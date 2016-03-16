@@ -4,7 +4,7 @@
  * Module dependencies.
  */
 
-var app = require('pz-server/src/app');
+var app = require('pz-server/build/node_modules/pz-server/src/app');
 var debug = require('debug')('Praisee:server');
 var http = require('http');
 

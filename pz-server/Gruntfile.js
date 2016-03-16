@@ -1,15 +1,25 @@
 module.exports = function(grunt) {
     require('load-grunt-tasks')(grunt);
+    
+    var pzPath = require('pz-support/src/pz-path');
+    var pzModules = ['pz-server', 'pz-client', 'pz-domain', 'pz-support'];
+    
+    function pzModuleWatcher(pzModule) {
+        return {
+            files: [pzPath(pzModule) + '/src/**/*.js'],
+            tasks: ['newer:babel:buildDev']
+        }
+    }
 
     grunt.initConfig({
         babel: {
             buildDev: {
-                files: [{
+                files: pzModules.map(function(pzModule) { return {
                     expand: true,
-                    cwd: 'src/',
+                    cwd: pzPath(pzModule, 'src/'),
                     src: ['**/*.js'],
-                    dest: 'build/src'
-                }],
+                    dest: 'build/node_modules/' + pzModule + '/src'
+                }}),
 
                 options: {
                     sourceMap: 'inline'
@@ -22,10 +32,10 @@ module.exports = function(grunt) {
         },
 
         watch: {
-            watchSrc: {
-                files: ['src/**/*.js'],
-                tasks: ['newer:babel:buildDev']
-            }
+            watchPzServerSrc: pzModuleWatcher('pz-server'),
+            watchPzClientSrc: pzModuleWatcher('pz-client'),
+            watchPzDomainSrc: pzModuleWatcher('pz-domain'),
+            watchPzSupportSrc: pzModuleWatcher('pz-support')
         }
     });
 

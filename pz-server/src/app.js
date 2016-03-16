@@ -4,11 +4,12 @@ import favicon from 'serve-favicon';
 import logger from 'morgan';
 import cookieParser from 'cookie-parser';
 import bodyParser from 'body-parser';
+import pzPath from 'pz-support/src/pz-path';
 
 var app = express();
 
 // view engine setup
-app.set('views', path.join(__dirname, 'views'));
+app.set('views', pzPath('pz-server', 'src/views'));
 app.set('view engine', 'jade');
 
 // uncomment after placing your favicon in /public
