@@ -40,4 +40,5 @@ module.exports = function(grunt) {
     });
 
     grunt.registerTask('buildDev', ['clean', 'babel:buildDev']);
+    grunt.registerTask('buildAndWatch', ['buildDev', 'watch']);
 };
