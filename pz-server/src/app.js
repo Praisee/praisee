@@ -5,6 +5,8 @@ import logger from 'morgan';
 import cookieParser from 'cookie-parser';
 import bodyParser from 'body-parser';
 import pzPath from 'pz-support/src/pz-path';
+import productRoutes from 'pz-server/src/product/product-routes'
+import productDataSource from 'pz-server/src/product/in-memory-data-source'
 
 var app = express();
 
@@ -20,9 +22,7 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser());
 // app.use(express.static(path.join(__dirname, 'public')));
 
-var productDataSource = require('pz-server/src/product/in-memory-data-source')();
-var productRoutes = require('pz-server/src/product/product-routes')(productDataSource);
-app.use('/api/v1/product', productRoutes);
+app.use('/api/v1/product', productRoutes(productDataSource()));
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {

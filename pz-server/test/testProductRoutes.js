@@ -6,7 +6,8 @@ var app = require('express')();
 var productMockRepo = {};
 
 app.use(bodyParser.json());
-app.use('/api/v1/product/', require("../product/productRoutes")(productMockRepo));
+var routes = require("pz-server/build/node_modules/pz-server/src/product/product-routes").default;
+app.use('/api/v1/product/', routes(productMockRepo));
 
 describe("/api/v1/product/", function() {
     describe("GET /", function() {
