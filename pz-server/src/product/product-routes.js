@@ -5,17 +5,16 @@ const router = express.Router();
 export default function(datasource) {
 
     router.get('/', runOrSendError(async function(req, res) {
-        console.log("pre hit response");
         var results = await datasource.getAll();
-        console.log("hit response");
         res.json(results);
     }));
 
     router.get('/:id', runOrSendError(async function(req, res) {
-        var results = await datasource.getByID(req.params.id);
-        if (!results) {
+        var result = await datasource.getByID(req.params.id);
+        if (!result) {
             throw new NotFoundError("Item with ID " + req.params.id + " not found");
         }
+        res.json(result);
     }));
 
     router.post('/', runOrSendError(async function(req, res) {

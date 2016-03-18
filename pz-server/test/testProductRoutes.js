@@ -12,8 +12,8 @@ app.use('/api/v1/product/', routes(productMockRepo));
 describe("/api/v1/product/", function() {
     describe("GET /", function() {
         it("should return all products from product repository", function(done) {
-            productMockRepo.getAll = function(callback) {
-                callback(null, ['product1', 'product2']);
+            productMockRepo.getAll = function() {
+                return Promise.resolve(['product1', 'product2']);
             };
 
             request(app)
@@ -28,8 +28,8 @@ describe("/api/v1/product/", function() {
         });
 
         it("should return empty array if no product in product repository", function(done) {
-            productMockRepo.getAll = function(callback) {
-                callback(null, []);
+            productMockRepo.getAll = function() {
+                return Promise.resolve([]);
             };
 
             request(app)
@@ -45,8 +45,8 @@ describe("/api/v1/product/", function() {
         });
 
         it("should return 500 if there is an error in the product repository", function(done) {
-            productMockRepo.getAll = function(callback) {
-                callback({ error: "blah" }, null);
+            productMockRepo.getAll = function() {
+                return Promise.reject({ error: "something bad happened" });
             };
 
             request(app)
@@ -64,7 +64,7 @@ describe("/api/v1/product/", function() {
     describe("GET /:id", function() {
         it("should return the document that the product repository returns", function(done) {
             productMockRepo.getByID = function(id, callback) {
-                callback(null, { id: id });
+                return Promise.resolve({ id: id });
             };
 
             request(app)
@@ -81,7 +81,7 @@ describe("/api/v1/product/", function() {
 
         it("should return 500 if there is an error in the product repository", function(done) {
             productMockRepo.getByID = function(id, callback) {
-                callback({ error: "blah" }, null);
+                return Promise.reject({ error: "blah" });
             };
 
             request(app)
@@ -96,7 +96,7 @@ describe("/api/v1/product/", function() {
 
         it("should return 404 if the product repository returns null", function(done) {
             productMockRepo.getByID = function(id, callback) {
-                callback(null, null);
+                return Promise.resolve(null);
             };
 
             request(app)
@@ -113,7 +113,7 @@ describe("/api/v1/product/", function() {
     describe("PUT /:id", function() {
         it("should return the document that the product repository returns", function(done) {
             productMockRepo.update = function(id, obj, callback) {
-                callback(null, { id: id });
+                return Promise.resolve({ id: id });
             };
 
             request(app)
@@ -130,7 +130,7 @@ describe("/api/v1/product/", function() {
 
         it("should return 400 error if ID not provided", function(done) {
             productMockRepo.update = function(id, obj, callback) {
-                callback(null, null);
+                return Promise.resolve(null);
             };
 
             request(app)
@@ -145,7 +145,7 @@ describe("/api/v1/product/", function() {
 
         it("should return 500 if there is an error in the product repository", function(done) {
             productMockRepo.update = function(id, obj, callback) {
-                callback({ error: "blah" }, null);
+                return Promise.reject({ error: "blah" });
             };
 
             request(app)
@@ -160,7 +160,7 @@ describe("/api/v1/product/", function() {
 
         it("should return 404 if the product repository returns null", function(done) {
             productMockRepo.update = function(id, obj, callback) {
-                callback(null, null);
+                return Promise.resolve(null);
             };
 
             request(app)
@@ -177,7 +177,7 @@ describe("/api/v1/product/", function() {
     describe("POST /", function() {
         it("should return the document that the product repository returns", function(done) {
             productMockRepo.create = function(obj, callback) {
-                callback(null, { name: "test product entry" });
+                return Promise.resolve({ name: "test product entry" });
             };
 
             request(app)
@@ -195,7 +195,7 @@ describe("/api/v1/product/", function() {
 
         it("should return 400 error if a name is not provided", function(done) {
             productMockRepo.create = function(obj, callback) {
-                callback(null, null);
+                return Promise.resolve(null);
             };
 
             request(app)
@@ -210,29 +210,13 @@ describe("/api/v1/product/", function() {
 
         it("should return 500 if there is an error in the product repository", function(done) {
             productMockRepo.create = function(obj, callback) {
-                callback({ error: "blah" }, null);
+                return Promise.reject({ error: "Something bad happened" });
             };
 
             request(app)
                 .post('/api/v1/product/')
                 .send({ name: "test product entry" })
                 .expect(500)
-                .end(function(err, res) {
-                    if (err) done(err);
-                    expect(res.body.error).to.be.ok;
-                    done(err);
-                });
-        });
-
-        it("should return 404 if the product repository returns null", function(done) {
-            productMockRepo.create = function(obj, callback) {
-                callback(null, null);
-            };
-
-            request(app)
-                .post('/api/v1/product/')
-                .send({ name: "test product entry" })
-                .expect(404)
                 .end(function(err, res) {
                     if (err) done(err);
                     expect(res.body.error).to.be.ok;
