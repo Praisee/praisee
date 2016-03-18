@@ -1,60 +1,50 @@
-module.exports = function(datasource) {
-    var express = require('express');
-    var router = express.Router();
+import express from 'express';
+import {NotFoundError, BadRequestError, runOrSendError} from 'pz-server/src/support/routerErrorHandlers';
+const router = express.Router();
 
-    router.get('/', function(req, res) {
-        datasource.getAll(function(error, results) {
-            if (error) return res.status(500).send({ error: error });
+export default function(datasource) {
 
-            res.json(results);
-        });
-    });
+    router.get('/', runOrSendError(async function(req, res) {
+        var results = await datasource.getAll();
+        res.json(results);
+    }));
 
-    router.get('/:id', function(req, res) {
-        datasource.getByID(req.params.id, function(error, results) {
-            if (error) return res.status(500).send({ error: error });
-            if (!results) return res.status(404).send({ error: "Item with ID " + req.params.id + " not found" });
+    router.get('/:id', runOrSendError(async function(req, res) {
+        var result = await datasource.getByID(req.params.id);
+        if (!result) {
+            throw new NotFoundError("Item with ID " + req.params.id + " not found");
+        }
+        res.json(result);
+    }));
 
-            res.json(results);
-        });
-    });
+    router.post('/', runOrSendError(async function(req, res) {
+        if (!req.body.name) {
+            throw new BadRequestError("Please atleast provide a 'name'");
+        }
 
-    router.post('/', function(req, res, next) {
-        if (!req.body.name)
-            return res.status(400).send({ error: "Please atleast provide a 'name'" });
+        var result = await datasource.create(req.body);
+        if (!result) {
+            throw new Error("Server failed to create new product");
+        }
 
-        datasource.create(req.body, function(error, results) {
-            if (error) return res.status(500).send({ error: error });
-            if (!results) return res.status(404).send({ error: "Could not create product" });
+        res.json(result);
+    }));
 
-            res.json(results);
-        });
-    });
+    router.put('/', runOrSendError(async function(req, res) {
+        if (!req.params.id) {
+            throw new BadRequestError("Please provide a product ID to update");
+        }
+    }));
 
-    router.put('/', function(req, res, next) {
-        if (!req.params.id)
-            return res.status(400).send({ error: "Please provide a product ID to update" });
-    });
+    router.put('/:id', runOrSendError(async function(req, res) {
+        var result = await datasource.update(req.params.id, req.body);
 
-    router.put('/:id', function(req, res, next) {
-        datasource.update(req.params.id, req.body, function(error, results) {
-            if (error) return res.status(500).send({ error: error });
-            if (!results) return res.status(404).send({ error: "Item with ID " + req.params.id + " not found" });
+        if (!result) {
+            throw new NotFoundError("Item with ID " + req.params.id + " not found");
+        }
 
-            res.json(results);
-        });
-    });
-
-    //Get property for room
-    // router.get('/:id/:property', function (req, res) {
-    //     rooms.get(req.params.id, function (err, resData) {
-    //         if (err) return res.status(500).send({ error: err });
-    //         var propName = req.params.property;
-    //         var returnObj = {};
-    //         returnObj[propName] = resData[propName];
-    //         res.json(returnObj);
-    //     });
-    // });
+        res.json(result);
+    }));
 
     return router;
 };
