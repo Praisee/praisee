@@ -5,8 +5,11 @@ import logger from 'morgan';
 import cookieParser from 'cookie-parser';
 import bodyParser from 'body-parser';
 import pzPath from 'pz-support/src/pz-path';
-import productRoutes from 'pz-server/src/product/product-routes'
-import productDataSource from 'pz-server/src/product/in-memory-data-source'
+
+import productRoutes from 'pz-server/src/product/product-routes';
+import productDataSource from 'pz-server/src/product/in-memory-data-source';
+
+import ReviewRouter from 'pz-server/src/review/review-router';
 
 var app = express();
 
@@ -23,6 +26,9 @@ app.use(cookieParser());
 // app.use(express.static(path.join(__dirname, 'public')));
 
 app.use('/api/v1/product', productRoutes(productDataSource()));
+
+// TODO: Needs a data source someday
+app.use('/api/v1/review', ReviewRouter.createRoutes('some data source')); 
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
