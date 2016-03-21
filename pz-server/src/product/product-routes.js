@@ -1,5 +1,5 @@
 import express from 'express';
-import {NotFoundError, BadRequestError, runOrSendError} from 'pz-server/src/support/routerErrorHandlers';
+import {NotFoundError, BadRequestError, runOrSendError} from 'pz-server/src/support/router-error-handlers';
 const router = express.Router();
 
 export default function(datasource) {

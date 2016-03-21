@@ -12,10 +12,8 @@ export class NotFoundError {
 
 export function runOrSendError(callback) {
     return (req, res) => {
-
-        callback(req, res).then(
-            () => { },
-            (error) => {
+        
+        return callback(req, res).catch((error) => {
                 if (error instanceof BadRequestError) {
                     return res.status(400).send({ error: error.message });
                 }
@@ -24,6 +22,6 @@ export function runOrSendError(callback) {
                 }
                 return res.status(500).send({ error: error });
             }
-            );
+        );
     }
 }
