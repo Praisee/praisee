@@ -8,9 +8,10 @@ lib-cov
 coverage
 .grunt
 .lock-wscript
-build/Release
 .npm
 .node_repl_history
 .idea
 node_modules
 build
+*.iml
+.vscode

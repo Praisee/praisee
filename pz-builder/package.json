@@ -1,0 +1,17 @@
+{
+  "name": "pz-builder",
+  "version": "1.0.0",
+  "description": "",
+  "main": "gulpfile.js",
+  "scripts": {
+    "buildDev": "gulp buildDev"
+  },
+  "dependencies": {
+    "del": "^2.2.0",
+    "gulp": "^3.9.1",
+    "gulp-babel": "^6.1.2",
+    "gulp-cli": "^1.2.1",
+    "gulp-typescript": "^2.12.2",
+    "stream-combiner": "^0.2.2"
+  }
+}
