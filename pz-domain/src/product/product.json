@@ -1,0 +1,45 @@
+{
+  "name": "Product",
+  "base": "PersistedModel",
+  "strict": false,
+  "idInjection": true,
+  "options": {
+    "validateUpsert": true
+  },
+  "properties": {
+    "name": {
+      "type": "string",
+      "required": true
+    },
+    "brand": {
+      "type": "string"
+    },
+    "upc": {
+      "type": "string"
+    },
+    "gtin": {
+      "type": "string"
+    },
+    "mpn": {
+      "type": "string"
+    },
+    "category": {
+      "type": "string"
+    }
+  },
+  "validations": [],
+  "relations": {
+    "reviews": {
+      "type": "hasMany",
+      "model": "Review",
+      "foreignKey": "productId"
+    },
+    "review": {
+      "type": "belongsTo",
+      "model": "Review",
+      "foreignKey": ""
+    }
+  },
+  "acls": [],
+  "methods": {}
+}
