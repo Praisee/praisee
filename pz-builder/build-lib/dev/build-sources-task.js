@@ -4,21 +4,19 @@ var babel = require('gulp-babel');
 
 module.exports = function(gulp, module, taskName, dependencies) {
     gulp.task(taskName, dependencies, function() {
-        var typescriptProject = typescript.createProject(
-            pzPath(module, 'tsconfig.json')
-        );
-        
-        return typescriptProject
+        var tsConfig = require(pzPath(module, 'tsconfig.json'));
+
+        return gulp
             .src([
                 pzPath(module, 'src/**/*.ts')
-            ], {base: module})
+            ])
 
-            .pipe(typescript(typescriptProject))
+            .pipe(typescript(tsConfig.compilerOptions))
             .pipe(babel())
             
-            .pipe(gulp.dest(pzPath(module, 'build')))
+            .pipe(gulp.dest(pzPath(module, 'build/src')))
         ;
     });
-    
+
     return taskName;
 };

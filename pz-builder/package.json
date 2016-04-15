@@ -11,6 +11,7 @@
     "gulp": "^3.9.1",
     "gulp-babel": "^6.1.2",
     "gulp-cli": "^1.2.1",
+    "gulp-print": "^2.0.1",
     "gulp-typescript": "^2.12.2",
     "stream-combiner": "^0.2.2"
   }
