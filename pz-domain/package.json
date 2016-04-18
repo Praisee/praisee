@@ -8,12 +8,22 @@
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "dependencies": {
+    "babel-plugin-transform-async-to-generator": "^6.7.4",
     "babel-plugin-transform-es2015-modules-commonjs": "^6.7.4",
+    "babel-plugin-transform-es2015-object-super": "^6.6.5",
+    "babel-plugin-transform-es2015-parameters": "^6.7.0",
+    "babel-plugin-transform-es2015-spread": "^6.6.5",
+    "babel-plugin-transform-es2015-typeof-symbol": "^6.6.0",
     "gulp": "^3.9.1"
   },
   "babel": {
     "plugins": [
-      "transform-es2015-modules-commonjs"
+      "transform-es2015-object-super",
+      "transform-es2015-spread",
+      "transform-es2015-parameters",
+      "transform-es2015-typeof-symbol",
+      "transform-es2015-modules-commonjs",
+      "transform-async-to-generator"
     ]
   }
 }
