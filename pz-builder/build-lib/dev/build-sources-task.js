@@ -12,7 +12,12 @@ module.exports = function(gulp, module, taskName, dependencies) {
             ])
 
             .pipe(typescript(tsConfig.compilerOptions))
-            .pipe(babel())
+            
+            .pipe(babel({
+                resolveModuleSource: function(source) {
+                    return source.replace(/^(pz-[a-zA-Z0-9]+)/, '$1/build');
+                }
+            }))
             
             .pipe(gulp.dest(pzPath(module, 'build/src')))
         ;

@@ -1,5 +1,7 @@
-import loopback = require('loopback');
-import boot = require('loopback-boot');
+import bootConfig from 'pz-server/src/boot-config';
+
+var loopback = require('loopback');
+var boot = require('loopback-boot');
 
 var app = loopback();
 
@@ -18,11 +20,10 @@ app.start = function() {
 
 // Bootstrap the application, configure models, datasources and middleware.
 // Sub-apps like REST API are mounted via boot scripts.
-boot(app, __dirname, function(err) {
-    if (err) {
-        throw err;
+boot(app, bootConfig, function(error: {message: string}) {
+    if (error) {
+        throw error;
     }
 
-    // start the server if `$ node server.js`
     app.start();
 });
