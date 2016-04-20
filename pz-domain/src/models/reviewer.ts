@@ -1,34 +1,48 @@
-module.exports = function (Reviewer) {
-    Reviewer.reputation = function (reviewerId, cb) {
-        Reviewer.findById(reviewerId, function (err, reviewer) {
-            if (err) { return console.log(err); }
-            if (!reviewer) { return cb("Not found"); }
+import query from 'pz-domain/src/query';
+import promisify from 'pz-support/src/promisify';
 
-            const ds = Reviewer.dataSource;
-            const votesQuery = `SELECT Vote.upVote FROM Reviewer
-                                JOIN Review ON Reviewer.Id = Review.ReviewerId
-                                JOIN Vote ON Review.Id = Vote.ReviewerId
-                                WHERE Reviewer.id = ${reviewerId}`;
+export interface IReviewer extends IModel {
+    reputation: Function
+}
 
-            ds.connector.execute(votesQuery, (err, result) => {
-                if (err) { return console.error(err); }
-
-                let reputation = 0;
-                for (let vote of result) {
-                    reputation += vote ? 1 : -1;
+module.exports = function (Reviewer: IReviewer) {
+    Reviewer.reputation = function (reviewerId: number, finish: ICallback) {
+        promisify(Reviewer.findById, Reviewer)(reviewerId)
+            .then((reviewer) => {
+                if (!reviewer) {
+                    throw new Error("Not found");
                 }
-
-                cb(err, reputation);
-            });
-        });
+        
+                const votesQuery = `
+                    SELECT SUM(
+                        CASE
+                            WHEN Vote.upVote = true THEN 1
+                            ELSE -1
+                        END
+                    ) as reputation
+                    FROM Reviewer
+                    JOIN Review ON Reviewer.Id = Review.ReviewerId
+                    JOIN Vote ON Review.Id = Vote.ReviewerId
+                    WHERE Reviewer.id = $1
+                `;
+        
+                return query(Reviewer, votesQuery, reviewerId);
+            })
+            .then(result => {
+                return Number(result.length ? result[0].reputation : 0);
+            })
+            
+            .then(response => finish(null, response))
+            .catch(error => finish(error))
+        ;
     };
-
+    
     Reviewer.remoteMethod(
         "reputation",
         {
-            http: { path: "/reputation", verb: "get" },
-            accepts: { arg: "id", type: "number", http: { source: "query" } },
-            returns: { arg: "reputation", type: "number" }
+            http: {path: "/:id/reputation", verb: "get"},
+            accepts: {arg: "id", type: "number", required: true},
+            returns: {arg: "reputation", type: "number"}
         }
     );
 };

@@ -1,3 +1,2 @@
-module.exports = function(Vote) {
-
+module.exports = function (Vote: IModel) {
 };

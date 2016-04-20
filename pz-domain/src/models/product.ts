@@ -1,3 +1,2 @@
-module.exports = function(Product) {
-
+module.exports = function (Product: IModel) {
 };

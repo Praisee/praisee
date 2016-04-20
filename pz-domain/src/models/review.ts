@@ -1,3 +1,2 @@
-module.exports = function(Review) {
-
+module.exports = function (Review: IModel) {
 };
