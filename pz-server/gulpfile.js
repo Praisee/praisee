@@ -1,4 +1,9 @@
 var gulp = require('gulp');
 
-require('pz-server/build-lib/build-dev-task')(gulp);
-gulp.task('buildDev', ['pzServer:buildDev']);
+gulp.task('buildDev', [
+    require('pz-server/build-lib/build-dev-task')(gulp)
+]);
+
+gulp.task('watch', [
+    require('pz-server/build-lib/watch-task')(gulp)
+]);

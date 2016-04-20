@@ -1,6 +1,9 @@
 var pzPath = require('pz-support/pz-path');
 var typescript = require('gulp-typescript');
 var babel = require('gulp-babel');
+var cached = require('gulp-cached');
+var gulpIf = require('gulp-if');
+var gulpPrint = require('gulp-print');
 
 module.exports = function(gulp, module, taskName, dependencies) {
     gulp.task(taskName, dependencies, function() {
@@ -10,6 +13,12 @@ module.exports = function(gulp, module, taskName, dependencies) {
             .src([
                 pzPath(module, 'src/**/*.ts')
             ])
+            
+            .pipe(gulpIf('!**/*.d.ts', cached(taskName)))
+            
+            .pipe(gulpPrint(function (filePath) {
+                return 'Building ' + filePath;
+            }))
 
             .pipe(typescript(tsConfig.compilerOptions))
             

@@ -8,6 +8,7 @@
     "typingsInstall": "cd ./pz-client && typings install && cd ../pz-domain && typings install && cd ../pz-server && typings install && cd ../pz-support && typings install",
     "postinstall": "npm run typingsInstall",
     "buildDev": "cd ./pz-builder && npm run buildDev",
+    "watch": "cd ./pz-builder && npm run watch",
     "debugTest": "mocha --debug-brk ./pz-server/test",
     "test": "mocha ./pz-server/test"
   }
