@@ -7,12 +7,12 @@ export interface IReviewer extends IModel {
 
 module.exports = function (Reviewer: IReviewer) {
     Reviewer.reputation = function (reviewerId: number, finish: ICallback) {
-        promisify(Reviewer.findById, Reviewer)(reviewerId)
+        (promisify(Reviewer.findById, Reviewer)(reviewerId)
             .then((reviewer) => {
                 if (!reviewer) {
-                    throw new Error("Not found");
+                    throw new Error('Not found');
                 }
-        
+
                 const votesQuery = `
                     SELECT SUM(
                         CASE
@@ -25,24 +25,24 @@ module.exports = function (Reviewer: IReviewer) {
                     JOIN Vote ON Review.Id = Vote.ReviewerId
                     WHERE Reviewer.id = $1
                 `;
-        
+
                 return query(Reviewer, votesQuery, reviewerId);
             })
-            .then((result: Array<any>) => {
+            .then((result) => {
                 return Number(result.length ? result[0].reputation : 0);
             })
             
             .then(response => finish(null, response))
             .catch(error => finish(error))
-        ;
+        );
     };
     
     Reviewer.remoteMethod(
-        "reputation",
+        'reputation',
         {
-            http: {path: "/:id/reputation", verb: "get"},
-            accepts: {arg: "id", type: "number", required: true},
-            returns: {arg: "reputation", type: "number"}
+            http: {path: '/:id/reputation', verb: 'get'},
+            accepts: {arg: 'id', type: 'number', required: true},
+            returns: {arg: 'reputation', type: 'number'}
         }
     );
 };
