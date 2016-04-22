@@ -28,7 +28,7 @@ module.exports = function (Reviewer: IReviewer) {
         
                 return query(Reviewer, votesQuery, reviewerId);
             })
-            .then(result => {
+            .then((result: Array<any>) => {
                 return Number(result.length ? result[0].reputation : 0);
             })
             
