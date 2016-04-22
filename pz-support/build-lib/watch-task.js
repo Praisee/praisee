@@ -7,13 +7,13 @@ module.exports = function(gulp) {
     var buildDevTask = buildDev(gulp);
 
     gulp.task('pzSupport:watch:typescript', function() {
-        return gulp.watch(pzPath('pz-support', 'src/**/*.ts'), [
+        return gulp.watch(['src/**/*.ts', 'src/**/*.js'], {cwd: pzPath('pz-support')}, [
             buildSources(gulp)
         ]);
     });
 
     gulp.task('pzSupport:watch:jsonFiles', function() {
-        return gulp.watch(pzPath('pz-support', 'src/**/*.json'), [
+        return gulp.watch('src/**/*.json', {cwd: pzPath('pz-support')}, [
             copyJsonFiles(gulp)
         ]);
     });

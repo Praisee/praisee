@@ -7,13 +7,13 @@ var pzSupport = require('pz-support/build-lib/watch-task');
 
 module.exports = function(gulp) {
     gulp.task('pzServer:watch:typescript', function() {
-        return gulp.watch(pzPath('pz-server', 'src/**/*.ts'), [
+        return gulp.watch(['src/**/*.ts', 'src/**/*.js'], {cwd: pzPath('pz-server')}, [
             buildSources(gulp)
         ]);
     });
     
     gulp.task('pzServer:watch:jsonFiles', function() {
-        return gulp.watch(pzPath('pz-server', 'src/**/*.json'), [
+        return gulp.watch('src/**/*.json', {cwd: pzPath('pz-server')}, [
             copyJsonFiles(gulp)
         ]);
     });
