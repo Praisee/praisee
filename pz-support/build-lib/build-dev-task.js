@@ -4,11 +4,13 @@ var buildSources = require('pz-support/build-lib/dev-build-sources-task');
 var copyJsonFiles = require('pz-support/build-lib/copy-json-files-task');
 
 module.exports = function(gulp) {
-    gulp.task('pzSupport:buildDev', runSequence.use(gulp)(
-        clean(gulp, 'pz-support', 'pzSupport:clean'),
-        
-        [buildSources(gulp), copyJsonFiles(gulp)]
-    ));
+    gulp.task('pzSupport:buildDev', function(done) {
+        runSequence.use(gulp)(
+            clean(gulp, 'pz-support', 'pzSupport:clean'),
+            [buildSources(gulp), copyJsonFiles(gulp)],
+            done
+        );
+    });
     
     return 'pzSupport:buildDev';
 };
