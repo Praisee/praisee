@@ -11,7 +11,8 @@ module.exports = function(gulp, module, taskName, dependencies) {
 
         return gulp
             .src([
-                pzPath(module, 'src/**/*.ts')
+                pzPath(module, 'src/**/*.ts'),
+                pzPath(module, 'src/**/*.js')
             ])
             
             .pipe(gulpIf('!**/*.d.ts', cached(taskName)))
@@ -20,7 +21,7 @@ module.exports = function(gulp, module, taskName, dependencies) {
                 return 'Building ' + filePath;
             }))
 
-            .pipe(typescript(tsConfig.compilerOptions))
+            .pipe(gulpIf('**/*.ts', typescript(tsConfig.compilerOptions)))
             
             .pipe(babel({
                 resolveModuleSource: function(source) {
