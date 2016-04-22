@@ -21,8 +21,7 @@ module.exports = function (Reviewer: IReviewer) {
                         END
                     ) as reputation
                     FROM Reviewer
-                    JOIN Review ON Reviewer.Id = Review.ReviewerId
-                    JOIN Vote ON Review.Id = Vote.ReviewerId
+                    INNER JOIN Vote ON Reviewer.Id = Vote.ReviewerId
                     WHERE Reviewer.id = $1
                 `;
 
