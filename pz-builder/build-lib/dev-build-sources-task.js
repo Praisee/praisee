@@ -4,6 +4,8 @@ var babel = require('gulp-babel');
 var cached = require('gulp-cached');
 var gulpIf = require('gulp-if');
 var gulpPrint = require('gulp-print');
+var moduleResolver = require('pz-builder/build-lib/module-resolver');
+var errorHandler = require('pz-builder/build-lib/error-handler');
 
 module.exports = function(gulp, module, taskName, dependencies) {
     gulp.task(taskName, dependencies, function() {
@@ -12,8 +14,11 @@ module.exports = function(gulp, module, taskName, dependencies) {
         return gulp
             .src([
                 pzPath(module, 'src/**/*.ts'),
+                pzPath(module, 'src/**/*.tsx'),
                 pzPath(module, 'src/**/*.js')
             ])
+            
+            .pipe(errorHandler())
             
             .pipe(gulpIf('!**/*.d.ts', cached(taskName)))
             
@@ -21,13 +26,9 @@ module.exports = function(gulp, module, taskName, dependencies) {
                 return 'Building ' + filePath;
             }))
 
-            .pipe(gulpIf('**/*.ts', typescript(tsConfig.compilerOptions)))
+            .pipe(gulpIf(['**/*.ts', '**/*.tsx'], typescript(tsConfig.compilerOptions)))
             
-            .pipe(babel({
-                resolveModuleSource: function(source) {
-                    return source.replace(/^(pz-[a-zA-Z0-9]+)/, '$1/build');
-                }
-            }))
+            .pipe(babel({resolveModuleSource: moduleResolver}))
             
             .pipe(gulp.dest(pzPath(module, 'build/src')))
         ;

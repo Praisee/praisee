@@ -1,9 +1,14 @@
 import bootConfig from 'pz-server/src/boot-config';
+import routesMiddelware from 'pz-server/src/middleware/routes';
+import staticAssetsMiddelware from 'pz-server/src/middleware/static-assets';
 
 var loopback = require('loopback');
 var boot = require('loopback-boot');
 
 var app = loopback();
+
+routesMiddelware(app);
+staticAssetsMiddelware(app);
 
 app.start = function() {
     // start the web server
