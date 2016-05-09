@@ -1,5 +1,5 @@
 {
-    "name": "Review",
+    "name": "Comment",
     "base": "CommunityItem",
     "strict": true,
     "options": {

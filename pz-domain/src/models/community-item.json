@@ -1,0 +1,22 @@
+{
+    "name": "CommunityItem",
+    "base": "PersistedModel",
+    "strict": true,
+    "options": {
+        "validateUpsert": true
+    },
+    "properties": {},
+    "validations": [],
+    "relations": {
+        "user": {
+            "type": "belongsTo",
+            "model": "User"
+        },
+        "votes": {
+            "type": "hasMany",
+            "model": "Vote"
+        }
+    },
+    "acls": [],
+    "methods": {}
+}

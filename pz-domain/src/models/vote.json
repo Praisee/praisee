@@ -1,28 +1,13 @@
 {
-  "name": "Vote",
-  "base": "PersistedModel",
-  "options": {
-    "validateUpsert": true
-  },
-  "properties": {
-    "upVote": {
-      "type": "boolean",
-      "required": true
-    }
-  },
-  "validations": [],
-  "relations": {
-    "review": {
-      "type": "belongsTo",
-      "model": "Review",
-      "foreignKey": "reviewId"
+    "name": "Vote",
+    "base": "PersistedModel",
+    "strict": true,
+    "options": {
+        "validateUpsert": true
     },
-    "reviewer": {
-      "type": "belongsTo",
-      "model": "Reviewer",
-      "foreignKey": "reviewerId"
-    }
-  },
-  "acls": [],
-  "methods": {}
+    "properties": {},
+    "validations": [],
+    "relations": {},
+    "acls": [],
+    "methods": {}
 }
