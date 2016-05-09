@@ -22,7 +22,7 @@ Vagrant.configure(2) do |config|
   # Create a forwarded port mapping which allows access to a specific port
   # within the machine from a port on the host machine. In the example below,
   # accessing "localhost:8080" will access port 80 on the guest machine.
-  config.vm.network "forwarded_port", guest: 3000, host: 3000
+  config.vm.network "forwarded_port", guest: 3000, host: 3001
   config.vm.network "forwarded_port", guest: 5432, host: 5432
   config.vm.network "forwarded_port", guest: 9200, host: 9200
   config.vm.network "forwarded_port", guest: 9300, host: 9300
@@ -85,9 +85,11 @@ Vagrant.configure(2) do |config|
     printf '-'
 
     sudo DEBIAN_FRONTEND=noninteractive apt-get install -y postgresql postgresql-contrib
-    sudo sed -i -E '/local\s+all\s+postgres\s+/ahost    all             postgres        127.0.0.1/32            trust' /etc/postgresql/9.5/main/pg_hba.conf
+    sudo sed -i -E "s/#?\s*?listen_addresses\s*?=\s*?'.*?'/listen_addresses = '*'/g" /etc/postgresql/9.5/main/postgresql.conf
+    sudo sed -i -E '/local\s+all\s+postgres\s+/ahost    all             postgres        samenet                 trust' /etc/postgresql/9.5/main/pg_hba.conf
     sudo sed -i -E 's/(local\s+all\s+postgres\s+)peer/\1trust/g' /etc/postgresql/9.5/main/pg_hba.conf
     sudo service postgresql restart
+    createdb -U postgres praisee
 
     printf '-'
     printf 'Java 8 Repo, see http://tecadmin.net/install-oracle-java-8-jdk-8-ubuntu-via-ppa/'

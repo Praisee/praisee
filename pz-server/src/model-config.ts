@@ -16,45 +16,45 @@ export default {
     ]
   },
   'User': {
-    'dataSource': 'db',
+    'dataSource': 'memory-db',
     'public': false
   },
   'AccessToken': {
-    'dataSource': 'db',
+    'dataSource': 'memory-db',
     'public': false
   },
   'ACL': {
-    'dataSource': 'db',
+    'dataSource': 'memory-db',
     'public': false
   },
   'RoleMapping': {
-    'dataSource': 'db',
+    'dataSource': 'memory-db',
     'public': false
   },
   'Role': {
-    'dataSource': 'db',
+    'dataSource': 'memory-db',
     'public': false
   },
   'Product': {
-    'dataSource': 'heroku-postgres',
+    'dataSource': 'vagrant-postgres',
     'public': true,
     '$promise': {},
     '$resolved': true
   },
   'Review': {
-    'dataSource': 'heroku-postgres',
+    'dataSource': 'vagrant-postgres',
     'public': true,
     '$promise': {},
     '$resolved': true
   },
   'Reviewer': {
-    'dataSource': 'heroku-postgres',
+    'dataSource': 'vagrant-postgres',
     'public': true,
     '$promise': {},
     '$resolved': true
   },
   'Vote': {
-    'dataSource': 'heroku-postgres',
+    'dataSource': 'vagrant-postgres',
     'public': true
   }
 }
