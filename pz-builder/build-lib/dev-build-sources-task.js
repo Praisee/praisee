@@ -15,7 +15,8 @@ module.exports = function(gulp, module, taskName, dependencies) {
             .src([
                 pzPath(module, 'src/**/*.ts'),
                 pzPath(module, 'src/**/*.tsx'),
-                pzPath(module, 'src/**/*.js')
+                pzPath(module, 'src/**/*.js'),
+                pzPath(module, 'src/**/*.json')
             ])
             
             .pipe(errorHandler())
@@ -28,7 +29,7 @@ module.exports = function(gulp, module, taskName, dependencies) {
 
             .pipe(gulpIf(['**/*.ts', '**/*.tsx'], typescript(tsConfig.compilerOptions)))
             
-            .pipe(babel({resolveModuleSource: moduleResolver}))
+            .pipe(gulpIf('**/*.js', babel({resolveModuleSource: moduleResolver})))
             
             .pipe(gulp.dest(pzPath(module, 'build/src')))
         ;

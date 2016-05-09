@@ -1,27 +1,21 @@
 var pzPath = require('pz-support/pz-path');
 var buildDev = require('pz-domain/build-lib/build-dev-task');
 var buildSources = require('pz-domain/build-lib/dev-build-sources-task');
-var copyJsonFiles = require('pz-domain/build-lib/copy-json-files-task');
 
 module.exports = function(gulp) {
     var buildDevTask = buildDev(gulp);
+    
+    var watchedFiles = ['src/**/*.ts', 'src/**/*.js', 'src/**/*.json'];
 
-    gulp.task('pzDomain:watch:typescript', function() {
-        return gulp.watch(['src/**/*.ts', 'src/**/*.js'], {cwd: pzPath('pz-domain')}, [
+    gulp.task('pzDomain:watch:sources', function() {
+        return gulp.watch(watchedFiles, {cwd: pzPath('pz-domain')}, [
             buildSources(gulp)
-        ]);
-    });
-
-    gulp.task('pzDomain:watch:jsonFiles', function() {
-        return gulp.watch('src/**/*.json', {cwd: pzPath('pz-domain')}, [
-            copyJsonFiles(gulp)
         ]);
     });
 
     gulp.task('pzDomain:watch', [
         buildDevTask,
-        'pzDomain:watch:typescript',
-        'pzDomain:watch:jsonFiles'
+        'pzDomain:watch:sources'
     ]);
 
     return 'pzDomain:watch';
