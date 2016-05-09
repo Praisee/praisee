@@ -13,10 +13,7 @@ module.exports = function(gulp, module, taskName, dependencies) {
 
         return gulp
             .src([
-                pzPath(module, 'src/**/*.ts'),
-                pzPath(module, 'src/**/*.tsx'),
-                pzPath(module, 'src/**/*.js'),
-                pzPath(module, 'src/**/*.json')
+                pzPath(module, 'src/**/*')
             ])
             
             .pipe(errorHandler())

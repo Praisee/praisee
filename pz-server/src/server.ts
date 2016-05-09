@@ -4,8 +4,13 @@ import staticAssetsMiddelware from 'pz-server/src/middleware/static-assets';
 
 var loopback = require('loopback');
 var boot = require('loopback-boot');
+var consolidate = require('consolidate');
 
 var app = loopback();
+
+app.engine('hbs', consolidate.handlebars);
+app.set('view engine', 'hbs');
+app.set('views', __dirname);
 
 routesMiddelware(app);
 staticAssetsMiddelware(app);
