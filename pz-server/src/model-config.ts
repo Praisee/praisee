@@ -6,12 +6,14 @@ export default {
             'loopback/common/models',
             'loopback/server/models',
             pzPath('pz-domain', 'src/models'),
+            pzPath('pz-domain', 'src/search-models'),
             './models'
         ],
         'mixins': [
             'loopback/common/mixins',
             'loopback/server/mixins',
             pzPath('pz-domain', 'src/mixins'),
+            pzPath('pz-domain', 'src/search-mixins'),
             './mixins'
         ]
     },
@@ -69,6 +71,14 @@ export default {
     },
     'Vote': {
         'dataSource': 'vagrant-postgres',
+        'public': true
+    },
+    'CommunityItemSearch': {
+        'dataSource': 'vagrant-elasticsearch',
+        'public': true
+    },
+    'TopicSearch': {
+        'dataSource': 'vagrant-elasticsearch',
         'public': true
     }
 }

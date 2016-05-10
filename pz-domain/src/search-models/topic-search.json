@@ -1,0 +1,11 @@
+{
+    "name": "TopicSearch",
+    "base": "PersistedModel",
+    "strict": true,
+    "options": {},
+    "properties": {},
+    "validations": [],
+    "relations": {},
+    "acls": [],
+    "methods": {}
+}
