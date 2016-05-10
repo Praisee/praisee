@@ -110,15 +110,19 @@ Vagrant.configure(2) do |config|
     printf 'Installing Elastic'
     printf '-'
 
-    wget -q https://download.elasticsearch.org/elasticsearch/release/org/elasticsearch/distribution/deb/elasticsearch/5.0.0-alpha2/elasticsearch-5.0.0-alpha2.deb -O ~/elasticsearch.deb && sudo dpkg -i ~/elasticsearch.deb && rm -f ~/elasticsearch.deb
+    # wget -q https://download.elasticsearch.org/elasticsearch/release/org/elasticsearch/distribution/deb/elasticsearch/5.0.0-alpha2/elasticsearch-5.0.0-alpha2.deb -O ~/elasticsearch.deb && sudo dpkg -i ~/elasticsearch.deb && rm -f ~/elasticsearch.deb
+    wget -q https://download.elasticsearch.org/elasticsearch/release/org/elasticsearch/distribution/deb/elasticsearch/2.3.2/elasticsearch-2.3.2.deb -O ~/elasticsearch.deb && sudo dpkg -i ~/elasticsearch.deb && rm -f ~/elasticsearch.deb
     sudo update-rc.d elasticsearch defaults
+    sudo sed -i -E 's/#?\s+?network.host.+?/network.host: 0/g' /etc/elasticsearch/elasticsearch.yml
+    sudo /usr/share/elasticsearch/bin/plugin install mobz/elasticsearch-head
     sudo service elasticsearch start
 
     printf '-'
     printf 'Installing Kibana'
     printf '-'
 
-    wget -q https://download.elastic.co/kibana/kibana/kibana_5.0.0-alpha2_amd64.deb -O ~/kibana.deb && sudo dpkg -i ~/kibana.deb && rm -f ~/kibana.deb
+    # wget -q https://download.elastic.co/kibana/kibana/kibana_5.0.0-alpha2_amd64.deb -O ~/kibana.deb && sudo dpkg -i ~/kibana.deb && rm -f ~/kibana.deb
+    wget -q https://download.elastic.co/kibana/kibana/kibana_4.5.0_amd64.deb -O ~/kibana.deb && sudo dpkg -i ~/kibana.deb && rm -f ~/kibana.deb
     sudo update-rc.d kibana defaults 96 9
     sudo service kibana start
 
