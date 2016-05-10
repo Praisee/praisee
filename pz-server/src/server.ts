@@ -6,7 +6,7 @@ var loopback = require('loopback');
 var boot = require('loopback-boot');
 var consolidate = require('consolidate');
 
-var app = loopback();
+var app: IApp = loopback();
 
 app.engine('hbs', consolidate.handlebars);
 app.set('view engine', 'hbs');
