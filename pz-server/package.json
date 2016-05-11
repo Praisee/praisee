@@ -8,7 +8,7 @@
     "test": "test"
   },
   "scripts": {
-    "start": "nodemon -w build -x 'node --es_staging --harmony_tostring --harmony_array_includes --harmony_rest_parameters --harmony_modules --harmony_regexps --harmony_proxies --harmony_unicode_regexps --harmony_reflect --harmony_destructuring --harmony_new_target build/src/server'",
+    "start": "nodemon -w build -x \"node --es_staging --harmony_tostring --harmony_array_includes --harmony_rest_parameters --harmony_modules --harmony_regexps --harmony_proxies --harmony_unicode_regexps --harmony_reflect --harmony_destructuring --harmony_new_target build/src/server\"",
     "buildDev": "gulp buildDev",
     "watch": "gulp watch",
     "slc": "slc",
