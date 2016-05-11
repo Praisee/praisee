@@ -13,7 +13,6 @@ export default {
             'loopback/common/mixins',
             'loopback/server/mixins',
             pzPath('pz-domain', 'src/mixins'),
-            pzPath('pz-domain', 'src/search-mixins'),
             './mixins'
         ]
     },
@@ -75,10 +74,10 @@ export default {
     },
     'CommunityItemSearch': {
         'dataSource': 'vagrant-elasticsearch',
-        'public': true
+        'public': true // TODO: This needs to be false after testing
     },
     'TopicSearch': {
         'dataSource': 'vagrant-elasticsearch',
-        'public': true
+        'public': true // TODO: This needs to be false after testing
     }
 }

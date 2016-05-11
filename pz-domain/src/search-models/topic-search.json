@@ -2,9 +2,22 @@
     "name": "TopicSearch",
     "base": "PersistedModel",
     "strict": true,
+    "idInjection": true,
     "options": {},
-    "properties": {},
-    "validations": [],
+    "properties": {
+        "topicId": {
+            "type": "number",
+            "required": true,
+            "index": {
+                "unique": true
+            }
+        },
+
+        "title": {
+            "type": "string",
+            "required": true
+        }
+    },
     "relations": {},
     "acls": [],
     "methods": {}

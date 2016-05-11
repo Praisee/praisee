@@ -36,7 +36,7 @@ declare interface IApp {
     start: Function
 }
 
-type TPaths =  string | RegExp | Array<string | RegExp>;
+type TPaths = string | RegExp | Array<string | RegExp>;
 
 interface IModelConfig {
     dataSource: string | {}

@@ -2,9 +2,39 @@
     "name": "CommunityItemSearch",
     "base": "PersistedModel",
     "strict": true,
+    "idInjection": true,
     "options": {},
-    "properties": {},
-    "validations": [],
+    "properties": {
+        "communityItemId": {
+            "type": "number",
+            "required": true
+        },
+
+        "type": {
+            "type": "string",
+            "required": true
+        },
+
+        "summary": {
+            "type": "string",
+            "required": true
+        },
+
+        "body": {
+            "type": "string",
+            "required": true
+        }
+    },
+    "indexes": {
+        "keys": {
+            "communityItemId": 1,
+            "type": 1
+        },
+
+        "options": {
+            "unique": true
+        }
+    },
     "relations": {},
     "acls": [],
     "methods": {}

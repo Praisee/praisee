@@ -2,10 +2,21 @@
     "name": "CommunityItem",
     "base": "PersistedModel",
     "strict": true,
+    "idInjection": true,
     "options": {
         "validateUpsert": true
     },
-    "properties": {},
+    "properties": {
+        "summary": {
+            "type": "string",
+            "required": true
+        },
+
+        "body": {
+            "type": "string",
+            "required": true
+        }
+    },
     "validations": [],
     "relations": {
         "user": {

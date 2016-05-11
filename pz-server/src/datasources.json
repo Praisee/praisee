@@ -18,7 +18,8 @@
                 "host": "127.0.0.1",
                 "port": 9200
             }
-        ]
+        ],
+        "log": "trace"
     },
     "heroku-postgres": {
         "url": "postgres://mbmbchsxdfphor:7F3vad_l4BY-ky0A7cwyrzm4NY@ec2-54-225-151-64.compute-1.amazonaws.com:5432/d15pkfgt0a2d13?sslmode=require&ssl=true",

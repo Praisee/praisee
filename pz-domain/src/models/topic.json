@@ -2,10 +2,16 @@
     "name": "Topic",
     "base": "PersistedModel",
     "strict": true,
+    "idInjection": true,
     "options": {
         "validateUpsert": true
     },
-    "properties": {},
+    "properties": {
+        "title": {
+            "type": "string",
+            "required": true
+        }
+    },
     "validations": [],
     "relations": {},
     "acls": [],
