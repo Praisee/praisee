@@ -162,3 +162,22 @@ declare interface IValidationError {
     message: string,
     details: any
 }
+
+declare class Review {
+    id: string;
+    reviewerId: string;
+    rating: number;
+    date: Date;
+}
+
+declare class Reviewer {
+    id: string;
+    email: string;
+    reputation: number;
+}
+
+declare class Vote {
+    id: string;
+    reviewerId: string;
+    upVote: boolean;
+}
