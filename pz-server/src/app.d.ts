@@ -23,6 +23,8 @@ declare interface IApp {
     middleware(name: string, paths: TPaths, handler: Function): IApp
     middleware(name: string, handler: Function): IApp
     
+    domain: IDomain
+    
     // Express
     get: Function
     post: Function
@@ -34,6 +36,11 @@ declare interface IApp {
     listen: Function
     emit: Function
     start: Function
+}
+
+interface IDomain {
+    searchClient?: any
+    searchUpdater?: any
 }
 
 type TPaths = string | RegExp | Array<string | RegExp>;

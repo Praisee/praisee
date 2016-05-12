@@ -6,7 +6,7 @@ export default {
             'loopback/common/models',
             'loopback/server/models',
             pzPath('pz-domain', 'src/models'),
-            pzPath('pz-domain', 'src/search-models'),
+            pzPath('pz-server', 'src/search/models'),
             './models'
         ],
         'mixins': [
@@ -16,6 +16,8 @@ export default {
             './mixins'
         ]
     },
+    
+    // User
     'User': {
         'dataSource': 'vagrant-postgres',
         'public': false
@@ -36,6 +38,8 @@ export default {
         'dataSource': 'vagrant-postgres',
         'public': false
     },
+    
+    // Domain
     'CommunityItem': {
         'dataSource': 'memory-db', // This is an abstract model
         'public': false,
@@ -72,12 +76,10 @@ export default {
         'dataSource': 'vagrant-postgres',
         'public': true
     },
-    'CommunityItemSearch': {
-        'dataSource': 'vagrant-elasticsearch',
-        'public': true // TODO: This needs to be false after testing
-    },
-    'TopicSearch': {
-        'dataSource': 'vagrant-elasticsearch',
-        'public': true // TODO: This needs to be false after testing
+    
+    // Search
+    'SearchUpdateJob': {
+        'dataSource': 'vagrant-postgres',
+        'public': false
     }
 }

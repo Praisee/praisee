@@ -3,7 +3,8 @@
 // http://apidocs.strongloop.com/loopback/#model
 declare interface IModel extends IValidatable {
     new (...properties: Array<any>): IModelInstance
-    
+
+    modelName: string
     dataSource: IDataSource
     remoteMethod(name: string, options: any)
     app?: IApp
@@ -17,11 +18,11 @@ declare interface IModelInstance {
 declare interface IPersistedModel extends IModel {
     new (...properties: Array<any>): IPersistedModelInstance
 
-    find(filter: IFinderFilter, callback: ICallback): IPersistedModelInstance
-    findOne(filter: IFinderFilter, callback: ICallback): IPersistedModelInstance
+    find(filter: IFinderFilter, callback: IResultCallback<Array<IPersistedModelInstance>>)
+    findOne(filter: IFinderFilter, callback: IResultCallback<IPersistedModelInstance>)
 
-    findById(id: any, callback: ICallback): IPersistedModelInstance
-    findById(id: any, filter: IFinderFilter, callback: ICallback): IPersistedModelInstance
+    findById(id: any, callback: IResultCallback<IPersistedModelInstance>)
+    findById(id: any, filter: IFinderFilter, callback: IResultCallback<IPersistedModelInstance>)
 
     upsert(data: any, done: (error: TError, model: IPersistedModelInstance) => void)
     
@@ -32,7 +33,7 @@ declare interface IPersistedModel extends IModel {
 }
 
 // http://apidocs.strongloop.com/loopback/#persistedmodel
-declare interface IPersistedModelInstance {
+declare interface IPersistedModelInstance extends IModelInstance {
     save(done: ICallback)
     save(options: {validate?: boolean, throws?: boolean}, done: ICallback)
     destroy(done?: ICallback)
@@ -90,6 +91,10 @@ declare type TError = IError | Error;
 
 declare interface ICallback {
     (error: TError, ...args: Array<any>): any
+}
+
+declare interface IResultCallback<T> {
+    (error: TError, result: T)
 }
 
 declare interface IDataSource {

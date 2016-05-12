@@ -1,0 +1,33 @@
+{
+    "name": "SearchUpdateJob",
+    "base": "PersistedModel",
+    "strict": true,
+    "idInjection": true,
+    "options": {
+        "validateUpsert": true
+    },
+    "properties": {
+        "modelName": {
+            "type": "string",
+            "required": true
+        },
+        "modelId": {
+            "type": "number",
+            "required": true
+        },
+        "operation": {
+            "type": "string",
+            "required": true
+        },
+        "isCompleted": {
+            "type": "boolean",
+            "required": false,
+            "default": false,
+            "index": true
+        }
+    },
+    "validations": [],
+    "relations": {},
+    "acls": [],
+    "methods": {}
+}

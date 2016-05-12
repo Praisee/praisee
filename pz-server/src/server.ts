@@ -8,6 +8,8 @@ var consolidate = require('consolidate');
 
 var app: IApp = loopback();
 
+app.domain = {};
+
 app.engine('hbs', consolidate.handlebars);
 app.set('view engine', 'hbs');
 app.set('views', __dirname);
@@ -30,8 +32,9 @@ app.start = function() {
 
 // Bootstrap the application, configure models, datasources and middleware.
 // Sub-apps like REST API are mounted via boot scripts.
-boot(app, bootConfig, function(error: {message: string}) {
+boot(app, bootConfig, function(error: TError) {
     if (error) {
+        console.error('Boot failed', error);
         throw error;
     }
 
