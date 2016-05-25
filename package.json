@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "private": true,
   "scripts": {
-    "start": "cd ./pz-server && (SET DEBUG=loopback || export DEBUG=loopback) && npm start",
+    "start": "cd ./pz-server && SET DEBUG=loopback || export DEBUG=loopback && npm start",
     "startQuiet": "cd ./pz-server && npm start",
     "install": "cd ./pz-client && npm install && cd ../pz-domain && npm install && cd ../pz-server && npm install && cd ../pz-support && npm install && cd ../pz-builder && npm install",
     "typingsInstall": "cd ./pz-client && typings install && cd ../pz-domain && typings install && cd ../pz-server && typings install && cd ../pz-support && typings install",
