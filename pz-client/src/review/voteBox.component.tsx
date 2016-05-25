@@ -1,26 +1,26 @@
 import * as React from 'react';
-import * as $ from 'jQuery';
+// import * from 'pz-domain/src/models/Vote'
+// import * as $ from 'jQuery';
 
-export class VoteBox extends React.Component<VoteBoxProps, VoteBoxState> {
+export class VoteBox extends React.Component<VoteBoxProps, any> {
   private serverRequest;
 
-  constructor(props?: VoteBoxProps, state?: VoteBoxState) {
+  constructor(props?, context?) {
     super(props);
-    this.state = state || new VoteBoxState();
+    this.state = new VoteBoxState();
   }
 
-  componentDidMount() {
-    this.serverRequest = $.get(
-      `http://localhost:3000/api/Reviews/${this.props.reviewId}/votes?filter={"fields":{"upVote":true}}`,
-      (votesResult: Vote[]) => {
-        let upVotes = votesResult.filter(vote => vote.upVote).length;
+  componentWillMount() {
+    // this.serverRequest = $.get(
+    //   `http://localhost:3000/api/Reviews/${this.props.reviewId}/votes?filter={"fields":{"upVote":true}}`,
+    //   (votesResult: Vote[]) => {
+    //     let upVotes = votesResult.filter(vote => vote.upVote).length;
 
-        this.setState({
-          upVotes: upVotes,
-          downVotes: votesResult.length - upVotes,
-          error: ""
-        });
-      });
+    //     this.setState({
+    //       upVotes: upVotes,
+    //       downVotes: votesResult.length - upVotes
+    //     });
+    //   });
   }
 
   componentWillUnmount() {
@@ -33,31 +33,34 @@ export class VoteBox extends React.Component<VoteBoxProps, VoteBoxState> {
     var originalUpVotes = this.state.upVotes;
     var originalDownVotes = this.state.downVotes;
 
-    if (upVote) { this.state.upVotes++ }
-    else { this.state.downVotes++ }
-
-    this.setState({
-      upVotes: this.state.upVotes,
-      downVotes: this.state.downVotes,
-      error: ""
-    });
-
-    this.serverRequest = $.post(
-      `http://localhost:3000/api/Reviews/${this.props.reviewId}/votes`,
-      {
-        upVote: upVote,
-        reviewerId: 1 //TODO: Get current user ID to put here
-      }
-    ).fail(function () {
-      //TODO: Fix the 'that' hack
-      that.state.upVotes = originalUpVotes;
-      that.state.downVotes = originalDownVotes;
-      that.setState({
-        upVotes: that.state.upVotes,
-        downVotes: that.state.downVotes,
-        error: "failed up cast up vote soz ;("
+    if (upVote) { 
+      this.setState({
+        upVotes: this.state.upVotes
       });
-    })
+      this.state.upVotes++; 
+    }
+    else { 
+      this.state.downVotes++; 
+    }
+
+    
+
+    // this.serverRequest = $.post(
+    //   `http://localhost:3000/api/Reviews/${this.props.reviewId}/votes`,
+    //   {
+    //     upVote: upVote,
+    //     reviewerId: 1 //TODO: Get current user ID to put here
+    //   }
+    // ).fail(function () {
+    //   //TODO: Fix the 'that' hack
+    //   that.state.upVotes = originalUpVotes;
+    //   that.state.downVotes = originalDownVotes;
+    //   that.setState({
+    //     upVotes: that.state.upVotes,
+    //     downVotes: that.state.downVotes,
+    //     error: "failed up cast up vote soz ;("
+    //   });
+    // })
   }
 
   render() {

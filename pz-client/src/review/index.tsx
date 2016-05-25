@@ -1,7 +1,7 @@
 import * as React from "react";
 import * as ReactDOM from "react-dom";
 
-import { ReviewList } from "./reviewList.component";
+import ReviewList from "./reviewList.component";
 
 ReactDOM.render(
   <ReviewList sourceUrl="/reviews" />,

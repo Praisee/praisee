@@ -1,9 +1,8 @@
 import * as React from 'react';
 import {Component} from 'react';
 import ReviewBox from 'pz-client/src/review/reviewBox.component'
-import * as $ from 'jQuery'
 
-export class ReviewList extends Component<ReviewListProps, ReviewListState> {
+export default class ReviewList extends Component<ReviewListProps, ReviewListState> {
   private serverRequest;
 
   constructor(props) {
@@ -12,11 +11,11 @@ export class ReviewList extends Component<ReviewListProps, ReviewListState> {
   }
 
   componentDidMount() {
-    this.serverRequest = $.get(this.props.sourceUrl, function (result) {
-      this.setState({
-        data: result
-      });
-    }.bind(this));
+    // this.serverRequest = $.get(this.props.sourceUrl, (result) => {
+    //   this.setState({
+    //     data: result
+    //   });
+    // });
   }
 
   componentWillUnmount() {

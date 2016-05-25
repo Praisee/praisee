@@ -1,5 +1,4 @@
 import * as React from 'react';
-import * as $ from 'jQuery';
 
 export class ReviewerAvatar extends React.Component<ReviewerAvatarProps, ReviewerAvatarState> {
     private serverRequest;
@@ -10,24 +9,21 @@ export class ReviewerAvatar extends React.Component<ReviewerAvatarProps, Reviewe
     }
 
     componentDidMount() {
-        var that = this;
-        this.serverRequest = $.get(
-            `http://localhost:3000/api/Reviewers/${this.props.id}`,
-            (reviewer: Reviewer) => {
-                this.setState({
-                    email: reviewer.email,
-                    reputation: 0
-                });
-            }).done(function (data) {
-                $.get(
-                    `http://localhost:3000/api/Reviewers/${that.props.id}/reputation`,
-                    (response) => {
-                        that.setState({
-                            email: this.state.email,
-                            reputation: response.reputation
-                        });
-                    })
-            });;
+        // this.serverRequest = $.get(`http://localhost:3000/api/Reviewers/${this.props.id}`,
+        //     (reviewer: Reviewer) => {
+        //         this.setState({
+        //             email: reviewer.email,
+        //             reputation: 0
+        //         });
+        //     }).done((data) => {
+        //         $.get(`http://localhost:3000/api/Reviewers/${this.props.id}/reputation`,
+        //             (response) => {
+        //                 this.setState({
+        //                     email: this.state.email,
+        //                     reputation: response.reputation
+        //                 });
+        //             })
+        //     });;
     }
 
     componentWillUnmount() {
