@@ -12,3 +12,11 @@ export function findCommunityItemByKeys(communityItemType: string, communityItem
         }
     }
 }
+
+export function findTopicByKey(topicId: number): ISearchQuery {
+    return {
+        filter: {
+            term: { topicId: topicId }
+        }
+    }
+}

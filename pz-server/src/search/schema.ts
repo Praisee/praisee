@@ -27,6 +27,13 @@ export default {
         },
         
         topic: {
+            name: {
+                type: 'string'
+            },
+
+            description: {
+                type: 'string'
+            }
         }
     }
 }

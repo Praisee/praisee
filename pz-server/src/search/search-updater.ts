@@ -1,8 +1,9 @@
 import promisify from 'pz-support/src/promisify';
 import {ISearchUpdateJobInstance} from 'pz-server/src/search/models/search-update-job';
 import {ICommunityItem, ICommunityItemInstance} from 'pz-domain/src/models/community-item';
+import {ITopicInstance} from 'pz-domain/src/models/topic';
 import SearchClient from 'pz-server/src/search/search-client';
-import {findCommunityItemByKeys} from 'pz-server/src/search/queries';
+import {findCommunityItemByKeys, findTopicByKey} from 'pz-server/src/search/queries';
 import searchSchema from 'pz-server/src/search/schema';
 
 // TODO: This is a hacked-in job queue that should be replaced with a real job queue
@@ -141,31 +142,48 @@ export default class SearchUpdater {
                     body: communityItem.body
                 };
                 
-                return (this.searchClient.createOrUpdate(path, query, document)
-                    .catch((error) => {
-                        console.error('Failed to create search document:', error);
-                        throw error;
-                    })
-                );
+                return this._saveSearchDocument(path, query, document);
             
             case 'destroy':
-                return (this.searchClient.destroyDocumentByQuery(path, query)
-                    .catch((error) => {
-                        console.error('Failed to destroy search document:', error);
-                        throw error;
-                    })
-                );
+                return this._destroySearchDocument(path, query);
         }
     }
     
-    _handleTopicJob(searchUpdateJob: ISearchUpdateJobInstance, model: IModelInstance) {
+    _handleTopicJob(searchUpdateJob: ISearchUpdateJobInstance, topic: ITopicInstance) {
+        const path = {index: searchSchema.index, type: searchSchema.types.topic};
+        const query = findTopicByKey(topic.id);
+        
         switch (searchUpdateJob.operation) {
             case 'save':
-                break;
+                const document = {
+                    topicId: topic.id,
+                    name: topic.name,
+                    description: topic.description
+                };
+                
+                return this._saveSearchDocument(path, query, document);
 
             case 'destroy':
-                break;
+                return this._destroySearchDocument(path, query);
         }
+    }
+    
+    _saveSearchDocument(path, query, document) {
+        return (this.searchClient.createOrUpdate(path, query, document)
+                .catch((error) => {
+                    console.error('Failed to create search document:', error);
+                    throw error;
+                })
+        );
+    }
+    
+    _destroySearchDocument(path, query) {
+        return (this.searchClient.destroyDocumentByQuery(path, query)
+            .catch((error) => {
+                console.error('Failed to destroy search document:', error);
+                throw error;
+            })
+        );
     }
     
     _markAsCompleted(searchUpdateJob) {
