@@ -72,6 +72,14 @@ export default {
         'dataSource': 'vagrant-postgres',
         'public': true
     },
+    'Brand': {
+        'dataSource': 'vagrant-postgres',
+        'public': true
+    },
+    'Product': {
+        'dataSource': 'vagrant-postgres',
+        'public': true
+    },
     'Vote': {
         'dataSource': 'vagrant-postgres',
         'public': true
