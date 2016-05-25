@@ -93,4 +93,35 @@ export default class SearchClient {
             id: path.id,
         });
     }
+    
+    destroyDocumentByQuery(path: ITypePath, query: ISearchQuery) {
+        return (Promise.resolve()
+                .then(() => this.search(query, path))
+
+                .then((results) => {
+                    const resultCount = results.hits.total;
+                    
+                    if (resultCount < 1) {
+                        return;
+                    }
+
+                    if (resultCount === 1) {
+                        const matchedDocument = results.hits.hits[0];
+                        
+                        const fullPath = {
+                            index: matchedDocument._index,
+                            type: matchedDocument._type,
+                            id: matchedDocument._id
+                        };
+
+                        return this.destroyDocument(fullPath);
+
+                    } else {
+
+                        throw new Error('Ambiguous createOrUpdate query matches more than one result');
+
+                    }
+                })
+        );
+    }
 }

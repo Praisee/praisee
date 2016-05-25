@@ -48,20 +48,31 @@ export default class SearchUpdater {
 
     _addHooks() {
         const saveHook = this._createHook('save');
-        const destroyHook = this._createHook('save');
+        const destroyHook = this._createHook('destroy');
         
         this._models.CommunityItem.observe('after save', saveHook);
         this._models.Topic.observe('after save', saveHook);
 
-        this._models.CommunityItem.observe('after destroy', destroyHook);
-        this._models.Topic.observe('after destroy', destroyHook);
+        this._models.CommunityItem.observe('after delete', destroyHook);
+        this._models.Topic.observe('after delete', destroyHook);
     }
     
     _createHook(operation: string) {
         return (context, next) => {
+            const modelName = context.Model.modelName;
+            let modelId;
+            
+            if (context.instance) {
+                modelId = context.instance.id;
+            } else if (context.where && context.where.id) {
+                modelId = context.where.id;
+            } else {
+                throw new Error('Cannot find ID for model' + modelName + ' in operation ' + operation)
+            }
+            
             const searchUpdateJob = new this._models.SearchUpdateJob({
-                modelName: context.Model.modelName,
-                modelId: context.instance.id,
+                modelName: modelName,
+                modelId: modelId,
                 operation: operation
             });
             
@@ -85,15 +96,23 @@ export default class SearchUpdater {
             return;
         }
         
-        (promisify(Model.findById, Model)(searchUpdateJob.modelId)
-            .then((model) => {
+        (Promise.resolve()
+            .then(() => {
+                if (searchUpdateJob.operation !== 'destroy') {
+                    return promisify(Model.findById, Model)(searchUpdateJob.modelId);
+                } else {
+                    return new Model({id: searchUpdateJob.modelId});
+                }
+            })
+            
+            .then((model): any => {
                 if (!model) {
                     console.error('Unable to locate model',
                         searchUpdateJob.modelName, searchUpdateJob.modelId);
-                    
+                   
                     return;
                 }
-
+                
                 if (model instanceof this._models.CommunityItem) {
                     return this._handleCommunityItemJob(searchUpdateJob, model as ICommunityItemInstance);
                 } else if (model instanceof this._models.Topic) {
@@ -110,13 +129,12 @@ export default class SearchUpdater {
     _handleCommunityItemJob(searchUpdateJob: ISearchUpdateJobInstance, communityItem: ICommunityItemInstance) {
         const Model: ICommunityItem = this._models[searchUpdateJob.modelName];
         
+        const path = {index: searchSchema.index, type: searchSchema.types.communityItem};
+        const query = findCommunityItemByKeys(Model.type, communityItem.id);
+        
         switch (searchUpdateJob.operation) {
             case 'save':
-                let path = {index: searchSchema.index, type: searchSchema.types.communityItem};
-                
-                let query = findCommunityItemByKeys(Model.type, communityItem.id);
-                
-                let document = {
+                const document = {
                     communityItemId: communityItem.id,
                     type: Model.type,
                     summary: communityItem.summary,
@@ -124,9 +142,6 @@ export default class SearchUpdater {
                 };
                 
                 return (this.searchClient.createOrUpdate(path, query, document)
-                    .then(() => {
-                    })
-                        
                     .catch((error) => {
                         console.error('Failed to create search document:', error);
                         throw error;
@@ -134,7 +149,12 @@ export default class SearchUpdater {
                 );
             
             case 'destroy':
-                return;
+                return (this.searchClient.destroyDocumentByQuery(path, query)
+                    .catch((error) => {
+                        console.error('Failed to destroy search document:', error);
+                        throw error;
+                    })
+                );
         }
     }
     
