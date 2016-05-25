@@ -29,3 +29,12 @@ class ReviewBoxProps {
 class ReviewBoxState {
 
 } 
+
+// App Controller
+  // Review Controller -> Reviews[]
+    // ReviewList Component -> Review
+      // Review Component  -> Review.content,  -> Review.Avatar,  -> Review.Vote
+        // Review content
+        // Avatar Component
+        // Vote Component
+    
