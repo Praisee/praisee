@@ -6,15 +6,23 @@
     "options": {
         "validateUpsert": true
     },
+    "mixins": {
+        "TimeStamp" : true
+    },
     "properties": {
-        "summary": {
-            "type": "string",
-            "required": true
+        "body": {
+            "type": "text",
+            "required": true,
+            "description": "The body content of the item",
+            "postgresql": {
+                "dataType": "text"
+            }
         },
 
-        "body": {
+        "summary": {
             "type": "string",
-            "required": true
+            "required": false,
+            "description": "The summary of the item (like a title)"
         }
     },
     "validations": [],

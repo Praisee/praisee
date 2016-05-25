@@ -33,6 +33,7 @@
     "loopback-component-explorer": "^2.5.0",
     "loopback-connector-postgresql": "^2.4.1",
     "loopback-datasource-juggler": "^2.46.0",
+    "loopback-ds-timestamp-mixin": "^3.2.4",
     "nodemon": "^1.9.2",
     "nsp": "^2.1.0",
     "react": "^15.0.2",

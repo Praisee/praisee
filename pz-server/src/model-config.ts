@@ -1,18 +1,19 @@
-import pzPath from 'pz-support/src/pz-path';
+import {pzPath, pzBuildPath} from 'pz-support/src/pz-path';
 
 export default {
     '_meta': {
         'sources': [
             'loopback/common/models',
             'loopback/server/models',
-            pzPath('pz-domain', 'src/models'),
-            pzPath('pz-server', 'src/search/models'),
+            pzBuildPath('pz-domain', 'src/models'),
+            pzBuildPath('pz-server', 'src/search/models'),
             './models'
         ],
         'mixins': [
             'loopback/common/mixins',
             'loopback/server/mixins',
-            pzPath('pz-domain', 'src/mixins'),
+            pzPath('pz-server', 'node_modules/loopback-ds-timestamp-mixin'),
+            pzBuildPath('pz-domain', 'src/mixins'),
             './mixins'
         ]
     },
