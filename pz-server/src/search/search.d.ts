@@ -24,6 +24,13 @@ export interface IDocumentUpdateResult {
     created: boolean
 }
 
+export interface ISearchSchema {
+    index: string
+    settings?: {}
+    types: { [type: string]: string }
+    typeMappings?: {}
+}
+
 /**
  * @source 
  */

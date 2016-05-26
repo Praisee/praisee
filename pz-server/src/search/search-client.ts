@@ -5,7 +5,8 @@ import {
     ITypePath,
     ISearchQuery,
     ISearchResults,
-    IPath
+    IPath,
+    ISearchSchema
 } from 'pz-server/src/search/search';
 
 var elasticsearch = require('elasticsearch');
@@ -14,20 +15,7 @@ export default class SearchClient {
     public elasticClient;
     
     constructor() {
-        this.elasticClient = new elasticsearch.Client(elasticSearchConfig);
-    }
-    
-    resetIndex(index: string): Promise<any> {
-        return (Promise.resolve()
-            .then(() => this.elasticClient.indices.delete({index}))
-            .catch(() => { /* That's ok, let's keep going */ })
-                
-            .then(() => this.elasticClient.indices.create({index}))
-            .catch(error => {
-                console.error('Error while resetting index', error);
-                throw error;
-            })
-        );
+        this.elasticClient = new elasticsearch.Client(elasticSearchConfig.client);
     }
     
     search(query: ISearchQuery, path?: IPath): Promise<ISearchResults> {
@@ -98,32 +86,52 @@ export default class SearchClient {
     
     destroyDocumentByQuery(path: ITypePath, query: ISearchQuery) {
         return (Promise.resolve()
-                .then(() => this.search(query, path))
+            .then(() => this.search(query, path))
 
-                .then((results) => {
-                    const resultCount = results.hits.total;
+            .then((results) => {
+                const resultCount = results.hits.total;
+                
+                if (resultCount < 1) {
+                    return;
+                }
+
+                if (resultCount === 1) {
+                    const matchedDocument = results.hits.hits[0];
                     
-                    if (resultCount < 1) {
-                        return;
-                    }
+                    const fullPath = {
+                        index: matchedDocument._index,
+                        type: matchedDocument._type,
+                        id: matchedDocument._id
+                    };
 
-                    if (resultCount === 1) {
-                        const matchedDocument = results.hits.hits[0];
-                        
-                        const fullPath = {
-                            index: matchedDocument._index,
-                            type: matchedDocument._type,
-                            id: matchedDocument._id
-                        };
+                    return this.destroyDocument(fullPath);
 
-                        return this.destroyDocument(fullPath);
+                } else {
 
-                    } else {
+                    throw new Error('Ambiguous createOrUpdate query matches more than one result');
 
-                        throw new Error('Ambiguous createOrUpdate query matches more than one result');
-
-                    }
-                })
+                }
+            })
         );
+    }
+
+    resetIndex(index: string, body: {} = {}): Promise<any> {
+        return (Promise.resolve()
+            .then(() => this.elasticClient.indices.delete({index}))
+            .catch(() => { /* That's ok, let's keep going */ })
+
+            .then(() => this.elasticClient.indices.create({index, body}))
+            .catch(error => {
+                console.error('Error while resetting index', error);
+                throw error;
+            })
+        );
+    }
+    
+    resetIndexFromSchema(schema: ISearchSchema) {
+        return this.resetIndex(schema.index, {
+            settings: schema.settings || {},
+            mappings: schema.typeMappings || {}
+        });
     }
 }
