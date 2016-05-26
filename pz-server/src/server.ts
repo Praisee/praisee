@@ -1,6 +1,6 @@
 import bootConfig from 'pz-server/src/boot-config';
-import routesMiddelware from 'pz-server/src/middleware/routes';
-import staticAssetsMiddelware from 'pz-server/src/middleware/static-assets';
+import routesMiddleware from 'pz-server/src/middleware/routes';
+import staticAssetsMiddleware from 'pz-server/src/middleware/static-assets';
 
 var loopback = require('loopback');
 var boot = require('loopback-boot');
@@ -14,12 +14,12 @@ app.engine('hbs', consolidate.handlebars);
 app.set('view engine', 'hbs');
 app.set('views', __dirname);
 
-routesMiddelware(app);
-staticAssetsMiddelware(app);
+staticAssetsMiddleware(app);
+routesMiddleware(app);
 
-app.start = function() {
+app.start = function () {
     // start the web server
-    return app.listen(function() {
+    return app.listen(function () {
         app.emit('started');
         var baseUrl = app.get('url').replace(/\/$/, '');
         console.log('Web server listening at: %s', baseUrl);
@@ -32,7 +32,7 @@ app.start = function() {
 
 // Bootstrap the application, configure models, datasources and middleware.
 // Sub-apps like REST API are mounted via boot scripts.
-boot(app, bootConfig, function(error: TError) {
+boot(app, bootConfig, function (error: TError) {
     if (error) {
         console.error('Boot failed', error);
         throw error;

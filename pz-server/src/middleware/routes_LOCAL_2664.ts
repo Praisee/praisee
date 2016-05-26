@@ -1,8 +1,7 @@
+import homeRoute from 'pz-server/src/home/home-route';
 import searchRoute from 'pz-server/src/search/site-search/search-route';
-import reactRouter from 'pz-server/src/site/site-route';
 
 export default function routes(app: IApp) {
-    
-    reactRouter(app); //this should ALWAYS be the last - it handles get('*')
+    homeRoute(app);
     searchRoute(app);
 }
