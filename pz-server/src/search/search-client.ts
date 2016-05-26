@@ -20,6 +20,8 @@ export default class SearchClient {
     resetIndex(index: string): Promise<any> {
         return (Promise.resolve()
             .then(() => this.elasticClient.indices.delete({index}))
+            .catch(() => { /* That's ok, let's keep going */ })
+                
             .then(() => this.elasticClient.indices.create({index}))
             .catch(error => {
                 console.error('Error while resetting index', error);
