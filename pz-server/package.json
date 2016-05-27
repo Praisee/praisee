@@ -38,6 +38,7 @@
     "nsp": "^2.1.0",
     "react": "^15.0.2",
     "react-dom": "^15.0.2",
+    "react-router": "^2.4.1",
     "serve-favicon": "^2.0.1",
     "strongloop": "^6.0.0"
   },
