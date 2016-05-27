@@ -10,6 +10,12 @@
         "TimeStamp" : true
     },
     "properties": {
+        "summary": {
+            "type": "string",
+            "required": true,
+            "description": "The summary of the item (like a title)"
+        },
+
         "body": {
             "type": "text",
             "required": true,
@@ -17,12 +23,6 @@
             "postgresql": {
                 "dataType": "text"
             }
-        },
-
-        "summary": {
-            "type": "string",
-            "required": false,
-            "description": "The summary of the item (like a title)"
         }
     },
     "validations": [],
