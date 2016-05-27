@@ -16,7 +16,9 @@ module.exports = function(gulp, module, taskName, dependencies) {
                 pzPath(module, 'src/**/*')
             ])
             
-            .pipe(errorHandler())
+            .pipe(errorHandler(function () {
+                delete cached.caches[taskName];
+            }))
             
             .pipe(gulpIf('!**/*.d.ts', cached(taskName)))
             
