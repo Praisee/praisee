@@ -155,6 +155,10 @@ export default class SearchUpdater {
         
         switch (searchUpdateJob.operation) {
             case 'save':
+                if (!topic.isVerified) {
+                    return; // Only verified topics get added to search
+                }
+                
                 const document = {
                     topicId: topic.id,
                     name: topic.name,

@@ -13,6 +13,9 @@
         "name": {
             "type": "string",
             "required": true,
+            "index": {
+                "unique": true
+            },
             "description": "Global (human friendly) identifier used to reference the topic"
         },
 
@@ -38,7 +41,7 @@
         },
 
         "isVerified": {
-            "type": "bool",
+            "type": "boolean",
             "required": false,
             "default": false,
             "description": "Whether or not the topic has been verified by a moderator yet"
