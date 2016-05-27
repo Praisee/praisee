@@ -60,9 +60,10 @@ export default class SearchUpdater {
     
     _createHook(operation: string) {
         return (context, next) => {
-            const modelName = context.Model.modelName;
+            const Model = context.Model;
+            const modelName = Model.modelName;
             let modelId;
-            
+
             if (context.instance) {
                 modelId = context.instance.id;
             } else if (context.where && context.where.id) {
