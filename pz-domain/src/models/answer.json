@@ -1,0 +1,13 @@
+{
+    "name": "Answer",
+    "base": "CommunityItem",
+    "strict": true,
+    "options": {
+        "validateUpsert": true
+    },
+    "properties": {},
+    "validations": [],
+    "relations": {},
+    "acls": [],
+    "methods": {}
+}

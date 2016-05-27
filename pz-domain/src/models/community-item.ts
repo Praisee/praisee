@@ -3,6 +3,7 @@ export type TCommunityItemType = (
     | 'comparison'
     | 'howto'
     | 'question'
+    | 'answer'
     | 'review'
 );
 
