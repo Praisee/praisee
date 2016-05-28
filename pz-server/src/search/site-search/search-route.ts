@@ -19,7 +19,7 @@ export default function (app: IApp) {
     });
     
     app.get('/i/search/poc', function(request, response) {
-        response.render('search/proofofconcept/search-view',
+        response.render('search/site-search/search-view',
             {content: ReactDomServer.renderToString(React.createElement(SearchComponent))});
     });
 }
