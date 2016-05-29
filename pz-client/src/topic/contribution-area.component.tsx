@@ -25,7 +25,7 @@ export default class ContributionArea extends Component<IContributionProps, ICon
             <div className="contribution-area">
                 <form onSubmit={this._submit.bind(this) } >
                     <textarea ref="body" />
-                    <button type="submit" disabled={this.state.isLoading}>Submit</button>
+                    <button className="btn btn-primary" type="submit" disabled={this.state.isLoading}>Submit</button>
                 </form>
             </div>
         )

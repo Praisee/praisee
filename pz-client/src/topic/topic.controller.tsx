@@ -94,7 +94,7 @@ export default class TopicController extends Component<ITopicProps, ITopicState>
 
     _renderSideSection() {
         return (
-            <div className="side-section">
+            <div className="side-section-container">
                 <SideSection topic={this.state.topic} />
             </div>
         )

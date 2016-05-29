@@ -5,7 +5,7 @@ export default class AppController extends React.Component<{},{}>
     //set context stuff here
     render() {
         return (
-            <div>
+            <div className="app-namespace">
                 {this.props.children}
             </div>
         );
