@@ -8,18 +8,23 @@ var buffer = require('vinyl-buffer');
 
 module.exports = function(gulp) {
     var dependencies = [transpile(gulp)];
-    
+
     gulp.task('pzClient:dev:buildSources', dependencies, function() {
-        return browserifyBundleCreator()
+        return (browserifyBundleCreator()
+            .on('error', function (error) {
+                console.error(error.toString());
+                this.emit("end");
+            })
+            
             .pipe(source('app.js'))
             .pipe(buffer())
-            
+
             .pipe(gulpPrint(function (filePath) {
                 return 'Building ' + filePath;
             }))
 
             .pipe(gulp.dest(paths.publicScriptsDir()))
-        ;
+        );
     });
 
     return 'pzClient:dev:buildSources';
