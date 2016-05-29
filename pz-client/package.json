@@ -10,6 +10,7 @@
     "watch": "gulp watch"
   },
   "dependencies": {
+    "autoprefixer": "^6.3.6",
     "babel-plugin-transform-async-to-generator": "^6.7.0",
     "babel-plugin-transform-es2015-modules-commonjs": "^6.7.0",
     "babel-plugin-transform-es2015-object-super": "^6.6.5",
@@ -20,8 +21,11 @@
     "babel-preset-react": "^6.5.0",
     "browserify": "^13.0.0",
     "gulp": "^3.9.1",
+    "gulp-postcss": "^6.1.1",
     "gulp-print": "^2.0.1",
+    "gulp-sass": "^2.3.1",
     "gulp-uglify": "^1.5.3",
+    "postcss-url": "^5.1.2",
     "react": "^15.0.2",
     "react-dom": "^15.0.2",
     "vinyl-buffer": "^1.0.0",
