@@ -6,7 +6,7 @@ import ProfileController from 'pz-client/src/home.controller';
 import CommunityItemController from 'pz-client/src/home.controller';
 import ReviewController from 'pz-client/src/home.controller';
 import ComparisonController from 'pz-client/src/home.controller';
-import TopicController from 'pz-client/src/home.controller';
+import TopicController from 'pz-client/src/topic/topic.controller';
 
 export default (
     <Router>
@@ -18,7 +18,9 @@ export default (
             <Route path="(:topicSlug)-comparisons" component={ComparisonController} />
             <Route path="(:topicSlug)-questions" component={ComparisonController} />
             <Route path="(:topicSlug)-how-tos" component={ComparisonController} />
-            <Route path="(:topicSlug)" component={TopicController} />
+            <Route path="(:topicSlug)" component={TopicController} >
+                
+            </Route>
         </Route>
     </Router>
 )
