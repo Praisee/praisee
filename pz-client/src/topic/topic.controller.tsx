@@ -2,96 +2,105 @@ import * as React from 'react';
 import {Component} from 'react';
 import * as util from 'util';
 import ContributionArea from 'pz-client/src/topic/contribution-area.component';
+import SideSection from 'pz-client/src/side-section/side-section.component';
+import {ITopicInstance} from 'pz-domain/src/models/topic';
 
 interface ITopicState {
     topicContent;
-    topicName;
+    topic: ITopicInstance;
 }
 
 interface ITopicProps {
-    topicSlug;
     params;
 }
 
 export default class TopicController extends Component<ITopicProps, ITopicState> {
-    //provide contexts for sub components
-    
     render() {
         return (
             <div className="topic-namespace" >
-                {this._renderPrimarySection()}
-                {this._renderSideSection()}
+                {this._renderPrimarySection() }
+                {this._renderSideSection() }
             </div>
         )
     }
-    
+
     componentWillMount() {
         //Go look up topic slug and set it in the state
-         this._lookupSlugInfo(this.props.params.topicSlug);
+        this._lookupSlugInfo(this.props.params.topicSlug);
         //Get topic content and put in state
     }
-    
+
     componentWillReceiveProps(nextProps) {
         //will have updated slug if user changed it via url
         this._lookupSlugInfo(nextProps.params.topicSlug);
         //Get topic content and put in state
     }
-    
-    _lookupSlugInfo(topicSlug){
+
+    _lookupSlugInfo(topicSlug) {
+        const topic: ITopicInstance = {
+            id: 123,
+            name: this.props.params.topicSlug,
+            description: "internal description",
+            overviewContent: "This is where the wiki stuff will go",
+            thumbnailPath: "sad",
+            isVerified: true,
+            save: () => { },
+            destroy: () => { }
+        };
         this.setState({
-            topicContent: Math.random(),
-            topicName: Math.random()
+            topicContent: "asdfghjk",
+            topic: topic
         })
     }
-    
-    _renderPrimarySection(){
+
+    _renderPrimarySection() {
         return (
             <div className="primary-section" >
-                 {this._renderContributionSection()}
-                 {this._renderTopicContentSection()}
+                {this._renderContributionSection() }
+                {this._renderTopicContentSection() }
             </div>
         )
     }
-    
-    _renderContributionSection(){
+
+    _renderContributionSection() {
         return (
-            <ContributionArea addContribution={this._addContibution} />
+            <ContributionArea addContribution={this._addContribution} />
         )
     }
-    
-    _renderTopicContentSection(){
+
+    _renderTopicContentSection() {
         var content = {};
         //TODO: Populate content from backend
-        
-        if(content){
+
+        if (content) {
             return this._renderTopicContent();
-        } 
+        }
         else {
             return this._renderEmptyContent();
         }
     }
-    
-    _renderTopicContent(){
+
+    _renderTopicContent() {
         return this.state.topicContent;
     }
-    
-    _renderEmptyContent(){
+
+    _renderEmptyContent() {
         return (
             <div>
                 <span>empty content</span>
             </div>
         ); //change to list of questions
     }
-    
-    _renderSideSection(){
+
+    _renderSideSection() {
         return (
             <div className="side-section">
-                <h2>{this.state.topicName}</h2>
+                <SideSection topic={this.state.topic} />
             </div>
         )
     }
 
-    _addContibution(){
+    _addContribution() {
         console.log("submited");
         var num = Math.random();
         return num > .5 ? Promise.resolve(true) : Promise.resolve(false);
