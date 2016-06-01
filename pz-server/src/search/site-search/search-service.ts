@@ -7,14 +7,9 @@ import {
     ISearchResultHit
 } from 'pz-server/src/search/search';
 
-import {getSuggestionsForUserQuery} from 'pz-server/src/search/queries';
+import {ISearchSuggestionResult} from 'pz-domain/src/search/search-results';
 
-export interface ISearchSuggestionResult {
-    type: 'topic' | 'communityItem' | 'user'
-    title: string
-    routePath: string
-    thumbnailPath: string
-}
+import {getSuggestionsForUserQuery} from 'pz-server/src/search/queries';
 
 interface ISearchClient {
     search(query: ISearchQuery, path?: IPath): Promise<IRawSearchResults>
@@ -30,6 +25,8 @@ export default class Searcher {
     }
     
     suggest(queryString: string): Promise<Array<ISearchSuggestionResult>> {
+        // TODO: Accept a context parameter to refine search further
+        
         const query = getSuggestionsForUserQuery(queryString);
         
         return (this._searchClient.search(query, {index: this._searchSchema.index})

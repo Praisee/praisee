@@ -8,12 +8,19 @@ import ReviewController from 'pz-client/src/home.controller';
 import ComparisonController from 'pz-client/src/home.controller';
 import TopicController from 'pz-client/src/topic/topic.controller';
 
+import SearchController from 'pz-client/src/search-proofofconcept/search.controller'; // TODO: Remove this
+
 export default (
     <Router>
         <Route path="/" component={AppController}>
             <IndexRoute component={HomeController} />
+            
+            <Route path="search/poc" component={SearchController} /> {/* TODO: Remove this */}
+            
             <Route path="profile/:usernameSlug" component={ProfileController} />
+            
             <Route path=":usernameSlug/:contentTitleSlug" component={CommunityItemController} />
+            
             <Route path="(:topicSlug)-reviews" component={ReviewController} />
             <Route path="(:topicSlug)-comparisons" component={ComparisonController} />
             <Route path="(:topicSlug)-questions" component={ComparisonController} />
