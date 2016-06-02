@@ -47,9 +47,9 @@ interface IServices {
 type TPaths = string | RegExp | Array<string | RegExp>;
 
 interface IModelConfig {
-    dataSource: string | {}
+    dataSource: string | any
     'public'?: boolean
-    relations?: {}
+    relations?: any
 }
 
 interface IMiddlewareConfig {

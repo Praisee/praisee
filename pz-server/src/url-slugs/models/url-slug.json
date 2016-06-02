@@ -1,0 +1,74 @@
+{
+    "name": "UrlSlug",
+    "description": "Url slugs used for vanity URL routing",
+    "base": "PersistedModel",
+    "strict": true,
+    "idInjection": true,
+    "options": {
+        "validateUpsert": true
+    },
+    "mixins": {
+        "TimeStamp" : true
+    },
+    "properties": {
+        "fullSlug": {
+            "type": "string",
+            "required": true,
+            "description": "Full URL slug, including the duplicate offset"
+        },
+
+        "baseSlug": {
+            "type": "string",
+            "required": true,
+            "description": "Base URL slug, used to find duplicates"
+        },
+
+        "duplicateOffset": {
+            "type": "number",
+            "required": false,
+            "default": 0,
+            "description": "An offset number appended to the URL slug to avoid collisions"
+        },
+
+        "isAlias": {
+            "type": "boolean",
+            "default": false,
+            "description": "Whether the URL slug is a redirect (true) or the canonical path (false)",
+            "index": true
+        }
+    },
+    "validations": [],
+    "relations": {
+        "owner": {
+            "type": "belongsTo",
+            "polymorphic": {
+                "foreignKey": "sluggableId",
+                "discriminator": "sluggableType"
+            }
+        }
+    },
+    "indexes": {
+        "fullslug_sluggabletype_index": {
+            "keys": {
+                "fullSlug": 1,
+                "sluggableType": 1
+            },
+            "options": {
+                "unique": true
+            }
+        },
+
+        "baseslug_duplicateoffset_index": {
+            "keys": {
+                "baseSlug": 1,
+                "duplicateOffset": 1,
+                "sluggableType": 1
+            },
+            "options": {
+                "unique": true
+            }
+        }
+    },
+    "acls": [],
+    "methods": {}
+}

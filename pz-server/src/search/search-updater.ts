@@ -54,45 +54,70 @@ export default class SearchUpdater {
         this._models.CommunityItem.observe('after save', saveHook);
         this._models.Topic.observe('after save', saveHook);
 
-        this._models.CommunityItem.observe('after delete', destroyHook);
-        this._models.Topic.observe('after delete', destroyHook);
+        this._models.CommunityItem.observe('before delete', destroyHook);
+        this._models.Topic.observe('before delete', destroyHook);
     }
     
     _createHook(operation: string) {
-        return (context, next) => {
+        return async (context) => {
             const Model = context.Model;
             const modelName = Model.modelName;
-            let modelId;
 
             if (context.instance) {
-                modelId = context.instance.id;
+                return this._createSearchUpdateJob(
+                    modelName,
+                    context.instance.id,
+                    operation
+                );
+                
             } else if (context.where && context.where.id) {
-                modelId = context.where.id;
+                return this._createSearchUpdateJob(
+                    modelName,
+                    context.where.id,
+                    operation
+                );
+                
             } else {
-                throw new Error('Cannot find ID for model' + modelName + ' in operation ' + operation)
+                const modelCount = await promisify(Model.count, Model)();
+                
+                if (modelCount > 100) {
+                    throw new Error('Too many ' + modelName + ' models to handle in operation ' + operation);
+                }
+                
+                const models = await promisify(Model.find, Model)({
+                    where: context.where
+                }) as Array<IPersistedModelInstance>;
+                
+                if (models.length < 0) {
+                    throw new Error('Cannot find ID for model' + modelName + ' in operation ' + operation)
+                }
+                
+                return Promise.all(models.map(model => {
+                    return this._createSearchUpdateJob(modelName, model.id, operation);
+                }));
             }
-            
-            const searchUpdateJob = new this._models.SearchUpdateJob({
-                modelName: modelName,
-                modelId: modelId,
-                operation: operation
-            });
-            
-            (promisify(searchUpdateJob.save, searchUpdateJob)()
-                .then(() => next(null))
-                    
-                .catch((error) => {
-                    console.error('Failed to create search update job', error);
-                    next(null);
-                    throw error;
-                })
-            );
         };
+    }
+    
+    _createSearchUpdateJob(modelName, modelId, operation): Promise<any> {
+        const searchUpdateJob = new this._models.SearchUpdateJob({
+            modelName: modelName,
+            modelId: modelId,
+            operation: operation
+        });
+
+        try {
+            return promisify(searchUpdateJob.save, searchUpdateJob)();
+
+        } catch(error) {
+            console.error('Failed to create search update job', error);
+            return Promise.resolve();
+        }
     }
     
     _handleJob(searchUpdateJob: ISearchUpdateJobInstance) {
         const Model = this._models[searchUpdateJob.modelName];
-        
+
         if (!Model) {
             console.error('Unknown model type', searchUpdateJob.modelName);
             return;
@@ -125,6 +150,18 @@ export default class SearchUpdater {
             })
                 
             .then(() => this._markAsCompleted(searchUpdateJob))
+            
+            .catch((error) => {
+                console.error('Search updater job failed');
+                
+                if (error && error.stack) {
+                    console.error(error.stack);
+                } else {
+                    console.error(error);
+                }
+                
+                throw error;
+            })
         );
     }
     

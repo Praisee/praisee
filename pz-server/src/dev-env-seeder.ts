@@ -74,10 +74,15 @@ export class DevEnvSeeder {
             .then(() => {
                 const Topic = this.app.models.Topic;
                 
-                return this.topicSeeds().map((topicSeed) => {
+                return Promise.all(this.topicSeeds().map((topicSeed) => {
                     const topic = new Topic(topicSeed);
-                    return promisify(topic.save, topic)();
-                });
+                    return (promisify(topic.save, topic)()
+                        .catch((error) => {
+                            console.error(error);
+                            throw error;
+                        })
+                    );
+                }));
             })
                 
             .then(() => {

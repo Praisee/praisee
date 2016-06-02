@@ -1,0 +1,9 @@
+{
+    "name": "PraiseeUser",
+    "base": "User",
+    "mixins": {
+        "Sluggable" : {
+            "property": "username"
+        }
+    }
+}

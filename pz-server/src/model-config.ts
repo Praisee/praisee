@@ -7,6 +7,7 @@ export default {
             'loopback/server/models',
             pzBuildPath('pz-domain', 'src/models'),
             pzBuildPath('pz-server', 'src/search/models'),
+            pzBuildPath('pz-server', 'src/url-slugs/models'),
             './models'
         ],
         'mixins': [
@@ -14,12 +15,13 @@ export default {
             'loopback/server/mixins',
             pzPath('pz-server', 'node_modules/loopback-ds-timestamp-mixin'),
             pzBuildPath('pz-domain', 'src/mixins'),
+            pzBuildPath('pz-server', 'src/url-slugs/mixins'),
             './mixins'
         ]
     },
     
     // User
-    'User': {
+    'PraiseeUser': {
         'dataSource': 'vagrant-postgres',
         'public': false
     },
@@ -80,6 +82,10 @@ export default {
     'Vote': {
         'dataSource': 'vagrant-postgres',
         'public': true
+    },
+    'UrlSlug': {
+        'dataSource': 'vagrant-postgres',
+        'public': false
     },
     
     // Search

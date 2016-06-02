@@ -9,8 +9,8 @@ export interface ITopic extends IPersistedModel {
 }
 
 export interface ITopicInstance extends IPersistedModelInstance {
-    id: number,
-    name: string,
+    id: number
+    name: string
     description: string
     thumbnailPath: string
     overviewContent: string
