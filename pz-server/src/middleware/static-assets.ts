@@ -5,7 +5,7 @@ var loopback = require('loopback');
 export default function staticAssetsServer(app: IApp) {
     app.middleware(
         'files',
-        '/client',
+        '/i/client',
         loopback.static(pzPath('pz-client', 'public'))
     );
 }

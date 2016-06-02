@@ -6,6 +6,11 @@ import routes from 'pz-client/src/routes'
 
 export default function (app: IApp) {
     app.get('*', function (request, response, next) {
+        if (request.path.match(/^\/?.\//i)) {
+            next(); // Single letter routes are reserved
+            return;
+        }
+        
         match({ routes, location: request.url }, (error, redirectLocation, renderProps: any) => {
             if (error) {
                 response.status(500).send(error.message)

@@ -5,7 +5,7 @@ import searchSchema from 'pz-server/src/search/schema';
 import SearchComponent from 'pz-client/src/search-proofofconcept/search.component';
 
 export default function (app: IApp) {
-    app.get('/search/suggestions', function(request, response) {
+    app.get('/i/search/suggestions', function(request, response) {
         let search = new SearchService(searchSchema, app.domain.searchClient);
         
         const searchQuery = request.query.query ?
@@ -18,7 +18,7 @@ export default function (app: IApp) {
         search.suggest(searchQuery).then(results => response.json({results}));
     });
     
-    app.get('/search/poc', function(request, response) {
+    app.get('/i/search/poc', function(request, response) {
         response.render('search/proofofconcept/search-view',
             {content: ReactDomServer.renderToString(React.createElement(SearchComponent))});
     });
