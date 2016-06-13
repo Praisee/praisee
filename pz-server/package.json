@@ -8,11 +8,11 @@
     "test": "test"
   },
   "scripts": {
-    "start": "nodemon -w build -x \"node --es_staging --harmony_tostring --harmony_array_includes --harmony_rest_parameters --harmony_modules --harmony_regexps --harmony_proxies --harmony_unicode_regexps --harmony_reflect --harmony_destructuring --harmony_new_target build/src/server\"",
+    "start": "nodemon -w build -x \"node --es_staging --harmony_tostring --harmony_array_includes --harmony_rest_parameters --harmony_modules --harmony_regexps --harmony_proxies --harmony_unicode_regexps --harmony_reflect --harmony_destructuring --harmony_new_target build/src/index\"",
+    "test": "mocha --es_staging --harmony_tostring --harmony_array_includes --harmony_rest_parameters --harmony_modules --harmony_regexps --harmony_proxies --harmony_unicode_regexps --harmony_reflect --harmony_destructuring --harmony_new_target --recursive build/test/smoke",
     "buildDev": "gulp buildDev",
     "watch": "gulp watch",
-    "slc": "slc",
-    "posttest": "nsp check"
+    "slc": "slc"
   },
   "dependencies": {
     "babel-plugin-transform-async-to-generator": "^6.7.4",
@@ -35,12 +35,19 @@
     "loopback-datasource-juggler": "^2.46.0",
     "loopback-ds-timestamp-mixin": "^3.2.4",
     "nodemon": "^1.9.2",
-    "nsp": "^2.1.0",
     "react": "^15.0.2",
     "react-dom": "^15.0.2",
     "react-router": "^2.4.1",
-    "serve-favicon": "^2.0.1",
-    "strongloop": "^6.0.0"
+    "serve-favicon": "^2.0.1"
+  },
+  "devDependencies": {
+    "chai": "^3.5.0",
+    "mocha": "^2.5.3",
+    "mute": "^2.0.6",
+    "nsp": "^2.1.0",
+    "sinon": "^1.17.4",
+    "strongloop": "^6.0.0",
+    "supertest": "^1.2.0"
   },
   "babel": {
     "plugins": [

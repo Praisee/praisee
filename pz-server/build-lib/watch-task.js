@@ -8,7 +8,7 @@ var pzClient = require('pz-client/build-lib/watch-task');
 module.exports = function(gulp) {
     gulp.task('pzServer:watch:sources', function() {
         return gulp.watch(
-            ['src/**/*'],
+            ['src/**/*', 'test/**/*'],
             {cwd: pzPath('pz-server')},
             [buildSources(gulp)]
         );

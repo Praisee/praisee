@@ -13,8 +13,9 @@ module.exports = function(gulp, module, taskName, dependencies) {
 
         return gulp
             .src([
-                pzPath(module, 'src/**/*')
-            ])
+                pzPath(module, 'src/**/*'),
+                pzPath(module, 'test/**/*')
+            ], {base: pzPath(module)})
             
             .pipe(errorHandler(function () {
                 delete cached.caches[taskName];
@@ -30,7 +31,7 @@ module.exports = function(gulp, module, taskName, dependencies) {
             
             .pipe(gulpIf('**/*.js', babel({resolveModuleSource: moduleResolver})))
             
-            .pipe(gulp.dest(pzPath(module, 'build/src')))
+            .pipe(gulp.dest(pzPath(module, 'build')))
         ;
     });
 

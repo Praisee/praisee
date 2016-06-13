@@ -23,7 +23,7 @@ declare interface IApp {
     middleware(name: string, paths: TPaths, handler: Function): IApp
     middleware(name: string, handler: Function): IApp
     
-    domain: IDomain
+    services: IServices
     
     // Express
     get: Function
@@ -35,10 +35,11 @@ declare interface IApp {
     set: Function
     listen: Function
     emit: Function
+    on: Function
     start: Function
 }
 
-interface IDomain {
+interface IServices {
     searchClient?: any
     searchUpdater?: any
 }

@@ -15,7 +15,7 @@ export default class SearchClient {
     public elasticClient;
     
     constructor() {
-        this.elasticClient = new elasticsearch.Client(elasticSearchConfig.client);
+        this.elasticClient = new elasticsearch.Client(Object.assign({}, elasticSearchConfig.client));
     }
     
     search(query: ISearchQuery, path?: IPath): Promise<ISearchResults> {
