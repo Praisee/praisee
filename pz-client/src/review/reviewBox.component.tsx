@@ -21,13 +21,20 @@ export default class ReviewBox extends React.Component<ReviewBoxProps, ReviewBox
   }
 }
 
+interface IReview { // TODO: Temporarily relocated here
+    id: string;
+    reviewerId: string;
+    rating: number;
+    date: Date;
+}
+
 class ReviewBoxProps {
-  review: Review
+  review: IReview
 }
 
 class ReviewBoxState {
 
-} 
+}
 
 // App Controller
   // Review Controller -> Reviews[]
@@ -36,4 +43,3 @@ class ReviewBoxState {
         // Review content
         // Avatar Component
         // Vote Component
-    
