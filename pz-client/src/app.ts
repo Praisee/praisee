@@ -3,10 +3,18 @@ import * as ReactRouter from 'react-router';
 import * as ReactDom from 'react-dom';
 import routes from 'pz-client/src/routes';
 import 'isomorphic-fetch';
+import IsomorphicContext from 'pz-client/src/isomorphic-context.component';
 
-ReactDom.render(
-    React.createElement(ReactRouter.Router, {
-        routes: routes, history: ReactRouter.browserHistory
-    }),
-    document.querySelector('.app-container')
-);
+var loopbackApp = require('loopback-app');
+
+var router = React.createElement(ReactRouter.Router, {
+    routes: routes,
+    history: ReactRouter.browserHistory
+});
+
+var isomorphicContext = React.createElement(IsomorphicContext, {
+    children: router,
+    loopbackApp
+});
+
+ReactDom.render(isomorphicContext, document.querySelector('.app-container'));
