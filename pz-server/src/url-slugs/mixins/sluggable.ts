@@ -18,7 +18,7 @@ import {
     ISluggableInstance as IParentSluggableInstance
 } from 'pz-domain/src/mixins/sluggable';
 
-import {IUrlSlug} from 'pz-server/src/url-slugs/models/url-slug';
+import {IUrlSlug, IUrlSlugInstance} from 'pz-server/src/url-slugs/models/url-slug';
 import {ISluggerOptions} from 'pz-server/src/url-slugs/slugger';
 
 export interface ISluggable extends IParentSluggable {
@@ -27,6 +27,19 @@ export interface ISluggable extends IParentSluggable {
 
 export interface ISluggableInstance extends IParentSluggableInstance {
     UrlSlug: IUrlSlug
+    
+    getCanonicalUrlSlug(): Promise<IUrlSlugInstance>
+    getCanonicalUrlSlugValue(): Promise<string>
+}
+
+export function disableRemoteMethodsForRelatedModel(Model: IModel, relatedModelName: string) {
+    const methods = Model.sharedClass.methods({includeDisabled: false});
+    
+    for (let method of methods) {
+        if (method.name.startsWith('__') && method.name.endsWith(relatedModelName)) {
+            Model.disableRemoteMethod(method.name, method.isStatic);
+        }
+    }
 }
 
 module.exports = function SluggableMixin(Model: ISluggable, options: ISluggableOptions) {
@@ -42,6 +55,8 @@ module.exports = function SluggableMixin(Model: ISluggable, options: ISluggableO
                     discriminator: 'sluggableType'
                 }
             });
+            
+            disableRemoteMethodsForRelatedModel(Model, 'UrlSlug');
         })
     );
     
@@ -74,4 +89,17 @@ module.exports = function SluggableMixin(Model: ISluggable, options: ISluggableO
             // We'll try again when the slug is requested
         }
     });
+    
+    Model.prototype.getCanonicalUrlSlug = async function () {
+        const urlSlugPromise = promisify(this.UrlSlug.findOne, this.UrlSlug)({
+            isAlias: false
+        }) as Promise<IUrlSlugInstance>;
+        
+        return urlSlugPromise;
+    };
+    
+    Model.prototype.getCanonicalUrlSlugValue = async function () {
+        const urlSlug = await this.getCanonicalUrlSlug();
+        return urlSlug.fullSlug;
+    };
 };

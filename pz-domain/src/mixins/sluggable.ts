@@ -63,6 +63,20 @@ function SluggableMixin(Model: ISluggable, options: ISluggableOptions) {
             }
         }
     });
+    
+    Model.remoteMethod('getCanonicalUrlSlugValue', {
+        isStatic: false,
+        
+        http: {
+            verb: 'get',
+            path: '/canonicalUrlSlug'
+        },
+        
+        returns: {
+            arg: 'urlSlug',
+            type: 'string'
+        }
+    });
 }
 
 module.exports = SluggableMixin;

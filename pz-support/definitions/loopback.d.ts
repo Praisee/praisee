@@ -43,9 +43,11 @@ declare interface IModel extends IValidatable {
 
     modelName: string
     dataSource: IDataSource
+    app?: IApp
+    
     sharedClass: ISharedClassInstance
     remoteMethod(name: string, options: any)
-    app?: IApp
+    disableRemoteMethod(methodName: string, isStatic: boolean)
 
     on(eventName: TModelEvent, listener: Function)
 
@@ -265,6 +267,8 @@ interface ISharedMethod {
 
 // https://apidocs.strongloop.com/strong-remoting/#sharedmethod
 interface ISharedMethodInstance {
+    name: string
+    isStatic: boolean
 }
 
 type TPaths = string | RegExp | Array<string | RegExp>;
