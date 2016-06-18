@@ -7,3 +7,7 @@ gulp.task('buildDev', [
 gulp.task('watch', [
     require('pz-server/build-lib/watch-task')(gulp)
 ]);
+
+gulp.task('buildSourcesQuick', [
+    require('pz-server/build-lib/build-sources-quick-task')(gulp)
+]);

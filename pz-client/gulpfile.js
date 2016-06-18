@@ -1,10 +1,17 @@
 var gulp = require('gulp');
 
-require('pz-client/build-lib/build-prod-task')(gulp);
-gulp.task('buildProd', ['pzClient:buildProd']);
+gulp.task('buildProd', [
+    require('pz-client/build-lib/build-prod-task')(gulp)
+]);
 
-require('pz-client/build-lib/build-dev-task')(gulp);
-gulp.task('buildDev', ['pzClient:buildDev']);
+gulp.task('buildDev', [
+    require('pz-client/build-lib/build-dev-task')(gulp)
+]);
 
-require('pz-client/build-lib/watch-task')(gulp);
-gulp.task('watch', ['pzClient:watch']);
+gulp.task('watch', [
+    require('pz-client/build-lib/watch-task')(gulp)
+]);
+
+gulp.task('buildSourcesQuick', [
+    require('pz-client/build-lib/build-sources-quick-task')(gulp)
+]);
