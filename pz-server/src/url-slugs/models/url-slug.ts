@@ -31,11 +31,13 @@ export interface IUrlSlug extends IPersistedModel {
 
 export interface IUrlSlugInstance extends IPersistedModelInstance {
     fullSlug: string
+    fullSlugLowercase: string
     baseSlug: string
     duplicateOffset: number
     isAlias: boolean
     sluggableId: number
     sluggableType: string
+    owner: Function
     
     _convertSlugToAlias(): Promise<any>
     _getAliasCount(): Promise<any>
@@ -62,6 +64,7 @@ module.exports = function (UrlSlug: IUrlSlug) {
         
         const newUrlSlug = {
             fullSlug,
+            fullSlugLowercase: fullSlug.toLowerCase(),
             baseSlug,
             duplicateOffset,
             isAlias: false

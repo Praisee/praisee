@@ -18,3 +18,4 @@ build
 typings
 .vagrant
 notes
+.DS_Store

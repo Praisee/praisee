@@ -184,7 +184,11 @@ interface IResultCallback<T> {
 
 interface IDataSource {
     connector: {
-        execute: (sql: String, params: Array<any>, callback: ICallback) => void
+        execute: (sql: String, params: Array<any>, callback: ICallback) => void,
+        //https://apidocs.strongloop.com/strong-remoting/#remoteobjects-prototype-invoke
+        remotes:{
+            invoke: (remoteMethodName: string, ctorArgs?: string, args?: string, callback?: Function) => void
+        }
     }
 }
 

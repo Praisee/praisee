@@ -8,7 +8,7 @@ export interface IRouteQuery {
     createParams?: (params, location) => {}
 }
 
-export var viewerQuery: IRouteQuery = {
+export const viewerQuery: IRouteQuery = {
     queries: {
         viewer: () => Relay.QL`
             query {

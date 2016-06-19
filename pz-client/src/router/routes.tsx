@@ -20,16 +20,16 @@ import TopicController from 'pz-client/src/topic/topic.controller';
 export default (
     <Router>
         <Route path="/" component={AppController}>
-            
+
             <IndexRoute
                 component={HomeController}
                 {...mixinRouteQuery(homeQuery)}
             />
-            
+
             <Route component={AppLayout} {...mixinRouteQuery(appQuery)}>
                 <Route path="user/sign-in" component={SignInController} />
                 <Route path="user/sign-up" component={SignUpController} />
-                
+
                 <Route path="profile/:usernameSlug" component={ProfileController} />
 
                 <Route path="review/:contentTitleSlug" component={CommunityItemController} />
@@ -41,9 +41,14 @@ export default (
                 <Route path="(:topicSlug)-comparisons" component={ComparisonController} />
                 <Route path="(:topicSlug)-questions" component={ComparisonController} />
                 <Route path="(:topicSlug)-how-tos" component={ComparisonController} />
-                <Route path="(:topicSlug)" component={TopicController} />
+
+                <Route
+                    path="(:topicSlug)"
+                    component={TopicController}
+                    {...mixinRouteQuery(viewerQuery)}
+                />
             </Route>
-            
+
         </Route>
     </Router>
 )
@@ -52,11 +57,10 @@ function mixinRouteQuery(routeQuery: IRouteQuery): {} {
     let props: any = {
         queries: routeQuery.queries
     };
-    
+
     if ('createParams' in routeQuery) {
         props.prepareParams = routeQuery.createParams;
     }
-    
+
     return props;
 }
-

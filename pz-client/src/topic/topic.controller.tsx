@@ -1,9 +1,11 @@
 import * as React from 'react';
 import {Component} from 'react';
+import * as Relay from 'react-relay';
 import * as util from 'util';
 import ContributionArea from 'pz-client/src/topic/contribution-area.component';
 import SideSection from 'pz-client/src/side-section/side-section.component';
-import {ITopicInstance} from 'pz-server/src/models/topic';
+import {ITopicInstance} from 'pz-domain/src/models/topic';
+import {Review} from 'pz-client/src/schemaStuff';
 
 interface ITopicState {
     topicContent;
@@ -12,14 +14,16 @@ interface ITopicState {
 
 interface ITopicProps {
     params;
+    viewer;
 }
 
-export default class TopicController extends Component<ITopicProps, ITopicState> {
+export class TopicController extends Component<ITopicProps, ITopicState> {
     render() {
         return (
             <div className="topic-namespace" >
                 {this._renderPrimarySection() }
                 {this._renderSideSection() }
+                <Review />
             </div>
         )
     }
@@ -96,7 +100,7 @@ export default class TopicController extends Component<ITopicProps, ITopicState>
     _renderSideSection() {
         return (
             <div className="side-section-container">
-                <SideSection topic={this.state.topic} />
+                <SideSection topic={this.props.viewer.topic.name} />
             </div>
         )
     }
@@ -108,3 +112,19 @@ export default class TopicController extends Component<ITopicProps, ITopicState>
     }
 }
 
+export default Relay.createContainer(TopicController, {
+    fragments: {
+        viewer: () => Relay.QL`
+            fragment on Viewer {
+                topic {
+                    id,
+                    name,
+                    description,
+                    thumbnailPath,
+                    overviewContent,
+                    isVerified
+                }
+            }
+        `
+    }
+});

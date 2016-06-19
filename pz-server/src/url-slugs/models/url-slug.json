@@ -16,7 +16,12 @@
             "required": true,
             "description": "Full URL slug, including the duplicate offset"
         },
-
+        "fullSlugLowercase": {
+            "type":"string",
+            "required": true,
+            "description":"Full URL slug used for lookup",
+            "index": true
+        },
         "baseSlug": {
             "type": "string",
             "required": true,

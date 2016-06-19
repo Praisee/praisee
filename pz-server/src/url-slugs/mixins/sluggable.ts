@@ -21,6 +21,7 @@ export interface ISluggable extends IPersistedModel {
     sluggableType: string
     
     sluggerOptions?: ISluggerOptions
+    getByUrlSlugName(fullSlug: string) : Promise<ISluggableInstance>
 }
 
 export interface ISluggableInstance extends IPersistedModelInstance {
@@ -151,5 +152,18 @@ module.exports = function SluggableMixin(Model: ISluggable, options: ISluggableO
     Model.prototype.getCanonicalUrlSlugValue = async function () {
         const urlSlug = await this.getCanonicalUrlSlug();
         return urlSlug.fullSlug;
+    };
+
+    Model.getByUrlSlugName = async function (fullSlug){
+        const UrlSlug = Model.app.models.UrlSlug;
+        let urlSlug : IUrlSlugInstance = await promisify(UrlSlug.findOne, UrlSlug)({
+            where: {
+                fullSlugLowercase: fullSlug.toLowerCase()
+            },
+            include: [
+                'owner'
+            ]
+        }) as IUrlSlugInstance;
+        return urlSlug.owner();
     };
 };

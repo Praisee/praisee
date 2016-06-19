@@ -1,64 +1,39 @@
 import promisify from 'pz-support/src/promisify';
 import * as graphqlRelay from 'graphql-relay';
-import {ITopic} from 'pz-domain/src/models/topic'
-
 import * as graphql from 'graphql';
-import {IAppRepositoryAuthorizers} from 'pz-server/src/app/repositories';
-import {IRepositoryRecord} from 'pz-server/src/support/repository';
-
-var {
-    GraphQLBoolean,
-    GraphQLID,
-    GraphQLInt,
-    GraphQLList,
-    GraphQLNonNull,
-    GraphQLObjectType,
-    GraphQLSchema,
-    GraphQLString
-} = graphql;
-
-export default function createSchema(repositoryAuthorizers: IAppRepositoryAuthorizers) {
-    const {users, topics} = repositoryAuthorizers;
-
-    const idResolver = (globalId, {user}) => {
-        const {type, id} = graphqlRelay.fromGlobalId(globalId);
-        const lowercaseType = type[0].toLowerCase() + type.slice(1);
-
-        const repositoryAuthorizer = repositoryAuthorizers[lowercaseType];
-
+var GraphQLBoolean = graphql.GraphQLBoolean, GraphQLID = graphql.GraphQLID, GraphQLInt = graphql.GraphQLInt, GraphQLList = graphql.GraphQLList, GraphQLNonNull = graphql.GraphQLNonNull, GraphQLObjectType = graphql.GraphQLObjectType, GraphQLSchema = graphql.GraphQLSchema, GraphQLString = graphql.GraphQLString;
+export default function createSchema(repositoryAuthorizers) {
+    var users = repositoryAuthorizers.users, topics = repositoryAuthorizers.topics;
+    var idResolver = function (globalId, _a) {
+        var user = _a.user;
+        var _b = graphqlRelay.fromGlobalId(globalId), type = _b.type, id = _b.id;
+        var lowercaseType = type[0].toLowerCase() + type.slice(1);
+        var repositoryAuthorizer = repositoryAuthorizers[lowercaseType];
         if (!repositoryAuthorizer) {
             return null;
         }
-
         return repositoryAuthorizer.as(user).findById(id);
     };
-
-    const typeResolver = (repositoryRecord: IRepositoryRecord) => {
+    var typeResolver = function (repositoryRecord) {
         switch (repositoryRecord.recordType) {
             case 'User':
                 return UserType;
-
             case 'Topic':
                 return TopicType;
         }
-
         return null;
     };
-
-    const {nodeInterface, nodeField} = graphqlRelay.nodeDefinitions(
-        idResolver, typeResolver
-    );
-
-    const ViewerType = new GraphQLObjectType({
+    var _a = graphqlRelay.nodeDefinitions(idResolver, typeResolver), nodeInterface = _a.nodeInterface, nodeField = _a.nodeField;
+    var ViewerType = new GraphQLObjectType({
         name: 'Viewer',
-
-        fields: () => ({
-
+        fields: function () { return ({
             topics: {
                 type: new GraphQLList(TopicType),
-                resolve: (_, __, {user}) => topics.as(user).findAll()
+                resolve: function (_, __, _a) {
+                    var user = _a.user;
+                    return topics.as(user).findAll();
+                }
             },
-
             topic: {
                 type: TopicType,
                 args: {
@@ -66,90 +41,72 @@ export default function createSchema(repositoryAuthorizers: IAppRepositoryAuthor
                         type: GraphQLString
                     }
                 },
-                resolve: (source, {urlSlug}) => {
+                resolve: function (source, _a) {
+                    var urlSlug = _a.urlSlug;
                     debugger;
-                    const Topic: ITopic = app.models.Topic;
-                    const remotes = Topic.dataSource.connector.remotes;
+                    var Topic = app.models.Topic;
+                    var remotes = Topic.dataSource.connector.remotes;
                     return promisify(remotes.invoke, remotes)('getByUrlSlugName', [urlSlug])
-                        .catch((err)=>{
-                            debugger;
-                            console.log(err);
-                        });
+                        .catch(function (err) {
+                        debugger;
+                        console.log(err);
+                    });
                 }
             }
-        })
+        }); }
     });
-
-    const UserType = new GraphQLObjectType({
+    var UserType = new GraphQLObjectType({
         name: 'User',
-
-        fields: () => ({
+        fields: function () { return ({
             id: graphqlRelay.globalIdField('User'),
-
             username: {
                 type: GraphQLString
             },
-
             email: {
                 type: GraphQLString
             }
-        }),
-
+        }); },
         interfaces: [nodeInterface]
     });
-
-    const TopicType = new GraphQLObjectType({
+    var TopicType = new GraphQLObjectType({
         name: 'Topic',
-
-        fields: () => ({
+        fields: function () { return ({
             id: graphqlRelay.globalIdField('Topic'),
-
             name: {
                 type: GraphQLString
             },
-
             description: {
                 type: GraphQLString
             },
-
             thumbnailPath: {
                 type: GraphQLString
             },
-
             overviewContent: {
                 type: GraphQLString
             },
-
             isVerified: {
                 type: GraphQLBoolean
             }
-        }),
-
+        }); },
         interfaces: [nodeInterface]
     });
-
     return new GraphQLSchema({
         query: new GraphQLObjectType({
             name: 'Query',
-
-            fields: () => ({
+            fields: function () { return ({
                 node: nodeField,
-
-                // Viewer must be at the query root due to a limitation in Relay's design
-                // See https://github.com/facebook/relay/issues/112
                 viewer: {
                     type: ViewerType,
-                    resolve: () => ({})
+                    resolve: function () { return ({}); }
                 },
-
                 currentUser: {
                     type: UserType,
-                    resolve: (_, __, {user}) => {
+                    resolve: function (_, __, _a) {
+                        var user = _a.user;
                         return users.as(user).findCurrentUser();
                     }
                 }
-
-            })
+            }); }
         })
     });
 }
