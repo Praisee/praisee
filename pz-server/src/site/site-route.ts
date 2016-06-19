@@ -1,7 +1,7 @@
 import * as React from 'react';
 import * as ReactDomServer from 'react-dom/server';
 import { match, RouterContext } from 'react-router'
-import IsomorphicContext from 'pz-client/src/isomorphic-context.component';
+import IsomorphicContext from 'pz-client/src/app/isomorphic-context.component';
 
 import routes from 'pz-client/src/routes'
 

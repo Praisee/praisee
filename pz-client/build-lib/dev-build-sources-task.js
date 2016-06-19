@@ -16,7 +16,7 @@ module.exports = function(gulp) {
                 this.emit("end");
             })
             
-            .pipe(source('app.js'))
+            .pipe(source('index.js'))
             .pipe(buffer())
 
             .pipe(gulpPrint(function (filePath) {

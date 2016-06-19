@@ -10,7 +10,7 @@ var modifyUrl = require('postcss-url');
 module.exports = function(gulp) {
     gulp.task('pzClient:dev:buildStyles', function() {
         return (gulp
-            .src(pzPath('pz-client', 'styles/app.scss'))
+            .src(pzPath('pz-client', 'src/app/app.scss'))
 
             .pipe(errorHandler())
             

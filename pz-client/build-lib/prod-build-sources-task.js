@@ -11,7 +11,7 @@ module.exports = function(gulp) {
 
     gulp.task('pzClient:prod:buildSources', dependencies, function() {
         return browserifyBundleCreator()
-            .pipe(source('app.js'))
+            .pipe(source('index.js'))
             .pipe(buffer())
 
             .pipe(gulpPrint(function (filePath) {

@@ -1,6 +1,6 @@
 import * as React from 'react';
 import {Router, Route, IndexRoute} from 'react-router';
-import AppController from 'pz-client/src/app.controller';
+import AppController from 'pz-client/src/app/app.controller';
 import HomeController from 'pz-client/src/home.controller';
 import ProfileController from 'pz-client/src/home.controller';
 import CommunityItemController from 'pz-client/src/home.controller';

@@ -4,7 +4,7 @@ var loopbackBoot = require('loopback-boot');
 
 module.exports = function createBrowserifyBundle() {
     var browserified = browserify({
-        entries: pzPath('pz-client', 'build/src/app.js'),
+        entries: pzPath('pz-client', 'build/src/index.js'),
         debug: true
     });
     
