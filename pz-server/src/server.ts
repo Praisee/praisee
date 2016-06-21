@@ -1,6 +1,7 @@
 import bootConfig from 'pz-server/src/boot-config';
 import routesMiddleware from 'pz-server/src/middleware/routes';
 import staticAssetsMiddleware from 'pz-server/src/middleware/static-assets';
+import graphqlMiddleware from 'pz-server/src/middleware/graphql';
 import promisify from 'pz-support/src/promisify';
 
 var loopback = require('loopback');
@@ -81,6 +82,7 @@ export default class PzServer {
     
     _setupMiddleware() {
         staticAssetsMiddleware(this.app);
+        graphqlMiddleware(this.app);
         routesMiddleware(this.app);
     }
 }

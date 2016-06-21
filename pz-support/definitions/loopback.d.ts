@@ -35,6 +35,7 @@ declare interface IApp {
     emit: Function
     on: Function
     start: Function
+    use: Function
 }
 
 // http://apidocs.strongloop.com/loopback/#model

@@ -1,10 +1,15 @@
 {
   "ambientDependencies": {
+    "express": "registry:dt/express#4.0.0+20160317120654",
+    "express-graphql": "registry:dt/express-graphql#0.0.0+20160316155526",
+    "express-serve-static-core": "registry:dt/express-serve-static-core#0.0.0+20160617060422",
     "isomorphic-fetch": "registry:dt/isomorphic-fetch#0.0.0+20160524142046",
+    "mime": "registry:dt/mime#0.0.0+20160316155526",
     "node": "registry:dt/node#4.0.0+20160412142033",
     "react": "registry:dt/react#0.14.0+20160423065914",
     "react-dom": "registry:dt/react-dom#0.14.0+20160412154040",
     "react-router": "registry:dt/react-router#2.0.0+20160501155536",
-    "react-router/history": "registry:dt/react-router/history#2.0.0+20160316155526"
+    "react-router/history": "registry:dt/react-router/history#2.0.0+20160316155526",
+    "serve-static": "registry:dt/serve-static#0.0.0+20160606155157"
   }
 }
