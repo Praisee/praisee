@@ -11,6 +11,10 @@ var paths = {
     
     publicStylesDir: function(additionalPath) {
         return paths.publicDir('styles');
+    },
+    
+    relaySchema: function () {
+        return pzPath('pz-client', 'build/relay/schema.json');
     }
 };
 

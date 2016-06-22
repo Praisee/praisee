@@ -39,6 +39,7 @@
     "loopback-datasource-juggler": "^2.46.0",
     "loopback-ds-timestamp-mixin": "^3.2.4",
     "nodemon": "^1.9.2",
+    "proxyquire": "^1.7.9",
     "react": "^15.1.0",
     "react-dom": "^15.1.0",
     "react-router": "^2.4.1",

@@ -2,8 +2,8 @@ var pzPath = require('pz-support/pz-path');
 var buildDev = require('pz-client/build-lib/build-dev-task');
 var buildSources = require('pz-client/build-lib/dev-build-sources-task');
 var buildStyles = require('pz-client/build-lib/dev-build-styles-task');
-var pzDomain = require('pz-domain/build-lib/watch-task');
-var pzSupport = require('pz-support/build-lib/watch-task');
+var createRelaySchema = require('pz-client/build-lib/create-relay-schema-task');
+var runSequence = require('pz-builder/build-lib/run-sequence');
 
 module.exports = function(gulp) {
     var watchSourceFiles = [
@@ -13,13 +13,15 @@ module.exports = function(gulp) {
         'src/**/*.json',
         'styles/**/*.json'
     ];
+    
+    var watchSourceFilesAndSchema = watchSourceFiles.concat('build/src/relay/schema.json');
 
     var watchStyleFiles = [
         'styles/**/*.scss'
     ];
 
     gulp.task('pzClient:watch:sources', function() {
-        return gulp.watch(watchSourceFiles, {cwd: pzPath('pz-client')}, [
+        return gulp.watch(watchSourceFilesAndSchema, {cwd: pzPath('pz-client')}, [
             buildSources(gulp)
         ]);
     });
@@ -29,14 +31,28 @@ module.exports = function(gulp) {
             buildStyles(gulp)
         ]);
     });
-
-    gulp.task('pzClient:watch', [
-        buildDev(gulp),
-        pzDomain(gulp),
-        pzSupport(gulp),
-        'pzClient:watch:sources',
-        'pzClient:watch:styles'
-    ]);
+    
+    gulp.task('pzClient:watch:graphqlSources', function() {
+        const watchOptions = {cwd: pzPath('pz-domain', 'build'), debounceDelay: 10000};
+        
+        return gulp.watch(watchSourceFiles, watchOptions, [
+            createRelaySchema(gulp)
+        ]);
+    });
+    
+    gulp.task('pzClient:watch', function(done) {
+        runSequence.use(gulp)(
+            buildDev(gulp),
+            
+            [
+                'pzClient:watch:sources',
+                'pzClient:watch:styles',
+                'pzClient:watch:graphqlSources'
+            ],
+            
+            done
+        );
+    });
 
     return 'pzClient:watch';
 };

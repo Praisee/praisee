@@ -7,22 +7,6 @@ module.exports = function createBrowserifyBundle() {
         entries: pzPath('pz-client', 'build/src/index.js'),
         debug: true
     });
-    
-    browserified.require(
-        pzPath('pz-client', 'build/src/loopback/loopback-app'),
-        { expose: 'loopback-app' }
-    );
-    
-    var bootConfig = require('pz-client/build/src/loopback/boot-config');
-    bootConfig = bootConfig.default || bootConfig;
-    
-    // Loopback mutates the config, so we need a fresh copy every time. Shame on them.
-    bootConfig = JSON.parse(JSON.stringify(bootConfig));
-    
-    loopbackBoot.compileToBrowserify(
-        bootConfig,
-        browserified
-    );
         
     return browserified.bundle();
 };

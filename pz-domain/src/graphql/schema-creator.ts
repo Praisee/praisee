@@ -26,36 +26,36 @@ export default function createSchema(app: IApp) {
 
         return promisify(Model.findOne, Model)(id);
     };
-    
+
     const typeResolver = (model) => {
         switch (model.modelName) {
             case 'Topic':
                 return GraphQLTopic;
         }
-        
+
         return null;
     };
-    
+
     const {nodeInterface, nodeField} = graphqlRelay.nodeDefinitions(
         idResolver, typeResolver
     );
 
     const GraphQLRoot = new GraphQLObjectType({
         name: 'Query',
-        
+
         fields: () => ({
             node: nodeField,
-            
+
             topics: {
                 type: new GraphQLList(GraphQLTopic),
                 resolve: () => promisify(app.models.Topic.find, app.models.Topic)(),
             }
         }),
     });
-    
+
     const GraphQLTopic = new GraphQLObjectType({
         name: 'Topic',
-        
+
         fields: {
             id: graphqlRelay.globalIdField('Topic'),
 
@@ -80,7 +80,7 @@ export default function createSchema(app: IApp) {
                 type: GraphQLBoolean
             }
         },
-        
+
         interfaces: [nodeInterface]
     });
 

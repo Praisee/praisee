@@ -9,8 +9,7 @@ export function renderApp(app: IApp, renderProps: any) {
     const routerContext = React.createElement(RouterContext, renderProps);
     
     var isomorphicContext = React.createElement(IsomorphicContext, {
-        children: routerContext,
-        loopbackApp: app
+        children: routerContext
     });
     
     return ReactDomServer.renderToString(isomorphicContext);

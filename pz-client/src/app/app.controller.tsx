@@ -11,7 +11,6 @@ export default class AppController extends React.Component<IAppControllerProps, 
     context: IIsomorphicContextProps;
     
     static contextTypes: ValidationMap<any> = {
-        loopbackApp: React.PropTypes.object.isRequired
     };
     
     constructor(props?, context?) {
