@@ -1,4 +1,11 @@
 {
+  "initial": {
+    "loopback#logger": {
+      "params": [
+        "combined"
+      ]
+    }
+  },
   "final:after": {
     "loopback#errorHandler": {
       "params": {
