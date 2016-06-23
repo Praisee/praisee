@@ -1,23 +1,43 @@
 import * as React from 'react';
 import * as ReactDomServer from 'react-dom/server';
-import { match, RouterContext } from 'react-router'
-import * as Relay from 'react-relay';
-import * as IsomorphicRelay from 'isomorphic-relay';
-import IsomorphicContext from 'pz-client/src/app/isomorphic-context.component';
+import {match} from 'react-router'
 
 import routes from 'pz-client/src/router/routes'
 
-export function renderApp(app: IApp, renderProps: any) {
-    const routerContext = React.createElement(RouterContext, renderProps);
-   
-    var isomorphicContext = React.createElement(IsomorphicContext, {
-        children: routerContext
-    });
-   
-    return ReactDomServer.renderToString(isomorphicContext);
+// We need to use these dependencies from pz-client, otherwise we'll run into an
+// `instanceof` bug.
+// See https://github.com/denvned/isomorphic-relay/issues/10#issuecomment-227966031
+import * as Relay from 'pz-client/node_modules/react-relay';
+import IsomorphicRouter from 'pz-client/node_modules/isomorphic-relay-router';
+import IsomorphicContext from 'pz-client/src/app/isomorphic-context.component';
+
+export function renderApp(response, graphqlNetworkLayer, renderProps, next) {
+    (Promise.resolve()
+        .then(() => {
+            return IsomorphicRouter.prepareData(renderProps, graphqlNetworkLayer);
+        })
+            
+        .then(({data, props}) => {
+            const router = IsomorphicRouter.render(props);
+
+            var isomorphicContext = React.createElement(IsomorphicContext, {
+                children: router
+            });
+
+            response.render('site/layout', {
+                cachedRequestData: JSON.stringify(data),
+                content: ReactDomServer.renderToString(isomorphicContext)
+            });
+        })
+        
+        .catch((error) => next(error))
+    );
 }
 
 export default function (app: IApp) {
+    const GRAPHQL_URL = `http://localhost:3000/i/graphql`; // TODO: Unhardcode this
+    const graphqlNetworkLayer = new Relay.DefaultNetworkLayer(GRAPHQL_URL);
+    
     app.get('*', function (request, response, next) {
         if (request.path.match(/^\/?.\//i)) {
             next(); // Single letter routes are reserved
@@ -26,16 +46,13 @@ export default function (app: IApp) {
         
         match({ routes, location: request.url }, (error, redirectLocation, renderProps: any) => {
             if (error) {
-                response.status(500).send(error.message)
+                next(error);
                 
             } else if (redirectLocation) {
                 response.redirect(302, redirectLocation.pathname + redirectLocation.search)
                 
             } else if (renderProps) {
-                response.render('site/layout', {
-                    // content: renderApp(app, renderProps)
-                    content: ''
-                });
+                renderApp(response, graphqlNetworkLayer, renderProps, next);
                 
             } else {
                 next();

@@ -1,25 +1,33 @@
+import 'isomorphic-fetch';
 import * as React from 'react';
 import * as Relay from 'react-relay';
 import * as ReactRouter from 'react-router';
-import * as useRelay from 'react-router-relay';
+import IsomorphicRelay from 'isomorphic-relay';
+import IsomorphicRouter from 'isomorphic-relay-router';
 import * as ReactDom from 'react-dom';
 import routes from 'pz-client/src/router/routes';
-import 'isomorphic-fetch';
 import IsomorphicContext from 'pz-client/src/app/isomorphic-context.component';
+import {getCachedRequestData} from 'pz-client/src/support/page-globals';
 
-Relay.injectNetworkLayer(
+const environment = new Relay.Environment();
+
+environment.injectNetworkLayer(
     new Relay.DefaultNetworkLayer('/i/graphql')
 );
 
-var router = React.createElement<any>(ReactRouter.Router, {
-    routes: routes,
-    history: ReactRouter.browserHistory,
-    render: ReactRouter.applyRouterMiddleware(useRelay),
-    environment: Relay.Store
-});
+IsomorphicRelay.injectPreparedData(environment, getCachedRequestData() || []);
 
-var isomorphicContext = React.createElement(IsomorphicContext, {
-    children: router
+ReactRouter.match({routes, history: ReactRouter.browserHistory}, (error, redirectLocation, renderProps) => {
+    IsomorphicRouter.prepareInitialRender(environment, renderProps).then(props => {
+        var router = React.createElement<any>(ReactRouter.Router, props);
+        
+        var isomorphicContext = React.createElement(IsomorphicContext, {
+            children: router
+        });
+        
+        ReactDom.render(
+            isomorphicContext,
+            document.querySelector('.app-container')
+        );
+    });
 });
-
-ReactDom.render(isomorphicContext, document.querySelector('.app-container'));
