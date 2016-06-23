@@ -1,5 +1,7 @@
 import * as React from 'react';
 import {Router, Route, IndexRoute} from 'react-router';
+import {viewerQuery, IRouteQuery} from 'pz-client/src/router/route-queries';
+
 import AppController from 'pz-client/src/app/app.controller';
 import HomeController from 'pz-client/src/home.controller';
 import ProfileController from 'pz-client/src/home.controller';
@@ -13,7 +15,10 @@ import SearchController from 'pz-client/src/search-proofofconcept/search.control
 export default (
     <Router>
         <Route path="/" component={AppController}>
-            <IndexRoute component={HomeController} />
+            <IndexRoute
+                component={HomeController}
+                {...mixinRouteQuery(viewerQuery)}
+            />
             
             <Route path="search/poc" component={SearchController} /> {/* TODO: Remove this */}
             
@@ -32,4 +37,15 @@ export default (
     </Router>
 )
 
-//praisee.com/author-name/name-of-content
+function mixinRouteQuery(routeQuery: IRouteQuery): {} {
+    let props: any = {
+        queries: routeQuery.queries
+    };
+    
+    if ('createParams' in routeQuery) {
+        props.prepareParams = routeQuery.createParams;
+    }
+    
+    return props;
+}
+
