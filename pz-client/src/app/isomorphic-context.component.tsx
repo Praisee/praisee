@@ -2,6 +2,7 @@ import * as React from 'react';
 import ReactElement = __React.ReactElement;
 
 export interface IIsomorphicContextProps {
+    relayRenderer: (rootContainer) => any
     children: any
 }
 
@@ -10,10 +11,12 @@ export interface IIsomorphicContextProps {
  */
 export default React.createClass<IIsomorphicContextProps, any>({
     childContextTypes: {
+        relayRenderer: React.PropTypes.func
     },
     
     getChildContext() {
         return {
+            relayRenderer: this.props.relayRenderer
         };
     },
     

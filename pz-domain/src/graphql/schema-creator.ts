@@ -30,7 +30,7 @@ export default function createSchema(app: IApp) {
     const typeResolver = (model) => {
         switch (model.modelName) {
             case 'Topic':
-                return GraphQLTopic;
+                return TopicType;
         }
 
         return null;
@@ -40,23 +40,21 @@ export default function createSchema(app: IApp) {
         idResolver, typeResolver
     );
 
-    const GraphQLRoot = new GraphQLObjectType({
-        name: 'Query',
+    const ViewerType = new GraphQLObjectType({
+        name: 'Viewer',
 
         fields: () => ({
-            node: nodeField,
-
             topics: {
-                type: new GraphQLList(GraphQLTopic),
+                type: new GraphQLList(TopicType),
                 resolve: () => promisify(app.models.Topic.find, app.models.Topic)(),
             }
-        }),
+        })
     });
 
-    const GraphQLTopic = new GraphQLObjectType({
+    const TopicType = new GraphQLObjectType({
         name: 'Topic',
 
-        fields: {
+        fields: () => ({
             id: graphqlRelay.globalIdField('Topic'),
 
             name: {
@@ -79,12 +77,26 @@ export default function createSchema(app: IApp) {
             isVerified: {
                 type: GraphQLBoolean
             }
-        },
+        }),
 
         interfaces: [nodeInterface]
     });
 
     return new GraphQLSchema({
-        query: GraphQLRoot
+        query: new GraphQLObjectType({
+            name: 'Query',
+
+            fields: () => ({
+                node: nodeField,
+
+                // Viewer must be at the query root due to a limitation in Relay's design
+                // See https://github.com/facebook/relay/issues/112
+                viewer: {
+                    type: ViewerType,
+                    resolve: () => ({})
+                }
+
+            })
+        })
     });
 }
