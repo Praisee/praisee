@@ -23,7 +23,7 @@ export default {
     // User
     'PraiseeUser': {
         'dataSource': 'vagrant-postgres',
-        'public': false
+        'public': true
     },
     'AccessToken': {
         'dataSource': 'vagrant-postgres',
@@ -73,15 +73,21 @@ export default {
     },
     'Topic': {
         'dataSource': 'vagrant-postgres',
-        'public': true
+        'public': true,
+        '$promise': {},
+        '$resolved': true
     },
     'Product': {
         'dataSource': 'vagrant-postgres',
-        'public': true
+        'public': true,
+        '$promise': {},
+        '$resolved': true
     },
     'Vote': {
         'dataSource': 'vagrant-postgres',
-        'public': true
+        'public': true,
+        '$promise': {},
+        '$resolved': true
     },
     'UrlSlug': {
         'dataSource': 'vagrant-postgres',
