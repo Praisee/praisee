@@ -1,6 +1,5 @@
 import models from 'pz-server/src/model-config';
 import importJson from 'pz-support/src/import-json';
-import seedDevEnv from 'pz-server/src/dev-env-seeder';
 import promisify from 'pz-support/src/promisify';
 
 var datasources = importJson('pz-server/src/datasources.json');
@@ -31,19 +30,9 @@ module.exports = function(app: IApp, next: ICallback) {
     }
     
     if (process.env === 'production') {
-        
         autoUpdate('autoupdate').then(() => next(null)).catch(next);
-        
     } else {
-        
-        (autoUpdate('automigrate')
-            .then(() => {
-                return seedDevEnv(app);
-            })
-            .then(() => next(null))
-            .catch(next)
-        );
-        
+        autoUpdate('automigrate').then(() => next(null)).catch(next);
     }
 
 };

@@ -3,7 +3,7 @@ import graphql from 'pz-domain/src/graphql/graphql';
 
 var proxyquire = require('proxyquire');
 
-export default function startGraphQLServer(app: IApp) {
+module.exports = function startGraphQLServer(app: IApp) {
     // We need to use the same GraphQL as pz-domain due to an instanceof bug
     // See https://github.com/graphql/graphiql/issues/58#issuecomment-193468718
     var graphqlServer = proxyquire('express-graphql', {graphql: graphql});
@@ -16,4 +16,4 @@ export default function startGraphQLServer(app: IApp) {
         pretty: true,
         schema: Schema,
     }));
-}
+};

@@ -14,5 +14,7 @@
     "debugTest": "mocha --debug-brk ./pz-server/test",
     "test": "mocha ./pz-server/test"
   },
-  "dependencies": {}
+  "dependencies": {
+    "loopback-component-passport": "^2.1.0"
+  }
 }

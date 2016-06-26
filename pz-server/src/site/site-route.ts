@@ -34,7 +34,7 @@ export function renderApp(response, graphqlNetworkLayer, renderProps, next) {
     );
 }
 
-export default function (app: IApp) {
+module.exports = function (app: IApp) {
     const GRAPHQL_URL = `http://localhost:3000/i/graphql`; // TODO: Unhardcode this
     const graphqlNetworkLayer = new Relay.DefaultNetworkLayer(GRAPHQL_URL);
     
@@ -59,4 +59,4 @@ export default function (app: IApp) {
             }
         });
     });
-}
+};

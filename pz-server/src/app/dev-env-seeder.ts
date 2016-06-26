@@ -92,6 +92,11 @@ export class DevEnvSeeder {
     }
 }
 
-export default function SeedDevEnv(app: IApp) {
-    return (new DevEnvSeeder(app)).seed();
-}
+module.exports = function SeedDevEnv(app: IApp, next: ICallback) {
+    return (
+        (new DevEnvSeeder(app))
+        .seed()
+        .then(() => next(null))
+        .catch(next)
+    );
+};
