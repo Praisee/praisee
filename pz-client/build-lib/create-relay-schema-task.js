@@ -50,8 +50,13 @@ module.exports = function(gulp) {
                     );
                 }
             })
-        );
             
+            .catch(function (error) {
+                console.trace(error);
+                throw error;
+            })
+        );
+        
         return stream.pipe(gulp.dest(function(file) { return file.base }));
     });
 
