@@ -4,6 +4,7 @@ export default {
         'module': 'passport-local',
         'usernameField': 'username',
         'passwordField': 'password',
-        'authPath': '/i/login'
+        'authPath': '/i/login',
+        'setAccessToken': true
     }
 }

@@ -64,8 +64,10 @@ export default function provideLocalAuth(app: IApp, userModel: IUser, options: a
                                 done(null, false, { message: 'Failed to create token.' }) :
                                 done(error);
                         }
-                        
-                        if (accessToken && user.emailVerified) {
+
+                        // TODO: Disabling hardcoded email verification
+                        // if (accessToken && user.emailVerified) {
+                        if (accessToken) {
                             userProfile.accessToken = accessToken;
                             done(null, userProfile, { accessToken: accessToken });
                         } else {

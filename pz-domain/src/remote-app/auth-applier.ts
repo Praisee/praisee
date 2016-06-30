@@ -1,8 +1,5 @@
-export interface IAuthOptions {
-}
-
 export interface IAuthCallback {
-    (authedLoopbackApp?: IApp): void | Promise<void>
+    (authedLoopbackApp?: IApp): any | Promise<any>
 }
 
 /**
@@ -15,37 +12,41 @@ export interface IAuthCallback {
 export default function applyAuth(
     loopbackApp: IApp,
     remoteName: string,
-    authOptions: IAuthOptions,
+    accessToken: string,
     aroundCallback: IAuthCallback
-): void | Promise<void> {
+): any | Promise<any> {
     
     // See https://github.com/strongloop/strong-remoting/issues/105#issuecomment-88886695
     // for details on how this works.
-    let connectorRemotes = loopbackApp.dataSources[remoteName].connnector.remotes;
+    let connectorRemotes = loopbackApp.dataSources[remoteName].connector.remotes;
     
     const priorAuthOptions = connectorRemotes.auth;
     
-    connectorRemotes.auth = authOptions;
+    connectorRemotes.auth = {
+        bearer: new Buffer(accessToken).toString('base64'),
+        sendImmediately: true
+    };
     
-    let nothingOrPromise;
+    let result;
     
     try {
-        nothingOrPromise = aroundCallback(loopbackApp);
+        result = aroundCallback(loopbackApp);
         
     } catch(error) {
         connectorRemotes.auth = priorAuthOptions;
         throw error;
     }
     
-    if (!(nothingOrPromise instanceof Promise)) {
+    if (!(result instanceof Promise)) {
         connectorRemotes.auth = priorAuthOptions;
         
-        return;
+        return result;
     }
     
-    return (nothingOrPromise
-        .then(() => {
+    return (result
+        .then((result) => {
             connectorRemotes.auth = priorAuthOptions;
+            return result;
         })
         .catch(error => {
             connectorRemotes.auth = priorAuthOptions;

@@ -19,6 +19,12 @@ export default {
             './mixins'
         ]
     },
+    
+    // User
+    'User': {
+        'dataSource': 'pz-remote', // This is an abstract model
+        'public': false,
+    },
 
     // Domain
     'CommunityItem': {
