@@ -45,7 +45,8 @@ export default class TopicController extends Component<ITopicProps, ITopicState>
             thumbnailPath: "sad",
             isVerified: true,
             save: () => { },
-            destroy: () => { }
+            destroy: () => { },
+            toJSON: () => { }
         };
         this.setState({
             topicContent: "asdfghjk",

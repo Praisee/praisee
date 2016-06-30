@@ -1,6 +1,7 @@
 {
     "name": "PraiseeUser",
     "base": "User",
+    "emailVerificationRequired": false,
     "mixins": {
         "Sluggable" : {
             "property": "username"

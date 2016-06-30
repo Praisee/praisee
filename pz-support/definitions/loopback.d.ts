@@ -69,6 +69,8 @@ declare interface IModel extends IValidatable {
 
 // http://apidocs.strongloop.com/loopback/#model
 declare interface IModelInstance {
+    // https://github.com/strongloop/loopback-datasource-juggler/blob/v2.46.1/lib/model-definition.js#L269
+    toJSON(forceRebuild?: boolean)
 }
 
 // http://apidocs.strongloop.com/loopback/#persistedmodel

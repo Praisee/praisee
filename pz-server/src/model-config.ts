@@ -5,6 +5,7 @@ export default {
         'sources': [
             'loopback/common/models',
             'loopback/server/models',
+            'loopback-component-passport/lib/models',
             pzBuildPath('pz-domain', 'src/models'),
             pzBuildPath('pz-server', 'src/search/models'),
             pzBuildPath('pz-server', 'src/url-slugs/models'),
@@ -21,7 +22,7 @@ export default {
     },
     
     // User
-    'PraiseeUser': {
+    'User': {
         'dataSource': 'vagrant-postgres',
         'public': true
     },
@@ -38,6 +39,14 @@ export default {
         'public': false
     },
     'Role': {
+        'dataSource': 'vagrant-postgres',
+        'public': false
+    },
+    'UserCredential': {
+        'dataSource': 'vagrant-postgres',
+        'public': false
+    },
+    'UserIdentity': {
         'dataSource': 'vagrant-postgres',
         'public': false
     },

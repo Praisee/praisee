@@ -10,7 +10,7 @@ export default {
         pzPath('pz-server', 'src/app/auto-update-models'),
         pzPath('pz-server', 'src/app/dev-env-seeder'),
         pzPath('pz-server', 'src/app/remote-app'),
-        pzPath('pz-server', 'src/app/authentication'),
+        pzPath('pz-server', 'src/authentication/authentication-initializer'),
         pzPath('pz-server', 'src/app/graphql'),
         pzPath('pz-server', 'src/site/template-renderer'),
         pzPath('pz-server', 'src/search/site-search/search-route'),
