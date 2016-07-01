@@ -14,7 +14,7 @@ export default {
         'mixins': [
             'loopback/common/mixins',
             'loopback/server/mixins',
-            pzPath('pz-server', 'node_modules/loopback-ds-timestamp-mixin'),
+            pzPath('pz-root', 'node_modules/loopback-ds-timestamp-mixin'),
             pzBuildPath('pz-domain', 'src/mixins'),
             pzBuildPath('pz-server', 'src/url-slugs/mixins'),
             './mixins'

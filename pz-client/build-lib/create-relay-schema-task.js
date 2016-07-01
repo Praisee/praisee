@@ -2,12 +2,9 @@ var fs = require('fs');
 var paths = require('pz-client/build-lib/paths');
 var source = require('vinyl-source-stream');
 var requireClean = require('require-clean');
-
-// We need to use the same GraphQL as pz-domain due to an instanceof bug
-// See https://github.com/graphql/graphiql/issues/58#issuecomment-193468718
-var graphql = require('pz-domain/node_modules/graphql').graphql;
-var introspectionQuery = require('pz-domain/node_modules/graphql/utilities').introspectionQuery;
-// var printSchema = require('pz-domain/node_modules/graphql/utilities').printSchema;
+var graphql = require('graphql').graphql;
+var introspectionQuery = require('graphql/utilities').introspectionQuery;
+// var printSchema = require('graphql/utilities').printSchema;
 
 module.exports = function(gulp) {
     var dependencies = [];

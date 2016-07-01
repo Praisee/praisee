@@ -1,7 +1,9 @@
 var path = require('path');
 
 module.exports = function join() {
-    var pzModule = require.resolve(arguments[0]);
+    var pzModuleName = arguments[0];
+    
+    var pzModule = pzModuleName === 'pz-root' ? __dirname : require.resolve(pzModuleName);
     
     if (arguments.length < 2) {
         return path.join(pzModule, '../');
