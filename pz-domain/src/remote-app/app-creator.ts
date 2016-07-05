@@ -5,6 +5,9 @@ var loopback = require('loopback');
 var loopbackBoot = require('loopback-boot');
 
 export default function createApp(): Promise<IApp> {
-    let app = loopback();
-    return promisify(loopbackBoot)(app, bootConfig).then(() => app);
+    // We need to create a copy of this object because Loopback mutates it :/
+    const clonedBootConfig = JSON.parse(JSON.stringify(bootConfig));
+    
+    let app = loopback({localRegistry: true, loadBuiltinModels: true});
+    return promisify(loopbackBoot)(app, clonedBootConfig).then(() => app);
 }
