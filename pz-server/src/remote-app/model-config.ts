@@ -4,13 +4,12 @@ export default {
     '_meta': {
         'sources': [
             'loopback/common/models',
-            pzPath('pz-domain', 'src/models'),
-            pzPath('pz-domain', 'models')
+            pzPath('pz-server', 'src/models')
         ],
         'mixins': [
             'loopback/common/mixins',
             pzPath('pz-root', 'node_modules/loopback-ds-timestamp-mixin'),
-            pzPath('pz-domain', 'src/mixins'),
+            pzPath('pz-server', 'src/mixins'),
             './mixins'
         ]
     },

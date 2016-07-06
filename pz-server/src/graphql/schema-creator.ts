@@ -1,5 +1,5 @@
 import promisify from 'pz-support/src/promisify';
-import {resolveWithAppAndSession} from 'pz-domain/src/graphql/resolver-middlewares';
+import {resolveWithAppAndSession} from 'pz-server/src/graphql/resolver-middlewares';
 import * as graphqlRelay from 'graphql-relay';
 
 import * as graphql from 'graphql';

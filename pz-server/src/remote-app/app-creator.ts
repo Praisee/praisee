@@ -1,5 +1,5 @@
 import promisify from 'pz-support/src/promisify';
-import bootConfig from 'pz-domain/src/remote-app/boot-config';
+import bootConfig from 'pz-server/src/remote-app/boot-config';
 
 var loopback = require('loopback');
 var loopbackBoot = require('loopback-boot');

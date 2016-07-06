@@ -10,11 +10,11 @@ module.exports = function(gulp) {
     var dependencies = [];
 
     gulp.task('pzClient:createRelaySchema', dependencies, function() {
-        requireClean('pz-domain/build/src/remote-app/app-creator');
-        var createRemoteApp = require('pz-domain/build/src/remote-app/app-creator').default;
+        requireClean('pz-server/build/src/remote-app/app-creator');
+        var createRemoteApp = require('pz-server/build/src/remote-app/app-creator').default;
 
-        requireClean('pz-domain/build/src/graphql/schema-creator');
-        var createSchema = require('pz-domain/build/src/graphql/schema-creator').default;
+        requireClean('pz-server/build/src/graphql/schema-creator');
+        var createSchema = require('pz-server/build/src/graphql/schema-creator').default;
         
         var stream = source(paths.relaySchema());
 

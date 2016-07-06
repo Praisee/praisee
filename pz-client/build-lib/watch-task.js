@@ -33,9 +33,9 @@ module.exports = function(gulp) {
     });
     
     gulp.task('pzClient:watch:graphqlSources', function() {
-        const watchOptions = {cwd: pzPath('pz-domain', 'build'), debounceDelay: 10000};
+        const watchOptions = {cwd: pzPath('pz-server', 'build/src/graphql'), debounceDelay: 10000};
         
-        return gulp.watch(watchSourceFiles, watchOptions, [
+        return gulp.watch(['**/*.js', '**/*.json'], watchOptions, [
             createRelaySchema(gulp)
         ]);
     });

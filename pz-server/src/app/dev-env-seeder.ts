@@ -1,5 +1,5 @@
 import promisify from 'pz-support/src/promisify';
-import {ITopic} from 'pz-domain/src/models/topic';
+import {ITopic} from 'pz-server/src/models/topic';
 
 export class DevEnvSeeder {
     app: IApp;

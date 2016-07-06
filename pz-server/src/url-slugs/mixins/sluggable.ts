@@ -4,7 +4,7 @@
  * slug.
  *
  * This extends the base Sluggable mixin defined under
- * `pz-domain/src/mixins/sluggable` to implement additional server hooks and
+ * `pz-server/src/mixins/sluggable` to implement additional server hooks and
  * server-specific domain logic that's better to keep under here for security
  * purposes.
  */
@@ -16,7 +16,7 @@ import {
     ISluggableOptions,
     ISluggable as IParentSluggable,
     ISluggableInstance as IParentSluggableInstance
-} from 'pz-domain/src/mixins/sluggable';
+} from 'pz-server/src/mixins/sluggable';
 
 import {IUrlSlug, IUrlSlugInstance} from 'pz-server/src/url-slugs/models/url-slug';
 import {ISluggerOptions} from 'pz-server/src/url-slugs/slugger';

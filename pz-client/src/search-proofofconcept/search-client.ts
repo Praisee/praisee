@@ -1,4 +1,4 @@
-import {ISearchSuggestionResult} from 'pz-domain/src/search/search-results';
+import {ISearchSuggestionResult} from 'pz-server/src/search/search-results';
 import * as queryString from 'querystring';
 
 export default class SearchClient {

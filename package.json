@@ -6,7 +6,7 @@
     "start": "cd ./pz-server && export DEBUG=loopback && npm start",
     "startWin": "cd ./pz-server && SET DEBUG=loopback && npm start",
     "startQuiet": "cd ./pz-server && npm start",
-    "typingsInstall": "cd ./pz-client && typings install && cd ../pz-domain && typings install && cd ../pz-server && typings install && cd ../pz-support && typings install",
+    "typingsInstall": "cd ./pz-client && typings install && cd ../pz-server && typings install && cd ../pz-support && typings install",
     "postinstall": "npm run typingsInstall",
     "buildDev": "cd ./pz-builder && npm run buildDev",
     "watch": "cd ./pz-builder && npm run watch",
