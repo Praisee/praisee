@@ -3,8 +3,8 @@
   "version": "1.0.0",
   "private": true,
   "scripts": {
-    "start": "cd ./pz-server && export DEBUG=loopback && npm start",
-    "startWin": "cd ./pz-server && SET DEBUG=loopback && npm start",
+    "start": "cd ./pz-server && export DEBUG=* && npm start",
+    "startWin": "cd ./pz-server && SET DEBUG=* && npm start",
     "startQuiet": "cd ./pz-server && npm start",
     "typingsInstall": "cd ./pz-client && typings install && cd ../pz-server && typings install && cd ../pz-support && typings install",
     "postinstall": "npm run typingsInstall",
