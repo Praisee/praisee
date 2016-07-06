@@ -8,16 +8,14 @@ export default {
             'loopback-component-passport/lib/models',
             pzBuildPath('pz-server', 'src/models'),
             pzBuildPath('pz-server', 'src/search/models'),
-            pzBuildPath('pz-server', 'src/url-slugs/models'),
-            './models'
+            pzBuildPath('pz-server', 'src/url-slugs/models')
         ],
         'mixins': [
             'loopback/common/mixins',
             'loopback/server/mixins',
             pzPath('pz-root', 'node_modules/loopback-ds-timestamp-mixin'),
             pzBuildPath('pz-server', 'src/mixins'),
-            pzBuildPath('pz-server', 'src/url-slugs/mixins'),
-            './mixins'
+            pzBuildPath('pz-server', 'src/url-slugs/mixins')
         ]
     },
     
