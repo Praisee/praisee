@@ -4,13 +4,13 @@ export default {
     '_meta': {
         'sources': [
             'loopback/common/models',
-            pzPath('pz-server', 'src/models')
+            pzPath('pz-server', 'src/models'),
+            pzPath('pz-server', 'src/url-slugs/models')
         ],
         'mixins': [
             'loopback/common/mixins',
             pzPath('pz-root', 'node_modules/loopback-ds-timestamp-mixin'),
-            pzPath('pz-server', 'src/mixins'),
-            './mixins'
+            pzPath('pz-server', 'src/url-slugs/mixins')
         ]
     },
     
@@ -60,5 +60,9 @@ export default {
     'Vote': {
         'dataSource': 'pz-remote',
         'public': true
+    },
+    'UrlSlug': {
+        'dataSource': 'memory-db',
+        'public': false
     }
 }

@@ -11,23 +11,32 @@
 
 import promisify from 'pz-support/src/promisify';
 
-import {
-    default as ParentSluggableMixin,
-    ISluggableOptions,
-    ISluggable as IParentSluggable,
-    ISluggableInstance as IParentSluggableInstance
-} from 'pz-server/src/mixins/sluggable';
-
 import {IUrlSlug, IUrlSlugInstance} from 'pz-server/src/url-slugs/models/url-slug';
 import {ISluggerOptions} from 'pz-server/src/url-slugs/slugger';
 
-export interface ISluggable extends IParentSluggable {
+export interface ISluggableOptions {
+    property: string
+}
+
+export interface ISluggable extends IPersistedModel {
+    new (...properties: Array<any>): ISluggableInstance
+
+    isSluggable: boolean
+    sluggableProperty: string
+    sluggableType: string
+    
     sluggerOptions?: ISluggerOptions
 }
 
-export interface ISluggableInstance extends IParentSluggableInstance {
-    UrlSlug: IUrlSlug
+export interface ISluggableInstance extends IPersistedModelInstance {
+    isSluggable: boolean
+    sluggableProperty: string
+    sluggableValue: string
+    sluggableType: string
+    sluggableId: number
     
+    UrlSlug: IUrlSlug
+
     getCanonicalUrlSlug(): Promise<IUrlSlugInstance>
     getCanonicalUrlSlugValue(): Promise<string>
 }
@@ -43,7 +52,53 @@ export function disableRemoteMethodsForRelatedModel(Model: IModel, relatedModelN
 }
 
 module.exports = function SluggableMixin(Model: ISluggable, options: ISluggableOptions) {
-    ParentSluggableMixin(Model, options);
+    Model.isSluggable = true;
+    Model.prototype.isSluggable = true;
+
+    Model.sluggableProperty = options.property;
+    Model.prototype.sluggableProperty = options.property;
+
+    Object.defineProperties(Model, {
+        sluggableType: {
+            get() {
+                return this.modelName;
+            }
+        }
+    });
+
+    Object.defineProperties(Model.prototype, {
+        sluggableValue: {
+            get() {
+                return this[this.sluggableProperty].toString();
+            }
+        },
+
+        sluggableType: {
+            get() {
+                return this.constructor.modelName;
+            }
+        },
+
+        sluggableId: {
+            get() {
+                return this.id;
+            }
+        }
+    });
+
+    Model.remoteMethod('getCanonicalUrlSlugValue', {
+        isStatic: false,
+
+        http: {
+            verb: 'get',
+            path: '/canonicalUrlSlug'
+        },
+
+        returns: {
+            arg: 'urlSlug',
+            type: 'string'
+        }
+    });
 
     // TODO: Find a better hack
     // See https://github.com/strongloop/loopback-datasource-juggler/issues/969
