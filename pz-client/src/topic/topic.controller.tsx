@@ -4,7 +4,7 @@ import * as Relay from 'react-relay';
 import * as util from 'util';
 import ContributionArea from 'pz-client/src/topic/contribution-area.component';
 import SideSection from 'pz-client/src/side-section/side-section.component';
-import {ITopicInstance} from 'pz-domain/src/models/topic';
+import {ITopicInstance} from 'pz-server/src/models/topic';
 import {Review} from 'pz-client/src/schemaStuff';
 
 interface ITopicState {

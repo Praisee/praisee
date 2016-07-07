@@ -1,6 +1,6 @@
 import promisify from 'pz-support/src/promisify';
 import * as graphqlRelay from 'graphql-relay';
-import {ITopic} from 'pz-domain/src/models/topic'
+import {ITopic} from 'pz-server/src/models/topic'
 
 import * as graphql from 'graphql';
 import {IAppRepositoryAuthorizers} from 'pz-server/src/app/repositories';
