@@ -10,7 +10,7 @@
     "postinstall": "npm run typingsInstall",
     "buildDev": "cd ./pz-builder && npm run buildDev",
     "watch": "cd ./pz-builder && npm run watch",
-    "debugTest": "mocha --debug-brk ./pz-server/test",
+    "tests": "mocha --es_staging --harmony_tostring --harmony_array_includes --harmony_rest_parameters --harmony_modules --harmony_regexps --harmony_proxies --harmony_unicode_regexps --harmony_reflect --harmony_destructuring --harmony_new_target --recursive",
     "serverSmokeTests": "mocha --es_staging --harmony_tostring --harmony_array_includes --harmony_rest_parameters --harmony_modules --harmony_regexps --harmony_proxies --harmony_unicode_regexps --harmony_reflect --harmony_destructuring --harmony_new_target --recursive pz-server/build/test/smoke"
   },
   "dependencies": {
@@ -61,6 +61,7 @@
     "loopback-datasource-juggler": "^2.46.1",
     "loopback-ds-timestamp-mixin": "^3.2.4",
     "morgan": "^1.7.0",
+    "mute": "^2.0.6",
     "nodemon": "^1.9.2",
     "passport": "^0.3.2",
     "passport-local": "^1.0.0",
@@ -87,6 +88,7 @@
     "nsp": "^2.1.0",
     "sinon": "^1.17.4",
     "strongloop": "^6.0.0",
-    "supertest": "^1.2.0"
+    "supertest": "^1.2.0",
+    "supertest-session": "^2.0.1"
   }
 }
