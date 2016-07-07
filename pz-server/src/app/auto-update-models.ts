@@ -1,8 +1,8 @@
-import models from 'pz-server/src/model-config';
+import models from 'pz-server/src/app/model-config';
 import importJson from 'pz-support/src/import-json';
 import promisify from 'pz-support/src/promisify';
 
-var datasources = importJson('pz-server/src/datasources.json');
+var datasources = importJson('pz-server/src/app/datasources.json');
 
 // Source: http://stackoverflow.com/a/31119634/786810
 

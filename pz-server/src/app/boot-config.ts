@@ -1,8 +1,8 @@
-import modelConfig from 'pz-server/src/model-config';
+import modelConfig from 'pz-server/src/app/model-config';
 import pzPath from 'pz-support/src/pz-path';
 
 export default {
-    appRootDir: pzPath('pz-server', 'src'),
+    appRootDir: pzPath('pz-server', 'src/app'),
     models: modelConfig,
     
     bootScripts: [

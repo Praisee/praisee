@@ -1,4 +1,4 @@
-import defaultBootConfig from 'pz-server/src/boot-config';
+import defaultBootConfig from 'pz-server/src/app/boot-config';
 import promisify from 'pz-support/src/promisify';
 
 var loopback = require('loopback');

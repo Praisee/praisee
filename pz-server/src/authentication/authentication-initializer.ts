@@ -1,4 +1,4 @@
-import authProvidersConfig from 'pz-server/src/auth-providers';
+import authProvidersConfig from 'pz-server/src/authentication/authentication-providers';
 import provideLocalAuth from 'pz-server/src/authentication/local-provider';
 
 var loopback = require('loopback');
