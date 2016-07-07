@@ -61,7 +61,6 @@
     "loopback-datasource-juggler": "^2.46.1",
     "loopback-ds-timestamp-mixin": "^3.2.4",
     "morgan": "^1.7.0",
-    "mute": "^2.0.6",
     "nodemon": "^1.9.2",
     "passport": "^0.3.2",
     "passport-local": "^1.0.0",
