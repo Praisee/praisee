@@ -1,4 +1,4 @@
-import applyAuth from 'pz-domain/src/remote-app/auth-applier';
+import applyAuth from 'pz-server/src/remote-app/auth-applier';
 
 export interface IResolver {
     (source, args, context, ...other): any | Promise<any>

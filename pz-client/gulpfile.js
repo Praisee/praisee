@@ -19,7 +19,7 @@ gulp.task('buildSourcesQuick', [
 
 gulp.task('createRelaySchema', function(done) {
     runSequence.use(gulp)(
-        require('pz-domain/build-lib/build-dev-task')(gulp),
+        require('pz-server/build-lib/dev-build-sources-task')(gulp),
         require('pz-client/build-lib/create-relay-schema-task')(gulp),
         done
     );

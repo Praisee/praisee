@@ -1,4 +1,4 @@
-import {ITopic} from 'pz-domain/src/models/topic';
+import {ITopic} from 'pz-server/src/models/topic';
 
 module.exports = function (Product: ITopic) {
     Product.type = 'product';

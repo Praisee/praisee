@@ -6,13 +6,20 @@ var loopbackBoot = require('loopback-boot');
 
 export default class PzServer {
     bootConfig: {};
-    app: IApp = loopback();
+    
+    app: IApp = loopback({
+        // Force local Registry, so we don't have collisions with other instances
+        // (e.g. remoteApp)
+        localRegistry: true,
+        loadBuiltinModels: true
+    });
+    
     listener = null;
     
     private _hasBooted = false;
     private _hasStartedWebServer = false;
     
-    constructor(bootConfig = defaultBootConfig) {
+    constructor(bootConfig = PzServer._getDefaultBootConfig()) {
         this.bootConfig = bootConfig;
         this.app.services = {};
         this.app.start = this.startWebServer.bind(this);
@@ -67,5 +74,10 @@ export default class PzServer {
         if (this._hasStartedWebServer) {
             this.listener.close();
         }
+    }
+    
+    private static _getDefaultBootConfig() {
+        // We need to create a copy of this object because Loopback mutates it :/
+        return JSON.parse(JSON.stringify(defaultBootConfig));
     }
 }

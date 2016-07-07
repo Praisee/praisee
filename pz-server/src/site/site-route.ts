@@ -7,8 +7,8 @@ import routes from 'pz-client/src/router/routes'
 // We need to use these dependencies from pz-client, otherwise we'll run into an
 // `instanceof` bug.
 // See https://github.com/denvned/isomorphic-relay/issues/10#issuecomment-227966031
-import * as Relay from 'pz-client/node_modules/react-relay';
-import IsomorphicRouter from 'pz-client/node_modules/isomorphic-relay-router';
+import * as Relay from 'react-relay';
+import IsomorphicRouter from 'isomorphic-relay-router';
 import IsomorphicContext from 'pz-client/src/app/isomorphic-context.component';
 
 export function renderApp(response, graphqlNetworkLayer, renderProps, next) {

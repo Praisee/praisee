@@ -1,6 +1,6 @@
 import * as React from 'react';
 import {Component} from 'react';
-import {ITopicInstance} from 'pz-domain/src/models/topic';
+import {ITopicInstance} from 'pz-server/src/models/topic';
 
 interface ITopicWikiProps {
     topic: ITopicInstance;

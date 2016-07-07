@@ -4,7 +4,6 @@ var createRelaySchema = require('pz-client/build-lib/create-relay-schema-task');
 var buildSources = require('pz-client/build-lib/prod-build-sources-task');
 var buildStyles = require('pz-client/build-lib/dev-build-styles-task');
 var pzSupport = require('pz-support/build-lib/build-dev-task');
-var pzDomain = require('pz-domain/build-lib/build-dev-task');
 
 module.exports = function(gulp) {
     var pzSupportTask = pzSupport(gulp);
@@ -13,7 +12,7 @@ module.exports = function(gulp) {
     gulp.task('pzClient:buildProd', function(done) {
         runSequence.use(gulp)(
             clean(gulp, 'pz-client', 'pzClient:clean'),
-            [pzSupportTask, pzDomainTask],
+            pzSupportTask,
             createRelaySchema(gulp),
             [buildSources(gulp), buildStyles(gulp)],
             done

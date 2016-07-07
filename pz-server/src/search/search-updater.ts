@@ -1,7 +1,7 @@
 import promisify from 'pz-support/src/promisify';
 import {ISearchUpdateJobInstance} from 'pz-server/src/search/models/search-update-job';
-import {ICommunityItem, ICommunityItemInstance} from 'pz-domain/src/models/community-item';
-import {ITopicInstance} from 'pz-domain/src/models/topic';
+import {ICommunityItem, ICommunityItemInstance} from 'pz-server/src/models/community-item';
+import {ITopicInstance} from 'pz-server/src/models/topic';
 import SearchClient from 'pz-server/src/search/search-client';
 import {findCommunityItemByKeys, findTopicByKey} from 'pz-server/src/search/queries';
 import searchSchema from 'pz-server/src/search/schema';

@@ -7,7 +7,7 @@ import {
     ISearchResultHit
 } from 'pz-server/src/search/search';
 
-import {ISearchSuggestionResult} from 'pz-domain/src/search/search-results';
+import {ISearchSuggestionResult} from 'pz-server/src/search/search-results';
 
 import {getSuggestionsForUserQuery} from 'pz-server/src/search/queries';
 

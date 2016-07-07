@@ -1,4 +1,4 @@
-import createRemoteApp from 'pz-domain/src/remote-app/app-creator';
+import createRemoteApp from 'pz-server/src/remote-app/app-creator';
 
 module.exports = function setupRemoteApp(app: IApp, next: ICallback) {
     (createRemoteApp()
