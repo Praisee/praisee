@@ -40,7 +40,11 @@ module.exports = function(gulp, module, taskName, dependencies) {
             .pipe(gulpIf('**/*.js', babel({resolveModuleSource: moduleResolver})))
                 
             // Sourcemaps Output
-            .pipe(gulpIf(transpiledFiles, sourcemaps.write()))
+            .pipe(gulpIf(transpiledFiles, sourcemaps.write({
+                sourceRoot: function(file) {
+                    return pzPath(module);
+                }
+            })))
             
             .pipe(gulp.dest(pzPath(module, 'build')))
         ;
