@@ -43,10 +43,6 @@ export default {
     typeMappings: {
         communityItem: {
             properties: {
-                communityItemId: {
-                    type: 'long',
-                },
-
                 type: {
                     type: 'string',
                     index: 'not_analyzed'

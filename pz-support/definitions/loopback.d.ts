@@ -91,6 +91,9 @@ declare interface IPersistedModel extends IModel {
     create(data: any, done?: ICallback)
 
     upsert(data: any, done: (error: TError, model: IPersistedModelInstance) => void)
+    
+    updateAll(data: any, done?: ICallback)
+    updateAll(where: any, data: any, done?: ICallback)
 
     destroyAll(done?: ICallback)
     destroyAll(where: any, done?: ICallback)
@@ -106,6 +109,7 @@ declare interface IPersistedModel extends IModel {
     }
 
     observe(operation: TOperationHook, listener: IOperationHookCallback)
+    removeObserver(operation: TOperationHook, listener: IOperationHookCallback)
 
     scope(name: string, definition: {} | Function)
 }

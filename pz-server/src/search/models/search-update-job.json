@@ -7,17 +7,32 @@
         "validateUpsert": true
     },
     "properties": {
-        "modelName": {
+        "pathIndex": {
             "type": "string",
-            "required": true
+            "required": true,
+            "index": true
         },
-        "modelId": {
+        "pathType": {
+            "type": "string",
+            "required": true,
+            "index": true
+        },
+        "pathId": {
             "type": "number",
-            "required": true
+            "required": true,
+            "index": true
         },
         "operation": {
             "type": "string",
-            "required": true
+            "required": true,
+            "index": true
+        },
+        "searchDocument": {
+            "type": "object",
+            "required": false,
+            "postgresql": {
+                "dataType": "json"
+            }
         },
         "isCompleted": {
             "type": "boolean",

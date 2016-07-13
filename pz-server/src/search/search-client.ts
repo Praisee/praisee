@@ -6,7 +6,11 @@ import {
     ISearchQuery,
     ISearchResults,
     IPath,
-    ISearchSchema
+    ISearchSchema,
+    TBulkOperations,
+    IBulkDelete,
+    IBulkUpsert,
+    ISearchResultHit
 } from 'pz-server/src/search/search';
 
 var elasticsearch = require('elasticsearch');
@@ -24,6 +28,19 @@ export default class SearchClient {
         } else {
             return this.elasticClient.search(query);
         }
+    }
+    
+    getDocument(path: IDocumentPath): Promise<ISearchResultHit> {
+        return (this.elasticClient
+            .get(path)
+            .catch((error) => {
+                if (error && error.status && error.status === 404) {
+                    return null;
+                } else {
+                    throw error;
+                }
+            })
+        );
     }
     
     createDocument(path: ITypePath, document: any): Promise<IDocumentUpdateResult> {
@@ -45,7 +62,19 @@ export default class SearchClient {
         });
     }
     
-    createOrUpdate(path: ITypePath, query: ISearchQuery, document: any) {
+    upsertDocument(path: IDocumentPath, document: any): Promise<IDocumentUpdateResult> {
+        return this.elasticClient.update({
+            index: path.index,
+            type: path.type,
+            id: path.id,
+            body: {
+                doc: document,
+                doc_as_upsert: true
+            }
+        });
+    }
+    
+    upsertDocumentByQuery(path: ITypePath, query: ISearchQuery, document: any) {
         return (Promise.resolve()
             .then(() => this.search(query, path))
                 
@@ -133,5 +162,55 @@ export default class SearchClient {
             settings: schema.settings || {},
             mappings: schema.typeMappings || {}
         });
+    }
+
+    performBulkOperations(bulkOperations: Array<IBulkUpsert | IBulkDelete>): Promise<void> {
+        if (!bulkOperations.length) {
+            return Promise.resolve();
+        }
+        
+        const bulkBody = bulkOperations.reduce((bulkBody, bulkOperation) => {
+            if (bulkOperation.type === 'upsert') {
+                return bulkBody.concat(this._bulkUpsertToBody(bulkOperation as IBulkUpsert));
+                
+            } else if (bulkOperation.type === 'delete') {
+                return bulkBody.concat(this._bulkDeleteToBody(bulkOperation as IBulkDelete));
+                
+            } else {
+                console.error('Unable to handle bulk operation: ' + bulkOperation.type);
+                return bulkBody;
+            }
+            
+        }, []);
+
+        return this.elasticClient.bulk({
+            body: bulkBody
+        });
+    }
+    
+    private _bulkUpsertToBody(bulkUpsert: IBulkUpsert) {
+        return [
+            {
+                update: {
+                    _index: bulkUpsert.path.index,
+                    _type: bulkUpsert.path.type,
+                    _id: bulkUpsert.path.id
+                }
+            },
+            {
+                doc: bulkUpsert.document,
+                doc_as_upsert: true
+            }
+        ];
+    }
+    
+    private _bulkDeleteToBody(bulkDelete: IBulkDelete) {
+        return {
+            'delete': {
+                _index: bulkDelete.path.index,
+                _type: bulkDelete.path.type,
+                _id: bulkDelete.path.id
+            }
+        };
     }
 }

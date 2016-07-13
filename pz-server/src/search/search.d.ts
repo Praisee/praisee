@@ -10,7 +10,7 @@ export interface ITypePath {
 }
 
 export interface IDocumentPath extends ITypePath {
-    id: string
+    id: string | number
 }
 
 /**
@@ -55,3 +55,22 @@ export interface ISearchResultHit {
     _id: string
     _source: any
 }
+
+export interface IBulkOperation {
+    type: 'create' | 'update' | 'upsert' | 'delete'
+    path: ITypePath | IDocumentPath
+    document?: any
+}
+
+export interface IBulkUpsert extends IBulkOperation {
+    type: 'upsert'
+    path: IDocumentPath
+    document: any
+}
+
+export interface IBulkDelete extends IBulkOperation {
+    type: 'delete'
+    path: IDocumentPath
+}
+
+export type TBulkOperations = Array<IBulkOperation>

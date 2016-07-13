@@ -1,10 +1,23 @@
 import promisify from 'pz-support/src/promisify';
-import {ISearchUpdateJobInstance} from 'pz-server/src/search/models/search-update-job';
+
+import {
+    ISearchUpdateJobInstance,
+    ISearchUpdateJob,
+    TOperation
+} from 'pz-server/src/search/models/search-update-job';
+
 import {ICommunityItem, ICommunityItemInstance} from 'pz-server/src/models/community-item';
-import {ITopicInstance} from 'pz-server/src/models/topic';
+import {ITopicInstance, ITopic} from 'pz-server/src/models/topic';
 import SearchClient from 'pz-server/src/search/search-client';
-import {findCommunityItemByKeys, findTopicByKey} from 'pz-server/src/search/queries';
 import searchSchema from 'pz-server/src/search/schema';
+import {IBulkUpsert, IDocumentPath, IBulkDelete} from './search';
+
+export interface ISearchUpdaterModels {
+    SearchUpdateJob: ISearchUpdateJob,
+    CommunityItem: ICommunityItem,
+    Topic: ITopic,
+    [modelName: string]: IPersistedModel
+}
 
 // TODO: This is a hacked-in job queue that should be replaced with a real job queue
 // TODO: This is only meant for demonstration and should not be relied on long-term
@@ -14,222 +27,258 @@ export default class SearchUpdater {
     
     public searchClient: SearchClient;
 
-    private _models;
+    private _models: ISearchUpdaterModels;
+    
+    private _updateTimer;
+    
+    private _operationHooks = [];
 
-    constructor(models: any, searchClient: SearchClient) {
+    constructor(models: ISearchUpdaterModels, searchClient: SearchClient) {
         this._models = models;
         this.searchClient = searchClient;
     }
 
     start() {
-        this._addHooks();
+        this.addSearchUpdateObservers();
         
-        setInterval(() => {
-            this.runJobs();
+        let isRunningStill = false;
+        
+        this._updateTimer = setInterval(() => {
+            if (isRunningStill) {
+                return;
+            }
+            
+            this.runJobs().then(() => {
+                isRunningStill = false;
+            });
+            
         }, this.updateFrequency * 1000);
     }
+    
+    stop() {
+        clearInterval(this._updateTimer);
+        this.removeSearchUpdateObservers();
+    }
 
-    runJobs() {
-        const filter = {
-            where: {
-                isCompleted: false
-            }
-        };
+    async runJobs() {
+        const {SearchUpdateJob} = this._models;
         
-        return (promisify(this._models.SearchUpdateJob.find, this._models.SearchUpdateJob)(filter)
-            .then((searchUpdateJobs: Array<ISearchUpdateJobInstance>) => {
-                const updatePromises = searchUpdateJobs.map(searchUpdateJob => {
-                    return this._handleJob(searchUpdateJob);
-                });
-                
-                return Promise.all(updatePromises)
-            })
+        const incompleteJobs = await SearchUpdateJob.findIncompleteJobs();
+        
+        const bulkOperations = this._jobsToBulkOperations(incompleteJobs);
+        
+        await this.searchClient.performBulkOperations(bulkOperations);
+        
+        await SearchUpdateJob.markAsCompletedByIds(
+            incompleteJobs.map(incompleteJob => incompleteJob.id)
         );
     }
 
-    _addHooks() {
+    addSearchUpdateObservers() {
+        this.removeSearchUpdateObservers();
+        
         const saveHook = this._createHook('save');
         const destroyHook = this._createHook('destroy');
         
-        this._models.CommunityItem.observe('after save', saveHook);
-        this._models.Topic.observe('after save', saveHook);
+        this._addHook('CommunityItem', 'after save', saveHook);
+        this._addHook('Topic', 'after save', saveHook);
 
-        this._models.CommunityItem.observe('before delete', destroyHook);
-        this._models.Topic.observe('before delete', destroyHook);
+        this._addHook('CommunityItem', 'before delete', destroyHook);
+        this._addHook('Topic', 'before delete', destroyHook);
     }
     
-    _createHook(operation: string) {
-        return async (context) => {
-            const Model = context.Model;
-            const modelName = Model.modelName;
-
-            if (context.instance) {
-                return this._createSearchUpdateJob(
-                    modelName,
-                    context.instance.id,
-                    operation
-                );
-                
-            } else if (context.where && context.where.id) {
-                return this._createSearchUpdateJob(
-                    modelName,
-                    context.where.id,
-                    operation
-                );
-                
-            } else {
-                const modelCount = await promisify(Model.count, Model)();
-                
-                if (modelCount > 100) {
-                    throw new Error('Too many ' + modelName + ' models to handle in operation ' + operation);
-                }
-                
-                const models = await promisify(Model.find, Model)({
-                    where: context.where
-                }) as Array<IPersistedModelInstance>;
-                
-                if (models.length < 0) {
-                    throw new Error('Cannot find ID for model' + modelName + ' in operation ' + operation)
-                }
-                
-                return Promise.all(models.map(model => {
-                    return this._createSearchUpdateJob(modelName, model.id, operation);
-                }));
-            }
+    removeSearchUpdateObservers() {
+        this._operationHooks.forEach(({modelName, operationName, hook}) => {
+            this._models[modelName].removeObserver(operationName, hook);
+        });
+    }
+    
+    private _addHook(modelName, operationName, hook) {
+        this._models[modelName].observe(operationName, hook);
+        this._operationHooks.push({modelName, operationName, hook});
+    }
+    
+    private _createHook(operation: TOperation): (context) => Promise<void> {
+        return async (context): Promise<void> => {
+            const models = await this._extractModelsFromOperationHookContext(context);
+            
+            await Promise.all(models.map(({modelName, modelId}) => {
+                return this._createSearchUpdateJob(modelName, modelId, operation);
+            }));
         };
     }
     
-    _createSearchUpdateJob(modelName, modelId, operation): Promise<any> {
-        const searchUpdateJob = new this._models.SearchUpdateJob({
-            modelName: modelName,
-            modelId: modelId,
-            operation: operation
-        });
+    private async _extractModelsFromOperationHookContext(context): Promise<Array<IModelDefinition>> {
+        const Model = context.Model;
+        const modelName = Model.modelName;
+        
+        if (context.instance) {
+            return [{
+                modelName,
+                modelId: context.instance.id
+            }];
 
-        try {
-            return promisify(searchUpdateJob.save, searchUpdateJob)();
+        } else if (context.where && context.where.id) {
+            return [{
+                modelName,
+                modelId: context.where.id
+            }];
 
-        } catch(error) {
-            console.error('Failed to create search update job', error);
-            return Promise.resolve();
+        } else {
+            const modelCount = await promisify(Model.count, Model)();
+
+            if (modelCount > 100) {
+                throw new Error('Too many ' + modelName + ' models to handle in operation ');
+            }
+
+            const models = await promisify(Model.find, Model)({
+                where: context.where
+            }) as Array<IPersistedModelInstance>;
+
+            if (models.length < 0) {
+                throw new Error('Cannot find ID for model' + modelName)
+            }
+
+            return models.map(model => ({
+                modelName,
+                modelId: model.id
+            }));
         }
     }
     
-    _handleJob(searchUpdateJob: ISearchUpdateJobInstance) {
-        const Model = this._models[searchUpdateJob.modelName];
+    private async _createSearchUpdateJob(modelName: string, modelId: number, operation: TOperation): Promise<void> {
+        const Model: IPersistedModel = this._models[modelName];
+        
+        let model;
+        
+        if (operation !== 'destroy') {
+            model = await promisify(Model.findById, Model)(modelId);
+        } else {
+            model = new Model({id: modelId});
+        }
+        
+        if (!model) {
+            console.error('Unable to locate model',
+                modelName, modelId);
 
-        if (!Model) {
-            console.error('Unknown model type', searchUpdateJob.modelName);
             return;
         }
-        
-        (Promise.resolve()
-            .then(() => {
-                if (searchUpdateJob.operation !== 'destroy') {
-                    return promisify(Model.findById, Model)(searchUpdateJob.modelId);
-                } else {
-                    return new Model({id: searchUpdateJob.modelId});
-                }
-            })
-            
-            .then((model): any => {
-                if (!model) {
-                    console.error('Unable to locate model',
-                        searchUpdateJob.modelName, searchUpdateJob.modelId);
-                   
-                    return;
-                }
-                
-                if (model instanceof this._models.CommunityItem) {
-                    return this._handleCommunityItemJob(searchUpdateJob, model as ICommunityItemInstance);
-                } else if (model instanceof this._models.Topic) {
-                    return this._handleTopicJob(searchUpdateJob, model);
-                } else {
-                    console.error('Unable to handle model type', searchUpdateJob.modelName);
-                }
-            })
-                
-            .then(() => this._markAsCompleted(searchUpdateJob))
-            
-            .catch((error) => {
-                console.error('Search updater job failed');
-                
-                if (error && error.stack) {
-                    console.error(error.stack);
-                } else {
-                    console.error(error);
-                }
-                
-                throw error;
-            })
-        );
-    }
-    
-    _handleCommunityItemJob(searchUpdateJob: ISearchUpdateJobInstance, communityItem: ICommunityItemInstance) {
-        const Model: ICommunityItem = this._models[searchUpdateJob.modelName];
-        
-        const path = {index: searchSchema.index, type: searchSchema.types.communityItem};
-        const query = findCommunityItemByKeys(Model.type, communityItem.id);
-        
-        switch (searchUpdateJob.operation) {
-            case 'save':
-                const document = {
-                    communityItemId: communityItem.id,
-                    type: Model.type,
-                    summary: communityItem.summary,
-                    body: communityItem.body
-                };
-                
-                return this._saveSearchDocument(path, query, document);
-            
-            case 'destroy':
-                return this._destroySearchDocument(path, query);
-        }
-    }
-    
-    _handleTopicJob(searchUpdateJob: ISearchUpdateJobInstance, topic: ITopicInstance) {
-        const path = {index: searchSchema.index, type: searchSchema.types.topic};
-        const query = findTopicByKey(topic.id);
-        
-        switch (searchUpdateJob.operation) {
-            case 'save':
-                if (!topic.isVerified) {
-                    return; // Only verified topics get added to search
-                }
-                
-                const document = {
-                    topicId: topic.id,
-                    name: topic.name,
-                    description: topic.description
-                };
-                
-                return this._saveSearchDocument(path, query, document);
 
-            case 'destroy':
-                return this._destroySearchDocument(path, query);
+        if (model instanceof this._models.CommunityItem) {
+            return this._createCommunityItemJob(operation, model);
+        } else if (model instanceof this._models.Topic) {
+            return this._createTopicJob(operation, model);
+        } else {
+            console.error('Unable to handle model type', modelName);
         }
     }
     
-    _saveSearchDocument(path, query, document) {
-        return (this.searchClient.createOrUpdate(path, query, document)
-                .catch((error) => {
-                    console.error('Failed to create search document:', error);
-                    throw error;
-                })
-        );
+    private _createCommunityItemJob(operation: TOperation, communityItem: ICommunityItemInstance) {
+        const Model = communityItem.constructor as ICommunityItem ;
+        
+        const path = {
+            index: searchSchema.index,
+            type: searchSchema.types.communityItem,
+            id: communityItem.id
+        };
+        
+        if (operation === 'save') {
+            const document = {
+                type: Model.type,
+                summary: communityItem.summary,
+                body: communityItem.body
+            };
+
+            return this._createSaveJob(path, document);
+            
+        } else if (operation === 'destroy') {
+            return this._createDestroyJob(path);
+        }
     }
     
-    _destroySearchDocument(path, query) {
-        return (this.searchClient.destroyDocumentByQuery(path, query)
-            .catch((error) => {
-                console.error('Failed to destroy search document:', error);
-                throw error;
-            })
-        );
+    private _createTopicJob(operation: TOperation, topic: ITopicInstance) {
+        const path = {
+            index: searchSchema.index,
+            type: searchSchema.types.topic,
+            id: topic.id
+        };
+        
+        if (operation === 'save') {
+            if (!topic.isVerified) {
+                return; // Only verified topics get added to search
+            }
+
+            const document = {
+                name: topic.name,
+                description: topic.description
+            };
+
+            return this._createSaveJob(path, document);
+            
+        } else if (operation === 'destroy') {
+            return this._createDestroyJob(path);
+        }
     }
     
-    _markAsCompleted(searchUpdateJob) {
-        searchUpdateJob.isCompleted = true;
-        return promisify(searchUpdateJob.save, searchUpdateJob)();
+    private async _createSaveJob(path, document) {
+        const {SearchUpdateJob} = this._models;
+        
+        const searchUpdateJob = SearchUpdateJob.from(
+            path,
+            'save',
+            document
+        );
+        
+        await promisify(searchUpdateJob.save, searchUpdateJob)();
+    }
+    
+    private async _createDestroyJob(path) {
+        const {SearchUpdateJob} = this._models;
+        
+        const searchUpdateJob = SearchUpdateJob.from(
+            path,
+            'destroy'
+        );
+        
+        await promisify(searchUpdateJob.save, searchUpdateJob)();
+    }
+    
+    private _jobsToBulkOperations(searchUpdateJobs: Array<ISearchUpdateJobInstance>):
+        Array<IBulkUpsert | IBulkDelete> {
+        
+        return searchUpdateJobs.map(searchUpdateJob => {
+            const path: IDocumentPath = {
+                index: searchUpdateJob.pathIndex,
+                type: searchUpdateJob.pathType,
+                id: searchUpdateJob.pathId
+            };
+            
+            if (searchUpdateJob.operation === 'save') {
+                const upsertOperation: IBulkUpsert = {
+                    type: 'upsert',
+                    path,
+                    document: searchUpdateJob.searchDocument
+                };
+                
+                return upsertOperation;
+               
+            } else if (searchUpdateJob.operation === 'destroy') {
+                const deleteOperation: IBulkDelete = {
+                    type: 'delete',
+                    path
+                };
+                
+                return deleteOperation;
+               
+            } else {
+                throw new Error('Unable to handle operation: ' + searchUpdateJob.operation)
+            }
+        });
     }
 }
+
+interface IModelDefinition {
+    modelName: string
+    modelId: number
+}
+
