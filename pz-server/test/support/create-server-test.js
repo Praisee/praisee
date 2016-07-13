@@ -3,7 +3,19 @@ import mute from 'mute';
 
 let server = null;
 
-export default function createServerTest(description, callback, bootConfig = void(0)) {
+const defaultOptions = {};
+
+export default function createServerTestFor(description, callbackOrOptions, callback = null) {
+    let options = defaultOptions;
+    
+    if (callback) {
+        options = Object.assign(options, callbackOrOptions);
+    } else {
+        callback = callbackOrOptions;
+    }
+    
+    const {bootConfig} = options;
+    
     describe(description, function () {
         process.on('unhandledRejection', (error, promise) => {
             console.error('Unhandled promise rejection: ', error);
@@ -29,7 +41,7 @@ export default function createServerTest(description, callback, bootConfig = voi
                 return done();
             }
 
-            const unmute = mute();
+            const unmute = !process.env.NO_MUTE ? mute() : () => {};
             
             server = new PzServer(bootConfig);
 

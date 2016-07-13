@@ -1,10 +1,11 @@
 import {expect} from 'chai';
 import supertest from 'supertest-as-promised';
 import promisify from 'pz-support/src/promisify';
-import createServerTest from 'pz-server/test/support/create-server-test';
+import createServerTestFor from 'pz-server/test/support/create-server-test';
 import createSlug from 'pz-server/src/url-slugs/slugger';
+import resetModels from 'pz-server/test/support/reset-models';
 
-createServerTest('urlSlugs', function () {
+createServerTestFor('urlSlugs', function () {
     const context = this;
     
     describe('given a sluggable', () => {
@@ -20,13 +21,13 @@ createServerTest('urlSlugs', function () {
             
             UrlSlug.daysBeforeAliasCanBeCreated = 0;
 
-            await resetModels();
+            await resetModels(this.models);
             await create('Foo');
             review = await findFoo();
         });
         
         afterEach(async () => {
-            await resetModels();
+            await resetModels(this.models);
         });
         
         it('creates a URL slug', async () => {
@@ -146,11 +147,6 @@ createServerTest('urlSlugs', function () {
                 duplicateOffset,
                 minChars: 1
             });
-        }
-        
-        async function resetModels() {
-            await promisify(Review.destroyAll, Review)();
-            await promisify(UrlSlug.destroyAll, UrlSlug)();
         }
         
         async function create(name) {

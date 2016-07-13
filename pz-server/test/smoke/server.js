@@ -1,8 +1,8 @@
 import {expect} from 'chai';
 import supertest from 'supertest';
-import createServerTest from 'pz-server/test/support/create-server-test';
+import createServerTestFor from 'pz-server/test/support/create-server-test';
 
-createServerTest('server', function () {
+createServerTestFor('server', function () {
     it('starts', () => {});
     
     it('serves site routes', (done) => {

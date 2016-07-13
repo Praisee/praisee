@@ -2,9 +2,10 @@ import {expect} from 'chai';
 import supertest from 'supertest-as-promised';
 import supertestSession from 'supertest-session';
 import promisify from 'pz-support/src/promisify';
-import createServerTest from 'pz-server/test/support/create-server-test';
+import createServerTestFor from 'pz-server/test/support/create-server-test';
+import resetModels from 'pz-server/test/support/reset-models';
 
-createServerTest('authentication', function () {
+createServerTestFor('authentication', function () {
     const context = this;
     let User, requestWithSession;
     
@@ -13,11 +14,11 @@ createServerTest('authentication', function () {
         
         requestWithSession = supertestSession(context.app);
         
-        await resetModels();
+        await resetModels(this.models);
     });
 
     afterEach(async () => {
-        await resetModels();
+        await resetModels(this.models);
     });
     
     it('can register', async () => {
@@ -55,10 +56,6 @@ createServerTest('authentication', function () {
             expect(currentUser.username).to.equal('foobar');
         });
     });
-    
-    async function resetModels() {
-        await promisify(User.destroyAll, User)();
-    }
     
     async function registerUser(username, password) {
         await requestWithSession
