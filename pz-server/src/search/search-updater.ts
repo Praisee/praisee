@@ -11,11 +11,14 @@ import {ITopicInstance, ITopic} from 'pz-server/src/models/topic';
 import SearchClient from 'pz-server/src/search/search-client';
 import searchSchema from 'pz-server/src/search/schema';
 import {IBulkUpsert, IDocumentPath, IBulkDelete} from './search';
+import {IUrlSlugInstance, IUrlSlug} from 'pz-server/src/url-slugs/models/url-slug';
+import routePaths from 'pz-client/src/router/route-paths';
 
 export interface ISearchUpdaterModels {
-    SearchUpdateJob: ISearchUpdateJob,
-    CommunityItem: ICommunityItem,
-    Topic: ITopic,
+    SearchUpdateJob: ISearchUpdateJob
+    CommunityItem: ICommunityItem
+    Topic: ITopic
+    UrlSlug: IUrlSlug
     [modelName: string]: IPersistedModel
 }
 
@@ -82,6 +85,7 @@ export default class SearchUpdater {
         
         this._addHook('CommunityItem', 'after save', saveHook);
         this._addHook('Topic', 'after save', saveHook);
+        this._addHook('UrlSlug', 'after save', saveHook);
 
         this._addHook('CommunityItem', 'before delete', destroyHook);
         this._addHook('Topic', 'before delete', destroyHook);
@@ -168,6 +172,8 @@ export default class SearchUpdater {
             return this._createCommunityItemJob(operation, model);
         } else if (model instanceof this._models.Topic) {
             return this._createTopicJob(operation, model);
+        } else if (model instanceof this._models.UrlSlug) {
+            return this._createUrlSlugJob(operation, model);
         } else {
             console.error('Unable to handle model type', modelName);
         }
@@ -218,6 +224,61 @@ export default class SearchUpdater {
         } else if (operation === 'destroy') {
             return this._createDestroyJob(path);
         }
+    }
+    
+    private _createUrlSlugJob(operation: TOperation, urlSlug: IUrlSlugInstance) {
+        if (urlSlug.isAlias) {
+            return;
+        }
+
+        if (operation !== 'save') {
+            console.error('Unknown search update operation for URL slugs: ', operation);
+
+            return;
+        }
+
+        const Model = this._models[urlSlug.sluggableType];
+        let path, routePath;
+        
+        const pathFromType = (type) => ({
+            index: searchSchema.index,
+            type: searchSchema.types[type],
+            id: urlSlug.sluggableId
+        });
+
+        switch (urlSlug.sluggableType) {
+            case 'Topic':
+                path = pathFromType('topic');
+                routePath = routePaths.topic(urlSlug.fullSlug);
+                break;
+
+            case 'Review':
+                path = pathFromType('communityItem');
+                routePath = routePaths.communityItem.review(urlSlug.fullSlug);
+                break;
+            
+            case 'Question':
+                path = pathFromType('communityItem');
+                routePath = routePaths.communityItem.question(urlSlug.fullSlug);
+                break;
+            
+            case 'Howto':
+                path = pathFromType('communityItem');
+                routePath = routePaths.communityItem.howto(urlSlug.fullSlug);
+                break;
+            
+            case 'Comparison':
+                path = pathFromType('communityItem');
+                routePath = routePaths.communityItem.comparison(urlSlug.fullSlug);
+                break;
+
+            default:
+                return;
+        }
+
+        return this._createSaveJob(path, {
+            routePath: routePath
+        });
     }
     
     private async _createSaveJob(path, document) {

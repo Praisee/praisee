@@ -20,6 +20,7 @@ export interface ISearchUpdateJobInstance extends IPersistedModelInstance {
     pathType: string
     pathId: number
     operation: string
+    isCompleted: boolean
     searchDocument?: any
     
     markAsCompleted(): Promise<void>;

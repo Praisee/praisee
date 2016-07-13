@@ -24,7 +24,10 @@ export default (
             
             <Route path="profile/:usernameSlug" component={ProfileController} />
             
-            <Route path=":usernameSlug/:contentTitleSlug" component={CommunityItemController} />
+            <Route path="review/:contentTitleSlug" component={CommunityItemController} />
+            <Route path="question/:contentTitleSlug" component={CommunityItemController} />
+            <Route path="how-to/:contentTitleSlug" component={CommunityItemController} />
+            <Route path="comparison/:contentTitleSlug" component={CommunityItemController} />
             
             <Route path="(:topicSlug)-reviews" component={ReviewController} />
             <Route path="(:topicSlug)-comparisons" component={ComparisonController} />

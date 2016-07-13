@@ -24,20 +24,22 @@ export default class Searcher {
         this._searchClient = searchClient;
     }
     
-    suggest(queryString: string): Promise<Array<ISearchSuggestionResult>> {
+    async suggest(queryString: string): Promise<Array<ISearchSuggestionResult>> {
         // TODO: Accept a context parameter to refine search further
         
         const query = getSuggestionsForUserQuery(queryString);
         
-        return (this._searchClient.search(query, {index: this._searchSchema.index})
-            .then((results: IRawSearchResults) => {
-                const hits = results.hits.hits;
-                return hits.map(hit => this._convertSearchHitIntoSearchSuggestions(hit));
-            })
+        const results = await this._searchClient.search(
+            query, {index: this._searchSchema.index}
         );
+
+        const hits = results.hits.hits;
+        
+        return hits.map(hit => this._convertSearchHitIntoSearchSuggestions(hit));
     }
     
     _convertSearchHitIntoSearchSuggestions(searchHit: ISearchResultHit): ISearchSuggestionResult {
+        
         switch(searchHit._type) {
             case 'topic':
                 return {

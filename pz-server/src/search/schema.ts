@@ -47,6 +47,11 @@ export default {
                     type: 'string',
                     index: 'not_analyzed'
                 },
+                
+                routePath: {
+                    type: 'string',
+                    index: 'not_analyzed'
+                },
 
                 summary: {
                     type: 'string'
@@ -60,6 +65,16 @@ export default {
         
         topic: {
             properties: {
+                type: {
+                    type: 'string',
+                    index: 'not_analyzed'
+                },
+
+                routePath: {
+                    type: 'string',
+                    index: 'not_analyzed'
+                },
+                
                 name: {
                     type: 'string',
                     analyzer: 'autocomplete',

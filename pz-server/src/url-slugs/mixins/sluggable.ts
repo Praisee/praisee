@@ -2,11 +2,6 @@
  * Sluggables are any models that can have vanity URLs attached to them. For example,
  * a topic may be found at `praisee.com/Nikon-D800E`, where `Nikon-D800E` is the URL
  * slug.
- *
- * This extends the base Sluggable mixin defined under
- * `pz-server/src/mixins/sluggable` to implement additional server hooks and
- * server-specific domain logic that's better to keep under here for security
- * purposes.
  */
 
 import promisify from 'pz-support/src/promisify';
