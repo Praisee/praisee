@@ -45,7 +45,7 @@ export default class Searcher {
                 return {
                     type: 'topic',
                     title: searchHit._source.name,
-                    routePath: '',
+                    routePath: searchHit._source.routePath,
                     thumbnailPath: ''
                 };
             
@@ -53,7 +53,7 @@ export default class Searcher {
                 return {
                     type: 'communityItem',
                     title: searchHit._source.summary,
-                    routePath: '',
+                    routePath: searchHit._source.routePath,
                     thumbnailPath: ''
                 };
             

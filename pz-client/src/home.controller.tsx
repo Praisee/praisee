@@ -1,7 +1,6 @@
 import * as React from 'react';
 import * as Relay from 'react-relay';
 import {Component} from 'react';
-import * as util from 'util';
 
 export interface IHomeControllerProps {
     params: any,
@@ -17,8 +16,6 @@ export class HomeController extends Component<IHomeControllerProps, any> {
     render() {
         return (
             <div>
-                Heya, world!!!: "{this.state.counter}" - {util.inspect(this.props.params)}
-
                 <h2>Topics</h2>
                 <ul>
                     {this.props.viewer.topics.map(topic => (

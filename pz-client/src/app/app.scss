@@ -1,7 +1,10 @@
 @import 'variables';
 @import '../../../node_modules/bootstrap/scss/bootstrap-reboot';
 @import 'bootstrap';
+@import '../search/site-search';
 
 .app-namespace {
     @import '../topic/topic';
+
+    @extend %site-search;
 }

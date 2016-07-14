@@ -10,8 +10,6 @@ import ReviewController from 'pz-client/src/home.controller';
 import ComparisonController from 'pz-client/src/home.controller';
 import TopicController from 'pz-client/src/topic/topic.controller';
 
-import SearchController from 'pz-client/src/search-proofofconcept/search.controller'; // TODO: Remove this
-
 export default (
     <Router>
         <Route path="/" component={AppController}>
@@ -19,8 +17,6 @@ export default (
                 component={HomeController}
                 {...mixinRouteQuery(viewerQuery)}
             />
-            
-            <Route path="search/poc" component={SearchController} /> {/* TODO: Remove this */}
             
             <Route path="profile/:usernameSlug" component={ProfileController} />
             

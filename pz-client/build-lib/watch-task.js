@@ -10,14 +10,13 @@ module.exports = function(gulp) {
         'src/**/*.ts',
         'src/**/*.tsx',
         'src/**/*.js',
-        'src/**/*.json',
-        'styles/**/*.json'
+        'src/**/*.json'
     ];
     
     var watchSourceFilesAndSchema = watchSourceFiles.concat('build/src/relay/schema.json');
 
     var watchStyleFiles = [
-        'styles/**/*.scss'
+        'src/**/*.scss'
     ];
 
     gulp.task('pzClient:watch:sources', function() {

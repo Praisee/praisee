@@ -1,0 +1,22 @@
+@import '../app/bootstrap';
+
+%site-search {
+    .site-search {
+        @extend %bootstrap;
+
+        position: relative;
+
+        .search-input {
+            width: 100%;
+        }
+
+        .suggestions-container {
+            @extend .dropdown-menu;
+            display: block;
+        }
+
+        .suggestion {
+            @extend .dropdown-item;
+        }
+    }
+}
