@@ -15,3 +15,13 @@ export var homeQuery = {
         currentUser: function () { return (_a = ["\n            query {\n                currentUser\n            }\n        "], _a.raw = ["\n            query {\n                currentUser\n            }\n        "], Relay.QL(_a)); var _a; }
     }
 };
+export var topicQuery = {
+    queries: {
+        topic: function () { return (_a = ["\n            query {\n                topic(urlSlug: $urlSlug)\n            }\n        "], _a.raw = ["\n            query {\n                topic(urlSlug: $urlSlug)\n            }\n        "], Relay.QL(_a)); var _a; }
+    }
+};
+export var reviewQuery = {
+    queries: {
+        review: function () { return (_a = ["\n            query {\n                review(urlSlug: $urlSlug)\n            }\n        "], _a.raw = ["\n            query {\n                review(urlSlug: $urlSlug)\n            }\n        "], Relay.QL(_a)); var _a; }
+    }
+};

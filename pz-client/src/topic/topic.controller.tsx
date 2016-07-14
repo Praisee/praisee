@@ -5,57 +5,28 @@ import * as util from 'util';
 import ContributionArea from 'pz-client/src/topic/contribution-area.component';
 import SideSection from 'pz-client/src/side-section/side-section.component';
 import {ITopicInstance} from 'pz-server/src/models/topic';
-import {Review} from 'pz-client/src/schemaStuff';
+import {SchemaInjector, ISchemaType} from 'pz-client/src/support/schema-injector';
 
 interface ITopicState {
-    topicContent;
-    topic: ITopicInstance;
 }
 
 interface ITopicProps {
     params;
-    viewer;
+    topic;
 }
 
 export class TopicController extends Component<ITopicProps, ITopicState> {
+    constructor(){
+        super();
+    }
+
     render() {
         return (
             <div className="topic-namespace" >
                 {this._renderPrimarySection() }
                 {this._renderSideSection() }
-                <Review />
             </div>
         )
-    }
-
-    componentWillMount() {
-        //Go look up topic slug and set it in the state
-        this._lookupSlugInfo(this.props.params.topicSlug);
-        //Get topic content and put in state
-    }
-
-    componentWillReceiveProps(nextProps) {
-        //will have updated slug if user changed it via url
-        this._lookupSlugInfo(nextProps.params.topicSlug);
-        //Get topic content and put in state
-    }
-
-    _lookupSlugInfo(topicSlug) {
-        const topic: ITopicInstance = {
-            id: 123,
-            name: this.props.params.topicSlug,
-            description: "internal description",
-            overviewContent: "This is where the wiki stuff will go",
-            thumbnailPath: "sad",
-            isVerified: true,
-            save: () => { },
-            destroy: () => { },
-            toJSON: () => { }
-        };
-        this.setState({
-            topicContent: "asdfghjk",
-            topic: topic
-        })
     }
 
     _renderPrimarySection() {
@@ -75,7 +46,6 @@ export class TopicController extends Component<ITopicProps, ITopicState> {
 
     _renderTopicContentSection() {
         var content = {};
-        //TODO: Populate content from backend
 
         if (content) {
             return this._renderTopicContent();
@@ -86,7 +56,11 @@ export class TopicController extends Component<ITopicProps, ITopicState> {
     }
 
     _renderTopicContent() {
-        return this.state.topicContent;
+        return (
+            <div>
+                <span>{this.props.topic.name}</span>
+            </div>
+        ); 
     }
 
     _renderEmptyContent() {
@@ -100,7 +74,7 @@ export class TopicController extends Component<ITopicProps, ITopicState> {
     _renderSideSection() {
         return (
             <div className="side-section-container">
-                <SideSection topic={this.props.viewer.topic.name} />
+                <SideSection topic={this.props.topic} />
             </div>
         )
     }
@@ -114,16 +88,14 @@ export class TopicController extends Component<ITopicProps, ITopicState> {
 
 export default Relay.createContainer(TopicController, {
     fragments: {
-        viewer: () => Relay.QL`
-            fragment on Viewer {
-                topic {
-                    id,
-                    name,
-                    description,
-                    thumbnailPath,
-                    overviewContent,
-                    isVerified
-                }
+        topic: () => Relay.QL`
+            fragment on Topic {
+                id,
+                name,
+                description,
+                thumbnailPath,
+                overviewContent,
+                isVerified
             }
         `
     }

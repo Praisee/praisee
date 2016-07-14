@@ -3,7 +3,9 @@ import {Router, Route, IndexRoute} from 'react-router';
 import {
     IRouteQuery,
     homeQuery,
-    appQuery
+    appQuery,
+    topicQuery,
+    reviewQuery
 } from 'pz-client/src/router/route-queries';
 
 import AppController from 'pz-client/src/app/app.controller';

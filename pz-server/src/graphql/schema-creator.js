@@ -20,6 +20,8 @@ export default function createSchema(repositoryAuthorizers) {
                 return UserType;
             case 'Topic':
                 return TopicType;
+            case 'Review':
+                return ReviewType;
         }
         return null;
     };
@@ -34,24 +36,9 @@ export default function createSchema(repositoryAuthorizers) {
                     return topics.as(user).findAll();
                 }
             },
-            topic: {
-                type: TopicType,
-                args: {
-                    urlSlug: {
-                        type: GraphQLString
-                    }
-                },
-                resolve: function (source, _a) {
-                    var urlSlug = _a.urlSlug;
-                    debugger;
-                    var Topic = app.models.Topic;
-                    var remotes = Topic.dataSource.connector.remotes;
-                    return promisify(remotes.invoke, remotes)('getByUrlSlugName', [urlSlug])
-                        .catch(function (err) {
-                        debugger;
-                        console.log(err);
-                    });
-                }
+            reviews: {
+                type: new GraphQLList(ReviewType),
+                resolve: function () { return promisify(app.models.Review.find, app.models.Review)(); }
             }
         }); }
     });
@@ -90,6 +77,19 @@ export default function createSchema(repositoryAuthorizers) {
         }); },
         interfaces: [nodeInterface]
     });
+    var ReviewType = new GraphQLObjectType({
+        name: 'Review',
+        fields: function () { return ({
+            id: graphqlRelay.globalIdField('Review'),
+            summary: {
+                type: GraphQLString
+            },
+            body: {
+                type: GraphQLString
+            }
+        }); },
+        interfaces: [nodeInterface]
+    });
     return new GraphQLSchema({
         query: new GraphQLObjectType({
             name: 'Query',
@@ -105,6 +105,35 @@ export default function createSchema(repositoryAuthorizers) {
                         var user = _a.user;
                         return users.as(user).findCurrentUser();
                     }
+                },
+                topic: {
+                    type: TopicType,
+                    args: {
+                        urlSlug: {
+                            type: GraphQLString
+                        }
+                    },
+                    resolve: resolveWithSession(function (_, _a) {
+                        var urlSlug = _a.urlSlug;
+                        var Topic = app.models.Topic;
+                        return promisify(Topic.getByUrlSlugName, Topic)(urlSlug)
+                            .catch(function (err) {
+                            console.log(err);
+                        });
+                    })
+                },
+                review: {
+                    type: ReviewType,
+                    args: {
+                        urlSlug: {
+                            type: GraphQLString
+                        }
+                    },
+                    resolve: resolveWithSession(function (_, _a) {
+                        var urlSlug = _a.urlSlug;
+                        var Review = app.models.Review;
+                        return promisify(Review.getByUrlSlugName, Review)(urlSlug);
+                    })
                 }
             }); }
         })

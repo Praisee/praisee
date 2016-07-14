@@ -1,6 +1,6 @@
 import * as React from 'react';
 import {Component} from 'react';
-import ReviewBox from 'pz-client/src/review/reviewBox.component'
+import ReviewBox from 'pz-client/src/review/review-box.component'
 
 export default class ReviewList extends Component<ReviewListProps, ReviewListState> {
   private serverRequest;

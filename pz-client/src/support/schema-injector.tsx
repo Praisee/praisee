@@ -1,39 +1,8 @@
 import * as React from 'react';
 import {Component, ReactNode} from 'react';
 
-export class Review extends Component<any, any> {
-    schema: ISchema;
-
-    constructor(props, context, schema: ISchema) {
-        super(props, context);
-        this.schema = new ReviewSchema();
-    };
-
-    render() {
-        let injectedJSX = this.schema.inject(
-            <div className="testing">
-                <span className="name"> Microwave abc </span>
-                <div className="aggregate-value">
-                    <span className="rating-value">3.5</span>/5 with <span className="review-count"> 8793 </span> reviews
-                </div>
-            </div>
-        );
-        return injectedJSX;
-    }
-}
-
-class ReviewSchema implements ISchema {
-    schema = {
-        "name": {
-            itemProp: "name"
-        },
-        "rating-value": {
-            itemProp: "ratingValue"
-        },
-        "review-count": {
-            itemProp: "ratingCount"
-        },
-    }
+export class SchemaInjector {
+    constructor(private schema: {}) { }
 
     inject(baseNode: any) {
         let modifiedChildren = React.Children.map(baseNode.props.children, (element) => this._modifyElement(element));
@@ -50,6 +19,9 @@ class ReviewSchema implements ISchema {
                     if (index != null) {
                         props.key = "__review" + index;
                     }
+                    if (this.schema[key].itemScope) {
+                        props.itemScope = "itemScope";
+                    }
                     break;
                 }
             }
@@ -63,7 +35,7 @@ class ReviewSchema implements ISchema {
 
         if (Array.isArray(element)) {
             return element.map((subElement, index) => {
-                if (!subElement.key) {
+                if (subElement && !subElement.key) {
                     return this._modifyElement(subElement, index);
                 }
                 return this._modifyElement(subElement);
@@ -74,6 +46,9 @@ class ReviewSchema implements ISchema {
     }
 }
 
-interface ISchema {
-    inject(elements: React.ReactNode);
+export interface ISchemaType {
+    [className: string]: {
+        property: string,
+        typeof?: string
+    }
 }

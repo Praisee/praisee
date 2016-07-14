@@ -1,8 +1,9 @@
 import * as React from 'react';
+import {IReviewInstance} from 'pz-server/src/models/review';
 import {ReviewerAvatar} from 'pz-client/src/review/reviewerAvatar.component'
 import {VoteBox} from 'pz-client/src/review/voteBox.component'
 
-export default class ReviewBox extends React.Component<ReviewBoxProps, ReviewBoxState> {
+export default class ReviewBoxComponent extends React.Component<ReviewBoxProps, ReviewBoxState> {
 
   render() {
     return (

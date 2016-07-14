@@ -1,7 +1,7 @@
 import promisify from 'pz-support/src/promisify';
 import * as graphqlRelay from 'graphql-relay';
-import {ITopic} from 'pz-server/src/models/topic'
-
+import {ITopic} from 'pz-server/src/models/topic';
+import {IReview} from 'pz-server/src/models/review';
 import * as graphql from 'graphql';
 import {IAppRepositoryAuthorizers} from 'pz-server/src/app/repositories';
 import {IRepositoryRecord} from 'pz-server/src/support/repository';
@@ -40,6 +40,9 @@ export default function createSchema(repositoryAuthorizers: IAppRepositoryAuthor
 
             case 'Topic':
                 return TopicType;
+
+            case 'Review':
+                return ReviewType;
         }
 
         return null;
@@ -58,24 +61,9 @@ export default function createSchema(repositoryAuthorizers: IAppRepositoryAuthor
                 type: new GraphQLList(TopicType),
                 resolve: (_, __, {user}) => topics.as(user).findAll()
             },
-
-            topic: {
-                type: TopicType,
-                args: {
-                    urlSlug: {
-                        type: GraphQLString
-                    }
-                },
-                resolve: (source, {urlSlug}) => {
-                    debugger;
-                    const Topic: ITopic = app.models.Topic;
-                    const remotes = Topic.dataSource.connector.remotes;
-                    return promisify(remotes.invoke, remotes)('getByUrlSlugName', [urlSlug])
-                        .catch((err)=>{
-                            debugger;
-                            console.log(err);
-                        });
-                }
+            reviews: {
+                type: new GraphQLList(ReviewType),
+                resolve: () => promisify(app.models.Review.find, app.models.Review)(),
             }
         })
     });
@@ -128,6 +116,24 @@ export default function createSchema(repositoryAuthorizers: IAppRepositoryAuthor
         interfaces: [nodeInterface]
     });
 
+    const ReviewType = new GraphQLObjectType({
+        name: 'Review',
+
+        fields: () => ({
+            id: graphqlRelay.globalIdField('Review'),
+
+            summary: {
+                type: GraphQLString
+            },
+
+            body: {
+                type: GraphQLString
+            }
+        }),
+
+        interfaces: [nodeInterface]
+    });
+
     return new GraphQLSchema({
         query: new GraphQLObjectType({
             name: 'Query',
@@ -147,8 +153,38 @@ export default function createSchema(repositoryAuthorizers: IAppRepositoryAuthor
                     resolve: (_, __, {user}) => {
                         return users.as(user).findCurrentUser();
                     }
-                }
+                },
 
+                topic: {
+                    type: TopicType,
+                    args: {
+                        urlSlug: {
+                            type: GraphQLString
+                        }
+                    },
+                    resolve: resolveWithSession((_, {urlSlug}) => {
+                        const Topic: ITopic = app.models.Topic;
+
+                        return promisify(Topic.getByUrlSlugName, Topic)(urlSlug)
+                            .catch((err) => {
+                                console.log(err);
+                            });
+                    })
+                },
+
+                review: {
+                    type: ReviewType,
+                    args: {
+                        urlSlug: {
+                            type: GraphQLString
+                        }
+                    },
+                    resolve: resolveWithSession((_, {urlSlug}) => {
+                        const Review: IReview = app.models.Review;
+
+                        return promisify(Review.getByUrlSlugName, Review)(urlSlug)
+                    })
+                }
             })
         })
     });
