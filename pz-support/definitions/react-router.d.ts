@@ -5,6 +5,7 @@ declare namespace ReactRouter {
 }
 
 declare module "react-router" {
-    export let applyRouterMiddleware: Function
+    export let applyRouterMiddleware: Function;
+    export let withRouter: Function;
 }
 

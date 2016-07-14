@@ -13,9 +13,13 @@ export interface IHomeControllerProps {
 export class HomeController extends Component<IHomeControllerProps, any> {
     state = {counter: 0};
     
+    private _counterTimer;
+    
     render() {
         return (
             <div>
+                <p>Counter: {this.state.counter}</p>
+                
                 <h2>Topics</h2>
                 <ul>
                     {this.props.viewer.topics.map(topic => (
@@ -27,9 +31,15 @@ export class HomeController extends Component<IHomeControllerProps, any> {
     }
     
     componentDidMount() {
-        setInterval(() => {
+        this._counterTimer = setInterval(() => {
             this.setState({counter: this.state.counter + 1})
         }, 1000);
+    }
+    
+    componentWillUnmount() {
+        if (this._counterTimer) {
+            clearInterval(this._counterTimer);
+        }
     }
 }
 

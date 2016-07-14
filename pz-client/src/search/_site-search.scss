@@ -18,5 +18,14 @@
         .suggestion {
             @extend .dropdown-item;
         }
+
+        .suggestion-focused,
+        .suggestion:hover,
+        .suggestion:active,
+        .suggestion:focus {
+            &, .suggestion-link {
+                @extend .dropdown-item.active;
+            }
+        }
     }
 }
