@@ -7,7 +7,6 @@ var pzSupport = require('pz-support/build-lib/build-dev-task');
 
 module.exports = function(gulp) {
     var pzSupportTask = pzSupport(gulp);
-    var pzDomainTask = pzDomain(gulp);
 
     gulp.task('pzClient:buildProd', function(done) {
         runSequence.use(gulp)(
