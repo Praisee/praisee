@@ -68,6 +68,10 @@ export default class SearchUpdater {
         
         const incompleteJobs = await SearchUpdateJob.findIncompleteJobs();
         
+        if (!incompleteJobs.length) {
+            return;
+        }
+        
         const bulkOperations = this._jobsToBulkOperations(incompleteJobs);
         
         await this.searchClient.performBulkOperations(bulkOperations);
