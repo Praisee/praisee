@@ -3,7 +3,7 @@ import * as React from 'react';
 import * as Relay from 'react-relay';
 import {SchemaInjector, ISchemaType} from 'pz-client/src/support/schema-injector';
 
-class CommunityItemRatingComponent extends Component<ICommunityItemRatingProps, any>{
+class CommunityItemRating extends Component<ICommunityItemRatingProps, any>{
     schemaInjector: SchemaInjector;
 
     constructor(props, context) {
@@ -13,6 +13,7 @@ class CommunityItemRatingComponent extends Component<ICommunityItemRatingProps, 
 
     render() {
         const {rating, count} = this.props.votes;
+        
         return this.schemaInjector.inject(
             <div className="aggregate-rating">
                 <p>
@@ -24,7 +25,7 @@ class CommunityItemRatingComponent extends Component<ICommunityItemRatingProps, 
     }
 }
 
-export default Relay.createContainer(CommunityItemRatingComponent, {
+export default Relay.createContainer(CommunityItemRating, {
     fragments: {
         votes: ()=> Relay.QL`
             fragment on Votes {

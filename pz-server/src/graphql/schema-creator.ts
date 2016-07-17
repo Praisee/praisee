@@ -7,6 +7,16 @@ import {IAppRepositoryAuthorizers} from 'pz-server/src/app/repositories';
 import {IRepositoryRecord} from 'pz-server/src/support/repository';
 
 var {
+    connectionDefinitions,
+    fromGlobalId,
+    nodeDefinitions,
+    connectionArgs,
+    globalId,
+    connectionFromPromisedArray,
+    globalIdField
+} = graphqlRelay;
+
+var {
     GraphQLBoolean,
     GraphQLID,
     GraphQLInt,
@@ -48,7 +58,7 @@ export default function createSchema(repositoryAuthorizers: IAppRepositoryAuthor
         return null;
     };
 
-    const {nodeInterface, nodeField} = graphqlRelay.nodeDefinitions(
+    const {nodeInterface, nodeField} = nodeDefinitions(
         idResolver, typeResolver
     );
 
@@ -61,9 +71,55 @@ export default function createSchema(repositoryAuthorizers: IAppRepositoryAuthor
                 type: new GraphQLList(TopicType),
                 resolve: (_, __, {user}) => topics.as(user).findAll()
             },
-            reviews: {
-                type: new GraphQLList(ReviewType),
-                resolve: () => promisify(app.models.Review.find, app.models.Review)(),
+            reviewConnection: {
+                type: ReviewConnection.connectionType,
+                args: connectionArgs,
+                resolve: (_, args) => {
+                    const Review: IReview = app.models.Review;
+
+                    return connectionFromPromisedArray(
+                        promisify(Review.find, Review)(
+                            {
+                                //the +1 allows the hasNextPage argument to return true if there is more content
+                                limit: args.first + 1,
+                                skip: args.after
+                            }),
+                        args
+                    );
+                }
+            },
+            commentConnection: {
+                type: CommentConnection.connectionType,
+                args: connectionArgs,
+                resolve: (_, args) => {
+                    return connectionFromPromisedArray(
+                        //TODO: Implment this
+                        promisify(() => { }, {})(),
+                        args
+                    );
+                }
+            },
+            avatarConnection: {
+                type: AuthorConnection.connectionType,
+                args: connectionArgs,
+                resolve: (_, args) => {
+                    return connectionFromPromisedArray(
+                        //TODO: Implment this
+                        promisify(() => { }, {})(),
+                        args
+                    );
+                }
+            },
+            votesConnection: {
+                type: VotesConnection.connectionType,
+                args: connectionArgs,
+                resolve: (_, args) => {
+                    return connectionFromPromisedArray(
+                        //TODO: Implment this
+                        promisify(() => { }, {})(),
+                        args
+                    );
+                }
             }
         })
     });
@@ -72,7 +128,7 @@ export default function createSchema(repositoryAuthorizers: IAppRepositoryAuthor
         name: 'User',
 
         fields: () => ({
-            id: graphqlRelay.globalIdField('User'),
+            id: globalIdField('User'),
 
             username: {
                 type: GraphQLString
@@ -90,7 +146,7 @@ export default function createSchema(repositoryAuthorizers: IAppRepositoryAuthor
         name: 'Topic',
 
         fields: () => ({
-            id: graphqlRelay.globalIdField('Topic'),
+            id: globalIdField('Topic'),
 
             name: {
                 type: GraphQLString
@@ -120,7 +176,7 @@ export default function createSchema(repositoryAuthorizers: IAppRepositoryAuthor
         name: 'Review',
 
         fields: () => ({
-            id: graphqlRelay.globalIdField('Review'),
+            id: globalIdField('Review'),
 
             summary: {
                 type: GraphQLString
@@ -128,10 +184,100 @@ export default function createSchema(repositoryAuthorizers: IAppRepositoryAuthor
 
             body: {
                 type: GraphQLString
+            },
+
+            dateCreated: {
+                type: GraphQLInt
             }
         }),
 
         interfaces: [nodeInterface]
+    });
+
+    const CommentType = new GraphQLObjectType({
+        name: 'Comment',
+
+        fields: () => ({
+            id: globalIdField('Comment'),
+
+            upVotes: {
+                type: GraphQLInt
+            },
+
+            downVotes: {
+                type: GraphQLInt
+            },
+
+            text: {
+                type: GraphQLString
+            },
+
+            dateCreated: {
+                type: GraphQLInt
+            }
+        }),
+
+        interfaces: [nodeInterface]
+    });
+
+    const AuthorType = new GraphQLObjectType({
+        name: 'Author',
+
+        fields: () => ({
+            id: globalIdField('Author'),
+
+            name: {
+                type: GraphQLString
+            },
+
+            reputation: {
+                type: GraphQLString
+            },
+
+            image: {
+                type: GraphQLString
+            },
+        }),
+
+        interfaces: [nodeInterface]
+    });
+
+    const VotesType = new GraphQLObjectType({
+        name: 'Votes',
+
+        fields: () => ({
+            id: globalIdField('Votes'),
+
+            rating: {
+                type: GraphQLInt
+            },
+
+            count: {
+                type: GraphQLInt
+            }
+        }),
+
+        interfaces: [nodeInterface]
+    });
+
+    const ReviewConnection = connectionDefinitions({
+        name: "Review",
+        nodeType: ReviewType
+    });
+
+    const CommentConnection = connectionDefinitions({
+        name: "Comment",
+        nodeType: CommentType
+    });
+
+    const AuthorConnection = connectionDefinitions({
+        name: "Author",
+        nodeType: AuthorType
+    });
+
+    const VotesConnection = connectionDefinitions({
+        name: "Votes",
+        nodeType: VotesType
     });
 
     return new GraphQLSchema({

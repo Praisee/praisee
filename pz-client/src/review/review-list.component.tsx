@@ -9,35 +9,38 @@ export class ReviewListComponent extends Component<IReviewListProps, any> {
     };
 
     render() {
-        const {reviews} = this.props;
+        const {reviews} = this.props.viewer;
         return (
             <div className="review-list">
-                {reviews.map(reviewId => <Review itemId={reviewId} />) }
+                { reviews.map(review =>
+                    <Review key={review.id} review={review} />
+                ) }
             </div>
         );
     }
 }
 
 interface IReviewListProps {
-    reviews: Number[]
+    viewer: any;
 }
 
 //https://facebook.github.io/react/blog/2015/03/19/building-the-facebook-news-feed-with-relay.html
 export default Relay.createContainer(ReviewListComponent, {
     initialVariables: {
-        count: 3                                /* default to 3 reviews */
+        limit: 3                                /* default to 3 reviews */
     },
     fragments: {
         viewer: () => Relay.QL`
-      fragment on Viewer {
-        reviews(first: $count) {
-          edges {
-            node {
-              ${Review.getFragment('review')}
+            fragment on Viewer {
+                reviewConnection(first: $limit) {
+                    edges {
+                        node {
+                            id,
+                            ${Review.getFragment('review')}
+                        }
+                    }
+                }
             }
-          }
-        }
-      }
-    `,
+        `
     }
 });
