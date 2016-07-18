@@ -15,14 +15,13 @@ export class ReviewComponent extends Component<IReviewProps, any> {
     };
 
     render() {
-        const {dateCreated, review} = this.props;
+        const {review} = this.props;
         
         return this.schemaInjector.inject(
             <div className="review">
-                <DateDisplay date={dateCreated} type="date-published" />
-                <span className="name">{review.name}</span>
-                <p>{review.body}</p>
-                {/*<CommunityItemRating id={review.id} />*/}
+                <h2 className="name">{review.summary}</h2>
+                <DateDisplay date={review.createdAt} type="date-published" />
+                <p className="review-body">{review.body}</p>
             </div>
         );
     }
@@ -30,7 +29,7 @@ export class ReviewComponent extends Component<IReviewProps, any> {
 
 interface IReviewProps {
     review: IReviewInstance;
-    dateCreated: Date;
+    createdAt: string;
 }
 
 export default Relay.createContainer(ReviewComponent, {
@@ -40,7 +39,7 @@ export default Relay.createContainer(ReviewComponent, {
                 id,
                 summary,
                 body,
-                dateCreated
+                createdAt
             }
         `
     }

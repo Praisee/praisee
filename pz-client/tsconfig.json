@@ -4,6 +4,7 @@
         "target": "es2015",
         "moduleResolution": "node",
         "allowJs": true,
+        "allowSyntheticDefaultImports": true,
         "jsx": "react"
     },
     "exclude": [

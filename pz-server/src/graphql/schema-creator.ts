@@ -186,8 +186,8 @@ export default function createSchema(repositoryAuthorizers: IAppRepositoryAuthor
                 type: GraphQLString
             },
 
-            dateCreated: {
-                type: GraphQLInt
+            createdAt: {
+                type: GraphQLString
             }
         }),
 
@@ -212,8 +212,8 @@ export default function createSchema(repositoryAuthorizers: IAppRepositoryAuthor
                 type: GraphQLString
             },
 
-            dateCreated: {
-                type: GraphQLInt
+            createdAt: {
+                type: GraphQLString
             }
         }),
 

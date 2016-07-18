@@ -16,7 +16,9 @@ export interface ICommunityItem extends IPersistedModel, ISluggable {
 export interface ICommunityItemInstance extends IPersistedModelInstance, ISluggableInstance {
     id: number
     summary: string,
-    body: string
+    body: string,
+    createdAt: string,
+    updatedAt: string
 }
 
 module.exports = function (CommunityItem: ICommunityItem) {

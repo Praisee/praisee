@@ -2,16 +2,16 @@ import {Component} from 'react';
 import * as React from 'react';
 import * as Relay from 'react-relay';
 import {SchemaInjector, ISchemaType} from 'pz-client/src/support/schema-injector';
-import * as moment from 'moment';
+var moment = require('moment'); //TODO: Figure out why momentJS doesnt work with import statement
 
 export class DateDisplay extends Component<IDateDisplayProps, any>{
     schemaInjector: SchemaInjector;
-    moment: moment.Moment;
+    moment;
 
     constructor(props, context) {
         super(props, context);
         this.schemaInjector = new SchemaInjector(dateSchema);
-        this.moment = moment(this.props.date);
+        this.moment = moment(props.date);
     }
 
     render() {
@@ -19,16 +19,15 @@ export class DateDisplay extends Component<IDateDisplayProps, any>{
 
         return this.schemaInjector.inject(
             <div className="date">
-                <meta content={this.moment.format("CCYY-MM-DDThh:mm:ss")} className={type}>
+                <meta content={this.moment.format("YYYY-MM-DDThh:mm:ss")} className={type} />
                 {this.moment.format("LL")}
-                </meta>
             </div>
         );
     }
 }
 
 export interface IDateDisplayProps {
-    date: Date,
+    date: string | Date,
     type: DateType
 }
 

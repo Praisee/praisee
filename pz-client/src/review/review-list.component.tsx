@@ -9,11 +9,11 @@ export class ReviewListComponent extends Component<IReviewListProps, any> {
     };
 
     render() {
-        const {reviews} = this.props.viewer;
+        const edges = this.props.viewer.reviewConnection.edges;
         return (
             <div className="review-list">
-                { reviews.map(review =>
-                    <Review key={review.id} review={review} />
+                { edges.map(edge =>
+                    <Review key={edge.node.id} review={edge.node} />
                 ) }
             </div>
         );
@@ -27,7 +27,7 @@ interface IReviewListProps {
 //https://facebook.github.io/react/blog/2015/03/19/building-the-facebook-news-feed-with-relay.html
 export default Relay.createContainer(ReviewListComponent, {
     initialVariables: {
-        limit: 3                                /* default to 3 reviews */
+        limit: 3
     },
     fragments: {
         viewer: () => Relay.QL`

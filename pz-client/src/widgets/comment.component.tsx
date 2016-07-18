@@ -13,11 +13,11 @@ class Comment extends Component<ICommentProps, any>{
     }
 
     render() {
-        const {text, upVotes, downVotes, dateCreated} = this.props;
+        const {text, upVotes, downVotes, createdAt} = this.props;
 
         return this.schemaInjector.inject(
             <div className="comment">
-                <DateDisplay date={dateCreated} type="date-created" />
+                <DateDisplay date={createdAt} type="date-created" />
                 <p className="text">{text}</p>
                 <p>
                     <span className="upvote-count">{upVotes}</span>/5
@@ -33,7 +33,7 @@ export default Relay.createContainer(Comment, {
         votes: () => Relay.QL`
             fragment on Comment {
                 text,
-                dateCreated,
+                createdAt,
                 upVotes,
                 downVotes
             }
@@ -46,7 +46,7 @@ export interface ICommentProps {
     commentId: number,
     upVotes: number,
     downVotes: number,
-    dateCreated: Date
+    createdAt: string
 }
 
 var commentSchema: ISchemaType = {
