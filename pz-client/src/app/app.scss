@@ -1,10 +1,16 @@
 @import 'variables';
-@import '../../../node_modules/bootstrap/scss/bootstrap-reboot';
 @import 'bootstrap';
+@import 'layout/app-layout';
 @import '../search/site-search';
 
-.app-namespace {
-    @import '../topic/topic';
+@import '../home/home';
+@import '../topic/topic';
 
-    @extend %site-search;
+.app-namespace {
+    @extend %bootstrap;
+
+    & > { @include app-layout(); }
+
+    @include home-namespace();
+    @include topic-namespace();
 }

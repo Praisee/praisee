@@ -1,9 +1,9 @@
 @import 'variables';
 @import '../../../node_modules/bootstrap/scss/mixins';
+@import '../../../node_modules/bootstrap/scss/bootstrap-reboot';
 
 %bootstrap {
     // Core CSS
-    @import '../../../node_modules/bootstrap/scss/reboot';
     @import '../../../node_modules/bootstrap/scss/type';
     //@import '../../../node_modules/bootstrap/scss/images';
     //@import '../../../node_modules/bootstrap/scss/code';
@@ -25,7 +25,7 @@
     //@import '../../../node_modules/bootstrap/scss/pagination';
     //@import '../../../node_modules/bootstrap/scss/pager';
     //@import '../../../node_modules/bootstrap/scss/labels';
-    //@import '../../../node_modules/bootstrap/scss/jumbotron';
+    @import '../../../node_modules/bootstrap/scss/jumbotron';
     @import '../../../node_modules/bootstrap/scss/alert';
     //@import '../../../node_modules/bootstrap/scss/progress';
     //@import '../../../node_modules/bootstrap/scss/media';

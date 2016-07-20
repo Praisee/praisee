@@ -1,12 +1,9 @@
-@import '../app/bootstrap';
-
-%site-search {
+@mixin site-search {
     .site-search {
-        @extend %bootstrap;
-
         position: relative;
 
         .search-input {
+            @extend .form-control;
             width: 100%;
         }
 
@@ -17,15 +14,14 @@
 
         .suggestion {
             @extend .dropdown-item;
+            cursor: pointer;
         }
 
         .suggestion-focused,
         .suggestion:hover,
         .suggestion:active,
         .suggestion:focus {
-            &, .suggestion-link {
-                @extend .dropdown-item.active;
-            }
+            @extend .dropdown-item.active;
         }
     }
 }

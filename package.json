@@ -30,6 +30,7 @@
     "body-parser": "^1.15.2",
     "bootstrap": "twbs/bootstrap#v4.0.0-alpha.2",
     "browserify": "^13.0.0",
+    "classnames": "^2.2.5",
     "compression": "^1.0.3",
     "consolidate": "^0.14.1",
     "cors": "^2.5.2",

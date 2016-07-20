@@ -31,6 +31,16 @@ class SiteSearch extends Component<ISiteSearchProps, any> {
         router: React.PropTypes.object.isRequired
     };
 
+    context: any;
+    static contextTypes = {
+        // TODO: This is a temporary hack to get the router location object
+        // TODO: It is a deprecated method and will be fixed with v3.0 withRouter HOC
+        // TODO: See https://github.com/reactjs/react-router/pull/3444
+        location: React.PropTypes.object
+    };
+    
+    private _hasUnmounted = false;
+
     constructor() {
         super();
 
@@ -66,6 +76,16 @@ class SiteSearch extends Component<ISiteSearchProps, any> {
             </div>
         );
     }
+    
+    componentDidMount() {
+        this.setState({
+            value: this._getLastSelectedSuggestionValue()
+        });
+    }
+    
+    componentWillUnmount() {
+        this._hasUnmounted = true;
+    }
 
     _updateValue(_, { newValue }) {
         this.setState({
@@ -75,6 +95,10 @@ class SiteSearch extends Component<ISiteSearchProps, any> {
 
     _onSuggestionsUpdateRequested({ value }) {
         this.search.getSuggestions(value).then(suggestions => {
+            if (this._hasUnmounted) {
+                return;
+            }
+            
             this.setState({suggestions});
         });
     }
@@ -82,17 +106,30 @@ class SiteSearch extends Component<ISiteSearchProps, any> {
     _getSuggestionValue(suggestion) {
         return suggestion.title;
     }
+    
+    _getLastSelectedSuggestionValue() {
+        const location = this.context && this.context.location;
+        
+        if (!location || !location.state || !location.state._appSiteSearchSuggestion) {
+            return '';
+        }
+        
+        return location.state._appSiteSearchSuggestion.title || '';
+    }
 
     _renderSuggestion(suggestion: ISearchSuggestionResult) {
         return (
-            <Link to={suggestion.routePath} className="suggestion-link">
+            <span className="suggestion-link">
                 {suggestion.title}
-            </Link>
+            </span>
         );
     }
     
     _goToSuggestion(_, { suggestion }) {
-        this.props.router.push(suggestion.routePath);
+        this.props.router.push({
+            pathname: suggestion.routePath,
+            state: {_appSiteSearchSuggestion: suggestion}
+        });
     }
 }
 

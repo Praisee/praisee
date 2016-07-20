@@ -1,0 +1,33 @@
+@mixin home-namespace {
+    .home-namespace {
+        & > .app-header {
+            @include app-header();
+
+            .app-branding, .app-search {
+                display: none;
+            }
+        }
+
+        .primary-content {
+            @extend .jumbotron;
+            @extend .jumbotron-fluid;
+            @include site-search();
+        }
+
+        .primary-content-container {
+            @include make-container();
+            @include make-container-max-widths();
+        }
+
+        .branding-large {
+            @extend .display-3;
+            text-align: center;
+            margin-bottom: 1rem;
+        }
+
+        .temporary-content {
+            @include make-container();
+            @include make-container-max-widths();
+        }
+    }
+}

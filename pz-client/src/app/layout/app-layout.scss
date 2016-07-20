@@ -1,0 +1,50 @@
+@mixin app-header {
+    @include make-row();
+    padding-top: 0.8rem;
+    padding-bottom: 0.8rem;
+
+    .app-layout-container {
+        @include make-container();
+        @include make-container-max-widths();
+    }
+
+    .app-branding {
+        @include make-col();
+        @include make-col-span(2);
+    }
+
+    .app-search {
+        @include make-col();
+        @include make-col-span(7);
+        @include site-search();
+    }
+
+    .app-controls {
+        @include pull-right();
+
+        margin-left: auto;
+    }
+
+    .log-in {
+        @extend .btn;
+        @extend .btn-primary;
+    }
+}
+
+@mixin app-layout {
+    .app-layout {
+        @include make-container();
+
+        .app-layout-container {
+            @include make-container();
+        }
+
+        .app-header, .app-content, .app-footer {
+            @include make-row();
+        }
+
+        .app-header {
+            @include app-header();
+        }
+    }
+}

@@ -1,8 +1,6 @@
 import * as React from 'react';
-import ValidationMap = __React.ValidationMap;
-import SiteSearch from 'pz-client/src/search/site-search.component';
 
-export default class AppController extends React.Component<any, any> {
+export default class App extends React.Component<any, any> {
     //set context stuff here
     
     constructor(props?, context?) {
@@ -12,8 +10,6 @@ export default class AppController extends React.Component<any, any> {
     render() {
         return (
             <div className="app-namespace">
-                <SiteSearch />
-                
                 {this.props.children}
             </div>
         );
