@@ -49,7 +49,10 @@
             "required": false,
             "default": false,
             "description": "Whether or not the topic has been verified by a moderator yet"
-        }
+        },
+        
+        "createdAt": { "type": "date" },
+        "updatedAt": { "type": "date" }
     },
     "validations": [],
     "relations": {},

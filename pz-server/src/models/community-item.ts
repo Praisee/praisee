@@ -17,8 +17,8 @@ export interface ICommunityItemInstance extends IPersistedModelInstance, ISlugga
     id: number
     summary: string,
     body: string,
-    createdAt: string,
-    updatedAt: string
+    createdAt: Date,
+    updatedAt: Date
 }
 
 module.exports = function (CommunityItem: ICommunityItem) {

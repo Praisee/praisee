@@ -77,15 +77,12 @@ export default function createSchema(repositoryAuthorizers: IAppRepositoryAuthor
                 resolve: (_, args) => {
                     const Review: IReview = app.models.Review;
 
-                    return connectionFromPromisedArray(
-                        promisify(Review.find, Review)(
-                            {
-                                //the +1 allows the hasNextPage argument to return true if there is more content
-                                limit: args.first + 1,
-                                skip: args.after
-                            }),
-                        args
-                    );
+                    return connectionFromPromisedArray(promisify(Review.find, Review)(
+                        {
+                            //the +1 allows the hasNextPage argument to return true if there is more content
+                            limit: args.first + 1,
+                            skip: args.after
+                        }), args);
                 }
             },
             commentConnection: {

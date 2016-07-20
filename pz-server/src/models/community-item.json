@@ -27,7 +27,10 @@
             "postgresql": {
                 "dataType": "text"
             }
-        }
+        },
+
+        "createdAt": { "type": "date" },
+        "updatedAt": { "type": "date" }
     },
     "validations": [],
     "relations": {
