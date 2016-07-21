@@ -24,6 +24,16 @@ const routePaths = {
             routePaths.index(), 'comparison', urlSlug
         )
     },
+    
+    user: {
+        signIn: () => path.join(
+            routePaths.index(), 'user/sign-in'
+        ),
+
+        signUp: () => path.join(
+            routePaths.index(), 'user/sign-up'
+        )
+    }
 };
 
 export default routePaths;

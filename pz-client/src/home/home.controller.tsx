@@ -7,22 +7,24 @@ import Footer from 'pz-client/src/app/layout/footer.component';
 
 export interface IHomeControllerProps {
     params: any,
-    
+
     viewer: {
         topics: Array<any>
-    }
+    },
+
+    currentUser: any
 }
 
-export class HomeController extends Component<IHomeControllerProps, any> {
+export class Home extends Component<IHomeControllerProps, any> {
     state = {
         clientLoaded: false
     };
-    
+
     render() {
         return (
             <div className="home-namespace">
-                <Header />
-                
+                <Header currentUser={this.props.currentUser} />
+
                 <div className="primary-content">
                     <div className="primary-content-container">
                         <h1 className="branding-large">
@@ -32,7 +34,7 @@ export class HomeController extends Component<IHomeControllerProps, any> {
                         <SiteSearch />
                     </div>
                 </div>
-                
+
                 <div className="temporary-content">
                     <p>Topics loaded: {this.props.viewer.topics.length}</p>
                     <p>Client loaded: {this.state.clientLoaded ? 'true' : 'false'}</p>
@@ -42,13 +44,13 @@ export class HomeController extends Component<IHomeControllerProps, any> {
             </div>
         );
     }
-    
+
     componentDidMount() {
         this.setState({clientLoaded: true})
     }
 }
 
-export default Relay.createContainer(HomeController, {
+export default Relay.createContainer(Home, {
     fragments: {
         viewer: () => Relay.QL`
             fragment on Viewer {
@@ -56,6 +58,12 @@ export default Relay.createContainer(HomeController, {
                     id,
                     name
                 }
+            }
+        `,
+
+        currentUser: () => Relay.QL`
+            fragment on User {
+                ${Header.getFragment('currentUser')}
             }
         `
     }

@@ -25,9 +25,14 @@
         margin-left: auto;
     }
 
-    .log-in {
+    .sign-in {
         @extend .btn;
-        @extend .btn-primary;
+        @extend .btn-primary-outline;
+        @extend .btn-sm;
+    }
+
+    .current-user {
+        font-size: 0.8rem;
     }
 }
 

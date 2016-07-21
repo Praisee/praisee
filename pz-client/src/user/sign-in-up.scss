@@ -1,0 +1,15 @@
+@mixin sign-in-up-namespace {
+    .sign-in-up-namespace {
+        @include make-container();
+        @include make-container-max-widths();
+
+        input[type=submit] {
+            @extend .btn;
+            @extend .btn-primary;
+        }
+
+        p {
+            margin-top: 1.5rem;
+        }
+    }
+}

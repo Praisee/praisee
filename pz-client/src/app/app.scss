@@ -5,6 +5,7 @@
 
 @import '../home/home';
 @import '../topic/topic';
+@import '../user/sign-in-up';
 
 .app-namespace {
     @extend %bootstrap;
@@ -13,4 +14,6 @@
 
     @include home-namespace();
     @include topic-namespace();
+    @include topic-namespace();
+    @include sign-in-up-namespace();
 }

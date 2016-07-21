@@ -40,8 +40,7 @@ createServerTestFor('authentication', function () {
 
     describe('as a visitor', () => {
         it('does not give a user', async () => {
-            const response = await lookupUser();
-            const currentUser = response.body.data.viewer.currentUser;
+            const currentUser = await lookupUser();
             expect(currentUser).to.be.null;
         });
     });
@@ -50,8 +49,7 @@ createServerTestFor('authentication', function () {
         it('gives me my user info', async () => {
             await registerUser('foobar@example.com', 'foobar');
             await authenticateUser('foobar@example.com', 'foobar');
-            const response = await lookupUser();
-            const currentUser = response.body.data.viewer.currentUser;
+            const currentUser = await lookupUser();
 
             expect(currentUser.email).to.equal('foobar@example.com');
         });
@@ -78,19 +76,19 @@ createServerTestFor('authentication', function () {
     }
 
     async function lookupUser() {
-        return await requestWithSession
+        const response = await requestWithSession
             .post('/i/graphql')
             .send({
                 query: `
                     query {
-                        viewer {
-                            currentUser {
-                                email
-                            }
+                        currentUser {
+                            email
                         }
                     }
                 `
             })
             .expect(200);
+
+        return response.body.data.currentUser;
     }
 });

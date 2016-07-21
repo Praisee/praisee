@@ -52,16 +52,6 @@ export default function createSchema(app: IApp) {
         name: 'Viewer',
 
         fields: () => ({
-            currentUser: {
-                type: UserType,
-                resolve: resolveWithSession((_, __, {user}) => {
-                    if (!user) {
-                        return null;
-                    }
-                    
-                    return promisify(app.models.User.findById, app.models.User)(user.id);
-                })
-            },
             
             topics: {
                 type: new GraphQLList(TopicType),
@@ -130,6 +120,17 @@ export default function createSchema(app: IApp) {
                 viewer: {
                     type: ViewerType,
                     resolve: () => ({})
+                },
+                
+                currentUser: {
+                    type: UserType,
+                    resolve: resolveWithSession((_, __, {user}) => {
+                        if (!user) {
+                            return null;
+                        }
+
+                        return promisify(app.models.User.findById, app.models.User)(user.id);
+                    })
                 }
 
             })
