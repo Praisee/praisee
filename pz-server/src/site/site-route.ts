@@ -11,12 +11,18 @@ import * as Relay from 'react-relay';
 import IsomorphicRouter from 'isomorphic-relay-router';
 import IsomorphicContext from 'pz-client/src/app/isomorphic-context.component';
 
-export function renderApp(response, graphqlNetworkLayer, renderProps, next) {
+const GRAPHQL_URL = `http://localhost:3000/i/graphql`; // TODO: Unhardcode this
+
+export function renderApp(request, response, renderProps, next) {
+    const graphqlNetworkLayer = new Relay.DefaultNetworkLayer(GRAPHQL_URL, {
+        headers: request.headers
+    });
+
     (Promise.resolve()
         .then(() => {
             return IsomorphicRouter.prepareData(renderProps, graphqlNetworkLayer);
         })
-            
+
         .then(({data, props}) => {
             const router = IsomorphicRouter.render(props);
 
@@ -29,31 +35,28 @@ export function renderApp(response, graphqlNetworkLayer, renderProps, next) {
                 content: ReactDomServer.renderToString(isomorphicContext)
             });
         })
-        
+
         .catch((error) => next(error))
     );
 }
 
 module.exports = function (app: IApp) {
-    const GRAPHQL_URL = `http://localhost:3000/i/graphql`; // TODO: Unhardcode this
-    const graphqlNetworkLayer = new Relay.DefaultNetworkLayer(GRAPHQL_URL);
-    
     app.get('*', function (request, response, next) {
         if (request.path.match(/^\/?.\//i)) {
             next(); // Single letter routes are reserved
             return;
         }
-        
+
         match({ routes, location: request.url }, (error, redirectLocation, renderProps: any) => {
             if (error) {
                 next(error);
-                
+
             } else if (redirectLocation) {
                 response.redirect(302, redirectLocation.pathname + redirectLocation.search)
-                
+
             } else if (renderProps) {
-                renderApp(response, graphqlNetworkLayer, renderProps, next);
-                
+                renderApp(request, response, renderProps, next);
+
             } else {
                 next();
             }
