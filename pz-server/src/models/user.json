@@ -4,7 +4,14 @@
     "emailVerificationRequired": false,
     "mixins": {
         "Sluggable" : {
-            "property": "username"
+            "property": "displayName"
+        }
+    },
+    "properties": {
+        "displayName": {
+            "type": "string",
+            "required": true,
+            "description": "The displayed name of the user"
         }
     },
     "acls": [
