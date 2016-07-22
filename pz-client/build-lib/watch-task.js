@@ -10,7 +10,8 @@ module.exports = function(gulp) {
         'src/**/*.ts',
         'src/**/*.tsx',
         'src/**/*.js',
-        'src/**/*.json'
+        'src/**/*.json',
+        'test/**/*',
     ];
     
     var watchSourceFilesAndSchema = watchSourceFiles.concat('build/src/relay/schema.json');

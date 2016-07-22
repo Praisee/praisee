@@ -1,12 +1,13 @@
 import * as React from 'react';
 import {Component, ReactNode} from 'react';
 
-export class SchemaInjector {
+export default class SchemaInjector {
     constructor(private schema: {}) { }
 
     inject(baseNode: any) {
-        let modifiedChildren = React.Children.map(baseNode.props.children, (element) => this._modifyElement(element));
-        return React.cloneElement(baseNode, {}, modifiedChildren);
+        let modifiedBase = this._modifyElement(baseNode);
+        let modifiedChildren = React.Children.map(modifiedBase.props.children, (element) => this._modifyElement(element));
+        return React.cloneElement(modifiedBase, {}, modifiedChildren);
     }
 
     private _modifyElement(element, index = null) {
@@ -17,7 +18,7 @@ export class SchemaInjector {
                 if (element.props.className == key) {
                     props = this.schema[key];
                     if (index != null) {
-                        props.key = "__review" + index;
+                        props.key = "__schema" + index;
                     }
                     if (this.schema[key].itemScope) {
                         props.itemScope = "itemScope";

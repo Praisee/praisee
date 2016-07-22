@@ -1,7 +1,7 @@
 import {Component} from 'react';
 import * as React from 'react';
 import * as Relay from 'react-relay';
-import {SchemaInjector, ISchemaType} from 'pz-client/src/support/schema-injector';
+import SchemaInjector, {ISchemaType} from 'pz-client/src/support/schema-injector';
 import {IReviewInstance} from 'pz-server/src/models/review';
 import CommunityItemRating from 'pz-client/src/widgets/community-item-rating.component';
 import { DateDisplay } from 'pz-client/src/widgets/date-display.component';

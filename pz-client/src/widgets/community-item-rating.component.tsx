@@ -1,7 +1,7 @@
 import {Component} from 'react';
 import * as React from 'react';
 import * as Relay from 'react-relay';
-import {SchemaInjector, ISchemaType} from 'pz-client/src/support/schema-injector';
+import SchemaInjector, {ISchemaType} from 'pz-client/src/support/schema-injector';
 
 class CommunityItemRating extends Component<ICommunityItemRatingProps, any>{
     schemaInjector: SchemaInjector;

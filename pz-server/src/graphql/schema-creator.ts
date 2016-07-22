@@ -1,5 +1,6 @@
 import promisify from 'pz-support/src/promisify';
 import * as graphqlRelay from 'graphql-relay';
+import {ICommunityItem} from 'pz-server/src/models/community-item';
 import {ITopic} from 'pz-server/src/models/topic';
 import {IReview} from 'pz-server/src/models/review';
 import * as graphql from 'graphql';
@@ -70,6 +71,23 @@ export default function createSchema(repositoryAuthorizers: IAppRepositoryAuthor
             topics: {
                 type: new GraphQLList(TopicType),
                 resolve: (_, __, {user}) => topics.as(user).findAll()
+            },
+            communityItemConnection: {
+                type: CommunityItemConnection.connectionType,
+                args: connectionArgs,
+                resolve: (_, args) => {
+                    const Review: IReview = app.models.Review;
+                    const CommunityItem: ICommunityItem = app.models.CommunityItem;
+
+                    const reviewPromise = promisify(Review.find, Review)({});
+
+                    return connectionFromPromisedArray(promisify(Review.find, Review)(
+                        {
+                            //the +1 allows the hasNextPage argument to return true if there is more content
+                            limit: args.first + 1,
+                            skip: args.after
+                        }), args);
+                }
             },
             reviewConnection: {
                 type: ReviewConnection.connectionType,
@@ -257,6 +275,32 @@ export default function createSchema(repositoryAuthorizers: IAppRepositoryAuthor
         interfaces: [nodeInterface]
     });
 
+    const CommunityItemType = new GraphQLObjectType({
+        name: 'CommunityItem',
+
+        fields: () => ({
+            id: globalIdField('CommunityItem'),
+
+            summary: {
+                type: GraphQLString
+            },
+
+            body: {
+                type: GraphQLString
+            },
+
+            createdAt: {
+                type: GraphQLString
+            },
+
+            udpdatedAt: {
+                type: GraphQLString
+            }
+        }),
+
+        interfaces: [nodeInterface]
+    });
+
     const ReviewConnection = connectionDefinitions({
         name: "Review",
         nodeType: ReviewType
@@ -275,6 +319,11 @@ export default function createSchema(repositoryAuthorizers: IAppRepositoryAuthor
     const VotesConnection = connectionDefinitions({
         name: "Votes",
         nodeType: VotesType
+    });
+
+    const CommunityItemConnection = connectionDefinitions({
+        name: "CommunityItem",
+        nodeType: CommunityItemType
     });
 
     return new GraphQLSchema({

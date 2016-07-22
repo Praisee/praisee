@@ -14,7 +14,8 @@
     "serverSmokeTests": "mocha --require source-map-support/register --es_staging --harmony_tostring --harmony_array_includes --harmony_rest_parameters --harmony_modules --harmony_regexps --harmony_proxies --harmony_unicode_regexps --harmony_reflect --harmony_destructuring --harmony_new_target --recursive pz-server/build/test/smoke",
     "serverIntegrationTests": "mocha --require source-map-support/register --es_staging --harmony_tostring --harmony_array_includes --harmony_rest_parameters --harmony_modules --harmony_regexps --harmony_proxies --harmony_unicode_regexps --harmony_reflect --harmony_destructuring --harmony_new_target --recursive pz-server/build/test/integration",
     "serverIntegTests": "npm run serverIntegrationTests",
-    "serverUnitTests": "mocha --require source-map-support/register --es_staging --harmony_tostring --harmony_array_includes --harmony_rest_parameters --harmony_modules --harmony_regexps --harmony_proxies --harmony_unicode_regexps --harmony_reflect --harmony_destructuring --harmony_new_target --recursive pz-server/build/test/unit"
+    "serverUnitTests": "mocha --require source-map-support/register --es_staging --harmony_tostring --harmony_array_includes --harmony_rest_parameters --harmony_modules --harmony_regexps --harmony_proxies --harmony_unicode_regexps --harmony_reflect --harmony_destructuring --harmony_new_target --recursive pz-server/build/test/unit",
+    "clientIntegTests": "mocha --require source-map-support/register --es_staging --harmony_tostring --harmony_array_includes --harmony_rest_parameters --harmony_modules --harmony_regexps --harmony_proxies --harmony_unicode_regexps --harmony_reflect --harmony_destructuring --harmony_new_target --recursive pz-client/build/test/integration"
   },
   "dependencies": {
     "autoprefixer": "^6.3.6",

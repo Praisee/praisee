@@ -1,7 +1,7 @@
 import {Component} from 'react';
 import * as React from 'react';
 import * as Relay from 'react-relay';
-import {SchemaInjector, ISchemaType} from 'pz-client/src/support/schema-injector';
+import SchemaInjector, {ISchemaType} from 'pz-client/src/support/schema-injector';
 var moment = require('moment'); //TODO: Figure out why momentJS doesnt work with import statement
 
 export class DateDisplay extends Component<IDateDisplayProps, any>{
