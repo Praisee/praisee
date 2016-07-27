@@ -19,6 +19,7 @@
   "dependencies": {
     "autoprefixer": "^6.3.6",
     "babel-plugin-transform-async-to-generator": "^6.7.4",
+    "babel-plugin-transform-es2015-destructuring": "^6.9.0",
     "babel-plugin-transform-es2015-modules-commonjs": "^6.7.4",
     "babel-plugin-transform-es2015-object-super": "^6.6.5",
     "babel-plugin-transform-es2015-parameters": "^6.7.0",
@@ -39,6 +40,7 @@
     "express-graphql": "^0.5.3",
     "express-session": "^1.13.0",
     "graphql": "^0.6.0",
+    "graphql-errors": "^2.1.0",
     "graphql-relay": "^0.4.2",
     "gulp": "^3.9.1",
     "gulp-babel": "^6.1.2",
@@ -81,6 +83,7 @@
     "serve-favicon": "^2.0.1",
     "stream-combiner": "^0.2.2",
     "supertest-as-promised": "^3.1.0",
+    "typescript": "^1.8.10",
     "vinyl-buffer": "^1.0.0",
     "vinyl-source-stream": "^1.1.0"
   },

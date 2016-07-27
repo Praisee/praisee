@@ -8,5 +8,7 @@ interface IServices {
     searchClient?: any
     searchUpdater?: any
     remoteApp?: IApp
+    repositories?: any
+    repositoryAuthorizers?: any
 }
 

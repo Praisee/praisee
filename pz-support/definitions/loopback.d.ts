@@ -45,7 +45,7 @@ declare interface IModel extends IValidatable {
     modelName: string
     dataSource: IDataSource
     app?: IApp
-    
+
     sharedClass: ISharedClassInstance
     remoteMethod(name: string, options: any)
     disableRemoteMethod(methodName: string, isStatic: boolean)
@@ -91,7 +91,7 @@ declare interface IPersistedModel extends IModel {
     create(data: any, done?: ICallback)
 
     upsert(data: any, done: (error: TError, model: IPersistedModelInstance) => void)
-    
+
     updateAll(data: any, done?: ICallback)
     updateAll(where: any, data: any, done?: ICallback)
 
@@ -117,6 +117,7 @@ declare interface IPersistedModel extends IModel {
 // http://apidocs.strongloop.com/loopback/#persistedmodel
 declare interface IPersistedModelInstance extends IModelInstance {
     id: any
+    __data?: any // Don't use this, unless you're an elite hacker
 
     save(done?: ICallback)
     save(options: {validate?: boolean, throws?: boolean}, done?: ICallback)
@@ -258,7 +259,7 @@ interface ISharedClassInstance {
     find(methodName: string, isStatic?: boolean): ISharedMethodInstance
     getKeyFromMethodNameAndTarget(methodName: string, isStatic: boolean)
     methods(options?: {}): Array<ISharedMethodInstance>
-    
+
     resolve(resolver:
         (define:
             (name: string, options: {}, method:

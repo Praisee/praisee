@@ -1,8 +1,9 @@
 import promisify from 'pz-support/src/promisify';
-import {resolveWithAppAndSession} from 'pz-server/src/graphql/resolver-middlewares';
 import * as graphqlRelay from 'graphql-relay';
 
 import * as graphql from 'graphql';
+import {IAppRepositoryAuthorizers} from 'pz-server/src/app/repositories';
+import {IRepositoryRecord} from 'pz-server/src/support/repository';
 
 var {
     GraphQLBoolean,
@@ -15,28 +16,27 @@ var {
     GraphQLString
 } = graphql;
 
-export default function createSchema(app: IApp) {
-    const resolveWithSession = (resolver) => {
-        return resolveWithAppAndSession(app, 'pz-remote', resolver);
-    };
-    
-    const idResolver = (globalId) => {
+export default function createSchema(repositoryAuthorizers: IAppRepositoryAuthorizers) {
+    const {users, topics} = repositoryAuthorizers;
+
+    const idResolver = (globalId, {user}) => {
         const {type, id} = graphqlRelay.fromGlobalId(globalId);
+        const lowercaseType = type[0].toLowerCase() + type.slice(1);
 
-        const Model = app.models[type];
+        const repositoryAuthorizer = repositoryAuthorizers[lowercaseType];
 
-        if (!Model) {
+        if (!repositoryAuthorizer) {
             return null;
         }
 
-        return promisify(Model.findOne, Model)(id);
+        return repositoryAuthorizer.as(user).findById(id);
     };
 
-    const typeResolver = (model) => {
-        switch (model.modelName) {
+    const typeResolver = (repositoryRecord: IRepositoryRecord) => {
+        switch (repositoryRecord.recordType) {
             case 'User':
                 return UserType;
-            
+
             case 'Topic':
                 return TopicType;
         }
@@ -52,17 +52,17 @@ export default function createSchema(app: IApp) {
         name: 'Viewer',
 
         fields: () => ({
-            
+
             topics: {
                 type: new GraphQLList(TopicType),
-                resolve: () => promisify(app.models.Topic.find, app.models.Topic)(),
+                resolve: (_, __, {user}) => topics.as(user).findAll()
             }
         })
     });
-    
+
     const UserType = new GraphQLObjectType({
         name: 'User',
-        
+
         fields: () => ({
             id: graphqlRelay.globalIdField('User'),
 
@@ -74,7 +74,7 @@ export default function createSchema(app: IApp) {
                 type: GraphQLString
             }
         }),
-        
+
         interfaces: [nodeInterface]
     });
 
@@ -121,16 +121,12 @@ export default function createSchema(app: IApp) {
                     type: ViewerType,
                     resolve: () => ({})
                 },
-                
+
                 currentUser: {
                     type: UserType,
-                    resolve: resolveWithSession((_, __, {user}) => {
-                        if (!user) {
-                            return null;
-                        }
-
-                        return promisify(app.models.User.findById, app.models.User)(user.id);
-                    })
+                    resolve: (_, __, {user}) => {
+                        return users.as(user).findCurrentUser();
+                    }
                 }
 
             })

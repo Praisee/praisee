@@ -15,7 +15,7 @@ module.exports = function(gulp) {
 
         requireClean('pz-server/build/src/graphql/schema-creator');
         var createSchema = require('pz-server/build/src/graphql/schema-creator').default;
-        
+
         var stream = source(paths.relaySchema());
 
         // Save JSON of full schema introspection for Babel Relay Plugin to use
@@ -25,7 +25,7 @@ module.exports = function(gulp) {
             })
 
             .then(function(app) {
-                return createSchema(app);
+                return createSchema(app.services.repositoryAuthorizers);
             })
 
             .then(function(schema) {
@@ -38,7 +38,7 @@ module.exports = function(gulp) {
                         'ERROR introspecting schema: ',
                         JSON.stringify(result.errors, null, 2)
                     );
-                    
+
                     console.error(result.errors);
 
                 } else {
@@ -47,13 +47,13 @@ module.exports = function(gulp) {
                     );
                 }
             })
-            
+
             .catch(function (error) {
                 console.trace(error);
                 throw error;
             })
         );
-        
+
         return stream.pipe(gulp.dest(function(file) { return file.base }));
     });
 

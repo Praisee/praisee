@@ -1,5 +1,6 @@
 var pzPath = require('pz-support/pz-path');
-var typescript = require('gulp-typescript');
+var typescript = require('typescript');
+var gulpTypescript = require('gulp-typescript');
 var babel = require('gulp-babel');
 var cached = require('gulp-cached');
 var gulpIf = require('gulp-if');
@@ -11,7 +12,12 @@ var sourcemaps = require('gulp-sourcemaps');
 module.exports = function(gulp, module, taskName, dependencies) {
     gulp.task(taskName, dependencies, function() {
         var tsConfig = require(pzPath(module, 'tsconfig.json'));
-        
+        var tsCompilerOptions = tsConfig.compilerOptions;
+
+        var gulpTsOptions = Object.assign({}, tsCompilerOptions, {
+            typescript: typescript
+        });
+
         var transpiledFiles = ['**/*.ts', '**/*.tsx', '**/*.js', '**/*.jsx'];
 
         return gulp
@@ -19,13 +25,13 @@ module.exports = function(gulp, module, taskName, dependencies) {
                 pzPath(module, 'src/**/*'),
                 pzPath(module, 'test/**/*')
             ], {base: pzPath(module)})
-            
+
             .pipe(errorHandler(function () {
                 delete cached.caches[taskName];
             }))
-            
+
             .pipe(gulpIf('!**/*.d.ts', cached(taskName)))
-            
+
             .pipe(gulpPrint(function (filePath) {
                 return 'Building ' + filePath;
             }))
@@ -34,18 +40,18 @@ module.exports = function(gulp, module, taskName, dependencies) {
             .pipe(gulpIf(transpiledFiles, sourcemaps.init()))
 
             // Transpile TypeScript
-            .pipe(gulpIf(['**/*.ts', '**/*.tsx'], typescript(tsConfig.compilerOptions)))
-            
+            .pipe(gulpIf(['**/*.ts', '**/*.tsx'], gulpTypescript(gulpTsOptions)))
+
             // Transpile ES6
             .pipe(gulpIf('**/*.js', babel({resolveModuleSource: moduleResolver})))
-                
+
             // Sourcemaps Output
             .pipe(gulpIf(transpiledFiles, sourcemaps.write({
                 sourceRoot: function(file) {
                     return pzPath(module);
                 }
             })))
-            
+
             .pipe(gulp.dest(pzPath(module, 'build')))
         ;
     });

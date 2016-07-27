@@ -1,9 +1,12 @@
 import createSchema from 'pz-server/src/graphql/schema-creator';
 
 var graphqlServer = require('express-graphql');
+var maskErrors = require('graphql-errors').maskErrors;
 
 module.exports = function startGraphQLServer(app: IApp) {
-    const Schema = createSchema(app.services.remoteApp);
+    let Schema = createSchema(app.services.repositoryAuthorizers);
+
+    maskErrors(Schema);
 
     // Expose a GraphQL endpoint
     app.use('/i/graphql', graphqlServer(request => ({
