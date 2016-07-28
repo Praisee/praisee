@@ -32,20 +32,20 @@ export default (
                 <Route path="user/sign-in" component={SignInController} />
                 <Route path="user/sign-up" component={SignUpController} />
 
-                <Route path="profile/:usernameSlug" component={ProfileController} />
+                <Route path="profile/:urlSlug" component={ProfileController} />
 
-                <Route path="review/:contentTitleSlug" component={CommunityItemController} />
-                <Route path="question/:contentTitleSlug" component={CommunityItemController} />
-                <Route path="how-to/:contentTitleSlug" component={CommunityItemController} />
-                <Route path="comparison/:contentTitleSlug" component={CommunityItemController} />
+                <Route path="review/:urlSlug" component={CommunityItemController} />
+                <Route path="question/:urlSlug" component={CommunityItemController} />
+                <Route path="how-to/:urlSlug" component={CommunityItemController} />
+                <Route path="comparison/:urlSlug" component={CommunityItemController} />
 
-                <Route path="(:topicSlug)-reviews" component={ReviewController} />
-                <Route path="(:topicSlug)-comparisons" component={ComparisonController} />
-                <Route path="(:topicSlug)-questions" component={ComparisonController} />
-                <Route path="(:topicSlug)-how-tos" component={ComparisonController} />
+                <Route path="(:urlSlug)-reviews" component={ReviewController} />
+                <Route path="(:urlSlug)-comparisons" component={ComparisonController} />
+                <Route path="(:urlSlug)-questions" component={ComparisonController} />
+                <Route path="(:urlSlug)-how-tos" component={ComparisonController} />
 
                 <Route
-                    path="(:topicSlug)"
+                    path="(:urlSlug)"
                     component={TopicController}
                     {...mixinRouteQuery(topicQuery)}
                 />

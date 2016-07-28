@@ -8,16 +8,6 @@ export interface IRouteQuery {
     createParams?: (params, location) => {}
 }
 
-export const viewerQuery: IRouteQuery = {
-    queries: {
-        viewer: () => Relay.QL`
-            query {
-                viewer
-            }
-        `
-    }
-};
-
 export var appQuery: IRouteQuery = {
     queries: {
         currentUser: () => Relay.QL`
@@ -48,7 +38,7 @@ export const topicQuery: IRouteQuery = {
     queries: {
         topic: () => Relay.QL`
             query {
-                viewer
+                topic(urlSlug: $urlSlug)
             }
         `
     }

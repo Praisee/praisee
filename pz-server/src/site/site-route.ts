@@ -36,7 +36,13 @@ export function renderApp(request, response, renderProps, next) {
             });
         })
 
-        .catch((error) => next(error))
+        .catch((error) => {
+            if (error.response && error.response.text) {
+                error.response.text().then(console.error);
+            }
+            
+            next(error);
+        })
     );
 }
 
