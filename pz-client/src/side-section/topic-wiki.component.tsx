@@ -1,9 +1,9 @@
 import * as React from 'react';
 import {Component} from 'react';
-import {ITopicInstance} from 'pz-server/src/models/topic';
+import {ITopic} from 'pz-server/src/topics/topics';
 
 interface ITopicWikiProps {
-    topic: ITopicInstance;
+    topic: ITopic;
 }
 
 interface ITopicWikiState {

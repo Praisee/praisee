@@ -47,7 +47,7 @@ export default (
                 <Route
                     path="(:topicSlug)"
                     component={TopicController}
-                    {...mixinRouteQuery(viewerQuery)}
+                    {...mixinRouteQuery(topicQuery)}
                 />
             </Route>
 

@@ -29,6 +29,6 @@ export default class Users implements IUsers {
             return null;
         }
 
-        return createRecordFromLoopback<IUser>('user', result);
+        return createRecordFromLoopback<IUser>('User', result);
     }
 }

@@ -13,7 +13,7 @@ module.exports = function initializeRepositories(app: IApp) {
     const users = new Users(app.models.User);
     const usersAuthorizer = new UsersAuthorizer(users);
 
-    const topics = new Topics(app.models.Topic);
+    const topics = new Topics(app.models.Topic, app.models.UrlSlug);
     const topicsAuthorizer = new TopicsAuthorizer(topics);
 
     const repositories: IAppRepositories = {

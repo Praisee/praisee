@@ -49,7 +49,7 @@ module.exports = function(gulp) {
             })
 
             .catch(function (error) {
-                console.trace(error);
+                console.error(error.stack);
                 throw error;
             })
         );

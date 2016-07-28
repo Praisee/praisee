@@ -1,8 +1,5 @@
 import promisify from 'pz-support/src/promisify';
 import * as graphqlRelay from 'graphql-relay';
-import {ICommunityItem} from 'pz-server/src/models/community-item';
-import {ITopic} from 'pz-server/src/models/topic';
-import {IReview} from 'pz-server/src/models/review';
 import * as graphql from 'graphql';
 import {IAppRepositoryAuthorizers} from 'pz-server/src/app/repositories';
 import {IRepositoryRecord} from 'pz-server/src/support/repository';
@@ -29,7 +26,8 @@ var {
 } = graphql;
 
 export default function createSchema(repositoryAuthorizers: IAppRepositoryAuthorizers) {
-    const {users, topics} = repositoryAuthorizers;
+    const usersAuthorizer  = repositoryAuthorizers.users;
+    const topicsAuthorizer = repositoryAuthorizers.topics;
 
     const idResolver = (globalId, {user}) => {
         const {type, id} = graphqlRelay.fromGlobalId(globalId);
@@ -70,32 +68,16 @@ export default function createSchema(repositoryAuthorizers: IAppRepositoryAuthor
 
             topics: {
                 type: new GraphQLList(TopicType),
-                resolve: (_, __, {user}) => topics.as(user).findAll()
+                resolve: (_, __, {user}) => topicsAuthorizer.as(user).findAll()
             },
             communityItemConnection: {
                 type: CommunityItemConnection.connectionType,
                 args: connectionArgs,
-                resolve: (_, args) => {
-                    const Review: IReview = app.models.Review;
-                    const CommunityItem: ICommunityItem = app.models.CommunityItem;
+                resolve: (_, args, {user}) => {
+                    const repositoryAuthorizer = repositoryAuthorizers['communityItems'];
+                    const CommunityItem = repositoryAuthorizer.as(user);
 
-                    const reviewPromise = promisify(Review.find, Review)({});
-
-                    return connectionFromPromisedArray(promisify(Review.find, Review)(
-                        {
-                            //the +1 allows the hasNextPage argument to return true if there is more content
-                            limit: args.first + 1,
-                            skip: args.after
-                        }), args);
-                }
-            },
-            reviewConnection: {
-                type: ReviewConnection.connectionType,
-                args: connectionArgs,
-                resolve: (_, args) => {
-                    const Review: IReview = app.models.Review;
-
-                    return connectionFromPromisedArray(promisify(Review.find, Review)(
+                    return connectionFromPromisedArray(promisify(CommunityItem.find, CommunityItem)(
                         {
                             //the +1 allows the hasNextPage argument to return true if there is more content
                             limit: args.first + 1,
@@ -127,6 +109,18 @@ export default function createSchema(repositoryAuthorizers: IAppRepositoryAuthor
             },
             votesConnection: {
                 type: VotesConnection.connectionType,
+                args: connectionArgs,
+                resolve: (_, args) => {
+                    return connectionFromPromisedArray(
+                        //TODO: Implment this
+                        promisify(() => { }, {})(),
+                        args
+                    );
+                }
+            },
+
+            reviewConnection: {
+                type: ReviewConnection.connectionType,
                 args: connectionArgs,
                 resolve: (_, args) => {
                     return connectionFromPromisedArray(
@@ -181,6 +175,10 @@ export default function createSchema(repositoryAuthorizers: IAppRepositoryAuthor
 
             isVerified: {
                 type: GraphQLBoolean
+            },
+
+            communityItems: {
+                type: new GraphQLList(CommunityItemType)
             }
         }),
 
@@ -343,7 +341,7 @@ export default function createSchema(repositoryAuthorizers: IAppRepositoryAuthor
                 currentUser: {
                     type: UserType,
                     resolve: (_, __, {user}) => {
-                        return users.as(user).findCurrentUser();
+                        return usersAuthorizer.as(user).findCurrentUser();
                     }
                 },
 
@@ -354,14 +352,14 @@ export default function createSchema(repositoryAuthorizers: IAppRepositoryAuthor
                             type: GraphQLString
                         }
                     },
-                    resolve: resolveWithSession((_, {urlSlug}) => {
-                        const Topic: ITopic = app.models.Topic;
+                    resolve: (_, {urlSlug}, {user}) => {
+                        const topics = topicsAuthorizer.as(user);
 
-                        return promisify(Topic.getByUrlSlugName, Topic)(urlSlug)
+                        return topics.findByUrlSlugName(urlSlug)
                             .catch((err) => {
                                 console.log(err);
                             });
-                    })
+                    }
                 },
 
                 review: {
@@ -371,11 +369,9 @@ export default function createSchema(repositoryAuthorizers: IAppRepositoryAuthor
                             type: GraphQLString
                         }
                     },
-                    resolve: resolveWithSession((_, {urlSlug}) => {
-                        const Review: IReview = app.models.Review;
-
-                        return promisify(Review.getByUrlSlugName, Review)(urlSlug)
-                    })
+                    resolve: (_, {urlSlug}) => {
+                        return {}; //TODO: Implement
+                    }
                 }
             })
         })

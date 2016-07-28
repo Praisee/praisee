@@ -8,7 +8,7 @@ import {ITopics, ITopic} from 'pz-server/src/topics/topics';
 export interface IAuthorizedTopics extends ITopics {
 }
 
-class AuthorizedTopics {
+class AuthorizedTopics implements IAuthorizedTopics {
     private _user: TOptionalUser;
     private _topics: ITopics;
 
@@ -23,6 +23,10 @@ class AuthorizedTopics {
 
     findById(id: number) {
         return this._topics.findById(id);
+    }
+
+    findByUrlSlugName(fullSlug: string){
+        return this._topics.findByUrlSlugName(fullSlug);
     }
 }
 

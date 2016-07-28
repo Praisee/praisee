@@ -1,14 +1,14 @@
 import * as React from 'react';
 import {Component} from 'react';
 import TopicWiki from 'pz-client/src/side-section/topic-wiki.component';
-import {ITopicInstance} from 'pz-server/src/models/topic';
+import {ITopic} from 'pz-server/src/topics/topics';
 
 interface ISideSectionState {
 
 }
 
 interface ISideSectionProps {
-    topic: ITopicInstance;
+    topic: ITopic;
 }
 
 export default class SideSection extends Component<ISideSectionProps, ISideSectionState> {

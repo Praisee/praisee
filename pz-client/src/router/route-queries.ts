@@ -48,7 +48,7 @@ export const topicQuery: IRouteQuery = {
     queries: {
         topic: () => Relay.QL`
             query {
-                topic(urlSlug: $urlSlug)
+                viewer
             }
         `
     }
