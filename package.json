@@ -10,12 +10,20 @@
     "postinstall": "npm run typingsInstall",
     "buildDev": "cd ./pz-builder && npm run buildDev",
     "watch": "cd ./pz-builder && npm run watch",
-    "tests": "mocha --es_staging --harmony_tostring --harmony_array_includes --harmony_rest_parameters --harmony_modules --harmony_regexps --harmony_proxies --harmony_unicode_regexps --harmony_reflect --harmony_destructuring --harmony_new_target --recursive",
-    "serverSmokeTests": "mocha --require source-map-support/register --es_staging --harmony_tostring --harmony_array_includes --harmony_rest_parameters --harmony_modules --harmony_regexps --harmony_proxies --harmony_unicode_regexps --harmony_reflect --harmony_destructuring --harmony_new_target --recursive pz-server/build/test/smoke",
-    "serverIntegrationTests": "mocha --require source-map-support/register --es_staging --harmony_tostring --harmony_array_includes --harmony_rest_parameters --harmony_modules --harmony_regexps --harmony_proxies --harmony_unicode_regexps --harmony_reflect --harmony_destructuring --harmony_new_target --recursive pz-server/build/test/integration",
-    "serverIntegTests": "npm run serverIntegrationTests",
-    "serverUnitTests": "mocha --require source-map-support/register --es_staging --harmony_tostring --harmony_array_includes --harmony_rest_parameters --harmony_modules --harmony_regexps --harmony_proxies --harmony_unicode_regexps --harmony_reflect --harmony_destructuring --harmony_new_target --recursive pz-server/build/test/unit",
-    "clientIntegTests": "mocha --require source-map-support/register --es_staging --harmony_tostring --harmony_array_includes --harmony_rest_parameters --harmony_modules --harmony_regexps --harmony_proxies --harmony_unicode_regexps --harmony_reflect --harmony_destructuring --harmony_new_target --recursive pz-client/build/test/integration"
+
+    "testsIn": "mocha --es_staging --harmony_tostring --harmony_array_includes --harmony_rest_parameters --harmony_modules --harmony_regexps --harmony_proxies --harmony_unicode_regexps --harmony_reflect --harmony_destructuring --harmony_new_target --recursive",
+
+    "serverSmokeTests": "npm run testsIn pz-server/build/test/smoke",
+    "serverIntegTests": "npm run testsIn pz-server/build/test/integration",
+    "serverUnitTests": "npm run testsIn pz-server/build/test/unit",
+    "serverTests": "npm run testsIn pz-server/build/test/unit pz-server/build/test/smoke pz-server/build/test/integration",
+
+    "clientAcceptTests": "npm run testsIn pz-client/build/test/acceptance",
+    "clientIntegTests": "npm run testsIn pz-client/build/test/integration",
+    "clientUnitTests": "npm run testsIn pz-client/build/test/unit",
+    "clientTests": "npm run testsIn pz-client/build/test/acceptance pz-client/build/test/integration pz-client/build/test/unit",
+
+    "test": "npm run testsIn pz-server/build/test/unit pz-server/build/test/smoke pz-server/build/test/integration pz-client/build/test/acceptance pz-client/build/test/integration pz-client/build/test/unit"
   },
   "dependencies": {
     "autoprefixer": "^6.3.6",
@@ -60,6 +68,7 @@
     "isomorphic-fetch": "^2.2.1",
     "isomorphic-relay": "^0.7.0",
     "isomorphic-relay-router": "^0.8.0",
+    "longjohn": "^0.2.11",
     "loopback": "^2.29.0",
     "loopback-boot": "^2.19.0",
     "loopback-component-explorer": "^2.5.0",
