@@ -6,6 +6,13 @@
         "validateUpsert": true
     },
     "properties": {
+        "type": {
+            "type": "string",
+            "required": true,
+            "description": "The type of community item",
+            "default": "review",
+            "hidden": true
+        }
     },
     "validations": [],
     "relations": {},

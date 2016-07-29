@@ -5,7 +5,15 @@
     "options": {
         "validateUpsert": true
     },
-    "properties": {},
+    "properties": {
+        "type": {
+            "type": "string",
+            "required": true,
+            "description": "The type of community item",
+            "default": "howto",
+            "hidden": true
+        }
+    },
     "validations": [],
     "relations": {},
     "acls": [],
