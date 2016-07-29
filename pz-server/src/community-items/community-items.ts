@@ -30,8 +30,8 @@ export interface ICommunityItem extends IRepositoryRecord {
 export interface ICommunityItems extends IRepository {
     findById(id: number): Promise<ICommunityItem>
     isOwner(userId: number, communityItemId: number): Promise<boolean>
-    create(communityItem: ICommunityItem): Promise<void>
-    update(communityItem: ICommunityItem): Promise<void>
+    create(communityItem: ICommunityItem): Promise<ICommunityItem>
+    update(communityItem: ICommunityItem): Promise<ICommunityItem>
 }
 
 export default class CommunityItems implements ICommunityItems {
@@ -56,17 +56,18 @@ export default class CommunityItems implements ICommunityItems {
         return isOwnerOfModel(userId, this._CommunityItemModel, communityItemId);
     }
 
-    async create(communityItem: ICommunityItem): Promise<void> {
+    async create(communityItem: ICommunityItem): Promise<ICommunityItem> {
         let communityItemModel = new this._CommunityItemModel({
             type: communityItem.type,
             summary: communityItem.summary,
             body: communityItem.body
         });
 
-        return await promisify(communityItemModel.save, communityItem)();
+        const result = await promisify(communityItemModel.save, communityItem)();
+        return createRecordFromLoopback<ICommunityItem>('CommunityItem', result);
     }
 
-    async update(communityItem: ICommunityItem): Promise<void> {
+    async update(communityItem: ICommunityItem): Promise<ICommunityItem> {
         if (!communityItem.id) {
             throw new Error('Cannot update record without an id');
         }
@@ -78,7 +79,8 @@ export default class CommunityItems implements ICommunityItems {
             body: communityItem.body
         });
 
-        return await promisify(communityItemModel.save, communityItem)();
+        const result = await promisify(communityItemModel.save, communityItem)();
+        return createRecordFromLoopback<ICommunityItem>('CommunityItem', result);
     }
 }
 

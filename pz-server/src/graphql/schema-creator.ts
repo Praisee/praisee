@@ -28,6 +28,7 @@ var {
 export default function createSchema(repositoryAuthorizers: IAppRepositoryAuthorizers) {
     const usersAuthorizer  = repositoryAuthorizers.users;
     const topicsAuthorizer = repositoryAuthorizers.topics;
+    const communityItemsAuthorizer = repositoryAuthorizers.communityItems;
 
     const idResolver = (globalId, {user}) => {
         const {type, id} = graphqlRelay.fromGlobalId(globalId);
@@ -77,12 +78,14 @@ export default function createSchema(repositoryAuthorizers: IAppRepositoryAuthor
                     const repositoryAuthorizer = repositoryAuthorizers['communityItems'];
                     const CommunityItem = repositoryAuthorizer.as(user);
 
-                    return connectionFromPromisedArray(promisify(CommunityItem.find, CommunityItem)(
-                        {
-                            //the +1 allows the hasNextPage argument to return true if there is more content
-                            limit: args.first + 1,
-                            skip: args.after
-                        }), args);
+                    // TODO: This is not implemented yet
+                    // return connectionFromPromisedArray(promisify(CommunityItem.find, CommunityItem)(
+                    //     {
+                    //         //the +1 allows the hasNextPage argument to return true if there is more content
+                    //         limit: args.first + 1,
+                    //         skip: args.after
+                    //     }), args);
+                    return connectionFromPromisedArray(Promise.resolve([]));
                 }
             },
             commentConnection: {

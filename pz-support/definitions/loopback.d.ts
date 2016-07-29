@@ -119,8 +119,8 @@ declare interface IPersistedModelInstance extends IModelInstance {
     id: any
     __data?: any // Don't use this, unless you're an elite hacker
 
-    save(done?: ICallback)
-    save(options: {validate?: boolean, throws?: boolean}, done?: ICallback)
+    save(done?: IResultCallback<IPersistedModelInstance>)
+    save(options: {validate?: boolean, throws?: boolean}, done?: IResultCallback<IPersistedModelInstance>)
     destroy(done?: ICallback)
 }
 

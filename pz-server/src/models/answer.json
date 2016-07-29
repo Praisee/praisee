@@ -1,6 +1,6 @@
 {
     "name": "Answer",
-    "base": "CommunityItem",
+    "base": "PersistedModel",
     "strict": true,
     "options": {
         "validateUpsert": true

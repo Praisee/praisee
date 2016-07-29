@@ -9,8 +9,8 @@ import {ICommunityItems, ICommunityItem} from 'pz-server/src/community-items/com
 
 export interface IAuthorizedCommunityItems {
     findById(id: number): Promise<ICommunityItem>
-    create(communityItem: ICommunityItem): Promise<void>
-    update(communityItem: ICommunityItem): Promise<void>
+    create(communityItem: ICommunityItem): Promise<ICommunityItem>
+    update(communityItem: ICommunityItem): Promise<ICommunityItem>
 }
 
 class AuthorizedCommunityItems implements IAuthorizedCommunityItems {
@@ -47,7 +47,7 @@ class AuthorizedCommunityItems implements IAuthorizedCommunityItems {
             throw new NotOwnerError();
         }
 
-        await this._communityItems.update(communityItem);
+        return await this._communityItems.update(communityItem);
     }
 }
 
