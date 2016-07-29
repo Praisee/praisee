@@ -11,20 +11,20 @@ import {IUrlSlug, IUrlSlugInstance} from 'pz-server/src/url-slugs/models/url-slu
 
 export type TTopicType = (
     'topic'
-        | 'brand'
-        | 'product'
-    );
+    | 'brand'
+    | 'product'
+);
 
 export interface ITopic extends IRepositoryRecord {
     recordType: 'Topic'
 
-    id: number
+    id?: number
     type: TTopicType
     name: string
-    description: string
-    thumbnailPath: string
-    overviewContent: string
-    isVerified: boolean
+    description?: string
+    thumbnailPath?: string
+    overviewContent?: string
+    isVerified?: boolean
 }
 
 export interface ITopics extends IRepository {
@@ -35,33 +35,33 @@ export interface ITopics extends IRepository {
 
 //Loopback specific implementation of ITopics repository
 export default class Topics implements ITopics {
-    private _Topic: IPersistedModel & ISluggable;
-    private _UrlSlugs: IPersistedModel;
+    private _TopicModel: IPersistedModel & ISluggable;
+    private _UrlSlugsModel: IPersistedModel;
 
     constructor(Topic: IPersistedModel & ISluggable, UrlSlug: IPersistedModel) {
-        this._Topic = Topic;
-        this._UrlSlugs = UrlSlug;
+        this._TopicModel = Topic;
+        this._UrlSlugsModel = UrlSlug;
     }
 
     async findAll() {
-        const results = await promisify(this._Topic.find, this._Topic)();
+        const results = await promisify(this._TopicModel.find, this._TopicModel)();
         return results.map(result => createRecordFromLoopback('Topic', result));
     }
 
     async findById(id: number) {
-        const result = await promisify(this._Topic.findById, this._Topic)(id);
+        const result = await promisify(this._TopicModel.findById, this._TopicModel)(id);
         return createRecordFromLoopback<ITopic>('Topic', result);
     }
 
-    async findByUrlSlugName(fullSlug: string){        
-        let urlSlug: IUrlSlugInstance = await promisify(this._UrlSlugs.findOne, this._UrlSlugs)({
+    async findByUrlSlugName(fullSlug: string){
+        let urlSlug: IUrlSlugInstance = await promisify(this._UrlSlugsModel.findOne, this._UrlSlugsModel)({
             where: {
-                sluggableType: this._Topic.sluggableType,
+                sluggableType: this._TopicModel.sluggableType,
                 fullSlugLowercase: fullSlug.toLowerCase()
             }
         }) as IUrlSlugInstance;
-        
-        const result = await promisify(this._Topic.findById, this._Topic)(urlSlug.sluggableId);
+
+        const result = await promisify(this._TopicModel.findById, this._TopicModel)(urlSlug.sluggableId);
         return createRecordFromLoopback<ITopic>('Topic', result);
     }
 

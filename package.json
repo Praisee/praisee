@@ -10,19 +10,15 @@
     "postinstall": "npm run typingsInstall",
     "buildDev": "cd ./pz-builder && npm run buildDev",
     "watch": "cd ./pz-builder && npm run watch",
-
     "testsIn": "mocha --es_staging --harmony_tostring --harmony_array_includes --harmony_rest_parameters --harmony_modules --harmony_regexps --harmony_proxies --harmony_unicode_regexps --harmony_reflect --harmony_destructuring --harmony_new_target --recursive",
-
     "serverSmokeTests": "npm run testsIn pz-server/build/test/smoke",
     "serverIntegTests": "npm run testsIn pz-server/build/test/integration",
     "serverUnitTests": "npm run testsIn pz-server/build/test/unit",
     "serverTests": "npm run testsIn pz-server/build/test/unit pz-server/build/test/smoke pz-server/build/test/integration",
-
     "clientAcceptTests": "npm run testsIn pz-client/build/test/acceptance",
     "clientIntegTests": "npm run testsIn pz-client/build/test/integration",
     "clientUnitTests": "npm run testsIn pz-client/build/test/unit",
     "clientTests": "npm run testsIn pz-client/build/test/acceptance pz-client/build/test/integration pz-client/build/test/unit",
-
     "test": "npm run testsIn pz-server/build/test/unit pz-server/build/test/smoke pz-server/build/test/integration pz-client/build/test/acceptance pz-client/build/test/integration pz-client/build/test/unit"
   },
   "dependencies": {
@@ -100,6 +96,7 @@
   },
   "devDependencies": {
     "chai": "^3.5.0",
+    "chai-as-promised": "^5.3.0",
     "mocha": "^2.5.3",
     "mute": "^2.0.6",
     "nsp": "^2.1.0",

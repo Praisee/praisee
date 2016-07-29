@@ -1,10 +1,10 @@
 import {expect} from 'chai';
 import supertest from 'supertest-as-promised';
 import promisify from 'pz-support/src/promisify';
-import createServerTest from 'pz-server/test/support/create-server-test';
+import createServerTestFor from 'pz-server/test/support/create-server-test';
 import createSlug from 'pz-server/src/url-slugs/slugger';
 
-createServerTest('sluggable', function () {
+createServerTestFor('sluggable', function () {
     const context = this;
 
     describe('given a sluggable', () => {

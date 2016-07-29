@@ -16,14 +16,14 @@ export interface IUsers extends IRepository {
 }
 
 export default class Users implements IUsers {
-    private _User: IPersistedModel;
+    private _UserModel: IPersistedModel;
 
     constructor(User: IPersistedModel) {
-        this._User = User;
+        this._UserModel = User;
     }
 
     async findById(userId: number): Promise<IUser> {
-        const result = await promisify(this._User.findById, this._User)(userId);
+        const result = await promisify(this._UserModel.findById, this._UserModel)(userId);
 
         if (!result) {
             return null;

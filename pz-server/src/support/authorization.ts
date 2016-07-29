@@ -1,3 +1,5 @@
+import ExtendableError from './extendable-error';
+
 import {IRepository} from 'pz-server/src/support/repository';
 export {IRepository} from 'pz-server/src/support/repository';
 
@@ -28,3 +30,12 @@ export function authorizer<T>(AuthorizedRepository: IAuthorizedRepositoryConstru
         }
     };
 }
+
+export class NotAuthenticatedError extends ExtendableError {
+    constructor(message = 'User is not authenticate') { super(message); }
+}
+
+export class NotOwnerError extends ExtendableError {
+    constructor(message = 'User does not own item') { super(message); }
+}
+

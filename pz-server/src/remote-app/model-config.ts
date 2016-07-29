@@ -13,7 +13,7 @@ export default {
             pzPath('pz-server', 'src/url-slugs/mixins')
         ]
     },
-    
+
     // User
     'User': {
         'dataSource': 'pz-remote', // This is an abstract model
@@ -22,7 +22,7 @@ export default {
 
     // Domain
     'CommunityItem': {
-        'dataSource': 'memory-db', // This is an abstract model
+        'dataSource': 'pz-remote',
         'public': false,
     },
     'Review': {

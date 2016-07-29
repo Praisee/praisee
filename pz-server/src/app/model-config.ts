@@ -17,7 +17,7 @@ export default {
             pzBuildPath('pz-server', 'src/url-slugs/mixins')
         ]
     },
-    
+
     // User
     'User': {
         'dataSource': 'vagrant-postgres',
@@ -47,10 +47,10 @@ export default {
         'dataSource': 'vagrant-postgres',
         'public': false
     },
-    
+
     // Domain
     'CommunityItem': {
-        'dataSource': 'memory-db', // This is an abstract model
+        'dataSource': 'vagrant-postgres',
         'public': false,
     },
     'Review': {
@@ -99,7 +99,7 @@ export default {
         'dataSource': 'vagrant-postgres',
         'public': false
     },
-    
+
     // Search
     'SearchUpdateJob': {
         'dataSource': 'vagrant-postgres',
