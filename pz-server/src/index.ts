@@ -7,6 +7,7 @@ process.on('unhandledRejection', (error, promise) => {
 
 if (process.env.NODE_ENV !== 'production') {
     require('source-map-support').install();
+    require('longjohn').async_trace_limit = 30;
 }
 
 const server = new PzServer();
