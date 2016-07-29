@@ -2,48 +2,43 @@ import * as React from 'react';
 import {Component, ReactNode} from 'react';
 
 export default class SchemaInjector {
-    constructor(private schema: {}) { }
+    constructor(private schema: ISchemaType) { }
 
-    inject(baseNode: any) {
-        let modifiedBase = this._modifyElement(baseNode);
-        let modifiedChildren = React.Children.map(modifiedBase.props.children, (element) => this._modifyElement(element));
-        return React.cloneElement(modifiedBase, {}, modifiedChildren);
+    inject(baseElement: React.ReactElement<any>) {
+        return this._modifyElement(baseElement);
     }
 
-    private _modifyElement(element, index = null) {
+    private _modifyElement(element) {
         if (React.isValidElement(element)) {
-            let props: any = {};
-
-            for (let key of Object.keys(this.schema)) {
-                if (element.props.className == key) {
-                    props = this.schema[key];
-                    if (index != null) {
-                        props.key = "__schema" + index;
-                    }
-                    if (this.schema[key].itemScope) {
-                        props.itemScope = "itemScope";
-                    }
-                    break;
-                }
-            }
-
-            if (Array.isArray(element.props.children) && element.props.children.length > 0) {
-                return React.cloneElement(element, props, this._modifyElement(element.props.children));
-            }
-
-            return React.cloneElement(element, props);
-        }
-
-        if (Array.isArray(element)) {
-            return element.map((subElement, index) => {
-                if (subElement && !subElement.key) {
-                    return this._modifyElement(subElement, index);
-                }
-                return this._modifyElement(subElement);
-            });
+            let props = this._setPropsFromSchema(element);
+            let modifiedChildren = this._modifyChildren(element);
+            return React.cloneElement(element, props, modifiedChildren);
         }
 
         return element;
+    }
+
+    private _modifyChildren(element: React.ReactElement<any>) {
+        return React.Children.map(element.props.children, (child) => this._modifyElement(child));
+    }
+
+    private _setPropsFromSchema(element: React.ReactElement<any>) {
+        let props = Object.assign({}, element.props);
+
+        //Loop to match classNames to schema properties
+        for (let schemaKey of Object.keys(this.schema)) {
+            if (element.props.className !== schemaKey) {
+                continue;
+            }
+
+            for (let schemaProperty of Object.keys(this.schema[schemaKey])) {
+                if (this.schema[schemaKey][schemaProperty] === false) {
+                    continue;
+                }
+                props[schemaProperty] = this.schema[schemaKey][schemaProperty];
+            }
+            return props;
+        }
     }
 }
 
