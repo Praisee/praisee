@@ -42,7 +42,7 @@ export const topicQuery: IRouteQuery = {
             }
         `
     }
-}
+};
 
 export const reviewQuery: IRouteQuery = {
     queries: {
@@ -52,4 +52,4 @@ export const reviewQuery: IRouteQuery = {
             }
         `
     }
-}
+};

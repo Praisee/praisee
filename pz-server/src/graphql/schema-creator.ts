@@ -3,15 +3,19 @@ import * as graphqlRelay from 'graphql-relay';
 import * as graphql from 'graphql';
 import {IAppRepositoryAuthorizers} from 'pz-server/src/app/repositories';
 import {IRepositoryRecord} from 'pz-server/src/support/repository';
+import {AuthorizationError} from 'pz-server/src/support/authorization';
+import {ICursorResults, IForwardCursor} from '../support/cursors';
 
 var {
     connectionDefinitions,
     fromGlobalId,
     nodeDefinitions,
     connectionArgs,
+    forwardConnectionArgs,
     globalId,
     connectionFromPromisedArray,
-    globalIdField
+    globalIdField,
+    mutationWithClientMutationId
 } = graphqlRelay;
 
 var {
@@ -26,9 +30,49 @@ var {
 } = graphql;
 
 export default function createSchema(repositoryAuthorizers: IAppRepositoryAuthorizers) {
-    const usersAuthorizer  = repositoryAuthorizers.users;
-    const topicsAuthorizer = repositoryAuthorizers.topics;
-    const communityItemsAuthorizer = repositoryAuthorizers.communityItems;
+    const {
+        users: usersAuthorizer,
+        topics: topicsAuthorizer,
+        communityItems: communityItemsAuthorizer
+    } = repositoryAuthorizers;
+
+    const forwardCursorFromGraphqlArgs = (graphqlArgs): IForwardCursor => {
+        let cursor: any = {
+            take: graphqlArgs.first || 10
+        };
+
+        if (graphqlArgs.after) {
+            cursor.skipAfter = graphqlArgs.after;
+        }
+
+        return cursor;
+    };
+
+    const connectionFromCursorResults = <T>(cursorResults: ICursorResults<T>) => {
+        let pageInfo: any = {
+            hasNextPage: cursorResults.hasNextPage || false,
+            hasPreviousPage: cursorResults.hasPreviousPage || false
+        };
+
+        if (cursorResults.startCursor) {
+            pageInfo.startCursor = cursorResults.startCursor;
+        }
+
+        if (cursorResults.endCursor) {
+            pageInfo.endCursor = cursorResults.endCursor;
+        }
+
+        return {
+            edges: cursorResults.results.map(result => {
+                return {
+                    cursor: result.cursor,
+                    node: result.item
+                };
+            }),
+
+            pageInfo
+        };
+    };
 
     const idResolver = (globalId, {user}) => {
         const {type, id} = graphqlRelay.fromGlobalId(globalId);
@@ -51,8 +95,8 @@ export default function createSchema(repositoryAuthorizers: IAppRepositoryAuthor
             case 'Topic':
                 return TopicType;
 
-            case 'Review':
-                return ReviewType;
+            case 'CommunityItem':
+                return CommunityItemType;
         }
 
         return null;
@@ -71,9 +115,14 @@ export default function createSchema(repositoryAuthorizers: IAppRepositoryAuthor
                 type: new GraphQLList(TopicType),
                 resolve: (_, __, {user}) => topicsAuthorizer.as(user).findAll()
             },
+
+            // TODO: This should probably be moved under the topic query, since it
+            // TODO: should be in relation to a specific topic
+            // TODO: Also, the -Connection part of the name may be unnecessary?
             communityItemConnection: {
                 type: CommunityItemConnection.connectionType,
                 args: connectionArgs,
+
                 resolve: (_, args, {user}) => {
                     const repositoryAuthorizer = repositoryAuthorizers['communityItems'];
                     const CommunityItem = repositoryAuthorizer.as(user);
@@ -88,9 +137,26 @@ export default function createSchema(repositoryAuthorizers: IAppRepositoryAuthor
                     return connectionFromPromisedArray(Promise.resolve([]));
                 }
             },
+
+            myCommunityItems: {
+                type: CommunityItemConnection.connectionType,
+                args: forwardConnectionArgs,
+
+                resolve: async (_, args, {user}) => {
+                    const forwardCursor = forwardCursorFromGraphqlArgs(args);
+
+                    return connectionFromCursorResults(
+                        await communityItemsAuthorizer
+                            .as(user)
+                            .findSomeByCurrentUser(forwardCursor)
+                    );
+                }
+            },
+
             commentConnection: {
                 type: CommentConnection.connectionType,
                 args: connectionArgs,
+
                 resolve: (_, args) => {
                     return connectionFromPromisedArray(
                         //TODO: Implment this
@@ -99,9 +165,11 @@ export default function createSchema(repositoryAuthorizers: IAppRepositoryAuthor
                     );
                 }
             },
+
             avatarConnection: {
                 type: AuthorConnection.connectionType,
                 args: connectionArgs,
+
                 resolve: (_, args) => {
                     return connectionFromPromisedArray(
                         //TODO: Implment this
@@ -110,9 +178,11 @@ export default function createSchema(repositoryAuthorizers: IAppRepositoryAuthor
                     );
                 }
             },
+
             votesConnection: {
                 type: VotesConnection.connectionType,
                 args: connectionArgs,
+
                 resolve: (_, args) => {
                     return connectionFromPromisedArray(
                         //TODO: Implment this
@@ -125,6 +195,7 @@ export default function createSchema(repositoryAuthorizers: IAppRepositoryAuthor
             reviewConnection: {
                 type: ReviewConnection.connectionType,
                 args: connectionArgs,
+
                 resolve: (_, args) => {
                     return connectionFromPromisedArray(
                         //TODO: Implment this
@@ -282,6 +353,10 @@ export default function createSchema(repositoryAuthorizers: IAppRepositoryAuthor
         fields: () => ({
             id: globalIdField('CommunityItem'),
 
+            type: {
+                type: new GraphQLNonNull(GraphQLString)
+            },
+
             summary: {
                 type: GraphQLString
             },
@@ -325,6 +400,53 @@ export default function createSchema(repositoryAuthorizers: IAppRepositoryAuthor
     const CommunityItemConnection = connectionDefinitions({
         name: "CommunityItem",
         nodeType: CommunityItemType
+    });
+
+    const CreateCommunityItemMutation = mutationWithClientMutationId({
+        name: 'CreateCommunityItem',
+
+        inputFields: {
+            type: { type: new GraphQLNonNull(GraphQLString) },
+            summary: { type: new GraphQLNonNull(GraphQLString) },
+            body: { type: new GraphQLNonNull(GraphQLString) }
+        },
+
+        outputFields: {
+            communityItem: {
+                type: CommunityItemType,
+                resolve: (communityItem) => communityItem
+            }
+
+            // todoEdge: {
+            //     type: GraphQLTodoEdge,
+            //     resolve: ({localTodoId}) => {
+            //         const todo = getTodo(localTodoId);
+            //         return {
+            //             cursor: cursorForObjectInConnection(getTodos(), todo),
+            //             node: todo,
+            //         };
+            //     },
+            // },
+            // viewer: {
+            //     type: GraphQLUser,
+            //     resolve: () => getViewer(),
+            // },
+        },
+
+        mutateAndGetPayload: async ({type, summary, body}, context) => {
+            const communityItem = await communityItemsAuthorizer.as(context.user).create({
+                recordType: 'CommunityItem',
+                type,
+                summary,
+                body
+            });
+
+            if (communityItem instanceof AuthorizationError) {
+                return {communityItem: null};
+            }
+
+            return {communityItem};
+        },
     });
 
     return new GraphQLSchema({
@@ -377,6 +499,14 @@ export default function createSchema(repositoryAuthorizers: IAppRepositoryAuthor
                     }
                 }
             })
+        }),
+
+        mutation: new GraphQLObjectType({
+            name: 'Mutation',
+
+            fields: {
+                createCommunityItem: CreateCommunityItemMutation
+            }
         })
     });
 }

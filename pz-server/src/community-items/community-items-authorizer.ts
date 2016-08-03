@@ -2,15 +2,18 @@ import {
     authorizer,
     TOptionalUser,
     NotOwnerError,
-    NotAuthenticatedError
+    NotAuthenticatedError,
+    AuthorizationError
 } from 'pz-server/src/support/authorization';
 
 import {ICommunityItems, ICommunityItem} from 'pz-server/src/community-items/community-items';
+import {IForwardCursor, ICursorResults} from 'pz-server/src/support/cursors';
 
 export interface IAuthorizedCommunityItems {
     findById(id: number): Promise<ICommunityItem>
-    create(communityItem: ICommunityItem): Promise<ICommunityItem>
-    update(communityItem: ICommunityItem): Promise<ICommunityItem>
+    findSomeByCurrentUser(cursor: IForwardCursor): Promise<ICursorResults<ICommunityItem>>
+    create(communityItem: ICommunityItem): Promise<ICommunityItem | AuthorizationError>
+    update(communityItem: ICommunityItem): Promise<ICommunityItem | AuthorizationError>
 }
 
 class AuthorizedCommunityItems implements IAuthorizedCommunityItems {
@@ -22,21 +25,29 @@ class AuthorizedCommunityItems implements IAuthorizedCommunityItems {
         this._communityItems = communityItems;
     }
 
-    findById(id) {
-        return this._communityItems.findById(id);
+    async findById(id: number): Promise<ICommunityItem> {
+        return await this._communityItems.findById(id);
     }
 
-    create(communityItem) {
+    async findSomeByCurrentUser(cursor: IForwardCursor): Promise<ICursorResults<ICommunityItem>> {
         if (!this._user) {
-            throw new NotAuthenticatedError();
+            return {results: []};
         }
 
-        return this._communityItems.create(communityItem);
+        return await this._communityItems.findSomeByUserId(cursor, this._user.id);
     }
 
-    async update(communityItem) {
+    async create(communityItem): Promise<ICommunityItem | AuthorizationError> {
         if (!this._user) {
-            throw new NotAuthenticatedError();
+            return new NotAuthenticatedError();
+        }
+
+        return await this._communityItems.create(communityItem, this._user.id);
+    }
+
+    async update(communityItem): Promise<ICommunityItem | AuthorizationError> {
+        if (!this._user) {
+            return new NotAuthenticatedError();
         }
 
         const isOwner = await this._communityItems.isOwner(
@@ -44,7 +55,7 @@ class AuthorizedCommunityItems implements IAuthorizedCommunityItems {
         );
 
         if (!isOwner) {
-            throw new NotOwnerError();
+            return new NotOwnerError();
         }
 
         return await this._communityItems.update(communityItem);

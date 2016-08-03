@@ -14,6 +14,7 @@ module.exports = function startGraphQLServer(app: IApp) {
         pretty: true,
         schema: Schema,
         context: {
+            request,
             hasSession: !!request.user,
             user: request.user,
             sessionAccessToken: request.user && request.user.accessToken ?

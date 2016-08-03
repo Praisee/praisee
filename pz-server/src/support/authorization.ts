@@ -31,11 +31,13 @@ export function authorizer<T>(AuthorizedRepository: IAuthorizedRepositoryConstru
     };
 }
 
-export class NotAuthenticatedError extends ExtendableError {
-    constructor(message = 'User is not authenticate') { super(message); }
+export class AuthorizationError extends ExtendableError { }
+
+export class NotAuthenticatedError extends AuthorizationError {
+    constructor(message = 'User is not authenticated') { super(message); }
 }
 
-export class NotOwnerError extends ExtendableError {
+export class NotOwnerError extends AuthorizationError {
     constructor(message = 'User does not own item') { super(message); }
 }
 

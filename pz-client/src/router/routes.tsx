@@ -19,6 +19,9 @@ import ReviewController from 'pz-client/src/home/home.controller';
 import ComparisonController from 'pz-client/src/home/home.controller';
 import TopicController from 'pz-client/src/topic/topic.controller';
 
+// TODO: Remove this
+import {CreateItemEditor} from 'pz-client/src/editor-proofofconcept/editor.controller';
+
 export default (
     <Router>
         <Route path="/" component={AppController}>
@@ -29,6 +32,10 @@ export default (
             />
 
             <Route component={AppLayout} {...mixinRouteQuery(appQuery)}>
+
+                {/* TODO: Remove this shit */}
+                <Route path="editor-poc" component={CreateItemEditor} />
+
                 <Route path="user/sign-in" component={SignInController} />
                 <Route path="user/sign-up" component={SignUpController} />
 
@@ -49,6 +56,7 @@ export default (
                     component={TopicController}
                     {...mixinRouteQuery(topicQuery)}
                 />
+
             </Route>
 
         </Route>

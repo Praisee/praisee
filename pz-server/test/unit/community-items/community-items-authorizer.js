@@ -2,7 +2,7 @@ import chai, {expect} from 'chai';
 import chaiAsPromised from 'chai-as-promised';
 import sinon from 'sinon';
 import CommunityItemsAuthorizer from 'pz-server/src/community-items/community-items-authorizer';
-import {NotAuthenticatedError, NotOwnerError} from 'pz-server/src/support/authorization';
+import {AuthorizationError, NotAuthenticatedError, NotOwnerError} from 'pz-server/src/support/authorization';
 
 chai.use(chaiAsPromised);
 
@@ -43,14 +43,14 @@ describe('CommunityItemAuthorizer', function () {
             return expect(
                 (async () => await authorizedCommunityItems.create(communityItem))()
 
-            ).to.be.rejectedWith(NotAuthenticatedError);
+            ).to.eventually.be.instanceof(NotAuthenticatedError);
         });
 
         it('cannot update a community item', async () => {
             return expect(
                 (async () => await authorizedCommunityItems.update(communityItem))()
 
-            ).to.be.rejectedWith(NotAuthenticatedError);
+            ).to.eventually.be.instanceof(NotAuthenticatedError);
         });
     });
 
@@ -59,7 +59,7 @@ describe('CommunityItemAuthorizer', function () {
             return expect(
                 (async () => await authorizedCommunityItems.create(communityItem))()
 
-            ).to.be.fulfilled;
+            ).to.eventually.not.be.instanceof(AuthorizationError);
         });
     });
 
@@ -70,7 +70,7 @@ describe('CommunityItemAuthorizer', function () {
             return expect(
                 (async () => await authorizedCommunityItems.update(communityItem))()
 
-            ).to.be.rejectedWith(NotOwnerError);
+            ).to.eventually.be.instanceof(NotOwnerError);
         });
     });
 
@@ -81,7 +81,7 @@ describe('CommunityItemAuthorizer', function () {
             return expect(
                 (async () => await authorizedCommunityItems.update(communityItem))()
 
-            ).to.be.fulfilled;
+            ).to.eventually.not.be.instanceof(AuthorizationError);
         });
     });
 });
