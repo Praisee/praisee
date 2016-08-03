@@ -6,8 +6,10 @@ import {
 
 import promisify from 'pz-support/src/promisify';
 
+import {ITopic} from 'pz-server/src/topics/topics';
 import {ISluggable} from 'pz-server/src/url-slugs/mixins/sluggable';
 import isOwnerOfModel from 'pz-server/src/support/is-owner-of-model';
+import {ICommunityItem as ILoopbackCommunityItem} from 'pz-server/src/models/community-item'
 
 import {
     IForwardCursor, ICursorResults, fromDateCursor,
@@ -26,24 +28,25 @@ export interface ICommunityItem extends IRepositoryRecord {
 
     id?: number
     type: TCommunityItemType
-    summary: string,
-    body: string,
-    createdAt?: Date,
+    summary: string
+    body: string
+    createdAt?: Date
     updatedAt?: Date
 }
 
 export interface ICommunityItems extends IRepository {
     findById(id: number): Promise<ICommunityItem>
     findSomeByUserId(cursor: IForwardCursor, userId: number): Promise<ICursorResults<ICommunityItem>>
+    findAllTopics(): Promise<Array<ITopic>>
     isOwner(userId: number, communityItemId: number): Promise<boolean>
     create(communityItem: ICommunityItem, ownerId: number): Promise<ICommunityItem>
     update(communityItem: ICommunityItem): Promise<ICommunityItem>
 }
 
 export default class CommunityItems implements ICommunityItems {
-    private _CommunityItemModel: IPersistedModel & ISluggable;
+    private _CommunityItemModel: ILoopbackCommunityItem;
 
-    constructor(CommunityItemModel: IPersistedModel & ISluggable) {
+    constructor(CommunityItemModel: ILoopbackCommunityItem) {
         this._CommunityItemModel = CommunityItemModel;
     }
 
@@ -62,7 +65,7 @@ export default class CommunityItems implements ICommunityItems {
         let query: any = { where: { userId }, limit: cursor.take, order: 'createdAt' };
 
         if (shouldSkipAfter(cursor)) {
-            query.where.createdAt = {gt: fromDateCursor(cursor.skipAfter)};
+            query.where.createdAt = { gt: fromDateCursor(cursor.skipAfter) };
         }
 
         const communityItemModels = await promisify(
@@ -73,6 +76,15 @@ export default class CommunityItems implements ICommunityItems {
 
     isOwner(userId: number, communityItemId: number): Promise<boolean> {
         return isOwnerOfModel(userId, this._CommunityItemModel, communityItemId);
+    }
+
+    async findAllTopics(): Promise<Array<ITopic>> {
+        const topicModels = await promisify(
+            this._CommunityItemModel.topics, this._CommunityItemModel)({});
+
+        return topicModels.map((topic) =>
+            createRecordFromLoopback<ITopic>('Topic', topic)
+        );
     }
 
     async create(communityItem: ICommunityItem, ownerId: number): Promise<ICommunityItem> {

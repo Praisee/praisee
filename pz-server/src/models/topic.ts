@@ -8,6 +8,7 @@ export type TTopicType = (
 
 export interface ITopic extends IPersistedModel, ISluggable {
     type: TTopicType
+    communityItems: IRelatedPersistedModel
 }
 
 export interface ITopicInstance extends IPersistedModelInstance, ISluggableInstance {

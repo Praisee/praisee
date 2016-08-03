@@ -11,6 +11,7 @@ export type TCommunityItemType = (
 
 export interface ICommunityItem extends IPersistedModel, ISluggable {
     type: TCommunityItemType
+    topics: IRelatedPersistedModel
 }
 
 export interface ICommunityItemInstance extends IPersistedModelInstance, ISluggableInstance {

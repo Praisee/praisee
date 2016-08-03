@@ -55,7 +55,12 @@
         "updatedAt": { "type": "date" }
     },
     "validations": [],
-    "relations": {},
+    "relations": {
+        "communityItems":{
+            "type": "hasAndBelongsToMany",
+            "model": "CommunityItem"
+        }
+    },
     "acls": [],
     "methods": {}
 }

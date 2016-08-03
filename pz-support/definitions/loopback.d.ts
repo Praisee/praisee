@@ -99,7 +99,7 @@ declare interface IPersistedModel extends IModel {
     destroyAll(where: any, done?: ICallback)
 
     beginTransaction(next: ITransactionCallback)
-    beginTransaction(options: {isolationLevel?: string, timeout?: number}, next: ITransactionCallback)
+    beginTransaction(options: { isolationLevel?: string, timeout?: number }, next: ITransactionCallback)
 
     Transaction: {
         READ_UNCOMMITTED
@@ -114,13 +114,27 @@ declare interface IPersistedModel extends IModel {
     scope(name: string, definition: {} | Function)
 }
 
+declare interface IRelatedPersistedModel extends IModel {
+    (filter: IFinderFilter, options: {}, callback: IResultCallback<Array<IPersistedModelInstance>>) 
+
+    findById(id: any, callback: IResultCallback<IPersistedModelInstance>)
+
+    create(data: any, done?: ICallback)
+
+    add(data: any, done?: ICallback)
+
+    remove(data: any, done?: ICallback)
+
+    destroyAll(done?: ICallback)
+}
+
 // http://apidocs.strongloop.com/loopback/#persistedmodel
 declare interface IPersistedModelInstance extends IModelInstance {
     id: any
     __data?: any // Don't use this, unless you're an elite hacker
 
     save(done?: IResultCallback<IPersistedModelInstance>)
-    save(options: {validate?: boolean, throws?: boolean}, done?: IResultCallback<IPersistedModelInstance>)
+    save(options: { validate?: boolean, throws?: boolean }, done?: IResultCallback<IPersistedModelInstance>)
     destroy(done?: ICallback)
 }
 
@@ -144,23 +158,23 @@ declare interface IFinderFilter {
 // https://docs.strongloop.com/display/public/LB/Events#Events-Modelevents
 declare type TModelEvent = (
     'changed'
-        | 'deleted'
-        | 'deletedAll'
-        | 'attached'
-        | 'dataSourceAttached'
-        | 'set'
-    );
+    | 'deleted'
+    | 'deletedAll'
+    | 'attached'
+    | 'dataSourceAttached'
+    | 'set'
+);
 
 // https://docs.strongloop.com/display/public/LB/Operation+hooks#Operationhooks-Overview
 declare type TOperationHook = (
     'access'
-        | 'before save'
-        | 'after save'
-        | 'before delete'
-        | 'after delete'
-        | 'loaded'
-        | 'persist'
-    );
+    | 'before save'
+    | 'after save'
+    | 'before delete'
+    | 'after delete'
+    | 'loaded'
+    | 'persist'
+);
 
 declare interface IOperationHookCallback {
     (context: IOperationHookContext, next?: ICallback): void | Promise<any>
@@ -186,7 +200,7 @@ interface IDataSource {
     connector: {
         execute: (sql: String, params: Array<any>, callback: ICallback) => void,
         //https://apidocs.strongloop.com/strong-remoting/#remoteobjects-prototype-invoke
-        remotes:{
+        remotes: {
             invoke: (remoteMethodName: string, ctorArgs?: string, args?: string, callback?: Function) => void
         }
     }

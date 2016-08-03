@@ -27,7 +27,7 @@
         },
 
         "body": {
-            "type": "text",
+            "type": "string",
             "required": true,
             "description": "The body content of the item",
             "postgresql": {
@@ -47,6 +47,10 @@
         "votes": {
             "type": "hasMany",
             "model": "Vote"
+        },
+        "topics": {
+            "type": "hasAndBelongsToMany",
+            "model": "Topic"
         }
     },
     "acls": [],

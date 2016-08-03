@@ -13,6 +13,7 @@ var {
     connectionArgs,
     forwardConnectionArgs,
     globalId,
+    connectionFromArray,
     connectionFromPromisedArray,
     globalIdField,
     mutationWithClientMutationId
@@ -114,28 +115,6 @@ export default function createSchema(repositoryAuthorizers: IAppRepositoryAuthor
             topics: {
                 type: new GraphQLList(TopicType),
                 resolve: (_, __, {user}) => topicsAuthorizer.as(user).findAll()
-            },
-
-            // TODO: This should probably be moved under the topic query, since it
-            // TODO: should be in relation to a specific topic
-            // TODO: Also, the -Connection part of the name may be unnecessary?
-            communityItemConnection: {
-                type: CommunityItemConnection.connectionType,
-                args: connectionArgs,
-
-                resolve: (_, args, {user}) => {
-                    const repositoryAuthorizer = repositoryAuthorizers['communityItems'];
-                    const CommunityItem = repositoryAuthorizer.as(user);
-
-                    // TODO: This is not implemented yet
-                    // return connectionFromPromisedArray(promisify(CommunityItem.find, CommunityItem)(
-                    //     {
-                    //         //the +1 allows the hasNextPage argument to return true if there is more content
-                    //         limit: args.first + 1,
-                    //         skip: args.after
-                    //     }), args);
-                    return connectionFromPromisedArray(Promise.resolve([]));
-                }
             },
 
             myCommunityItems: {
@@ -252,7 +231,16 @@ export default function createSchema(repositoryAuthorizers: IAppRepositoryAuthor
             },
 
             communityItems: {
-                type: new GraphQLList(CommunityItemType)
+                type: CommunityItemConnection.connectionType,
+                args: connectionArgs,
+                
+                resolve: async (topic, args, {user}) => {
+                    const communityItems = await topicsAuthorizer
+                            .as(user)
+                            .findAllCommunityItemsRanked(topic.id)
+
+                    return connectionFromArray(communityItems, args);
+                }
             }
         }),
 
@@ -442,10 +430,10 @@ export default function createSchema(repositoryAuthorizers: IAppRepositoryAuthor
             });
 
             if (communityItem instanceof AuthorizationError) {
-                return {communityItem: null};
+                return { communityItem: null };
             }
 
-            return {communityItem};
+            return { communityItem };
         },
     });
 

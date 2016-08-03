@@ -28,6 +28,10 @@ class AuthorizedTopics implements IAuthorizedTopics {
     findByUrlSlugName(fullSlug: string){
         return this._topics.findByUrlSlugName(fullSlug);
     }
+
+    findAllCommunityItemsRanked(topicId: number){
+        return this._topics.findAllCommunityItemsRanked(topicId);
+    }
 }
 
 export default authorizer<IAuthorizedTopics>(AuthorizedTopics);

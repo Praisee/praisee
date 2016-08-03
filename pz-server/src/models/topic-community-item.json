@@ -1,0 +1,22 @@
+{
+    "name": "TopicCommunityItem",
+    "base": "PersistedModel",
+    "strict": true,
+    "idInjection": false,
+    "options": {},
+    "mixins": {},
+    "properties": {
+         "topicId": {
+            "type": "Number",
+            "required": true
+        },
+         "communityItemId": {
+            "type": "Number",
+            "required": true
+        }
+    },
+    "validations": [],
+    "relations": {},
+    "acls": [],
+    "methods": {}
+}
