@@ -4,14 +4,16 @@ import * as graphql from 'graphql';
 import {IAppRepositoryAuthorizers} from 'pz-server/src/app/repositories';
 import {IRepositoryRecord} from 'pz-server/src/support/repository';
 import {AuthorizationError} from 'pz-server/src/support/authorization';
-import {ICursorResults, IForwardCursor} from '../support/cursors';
+import {
+    ICursorResults,
+    TBiCursor, IBackwardCursor, IForwardCursor
+} from 'pz-server/src/support/cursors/cursors';
 
 var {
     connectionDefinitions,
     fromGlobalId,
     nodeDefinitions,
     connectionArgs,
-    forwardConnectionArgs,
     globalId,
     connectionFromArray,
     connectionFromPromisedArray,
@@ -37,16 +39,31 @@ export default function createSchema(repositoryAuthorizers: IAppRepositoryAuthor
         communityItems: communityItemsAuthorizer
     } = repositoryAuthorizers;
 
-    const forwardCursorFromGraphqlArgs = (graphqlArgs): IForwardCursor => {
-        let cursor: any = {
-            take: graphqlArgs.first || 10
-        };
+    const BiCursorFromGraphqlArgs = (graphqlArgs): TBiCursor => {
+        const take = graphqlArgs.first || graphqlArgs.last || 10;
 
-        if (graphqlArgs.after) {
-            cursor.skipAfter = graphqlArgs.after;
+        if (graphqlArgs.last) {
+            let cursor: IBackwardCursor = {
+                takePrevious: take
+            };
+
+            if (graphqlArgs.before) {
+                cursor.skipBefore = graphqlArgs.before;
+            }
+
+            return cursor;
+
+        } else {
+            let cursor: IForwardCursor = {
+                takeNext: take
+            };
+
+            if (graphqlArgs.after) {
+                cursor.skipAfter = graphqlArgs.after;
+            }
+
+            return cursor;
         }
-
-        return cursor;
     };
 
     const connectionFromCursorResults = <T>(cursorResults: ICursorResults<T>) => {
@@ -54,14 +71,6 @@ export default function createSchema(repositoryAuthorizers: IAppRepositoryAuthor
             hasNextPage: cursorResults.hasNextPage || false,
             hasPreviousPage: cursorResults.hasPreviousPage || false
         };
-
-        if (cursorResults.startCursor) {
-            pageInfo.startCursor = cursorResults.startCursor;
-        }
-
-        if (cursorResults.endCursor) {
-            pageInfo.endCursor = cursorResults.endCursor;
-        }
 
         return {
             edges: cursorResults.results.map(result => {
@@ -119,15 +128,15 @@ export default function createSchema(repositoryAuthorizers: IAppRepositoryAuthor
 
             myCommunityItems: {
                 type: CommunityItemConnection.connectionType,
-                args: forwardConnectionArgs,
+                args: connectionArgs,
 
                 resolve: async (_, args, {user}) => {
-                    const forwardCursor = forwardCursorFromGraphqlArgs(args);
+                    const cursor = BiCursorFromGraphqlArgs(args);
 
                     return connectionFromCursorResults(
                         await communityItemsAuthorizer
                             .as(user)
-                            .findSomeByCurrentUser(forwardCursor)
+                            .findSomeByCurrentUser(cursor)
                     );
                 }
             },

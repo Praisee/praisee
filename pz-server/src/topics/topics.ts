@@ -13,7 +13,7 @@ import {ITopic as ILoopbackTopic} from 'pz-server/src/models/topic'
 import {
     IForwardCursor, ICursorResults, fromDateCursor,
     shouldSkipAfter, toDateCursor
-} from 'pz-server/src/support/cursors';
+} from 'pz-server/src/support/cursors/cursors';
 
 
 export type TTopicType = (

@@ -112,6 +112,8 @@ declare interface IPersistedModel extends IModel {
     removeObserver(operation: TOperationHook, listener: IOperationHookCallback)
 
     scope(name: string, definition: {} | Function)
+
+    definition: any
 }
 
 declare interface IRelatedPersistedModel extends IModel {

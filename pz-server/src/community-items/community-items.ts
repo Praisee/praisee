@@ -12,9 +12,11 @@ import isOwnerOfModel from 'pz-server/src/support/is-owner-of-model';
 import {ICommunityItem as ILoopbackCommunityItem} from 'pz-server/src/models/community-item'
 
 import {
-    IForwardCursor, ICursorResults, fromDateCursor,
-    shouldSkipAfter, toDateCursor
-} from 'pz-server/src/support/cursors';
+    ICursorResults, TBiCursor
+} from 'pz-server/src/support/cursors/cursors';
+
+import {findWithCursor} from 'pz-server/src/support/cursors/loopback-helpers';
+import {cursorLoopbackModelsToRecords} from 'pz-server/src/support/cursors/repository-helpers';
 
 export type TCommunityItemType = (
     'review'
@@ -36,7 +38,7 @@ export interface ICommunityItem extends IRepositoryRecord {
 
 export interface ICommunityItems extends IRepository {
     findById(id: number): Promise<ICommunityItem>
-    findSomeByUserId(cursor: IForwardCursor, userId: number): Promise<ICursorResults<ICommunityItem>>
+    findSomeByUserId(cursor: TBiCursor, userId: number): Promise<ICursorResults<ICommunityItem>>
     findAllTopics(): Promise<Array<ITopic>>
     isOwner(userId: number, communityItemId: number): Promise<boolean>
     create(communityItem: ICommunityItem, ownerId: number): Promise<ICommunityItem>
@@ -61,17 +63,14 @@ export default class CommunityItems implements ICommunityItems {
         return createRecordFromLoopback<ICommunityItem>('CommunityItem', communityItemModel);
     }
 
-    async findSomeByUserId(cursor: IForwardCursor, userId: number): Promise<ICursorResults<ICommunityItem>> {
-        let query: any = { where: { userId }, limit: cursor.take, order: 'createdAt' };
+    async findSomeByUserId(cursor: TBiCursor, userId: number): Promise<ICursorResults<ICommunityItem>> {
+        const cursorResults = await findWithCursor(
+            this._CommunityItemModel,
+            cursor,
+            { where: { userId } }
+        );
 
-        if (shouldSkipAfter(cursor)) {
-            query.where.createdAt = { gt: fromDateCursor(cursor.skipAfter) };
-        }
-
-        const communityItemModels = await promisify(
-            this._CommunityItemModel.find, this._CommunityItemModel)(query);
-
-        return this._modelsToCursorResults(communityItemModels);
+        return cursorLoopbackModelsToRecords<ICommunityItem>('CommunityItem', cursorResults);
     }
 
     isOwner(userId: number, communityItemId: number): Promise<boolean> {
@@ -113,22 +112,6 @@ export default class CommunityItems implements ICommunityItems {
 
         const result = await promisify(communityItemModel.save, communityItemModel)();
         return createRecordFromLoopback<ICommunityItem>('CommunityItem', result);
-    }
-
-    _modelsToCursorResults(models: Array<IPersistedModelInstance>): ICursorResults<ICommunityItem> {
-        const results = models.map(model => {
-            const record = createRecordFromLoopback<ICommunityItem>('CommunityItem', model);
-
-            return {
-                cursor: toDateCursor((model as any).createdAt),
-                item: record
-            };
-        });
-
-        return {
-            results,
-            hasNextPage: false //TODO:
-        }
     }
 }
 
