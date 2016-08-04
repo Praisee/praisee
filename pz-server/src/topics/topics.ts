@@ -8,7 +8,7 @@ import promisify from 'pz-support/src/promisify';
 import {ISluggable} from 'pz-server/src/url-slugs/mixins/sluggable';
 import {IUrlSlug, IUrlSlugInstance} from 'pz-server/src/url-slugs/models/url-slug';
 import {ICommunityItem} from 'pz-server/src/community-items/community-items';
-import {ITopic as ILoopbackTopic} from 'pz-server/src/models/topic'
+import {ITopic as ILoopbackTopic, ITopicInstance as ILookbackTopicInstance} from 'pz-server/src/models/topic'
 
 import {
     IForwardCursor, ICursorResults, fromDateCursor,
@@ -90,7 +90,7 @@ export default class Topics implements ITopics {
     async findAllCommunityItemsRanked(topicId: number): Promise<Array<ICommunityItem>> {
 
 
-        const topic: ILoopbackTopic = await promisify(
+        const topic: ILookbackTopicInstance = await promisify(
             this._TopicModel.findById, this._TopicModel)(topicId);
 
         const communityItemModels = await promisify(

@@ -5,6 +5,7 @@ import * as util from 'util';
 
 interface IContributionState {
     isLoading: Boolean;
+    content?: string;
 }
 
 interface IContributionProps {
@@ -21,11 +22,18 @@ export default class ContributionArea extends Component<IContributionProps, ICon
     };
 
     render() {
+
         return (
             <div className="contribution-area">
                 <form onSubmit={this._submit.bind(this) } >
-                    <textarea ref="body" />
-                    <button className="btn btn-primary" type="submit" disabled={this.state.isLoading}>Submit</button>
+                    <textarea ref="body" 
+                        placeholder="Say something nice about {this.props.topic.summary}" 
+                        onChange={this._contentChangeHandler.bind(this)} 
+                        style="width: 100%" />
+                    { this.state.content ?
+                        <button className="btn btn-primary" type="submit" disabled={this.state.isLoading}>Submit</button>
+                        : null
+                    }
                 </form>
             </div>
         )
@@ -40,5 +48,12 @@ export default class ContributionArea extends Component<IContributionProps, ICon
                 console.log(success);
                 this.setState({ isLoading: false });
             });
+    }
+
+    private _contentChangeHandler(evt){
+        this.setState({
+            isLoading: this.state.isLoading,
+            content: evt.target.value
+        })
     }
 }

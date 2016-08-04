@@ -36,7 +36,8 @@ export class DevEnvSeeder {
 
             {
                 name: 'Nikon',
-                isVerified: true
+                isVerified: true,
+                overviewContent: "Nikon Corporation, also known just as Nikon, is a Japanese multinational corporation headquartered in Tokyo, Japan, specializing in optics and imaging products."
             },
 
             ...[
@@ -72,6 +73,19 @@ export class DevEnvSeeder {
         ];
     }
 
+    communityItemSeeds() {
+        return [
+            {
+                type: "Question",
+                summary: 'Is there any D810 successor is coming in 2016?',
+                body:
+                `I have seen lots of people selling D810 these days in gulf countries. Also its used price gone a bit up than old days. (Don't know why)
+                    is there any successor to D810? 
+                    I want a D810 badly and I can hold a bit if any new camera is going to release in 2016. 
+                    What is your opinion ? Should I wait or its time to buy D810 ?`
+            }]
+    }
+
     async seed(): Promise<any> {
         if (process.env === 'production') {
             return;
@@ -81,6 +95,7 @@ export class DevEnvSeeder {
 
         await this._seedWith(this.userSeeds(), this.app.models.User);
         await this._seedWith(this.topicSeeds(), this.app.models.Topic);
+        await this._seedWith(this.communityItemSeeds(), this.app.models.Topic);
 
         console.log('Seeding complete')
     }
@@ -107,8 +122,8 @@ export class DevEnvSeeder {
 module.exports = function SeedDevEnv(app: IApp, next: ICallback) {
     return (
         (new DevEnvSeeder(app))
-        .seed()
-        .then(() => next(null))
-        .catch(next)
+            .seed()
+            .then(() => next(null))
+            .catch(next)
     );
 };

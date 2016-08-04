@@ -2,13 +2,12 @@ import {ISluggable, ISluggableInstance} from 'pz-server/src/url-slugs/mixins/slu
 
 export type TTopicType = (
     'topic'
-        | 'brand'
-        | 'product'
-    );
+    | 'brand'
+    | 'product'
+);
 
 export interface ITopic extends IPersistedModel, ISluggable {
     type: TTopicType
-    communityItems: IRelatedPersistedModel
 }
 
 export interface ITopicInstance extends IPersistedModelInstance, ISluggableInstance {
@@ -18,6 +17,7 @@ export interface ITopicInstance extends IPersistedModelInstance, ISluggableInsta
     thumbnailPath: string
     overviewContent: string
     isVerified: boolean
+    communityItems: IRelatedPersistedModel    
 }
 
 module.exports = function (Topic: ITopic) {

@@ -6,23 +6,17 @@ import ContributionArea from 'pz-client/src/topic/contribution-area.component';
 import SideSection from 'pz-client/src/side-section/side-section.component';
 import {ITopic} from 'pz-server/src/topics/topics';
 import SchemaInjector, {ISchemaType} from 'pz-client/src/support/schema-injector';
-
-interface ITopicState {
-}
-
-interface ITopicProps {
-    params;
-    topic;
-}
+import CommunityItem from 'pz-client/src/community-item/community-item-component';
 
 export class TopicController extends Component<ITopicProps, ITopicState> {
-    constructor(){
+    constructor() {
         super();
     }
 
     render() {
         return (
             <div className="topic-namespace" >
+                <h2>{this.props.topic.name}</h2>
                 {this._renderPrimarySection() }
                 {this._renderSideSection() }
             </div>
@@ -45,9 +39,7 @@ export class TopicController extends Component<ITopicProps, ITopicState> {
     }
 
     _renderTopicContentSection() {
-        var content = {};
-
-        if (content) {
+        if (this.props.topic.communityItems.edges.length > 0) {
             return this._renderTopicContent();
         }
         else {
@@ -56,17 +48,24 @@ export class TopicController extends Component<ITopicProps, ITopicState> {
     }
 
     _renderTopicContent() {
+        const rows = this.props.topic.communityItems.edges
+            .map(({node}) =>
+                <div key={node.id}>
+                    <h5>Mr.Jones</h5>
+                    <CommunityItem communityItem={node} />
+                </div>
+            );
         return (
             <div>
-                <span>{this.props.topic.name}</span>
+                { rows }
             </div>
-        ); 
+        );
     }
 
     _renderEmptyContent() {
         return (
             <div>
-                <span>empty content</span>
+                <span>feed us some content plz?...kthnxbai</span>
             </div>
         ); //change to list of questions
     }
@@ -87,6 +86,9 @@ export class TopicController extends Component<ITopicProps, ITopicState> {
 }
 
 export default Relay.createContainer(TopicController, {
+    initialVariables: {
+        limit: 5
+    },
     fragments: {
         topic: () => Relay.QL`
             fragment on Topic {
@@ -95,8 +97,24 @@ export default Relay.createContainer(TopicController, {
                 description,
                 thumbnailPath,
                 overviewContent,
-                isVerified
+                isVerified,
+                communityItems(first: $limit) {
+                     edges{
+                        node{
+                            id,
+                            ${CommunityItem.getFragment('communityItem')}
+                        }
+                    }
+                }
             }
         `
     }
 });
+
+interface ITopicState {
+}
+
+interface ITopicProps {
+    params;
+    topic;
+}
