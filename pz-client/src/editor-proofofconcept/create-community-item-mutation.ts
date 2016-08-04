@@ -42,11 +42,8 @@ export default class CreateCommunityItemMutation extends Relay.Mutation {
     getFatQuery() {
         return Relay.QL `
             fragment on CreateCommunityItemPayload {
-                communityItem {
-                    id,
-                    type,
-                    summary,
-                    body
+                viewer {
+                    myCommunityItems
                 }
             }
         `;
@@ -66,7 +63,12 @@ export default class CreateCommunityItemMutation extends Relay.Mutation {
     //     }];
     // }
     getConfigs() {
-        return [];
+        return [{
+            type: 'FIELDS_CHANGE',
+            fieldIDs: {
+                viewer: this.props.viewer.id
+            }
+        }];
     }
 
     // This mutation has a hard dependency on the story's ID. We specify this
@@ -80,4 +82,11 @@ export default class CreateCommunityItemMutation extends Relay.Mutation {
     //       }
     //     `,
     // };
+    static fragments = {
+        viewer: () => Relay.QL`
+            fragment on Viewer {
+                id,
+            }
+        `,
+    };
 }

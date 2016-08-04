@@ -5,7 +5,8 @@ import {
     homeQuery,
     appQuery,
     topicQuery,
-    reviewQuery
+    reviewQuery,
+    createItemQuery
 } from 'pz-client/src/router/route-queries';
 
 import AppController from 'pz-client/src/app/app.controller';
@@ -34,7 +35,11 @@ export default (
             <Route component={AppLayout} {...mixinRouteQuery(appQuery)}>
 
                 {/* TODO: Remove this shit */}
-                <Route path="editor-poc" component={CreateItemEditor} />
+                <Route
+                    path="editor-poc"
+                    component={CreateItemEditor}
+                    {...mixinRouteQuery(createItemQuery)}
+                />
 
                 <Route path="user/sign-in" component={SignInController} />
                 <Route path="user/sign-up" component={SignUpController} />

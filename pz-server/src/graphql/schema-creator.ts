@@ -86,6 +86,11 @@ export default function createSchema(repositoryAuthorizers: IAppRepositoryAuthor
 
     const idResolver = (globalId, {user}) => {
         const {type, id} = graphqlRelay.fromGlobalId(globalId);
+
+        if (type === 'Viewer') {
+            return {id: 'viewer'};
+        }
+
         const lowercaseType = type[0].toLowerCase() + type.slice(1);
 
         const repositoryAuthorizer = repositoryAuthorizers[lowercaseType];
@@ -99,6 +104,9 @@ export default function createSchema(repositoryAuthorizers: IAppRepositoryAuthor
 
     const typeResolver = (repositoryRecord: IRepositoryRecord) => {
         switch (repositoryRecord.recordType) {
+            case 'Viewer':
+                return ViewerType;
+
             case 'User':
                 return UserType;
 
@@ -120,6 +128,8 @@ export default function createSchema(repositoryAuthorizers: IAppRepositoryAuthor
         name: 'Viewer',
 
         fields: () => ({
+
+            id: globalIdField('Viewer'),
 
             topics: {
                 type: new GraphQLList(TopicType),
@@ -242,7 +252,7 @@ export default function createSchema(repositoryAuthorizers: IAppRepositoryAuthor
             communityItems: {
                 type: CommunityItemConnection.connectionType,
                 args: connectionArgs,
-                
+
                 resolve: async (topic, args, {user}) => {
                     const communityItems = await topicsAuthorizer
                             .as(user)
@@ -409,25 +419,10 @@ export default function createSchema(repositoryAuthorizers: IAppRepositoryAuthor
         },
 
         outputFields: {
-            communityItem: {
-                type: CommunityItemType,
-                resolve: (communityItem) => communityItem
+            viewer: {
+                type: ViewerType,
+                resolve: () => ({id: 'viewer'})
             }
-
-            // todoEdge: {
-            //     type: GraphQLTodoEdge,
-            //     resolve: ({localTodoId}) => {
-            //         const todo = getTodo(localTodoId);
-            //         return {
-            //             cursor: cursorForObjectInConnection(getTodos(), todo),
-            //             node: todo,
-            //         };
-            //     },
-            // },
-            // viewer: {
-            //     type: GraphQLUser,
-            //     resolve: () => getViewer(),
-            // },
         },
 
         mutateAndGetPayload: async ({type, summary, body}, context) => {
@@ -457,7 +452,7 @@ export default function createSchema(repositoryAuthorizers: IAppRepositoryAuthor
                 // See https://github.com/facebook/relay/issues/112
                 viewer: {
                     type: ViewerType,
-                    resolve: () => ({})
+                    resolve: () => ({id: 'viewer'})
                 },
 
                 currentUser: {

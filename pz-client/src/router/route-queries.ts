@@ -34,7 +34,7 @@ export var homeQuery: IRouteQuery = {
     }
 };
 
-export const topicQuery: IRouteQuery = {
+export var topicQuery: IRouteQuery = {
     queries: {
         topic: () => Relay.QL`
             query {
@@ -44,11 +44,21 @@ export const topicQuery: IRouteQuery = {
     }
 };
 
-export const reviewQuery: IRouteQuery = {
+export var reviewQuery: IRouteQuery = {
     queries: {
         review: () => Relay.QL`
             query {
                 review(urlSlug: $urlSlug)
+            }
+        `
+    }
+};
+
+export var createItemQuery: IRouteQuery = {
+    queries: {
+        viewer: () => Relay.QL`
+            query {
+                viewer
             }
         `
     }
