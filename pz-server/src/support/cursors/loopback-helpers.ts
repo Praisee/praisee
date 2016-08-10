@@ -8,7 +8,7 @@ import {
     shouldSkipAfter,
     shouldSkipBefore,
     reverseBiCursor, toStringCursor, fromStringCursor, toNumberCursor,
-    fromNumberCursor
+    fromNumberCursor, isInvalidBiCursor
 } from 'pz-server/src/support/cursors/cursors';
 
 import {toDateCursor, fromDateCursor} from 'pz-server/src/support/cursors/cursors';
@@ -36,6 +36,10 @@ export async function findWithCursor<T extends IPersistedModelInstanceWithTimest
         additionalFilter?: IFinderFilter
     ): Promise<ICursorResults<T>> {
 
+    if (isInvalidBiCursor(cursor)) {
+        throw new Error('Invalid bi-cursor provided');
+    }
+
     let filter: IFinderFilter = Object.assign({
         order: 'createdAt'
     }, additionalFilter);
@@ -45,11 +49,8 @@ export async function findWithCursor<T extends IPersistedModelInstanceWithTimest
     const {toCursor, fromCursor} = createCursorResolversFrom(Model, cursorField);
 
     filter = applyCursorToFilter(
+        cursor,
         filter,
-
-        // The cursor direction needs to be aligned with the sort direction
-        isAscendingSort(filter) ? cursor : reverseBiCursor(cursor),
-
         cursorField,
         fromCursor
     );
@@ -71,14 +72,40 @@ function getCursorFieldFromFilter(Model: IPersistedModel, filter: IFinderFilter)
         return defaultField;
     }
 
-    const field = filter.order.split(' ', 2)[0];
+    const field = (filter.order as string).split(' ', 2)[0];
     const properties = (Model.definition && Model.definition.properties) || null;
 
     return properties && properties.hasOwnProperty(field) ? field : defaultField;
 }
 
-function isAscendingSort(filter: IFinderFilter) {
-    const orderDirectionMatch = filter.order.match(/^.+?\s+(ASC|DESC)/i);
+function reverseSortOrder(order: string | Array<string>): string | Array<string> {
+    const orderClauses: Array<string> = Array.isArray(order) ?
+        order as Array<string>
+        : (order as string).split(',');
+
+    const reversedClauses = orderClauses.map(orderClause => {
+        const cleanedOrderClause = orderClause.trim();
+        const orderClauseParts = orderClause.match(/([^\s]+)\s+(ASC|DESC)$/i);
+
+        if (!orderClauseParts) {
+            return cleanedOrderClause + ' DESC';
+        }
+
+        const [_, sortField, sortDirection] = orderClauseParts;
+
+        return sortDirection === 'ASC' ? sortField + ' DESC' : sortField + ' ASC';
+    });
+
+    if (reversedClauses.length > 2) {
+        return reversedClauses;
+    } else {
+        return reversedClauses[0];
+    }
+}
+
+function isAscendingSort(order: string | Array<string>) {
+    const orderClause: string = Array.isArray(order) ? order[0] : order as string;
+    const orderDirectionMatch = orderClause.match(/\s+(ASC|DESC)$/i);
 
     return (
         !orderDirectionMatch
@@ -131,32 +158,38 @@ function createCursorResolversFrom(Model: IPersistedModel, field: string): ICurs
 }
 
 function applyCursorToFilter(
-        filter: IFinderFilter,
         cursor: TBiCursor,
+        filter: IFinderFilter,
         cursorField: string,
         fromCursor: IFromCursorResolver
     ): IFinderFilter {
 
-    let cursorWhere: any = {};
+    let cursorOrder: string | Array<string>;
     let cursorLimit: number;
+    let cursorWhere: any = {};
 
     if (isForwardCursor(cursor)) {
-        cursorLimit = cursor.takeNext + 1;
+        cursorOrder = filter.order;
+        cursorLimit = cursor.takeFirst + 1;
 
         if (cursor.skipAfter) {
-            cursorWhere[cursorField] = { gt: fromCursor(cursor.skipAfter) };
+            const sortOperator = isAscendingSort(cursorOrder) ? 'gt' : 'lt';
+            cursorWhere[cursorField] = { [sortOperator]: fromCursor(cursor.skipAfter) };
         }
 
     } else {
-        cursorLimit = cursor.takePrevious + 1;
+        cursorOrder = filter.order ? reverseSortOrder(filter.order) : cursorField + ' DESC';
+        cursorLimit = cursor.takeLast + 1;
 
         if (cursor.skipBefore) {
-            cursorWhere[cursorField] = { lt: fromCursor(cursor.skipBefore) };
+            const sortOperator = isAscendingSort(cursorOrder) ? 'gt' : 'lt';
+            cursorWhere[cursorField] = { [sortOperator]: fromCursor(cursor.skipBefore) };
         }
     }
 
     filter = Object.assign({}, filter, {
         where: Object.assign({}, filter.where, cursorWhere),
+        order: cursorOrder,
         limit: cursorLimit
     });
 
@@ -172,13 +205,12 @@ function createCursorResultsFromModels<T extends IPersistedModelInstance>(
 
     let expectedModels, hasPreviousPage = false, hasNextPage = false;
 
-    if (isForwardCursor(cursor)) {
-        if (shouldSkipAfter(cursor)) {
-            // TODO: This is a hack since we don't know if there was a previous item
-            hasPreviousPage = true;
-        }
+    // Note: nextPage and previousPage should always be false in some circumstances
+    // due to the Connections spec. See:
+    // https://github.com/graphql/graphql-relay-js/issues/58
 
-        if (models.length >= (cursor.takeNext + 1)) {
+    if (isForwardCursor(cursor)) {
+        if (models.length >= (cursor.takeFirst + 1)) {
             expectedModels = models.slice(0, models.length - 1);
             hasNextPage = true;
 
@@ -186,16 +218,12 @@ function createCursorResultsFromModels<T extends IPersistedModelInstance>(
             expectedModels = models;
         }
     } else {
-        if (shouldSkipBefore(cursor)) {
-            hasNextPage = true;
-        }
-
-        if (models.length >= (cursor.takePrevious + 1)) {
-            expectedModels = models.slice(0, models.length - 1);
-            hasNextPage = true;
+        if (models.length >= (cursor.takeLast + 1)) {
+            expectedModels = models.slice(0, models.length - 1).reverse();
+            hasPreviousPage = true;
 
         } else {
-            expectedModels = models;
+            expectedModels = models.slice(0).reverse();
         }
     }
 

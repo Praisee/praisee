@@ -6,12 +6,12 @@ export type TBiCursor = IForwardCursor | IBackwardCursor;
 
 export interface IForwardCursor {
     skipAfter?: opaqueCursor
-    takeNext: number
+    takeFirst: number
 }
 
 export interface IBackwardCursor {
     skipBefore?: opaqueCursor
-    takePrevious: number
+    takeLast: number
 }
 
 export interface ICursorResults<T> {
@@ -26,7 +26,44 @@ export interface ICursorResult<T> {
 }
 
 export function isForwardCursor(cursor: TBiCursor): cursor is IForwardCursor {
-    return 'takeNext' in cursor;
+    return 'takeFirst' in cursor;
+}
+
+export function isInvalidBiCursor(cursor: TBiCursor): boolean {
+    const takeFirstInCursor = 'takeFirst' in cursor;
+    const takeLastInCursor = 'takeLast' in cursor;
+    const skipBeforeInCursor = 'skipBefore' in cursor;
+    const skipAfterInCursor = 'skipAfter' in cursor;
+
+    if (takeFirstInCursor === takeLastInCursor) {
+        return true;
+    }
+
+    if (skipBeforeInCursor && skipAfterInCursor) {
+        return true;
+    }
+
+    let take;
+
+    if (isForwardCursor(cursor)) {
+        if (skipBeforeInCursor) {
+            return true;
+        }
+
+        take = cursor.takeFirst;
+    } else {
+        if (skipAfterInCursor) {
+            return true;
+        }
+
+        take = cursor.takeLast;
+    }
+
+    if (Number.isNaN(take) || !Number.isFinite(take) || take < 1) {
+        return true;
+    }
+
+    return false;
 }
 
 export function shouldSkipAfter(cursor: IForwardCursor | TBiCursor): cursor is IForwardCursor {
@@ -84,7 +121,7 @@ export function toDateCursor(date: Date): opaqueCursor {
 export function reverseBiCursor(cursor: TBiCursor): TBiCursor {
     if (isForwardCursor(cursor)) {
         let reversedCursor: IBackwardCursor = {
-            takePrevious: cursor.takeNext
+            takeLast: cursor.takeFirst
         };
 
         if (cursor.skipAfter) {
@@ -95,7 +132,7 @@ export function reverseBiCursor(cursor: TBiCursor): TBiCursor {
 
     } else {
         let reversedCursor: IForwardCursor = {
-            takeNext: cursor.takePrevious
+            takeFirst: cursor.takeLast
         };
 
         if (cursor.skipBefore) {

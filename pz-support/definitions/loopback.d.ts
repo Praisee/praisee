@@ -117,7 +117,7 @@ declare interface IPersistedModel extends IModel {
 }
 
 declare interface IRelatedPersistedModel extends IModel {
-    (filter: IFinderFilter, options: {}, callback: IResultCallback<Array<IPersistedModelInstance>>) 
+    (filter: IFinderFilter, options: {}, callback: IResultCallback<Array<IPersistedModelInstance>>)
 
     findById(id: any, callback: IResultCallback<IPersistedModelInstance>)
 
@@ -152,7 +152,7 @@ interface ITransactionInstance {
 declare interface IFinderFilter {
     fields?: any
     include?: any
-    order?: string
+    order?: string | Array<string>
     skip?: number
     where?: any
 }

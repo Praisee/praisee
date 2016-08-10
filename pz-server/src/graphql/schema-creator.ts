@@ -44,7 +44,7 @@ export default function createSchema(repositoryAuthorizers: IAppRepositoryAuthor
 
         if (graphqlArgs.last) {
             let cursor: IBackwardCursor = {
-                takePrevious: take
+                takeLast: take
             };
 
             if (graphqlArgs.before) {
@@ -55,7 +55,7 @@ export default function createSchema(repositoryAuthorizers: IAppRepositoryAuthor
 
         } else {
             let cursor: IForwardCursor = {
-                takeNext: take
+                takeFirst: take
             };
 
             if (graphqlArgs.after) {
