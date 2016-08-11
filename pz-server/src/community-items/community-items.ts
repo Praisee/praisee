@@ -17,6 +17,10 @@ import {
 
 import {findWithCursor} from 'pz-server/src/support/cursors/loopback-helpers';
 import {cursorLoopbackModelsToRecords} from 'pz-server/src/support/cursors/repository-helpers';
+import {
+    IDataToTextConverter,
+    IContentData
+} from 'pz-server/src/content/content-data';
 
 export type TCommunityItemType = (
     'review'
@@ -31,7 +35,8 @@ export interface ICommunityItem extends IRepositoryRecord {
     id?: number
     type: TCommunityItemType
     summary: string
-    body: string
+    body?: string
+    bodyData: IContentData
     createdAt?: Date
     updatedAt?: Date
 }
@@ -47,9 +52,11 @@ export interface ICommunityItems extends IRepository {
 
 export default class CommunityItems implements ICommunityItems {
     private _CommunityItemModel: ILoopbackCommunityItem;
+    private _convertBodyDataToText: IDataToTextConverter;
 
-    constructor(CommunityItemModel: ILoopbackCommunityItem) {
+    constructor(CommunityItemModel: ILoopbackCommunityItem, convertBodyDataToText: IDataToTextConverter) {
         this._CommunityItemModel = CommunityItemModel;
+        this._convertBodyDataToText = convertBodyDataToText;
     }
 
     async findById(id: number): Promise<ICommunityItem> {
@@ -90,7 +97,8 @@ export default class CommunityItems implements ICommunityItems {
         let communityItemModel = new this._CommunityItemModel({
             type: communityItem.type,
             summary: communityItem.summary,
-            body: communityItem.body,
+            body: this._convertBodyDataToText(communityItem.bodyData),
+            bodyData: communityItem.bodyData,
             userId: ownerId
         });
 
@@ -107,7 +115,8 @@ export default class CommunityItems implements ICommunityItems {
             id: communityItem.id,
             type: communityItem.type,
             summary: communityItem.summary,
-            body: communityItem.body
+            body: this._convertBodyDataToText(communityItem.bodyData),
+            bodyData: communityItem.bodyData
         });
 
         const result = await promisify(communityItemModel.save, communityItemModel)();

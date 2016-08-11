@@ -29,9 +29,18 @@
         "body": {
             "type": "string",
             "required": true,
-            "description": "The body content of the item",
+            "description": "The item's text-only body content",
             "postgresql": {
                 "dataType": "text"
+            }
+        },
+
+        "bodyData": {
+            "type": "object",
+            "required": true,
+            "description": "The item's body content with formatting and embedded content",
+            "postgresql": {
+                "dataType": "json"
             }
         },
 

@@ -12,6 +12,8 @@ import TopicsAuthorizer from 'pz-server/src/topics/topics-authorizer';
 import CommunityItems from 'pz-server/src/community-items/community-items';
 import CommunityItemsAuthorizer from 'pz-server/src/community-items/community-items-authorizer';
 
+import convertContentDataToText from 'pz-server/src/content/data-to-text-converter';
+
 module.exports = function initializeRepositories(app: IApp) {
     const users = new Users(app.models.User);
     const usersAuthorizer = new UsersAuthorizer(users);
@@ -19,7 +21,11 @@ module.exports = function initializeRepositories(app: IApp) {
     const topics = new Topics(app.models.Topic, app.models.UrlSlug);
     const topicsAuthorizer = new TopicsAuthorizer(topics);
 
-    const communityItems = new CommunityItems(app.models.CommunityItem);
+    const communityItems = new CommunityItems(
+        app.models.CommunityItem,
+        convertContentDataToText
+    );
+
     const communityItemsAuthorizer = new CommunityItemsAuthorizer(communityItems);
 
     const repositories: IAppRepositories = {

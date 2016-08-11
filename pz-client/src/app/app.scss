@@ -7,6 +7,8 @@
 @import '../topic/topic';
 @import '../user/sign-in-up';
 
+@import '../editor-proofofconcept/editor'; // TODO: Remove this
+
 .app-namespace {
     @extend %bootstrap;
 
@@ -16,4 +18,6 @@
     @include topic-namespace();
     @include topic-namespace();
     @include sign-in-up-namespace();
+
+    @include editor-proofofconcept-namespace(); // TODO: Remove this
 }

@@ -28,6 +28,7 @@ var {
     GraphQLList,
     GraphQLNonNull,
     GraphQLObjectType,
+    GraphQLInputObjectType,
     GraphQLSchema,
     GraphQLString
 } = graphql;
@@ -372,6 +373,11 @@ export default function createSchema(repositoryAuthorizers: IAppRepositoryAuthor
                 type: GraphQLString
             },
 
+            bodyData: {
+                type: GraphQLString,
+                resolve: (source) => JSON.stringify(source.bodyData)
+            },
+
             createdAt: {
                 type: GraphQLString
             },
@@ -409,13 +415,33 @@ export default function createSchema(repositoryAuthorizers: IAppRepositoryAuthor
         nodeType: CommunityItemType
     });
 
+    const InputContentDataType = new GraphQLInputObjectType({
+        name: 'InputContentData',
+
+        fields: {
+            type: { type: new GraphQLNonNull(GraphQLString) },
+            version: { type: new GraphQLNonNull(GraphQLString) },
+            value: { type: new GraphQLNonNull(GraphQLString) },
+            isJson: { type: GraphQLBoolean, defaultValue: false }
+        }
+    });
+
+    const parseInputContentData = (inputContentData) => {
+        return {
+            type: inputContentData.type,
+            version: inputContentData.version,
+            value: inputContentData.isJson ?
+                JSON.parse(inputContentData.value) : inputContentData.value,
+        };
+    };
+
     const CreateCommunityItemMutation = mutationWithClientMutationId({
         name: 'CreateCommunityItem',
 
         inputFields: {
             type: { type: new GraphQLNonNull(GraphQLString) },
             summary: { type: new GraphQLNonNull(GraphQLString) },
-            body: { type: new GraphQLNonNull(GraphQLString) }
+            bodyData: { type: new GraphQLNonNull(InputContentDataType) }
         },
 
         outputFields: {
@@ -425,12 +451,14 @@ export default function createSchema(repositoryAuthorizers: IAppRepositoryAuthor
             }
         },
 
-        mutateAndGetPayload: async ({type, summary, body}, context) => {
+        mutateAndGetPayload: async ({type, summary, bodyData}, context) => {
+            const parsedBodyData = parseInputContentData(bodyData);
+
             const communityItem = await communityItemsAuthorizer.as(context.user).create({
                 recordType: 'CommunityItem',
                 type,
                 summary,
-                body
+                bodyData: parsedBodyData
             });
 
             if (communityItem instanceof AuthorizationError) {

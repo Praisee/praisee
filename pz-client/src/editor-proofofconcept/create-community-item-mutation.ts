@@ -15,7 +15,7 @@ export default class CreateCommunityItemMutation extends Relay.Mutation {
         return {
             type: this.props.type,
             summary: this.props.summary,
-            body: this.props.body
+            bodyData: this.props.bodyData
         };
     }
 

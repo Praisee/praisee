@@ -1,0 +1,35 @@
+@import '../../../node_modules/draft-js-toolbar-plugin/lib/plugin';
+
+@mixin editor-proofofconcept-namespace {
+    .editor-proofofconcept-namespace {
+        @include make-container();
+        @include make-container-max-widths();
+
+        .editor-form {
+            padding: 1rem 0;
+        }
+
+        .editor-summary {
+            display: block;
+            width: 100%;
+            border: none;
+            font-size: 1.5rem;
+            margin-bottom: 0.5rem;
+
+            &::placeholder { color: $editor-placeholder; }
+
+            &:active, &:focus {
+                outline: none;
+                &::placeholder { color: $editor-placeholder-focused; }
+            }
+        }
+
+        .editor-area {
+            @import '../../../node_modules/draft-js/dist/Draft';
+
+            .public-DraftEditor-content {
+                min-height: 10rem;
+            }
+        }
+    }
+}
