@@ -4,11 +4,11 @@ import * as Relay from 'react-relay';
 import {
     EditorState,
     RichUtils,
-    convertFromRaw,
-    CompositeDecorator
+    convertFromRaw
 } from 'draft-js';
 
-import createMentionPlugin from 'pz-client/src/editor-proofofconcept/plugins/mention/create-mention-plugin';
+import createMentionPlugin from 'pz-client/src/editor/mention-plugin/create-mention-plugin';
+import createDecoratorFromPlugins from 'pz-client/src/editor/create-decorator-from-plugins';
 
 var DraftJsEditor = require('draft-js-plugins-editor').default;
 var createLinkifyPlugin = require('draft-js-linkify-plugin').default;
@@ -43,17 +43,11 @@ export class CommunityItemContent extends React.Component<IProps, any> {
     private _getEditorState() {
         const contentData = JSON.parse(this.props.communityItem.bodyData);
 
-        const decorators = this._editorPlugins.reduce((decorators, plugin) => {
-            if (!plugin.decorators) {
-                return decorators;
-            }
-
-            return [...decorators, ...plugin.decorators];
-        });
+        const decorator = createDecoratorFromPlugins(this._editorPlugins);
 
         const editorState = EditorState.createWithContent(
             convertFromRaw(contentData.value),
-            new CompositeDecorator(decorators)
+            decorator
         );
 
         return editorState;

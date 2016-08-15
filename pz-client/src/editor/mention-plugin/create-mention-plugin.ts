@@ -1,5 +1,5 @@
 import ContentBlock = Draft.Model.ImmutableData.ContentBlock;
-import createMentionSuggestions from 'pz-client/src/editor-proofofconcept/plugins/mention/mention-suggestions';
+import createMentionSuggestions from 'pz-client/src/editor/mention-plugin/mention-suggestions';
 
 var createMentionsPlugin = require('draft-js-mention-plugin').default as Function;
 

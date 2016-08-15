@@ -7,7 +7,7 @@
 @import '../topic/topic';
 @import '../user/sign-in-up';
 
-@import '../editor-proofofconcept/editor'; // TODO: Remove this
+@import '../editor/proofofconcept/editor'; // TODO: Remove this
 
 .app-namespace {
     @extend %bootstrap;

@@ -21,7 +21,7 @@ import ComparisonController from 'pz-client/src/home/home.controller';
 import TopicController from 'pz-client/src/topic/topic.controller';
 
 // TODO: Remove this
-import {CreateItemEditor} from 'pz-client/src/editor-proofofconcept/editor.controller';
+import {CreateItemEditor} from 'pz-client/src/editor/proofofconcept/editor.controller';
 
 export default (
     <Router>

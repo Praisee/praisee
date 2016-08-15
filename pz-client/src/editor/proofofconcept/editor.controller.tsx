@@ -1,20 +1,10 @@
 import * as React from 'react';
 import * as Relay from 'react-relay';
 
-import {
-    EditorState as DraftJsEditorState,
-    RichUtils,
-    convertToRaw
-} from 'draft-js';
-
-import CreateCommunityItemMutation from 'pz-client/src/editor-proofofconcept/create-community-item-mutation';
-import CommunityItemContent from 'pz-client/src/editor-proofofconcept/community-item-content.component';
-
-import createMentionPlugin from 'pz-client/src/editor-proofofconcept/plugins/mention/create-mention-plugin';
-
-var DraftJsEditor = require('draft-js-plugins-editor').default;
-var createToolbarPlugin = require('draft-js-toolbar-plugin').default;
-var createLinkifyPlugin = require('draft-js-linkify-plugin').default;
+import CreateCommunityItemMutation from 'pz-client/src/editor/proofofconcept/create-community-item-mutation';
+import EditorComponent from 'pz-client/src/editor/editor.component';
+import CommunityItemContent from 'pz-client/src/editor/community-item-content.component';
+import serializeEditorState from 'pz-client/src/editor/serialize-editor-state';
 
 interface IProps {
     relay: any
@@ -40,33 +30,13 @@ interface IProps {
 }
 
 class Editor extends React.Component<IProps, any> {
-    private _editorPlugins;
-    private _MentionSuggestions;
-
-    constructor(props, state) {
-        super(props, state);
-
-        const mentionPlugin = createMentionPlugin();
-
-        this._MentionSuggestions = mentionPlugin.MentionSuggestions;
-
-        this._editorPlugins = [
-            createToolbarPlugin({clearTextActions: true}),
-            createLinkifyPlugin({target: 'noopener noreferrer'}),
-            mentionPlugin
-        ];
-
-        this.state = {
-            summary: '',
-            editorState: DraftJsEditorState.createEmpty()
-        };
-    }
+    state = {
+        summary: '',
+        editorState: null
+    };
 
     render() {
         const myCommunityItems = this.props.viewer.myCommunityItems.edges;
-        const {editorState} = this.state;
-
-        const MentionSuggestions = this._MentionSuggestions;
 
         return (
             <div className="editor-proofofconcept-namespace">
@@ -79,17 +49,10 @@ class Editor extends React.Component<IProps, any> {
                         value={this.state.summary}
                     />
 
-                    <div className="editor-area">
-                        <DraftJsEditor
-                            editorState={editorState}
-                            handleKeyCommand={this._updateRichStylingFromCommand.bind(this)}
-                            onChange={this._updateEditor.bind(this)}
-                            placeholder="Write something about Topic..."
-                            plugins={this._editorPlugins}
-                        />
-
-                        <MentionSuggestions />
-                    </div>
+                    <EditorComponent
+                        placeholder="Write something about Topic..."
+                        onChange={this._updateEditor.bind(this)}
+                    />
 
                     <button>Save</button>
                 </form>
@@ -118,12 +81,7 @@ class Editor extends React.Component<IProps, any> {
             type: 'Question',
             summary: this.state.summary,
 
-            bodyData: {
-                type: 'draftjs',
-                version: '0.8.0',
-                isJson: true,
-                value: JSON.stringify(convertToRaw(this.state.editorState.getCurrentContent()))
-            },
+            bodyData: serializeEditorState(this.state.editorState),
 
             viewer: this.props.viewer
         }));
@@ -131,17 +89,6 @@ class Editor extends React.Component<IProps, any> {
 
     private _updateEditor(editorState) {
         this.setState({editorState});
-    }
-
-    private _updateRichStylingFromCommand(command) {
-        const newState = RichUtils.handleKeyCommand(this.state.editorState, command);
-
-        if (newState) {
-            this._updateEditor(newState);
-            return true;
-        }
-
-        return false;
     }
 
     private _updateSummary(event) {
