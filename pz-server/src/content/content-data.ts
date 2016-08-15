@@ -6,7 +6,8 @@ export interface IContentData {
 
 export function isValidContentData(contentData: any): contentData is IContentData {
     return (
-        typeof contentData.type === 'string'
+        contentData
+        && typeof contentData.type === 'string'
         && typeof contentData.version === 'string'
         && contentData.value
     );
@@ -22,12 +23,12 @@ export function isTextContent(content: IContentData): content is ITextContent {
     return content.type === 'text';
 }
 
-export interface IDraftJs08Content extends IContentData {
+export interface IDraftjs08Content extends IContentData {
     type: 'draftjs',
     version: '0.8.0'
 }
 
-export function isDraftJs08Content(content: IContentData): content is IDraftJs08Content {
+export function isDraftJs08Content(content: IContentData): content is IDraftjs08Content {
     return content.type === 'draftjs' && content.version.startsWith('0.8');
 }
 

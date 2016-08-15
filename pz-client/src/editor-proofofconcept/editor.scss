@@ -26,10 +26,16 @@
 
         .editor-area {
             @import '../../../node_modules/draft-js/dist/Draft';
+            @import '../../../node_modules/draft-js-mention-plugin/lib/plugin';
 
             .public-DraftEditor-content {
                 min-height: 10rem;
             }
+        }
+
+        .community-item-content {
+            @import '../../../node_modules/draft-js/dist/Draft';
+            @import '../../../node_modules/draft-js-mention-plugin/lib/plugin';
         }
     }
 }

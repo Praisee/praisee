@@ -12,7 +12,7 @@ import SearchClient from 'pz-server/src/search/search-client';
 import searchSchema from 'pz-server/src/search/schema';
 import {IBulkUpsert, IDocumentPath, IBulkDelete} from './search';
 import {IUrlSlugInstance, IUrlSlug} from 'pz-server/src/url-slugs/models/url-slug';
-import routePaths from 'pz-client/src/router/route-paths';
+import routePaths from 'pz-server/src/vanity-route-paths/route-path-templates';
 
 export interface ISearchUpdaterModels {
     SearchUpdateJob: ISearchUpdateJob
@@ -27,13 +27,13 @@ export interface ISearchUpdaterModels {
 
 export default class SearchUpdater {
     public updateFrequency = 5; // TODO: Set this to something higher like 30 in production
-    
+
     public searchClient: SearchClient;
 
     private _models: ISearchUpdaterModels;
-    
+
     private _updateTimer;
-    
+
     private _operationHooks = [];
 
     constructor(models: ISearchUpdaterModels, searchClient: SearchClient) {
@@ -43,21 +43,21 @@ export default class SearchUpdater {
 
     start() {
         this.addSearchUpdateObservers();
-        
+
         let isRunningStill = false;
-        
+
         this._updateTimer = setInterval(() => {
             if (isRunningStill) {
                 return;
             }
-            
+
             this.runJobs().then(() => {
                 isRunningStill = false;
             });
-            
+
         }, this.updateFrequency * 1000);
     }
-    
+
     stop() {
         clearInterval(this._updateTimer);
         this.removeSearchUpdateObservers();
@@ -65,17 +65,17 @@ export default class SearchUpdater {
 
     async runJobs() {
         const {SearchUpdateJob} = this._models;
-        
+
         const incompleteJobs = await SearchUpdateJob.findIncompleteJobs();
-        
+
         if (!incompleteJobs.length) {
             return;
         }
-        
+
         const bulkOperations = this._jobsToBulkOperations(incompleteJobs);
-        
+
         await this.searchClient.performBulkOperations(bulkOperations);
-        
+
         await SearchUpdateJob.markAsCompletedByIds(
             incompleteJobs.map(incompleteJob => incompleteJob.id)
         );
@@ -83,10 +83,10 @@ export default class SearchUpdater {
 
     addSearchUpdateObservers() {
         this.removeSearchUpdateObservers();
-        
+
         const saveHook = this._createHook('save');
         const destroyHook = this._createHook('destroy');
-        
+
         this._addHook('CommunityItem', 'after save', saveHook);
         this._addHook('Topic', 'after save', saveHook);
         this._addHook('UrlSlug', 'after save', saveHook);
@@ -94,32 +94,32 @@ export default class SearchUpdater {
         this._addHook('CommunityItem', 'before delete', destroyHook);
         this._addHook('Topic', 'before delete', destroyHook);
     }
-    
+
     removeSearchUpdateObservers() {
         this._operationHooks.forEach(({modelName, operationName, hook}) => {
             this._models[modelName].removeObserver(operationName, hook);
         });
     }
-    
+
     private _addHook(modelName, operationName, hook) {
         this._models[modelName].observe(operationName, hook);
         this._operationHooks.push({modelName, operationName, hook});
     }
-    
+
     private _createHook(operation: TOperation): (context) => Promise<void> {
         return async (context): Promise<void> => {
             const models = await this._extractModelsFromOperationHookContext(context);
-            
+
             await Promise.all(models.map(({modelName, modelId}) => {
                 return this._createSearchUpdateJob(modelName, modelId, operation);
             }));
         };
     }
-    
+
     private async _extractModelsFromOperationHookContext(context): Promise<Array<IModelDefinition>> {
         const Model = context.Model;
         const modelName = Model.modelName;
-        
+
         if (context.instance) {
             return [{
                 modelName,
@@ -153,18 +153,18 @@ export default class SearchUpdater {
             }));
         }
     }
-    
+
     private async _createSearchUpdateJob(modelName: string, modelId: number, operation: TOperation): Promise<void> {
         const Model: IPersistedModel = this._models[modelName];
-        
+
         let model;
-        
+
         if (operation !== 'destroy') {
             model = await promisify(Model.findById, Model)(modelId);
         } else {
             model = new Model({id: modelId});
         }
-        
+
         if (!model) {
             console.error('Unable to locate model',
                 modelName, modelId);
@@ -182,16 +182,16 @@ export default class SearchUpdater {
             console.error('Unable to handle model type', modelName);
         }
     }
-    
+
     private _createCommunityItemJob(operation: TOperation, communityItem: ICommunityItemInstance) {
         const Model = communityItem.constructor as ICommunityItem ;
-        
+
         const path = {
             index: searchSchema.index,
             type: searchSchema.types.communityItem,
             id: communityItem.id
         };
-        
+
         if (operation === 'save') {
             const document = {
                 type: Model.type,
@@ -200,19 +200,19 @@ export default class SearchUpdater {
             };
 
             return this._createSaveJob(path, document);
-            
+
         } else if (operation === 'destroy') {
             return this._createDestroyJob(path);
         }
     }
-    
+
     private _createTopicJob(operation: TOperation, topic: ITopicInstance) {
         const path = {
             index: searchSchema.index,
             type: searchSchema.types.topic,
             id: topic.id
         };
-        
+
         if (operation === 'save') {
             if (!topic.isVerified) {
                 return; // Only verified topics get added to search
@@ -224,12 +224,12 @@ export default class SearchUpdater {
             };
 
             return this._createSaveJob(path, document);
-            
+
         } else if (operation === 'destroy') {
             return this._createDestroyJob(path);
         }
     }
-    
+
     private _createUrlSlugJob(operation: TOperation, urlSlug: IUrlSlugInstance) {
         if (urlSlug.isAlias) {
             return;
@@ -243,7 +243,7 @@ export default class SearchUpdater {
 
         const Model = this._models[urlSlug.sluggableType];
         let path, routePath;
-        
+
         const pathFromType = (type) => ({
             index: searchSchema.index,
             type: searchSchema.types[type],
@@ -260,17 +260,17 @@ export default class SearchUpdater {
                 path = pathFromType('communityItem');
                 routePath = routePaths.communityItem.review(urlSlug.fullSlug);
                 break;
-            
+
             case 'Question':
                 path = pathFromType('communityItem');
                 routePath = routePaths.communityItem.question(urlSlug.fullSlug);
                 break;
-            
+
             case 'Howto':
                 path = pathFromType('communityItem');
                 routePath = routePaths.communityItem.howto(urlSlug.fullSlug);
                 break;
-            
+
             case 'Comparison':
                 path = pathFromType('communityItem');
                 routePath = routePaths.communityItem.comparison(urlSlug.fullSlug);
@@ -284,57 +284,57 @@ export default class SearchUpdater {
             routePath: routePath
         });
     }
-    
+
     private async _createSaveJob(path, document) {
         const {SearchUpdateJob} = this._models;
-        
+
         const searchUpdateJob = SearchUpdateJob.from(
             path,
             'save',
             document
         );
-        
+
         await promisify(searchUpdateJob.save, searchUpdateJob)();
     }
-    
+
     private async _createDestroyJob(path) {
         const {SearchUpdateJob} = this._models;
-        
+
         const searchUpdateJob = SearchUpdateJob.from(
             path,
             'destroy'
         );
-        
+
         await promisify(searchUpdateJob.save, searchUpdateJob)();
     }
-    
+
     private _jobsToBulkOperations(searchUpdateJobs: Array<ISearchUpdateJobInstance>):
         Array<IBulkUpsert | IBulkDelete> {
-        
+
         return searchUpdateJobs.map(searchUpdateJob => {
             const path: IDocumentPath = {
                 index: searchUpdateJob.pathIndex,
                 type: searchUpdateJob.pathType,
                 id: searchUpdateJob.pathId
             };
-            
+
             if (searchUpdateJob.operation === 'save') {
                 const upsertOperation: IBulkUpsert = {
                     type: 'upsert',
                     path,
                     document: searchUpdateJob.searchDocument
                 };
-                
+
                 return upsertOperation;
-               
+
             } else if (searchUpdateJob.operation === 'destroy') {
                 const deleteOperation: IBulkDelete = {
                     type: 'delete',
                     path
                 };
-                
+
                 return deleteOperation;
-               
+
             } else {
                 throw new Error('Unable to handle operation: ' + searchUpdateJob.operation)
             }

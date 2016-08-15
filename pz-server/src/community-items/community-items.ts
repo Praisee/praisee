@@ -7,7 +7,6 @@ import {
 import promisify from 'pz-support/src/promisify';
 
 import {ITopic} from 'pz-server/src/topics/topics';
-import {ISluggable} from 'pz-server/src/url-slugs/mixins/sluggable';
 import isOwnerOfModel from 'pz-server/src/support/is-owner-of-model';
 import {ICommunityItem as ILoopbackCommunityItem} from 'pz-server/src/models/community-item'
 
@@ -17,10 +16,7 @@ import {
 
 import {findWithCursor} from 'pz-server/src/support/cursors/loopback-helpers';
 import {cursorLoopbackModelsToRecords} from 'pz-server/src/support/cursors/repository-helpers';
-import {
-    IDataToTextConverter,
-    IContentData
-} from 'pz-server/src/content/content-data';
+import {IContentData} from 'pz-server/src/content/content-data';
 
 export type TCommunityItemType = (
     'review'
@@ -33,16 +29,17 @@ export interface ICommunityItem extends IRepositoryRecord {
     recordType: 'CommunityItem'
 
     id?: number
-    type: TCommunityItemType
-    summary: string
+    type?: TCommunityItemType
+    summary?: string
     body?: string
-    bodyData: IContentData
+    bodyData?: IContentData
     createdAt?: Date
     updatedAt?: Date
 }
 
 export interface ICommunityItems extends IRepository {
     findById(id: number): Promise<ICommunityItem>
+    findAllByIds(ids: Array<number>): Promise<Array<ICommunityItem>>
     findSomeByUserId(cursor: TBiCursor, userId: number): Promise<ICursorResults<ICommunityItem>>
     findAllTopics(): Promise<Array<ITopic>>
     isOwner(userId: number, communityItemId: number): Promise<boolean>
@@ -52,11 +49,9 @@ export interface ICommunityItems extends IRepository {
 
 export default class CommunityItems implements ICommunityItems {
     private _CommunityItemModel: ILoopbackCommunityItem;
-    private _convertBodyDataToText: IDataToTextConverter;
 
-    constructor(CommunityItemModel: ILoopbackCommunityItem, convertBodyDataToText: IDataToTextConverter) {
+    constructor(CommunityItemModel: ILoopbackCommunityItem) {
         this._CommunityItemModel = CommunityItemModel;
-        this._convertBodyDataToText = convertBodyDataToText;
     }
 
     async findById(id: number): Promise<ICommunityItem> {
@@ -68,6 +63,18 @@ export default class CommunityItems implements ICommunityItems {
         }
 
         return createRecordFromLoopback<ICommunityItem>('CommunityItem', communityItemModel);
+    }
+
+    async findAllByIds(ids: Array<number>): Promise<Array<ICommunityItem>> {
+        const find = promisify(this._CommunityItemModel.find, this._CommunityItemModel);
+
+        const communityItemModels = await find({
+            where: { id: {inq: ids} }
+        });
+
+        return communityItemModels.map(communityItemModel => {
+            return createRecordFromLoopback<ICommunityItem>('CommunityItem', communityItemModel);
+        });
     }
 
     async findSomeByUserId(cursor: TBiCursor, userId: number): Promise<ICursorResults<ICommunityItem>> {
@@ -97,7 +104,7 @@ export default class CommunityItems implements ICommunityItems {
         let communityItemModel = new this._CommunityItemModel({
             type: communityItem.type,
             summary: communityItem.summary,
-            body: this._convertBodyDataToText(communityItem.bodyData),
+            body: communityItem.body,
             bodyData: communityItem.bodyData,
             userId: ownerId
         });
@@ -115,7 +122,7 @@ export default class CommunityItems implements ICommunityItems {
             id: communityItem.id,
             type: communityItem.type,
             summary: communityItem.summary,
-            body: this._convertBodyDataToText(communityItem.bodyData),
+            body: communityItem.body,
             bodyData: communityItem.bodyData
         });
 

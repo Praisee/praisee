@@ -4,8 +4,13 @@ import {
 } from 'pz-server/src/support/authorization';
 
 import {ITopics, ITopic} from 'pz-server/src/topics/topics';
+import {ICommunityItem} from 'pz-server/src/community-items/community-items';
 
-export interface IAuthorizedTopics extends ITopics {
+export interface IAuthorizedTopics {
+    findAll(): Promise<Array<ITopic>>
+    findById(id: number): Promise<ITopic>
+    findByUrlSlugName(urlSlugName: string): Promise<ITopic>
+    findAllCommunityItemsRanked(topicId: number): Promise<Array<ICommunityItem>>
 }
 
 class AuthorizedTopics implements IAuthorizedTopics {

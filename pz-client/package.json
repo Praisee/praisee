@@ -19,7 +19,9 @@
       "react",
       {
         "plugins": [
-          "pz-client/build-lib/babel-relay-plugin"
+          "pz-client/build-lib/babel-relay-plugin",
+          "transform-async-to-generator",
+          "transform-runtime"
         ]
       }
     ]

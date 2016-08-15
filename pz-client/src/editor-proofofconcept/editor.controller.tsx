@@ -8,6 +8,9 @@ import {
 } from 'draft-js';
 
 import CreateCommunityItemMutation from 'pz-client/src/editor-proofofconcept/create-community-item-mutation';
+import CommunityItemContent from 'pz-client/src/editor-proofofconcept/community-item-content.component';
+
+import createMentionPlugin from 'pz-client/src/editor-proofofconcept/plugins/mention/create-mention-plugin';
 
 var DraftJsEditor = require('draft-js-plugins-editor').default;
 var createToolbarPlugin = require('draft-js-toolbar-plugin').default;
@@ -37,13 +40,21 @@ interface IProps {
 }
 
 class Editor extends React.Component<IProps, any> {
-    private _editorPlugins = [
-        createToolbarPlugin({clearTextActions: true}),
-        createLinkifyPlugin()
-    ];
+    private _editorPlugins;
+    private _MentionSuggestions;
 
     constructor(props, state) {
         super(props, state);
+
+        const mentionPlugin = createMentionPlugin();
+
+        this._MentionSuggestions = mentionPlugin.MentionSuggestions;
+
+        this._editorPlugins = [
+            createToolbarPlugin({clearTextActions: true}),
+            createLinkifyPlugin({target: 'noopener noreferrer'}),
+            mentionPlugin
+        ];
 
         this.state = {
             summary: '',
@@ -54,6 +65,8 @@ class Editor extends React.Component<IProps, any> {
     render() {
         const myCommunityItems = this.props.viewer.myCommunityItems.edges;
         const {editorState} = this.state;
+
+        const MentionSuggestions = this._MentionSuggestions;
 
         return (
             <div className="editor-proofofconcept-namespace">
@@ -74,6 +87,8 @@ class Editor extends React.Component<IProps, any> {
                             placeholder="Write something about Topic..."
                             plugins={this._editorPlugins}
                         />
+
+                        <MentionSuggestions />
                     </div>
 
                     <button>Save</button>
@@ -85,7 +100,9 @@ class Editor extends React.Component<IProps, any> {
                         {myCommunityItems.map(({node: communityItem}) => (
                             <li key={communityItem.id}>
                                 <h3>{communityItem.summary}</h3>
-                                <div>{communityItem.body}</div>
+                                <div>
+                                    <CommunityItemContent communityItem={communityItem} />
+                                </div>
                             </li>
                         ))}
                     </ul>
@@ -98,7 +115,7 @@ class Editor extends React.Component<IProps, any> {
         event.preventDefault();
 
         this.props.relay.commitUpdate(new CreateCommunityItemMutation({
-            type: 'question',
+            type: 'Question',
             summary: this.state.summary,
 
             bodyData: {
@@ -113,7 +130,6 @@ class Editor extends React.Component<IProps, any> {
     }
 
     private _updateEditor(editorState) {
-        console.log(convertToRaw(editorState.getCurrentContent()));
         this.setState({editorState});
     }
 
@@ -143,7 +159,7 @@ export let CreateItemEditor = Relay.createContainer(Editor, {
                             id,
                             type,
                             summary,
-                            body
+                            ${CommunityItemContent.getFragment('communityItem')}
                         }
                     }
                 },
@@ -154,7 +170,7 @@ export let CreateItemEditor = Relay.createContainer(Editor, {
     }
 });
 
-export let UpdateItemEditor = Relay.createContainer(Editor, {
+export var UpdateItemEditor = Relay.createContainer(Editor, {
     fragments: {
         review: () => Relay.QL`
             fragment on CommunityItem {

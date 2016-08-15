@@ -4,10 +4,13 @@ import * as graphql from 'graphql';
 import {IAppRepositoryAuthorizers} from 'pz-server/src/app/repositories';
 import {IRepositoryRecord} from 'pz-server/src/support/repository';
 import {AuthorizationError} from 'pz-server/src/support/authorization';
+
 import {
     ICursorResults,
     TBiCursor, IBackwardCursor, IForwardCursor
 } from 'pz-server/src/support/cursors/cursors';
+
+import convertTextToData from 'pz-server/src/content/text-to-data-converter';
 
 var {
     connectionDefinitions,
@@ -426,13 +429,26 @@ export default function createSchema(repositoryAuthorizers: IAppRepositoryAuthor
         }
     });
 
-    const parseInputContentData = (inputContentData) => {
-        return {
-            type: inputContentData.type,
-            version: inputContentData.version,
-            value: inputContentData.isJson ?
-                JSON.parse(inputContentData.value) : inputContentData.value,
-        };
+    type TInputContentData = string | {
+        type: string
+        version: string
+        isJson: boolean
+        value: any
+    }
+
+    const parseInputContentData = (inputContentData: TInputContentData) => {
+        if (typeof inputContentData === 'string') {
+            return convertTextToData(inputContentData);
+
+        } else {
+
+            return {
+                type: inputContentData.type,
+                version: inputContentData.version,
+                value: inputContentData.isJson ?
+                    JSON.parse(inputContentData.value) : inputContentData.value,
+            };
+        }
     };
 
     const CreateCommunityItemMutation = mutationWithClientMutationId({
@@ -441,7 +457,8 @@ export default function createSchema(repositoryAuthorizers: IAppRepositoryAuthor
         inputFields: {
             type: { type: new GraphQLNonNull(GraphQLString) },
             summary: { type: new GraphQLNonNull(GraphQLString) },
-            bodyData: { type: new GraphQLNonNull(InputContentDataType) }
+            body: { type: GraphQLString },
+            bodyData: { type: InputContentDataType }
         },
 
         outputFields: {
@@ -451,8 +468,8 @@ export default function createSchema(repositoryAuthorizers: IAppRepositoryAuthor
             }
         },
 
-        mutateAndGetPayload: async ({type, summary, bodyData}, context) => {
-            const parsedBodyData = parseInputContentData(bodyData);
+        mutateAndGetPayload: async ({type, summary, body, bodyData}, context) => {
+            const parsedBodyData = parseInputContentData(body || bodyData);
 
             const communityItem = await communityItemsAuthorizer.as(context.user).create({
                 recordType: 'CommunityItem',

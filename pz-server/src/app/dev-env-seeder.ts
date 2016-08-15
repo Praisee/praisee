@@ -1,25 +1,34 @@
 import promisify from 'pz-support/src/promisify';
-import {ITopic} from 'pz-server/src/models/topic';
 
 export class DevEnvSeeder {
     app: IApp;
-    
+
     constructor(app) {
         this.app = app;
     }
-    
+
+    userSeeds() {
+        return [
+            {
+                email: 'test@praisee.com',
+                displayName: 'Test',
+                password: 'test'
+            }
+        ];
+    }
+
     topicSeeds() {
         return [
             {
                 name: 'Photography',
                 isVerified: true
             },
-            
+
             {
                 name: 'Videography',
                 isVerified: true
             },
-            
+
             {
                 name: 'Cameras',
                 isVerified: true
@@ -29,7 +38,7 @@ export class DevEnvSeeder {
                 name: 'Nikon',
                 isVerified: true
             },
-            
+
             ...[
                 'D1', 'D1X', 'D2X', 'D2Xs', 'D3X',
                 'D1H', 'D2H', 'D2Hs', 'D3', 'D3S', 'D4', 'D4S', 'D5',
@@ -45,12 +54,12 @@ export class DevEnvSeeder {
                 name: `Nikon ${model}`,
                 isVerified: true
             })),
-            
+
             {
                 name: 'Canon',
                 isVerified: true
             },
-            
+
             {
                 name: 'Beauty',
                 isVerified: true
@@ -62,33 +71,36 @@ export class DevEnvSeeder {
             }
         ];
     }
-    
-    seed(): Promise<any> {
+
+    async seed(): Promise<any> {
         if (process.env === 'production') {
             return;
         }
 
-        console.log('Seeding development environment');
+        console.log('Seeding development environment...');
 
-        return (Promise.resolve()
-            .then(() => {
-                const Topic = this.app.models.Topic;
-                
-                return Promise.all(this.topicSeeds().map((topicSeed) => {
-                    const topic = new Topic(topicSeed);
-                    return (promisify(topic.save, topic)()
-                        .catch((error) => {
-                            console.error(error);
-                            throw error;
-                        })
-                    );
-                }));
-            })
-                
-            .then(() => {
-                console.log('Seeding complete')
-            })
-        );
+        await this._seedWith(this.userSeeds(), this.app.models.User);
+        await this._seedWith(this.topicSeeds(), this.app.models.Topic);
+
+        console.log('Seeding complete')
+    }
+
+    private async _seedWith(seeds: Array<any>, Model: IPersistedModel): Promise<void> {
+        console.log('Seeding ' + Model.modelName + '...');
+
+        await Promise.all(seeds.map(async (seed) => {
+            try {
+                const topic = new Model(seed);
+                await promisify(topic.save, topic)()
+
+            } catch (error) {
+
+                console.error(error);
+                throw error;
+            }
+        }));
+
+        console.log('Seeding ' + Model.modelName + ' complete');
     }
 }
 

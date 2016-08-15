@@ -1,6 +1,6 @@
 import * as React from 'react';
 import {Component} from 'react';
-import SearchClient from 'pz-client/src/search/search-client';
+import SuggestionsClient from 'pz-client/src/search/suggestions-client';
 import {Link, withRouter} from 'react-router';
 import {ISearchSuggestionResult} from 'pz-server/src/search/search-results';
 
@@ -25,8 +25,8 @@ export interface ISiteSearchProps {
 }
 
 class SiteSearch extends Component<ISiteSearchProps, any> {
-    search: SearchClient;
-    
+    search: SuggestionsClient;
+
     static propTypes = {
         router: React.PropTypes.object.isRequired
     };
@@ -38,13 +38,13 @@ class SiteSearch extends Component<ISiteSearchProps, any> {
         // TODO: See https://github.com/reactjs/react-router/pull/3444
         location: React.PropTypes.object
     };
-    
+
     private _hasUnmounted = false;
 
     constructor() {
         super();
 
-        this.search = new SearchClient();
+        this.search = new SuggestionsClient();
 
         this.state = {
             value: '',
@@ -76,13 +76,13 @@ class SiteSearch extends Component<ISiteSearchProps, any> {
             </div>
         );
     }
-    
+
     componentDidMount() {
         this.setState({
             value: this._getLastSelectedSuggestionValue()
         });
     }
-    
+
     componentWillUnmount() {
         this._hasUnmounted = true;
     }
@@ -98,7 +98,7 @@ class SiteSearch extends Component<ISiteSearchProps, any> {
             if (this._hasUnmounted) {
                 return;
             }
-            
+
             this.setState({suggestions});
         });
     }
@@ -106,14 +106,14 @@ class SiteSearch extends Component<ISiteSearchProps, any> {
     _getSuggestionValue(suggestion) {
         return suggestion.title;
     }
-    
+
     _getLastSelectedSuggestionValue() {
         const location = this.context && this.context.location;
-        
+
         if (!location || !location.state || !location.state._appSiteSearchSuggestion) {
             return '';
         }
-        
+
         return location.state._appSiteSearchSuggestion.title || '';
     }
 
@@ -124,7 +124,7 @@ class SiteSearch extends Component<ISiteSearchProps, any> {
             </span>
         );
     }
-    
+
     _goToSuggestion(_, { suggestion }) {
         this.props.router.push({
             pathname: suggestion.routePath,

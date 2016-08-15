@@ -38,6 +38,7 @@ export interface ITopic extends IRepositoryRecord {
 export interface ITopics extends IRepository {
     findAll(): Promise<Array<ITopic>>
     findById(id: number): Promise<ITopic>
+    findAllByIds(ids: Array<number>): Promise<Array<ITopic>>
     findByUrlSlugName(urlSlugName: string): Promise<ITopic>
     findAllCommunityItemsRanked(topicId: number): Promise<Array<ICommunityItem>>
 }
@@ -60,6 +61,18 @@ export default class Topics implements ITopics {
     async findById(id: number) {
         const result = await promisify(this._TopicModel.findById, this._TopicModel)(id);
         return createRecordFromLoopback<ITopic>('Topic', result);
+    }
+
+    async findAllByIds(ids: Array<number>): Promise<Array<ITopic>> {
+        const find = promisify(this._TopicModel.find, this._TopicModel);
+
+        const topicModels = await find({
+            where: { id: {inq: ids} }
+        });
+
+        return topicModels.map(topicModel => {
+            return createRecordFromLoopback<ITopic>('Topic', topicModel);
+        });
     }
 
     async findByUrlSlugName(fullSlug: string) {

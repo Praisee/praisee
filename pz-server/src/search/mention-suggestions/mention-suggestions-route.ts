@@ -1,10 +1,9 @@
 import * as React from 'react';
-import * as ReactDomServer from 'react-dom/server';
 import SuggestionsService from 'pz-server/src/search/suggestions-service';
 import searchSchema from 'pz-server/src/search/schema';
 
 module.exports = function (app: IApp) {
-    app.get('/i/search/suggestions', function(request, response) {
+    app.get('/i/search/mention-suggestions', function(request, response) {
         let suggester = new SuggestionsService(searchSchema, app.services.searchClient);
 
         const searchQuery = request.query.query ?

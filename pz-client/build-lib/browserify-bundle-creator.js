@@ -6,6 +6,6 @@ module.exports = function createBrowserifyBundle() {
         entries: pzPath('pz-client', 'build/src/index.js'),
         debug: true
     });
-        
+
     return browserified.bundle();
 };

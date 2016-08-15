@@ -17,6 +17,7 @@ export default {
         pzPath('pz-server', 'src/graphql/graphql-initializer'),
         pzPath('pz-server', 'src/site/template-renderer'),
         pzPath('pz-server', 'src/search/site-search/search-route'),
+        pzPath('pz-server', 'src/search/mention-suggestions/mention-suggestions-route'),
         pzPath('pz-server', 'src/site/site-route'),
         pzPath('pz-server', 'src/site/static-assets')
     ]
