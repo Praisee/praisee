@@ -10,7 +10,7 @@ export default class SchemaInjector {
 
     private _modifyElement(element) {
         if (React.isValidElement(element)) {
-            let props = this._setPropsFromSchema(element);
+            let props = this._getPropsFromSchema(element);
             let modifiedChildren = this._modifyChildren(element);
             return React.cloneElement(element, props, modifiedChildren);
         }
@@ -22,7 +22,7 @@ export default class SchemaInjector {
         return React.Children.map(element.props.children, (child) => this._modifyElement(child));
     }
 
-    private _setPropsFromSchema(element: React.ReactElement<any>) {
+    private _getPropsFromSchema(element: React.ReactElement<any>) {
         let props = Object.assign({}, element.props);
 
         //Loop to match classNames to schema properties

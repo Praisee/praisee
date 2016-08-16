@@ -11,7 +11,7 @@ export class DateDisplay extends Component<IDateDisplayProps, any>{
     constructor(props, context) {
         super(props, context);
         this.schemaInjector = new SchemaInjector(dateSchema);
-        this.moment = moment(props.date);
+        this.moment = moment(new Date(props.date));
     }
 
     render() {

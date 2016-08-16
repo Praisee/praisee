@@ -52,7 +52,7 @@ export class TopicController extends Component<ITopicProps, ITopicState> {
             .map(({node}) =>
                 <div key={node.id}>
                     <h5>Mr.Jones</h5>
-                    <CommunityItem communityItem={node} />
+                    <CommunityItem key={node.id} communityItem={node} />
                 </div>
             );
         return (

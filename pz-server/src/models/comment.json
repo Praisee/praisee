@@ -5,9 +5,38 @@
     "options": {
         "validateUpsert": true
     },
-    "properties": {},
+    "mixins": {
+        "TimeStamp" : true
+    },
+    "properties": {
+        "body": {
+            "type": "string",
+            "required": true,
+            "description": "The content of the comment"
+        }
+    },
     "validations": [],
-    "relations": {},
+    "relations": {
+        "user": {
+            "type": "belongsTo",
+            "model": "User"
+        },
+        "votes": {
+            "type": "hasMany",
+            "model": "Vote"
+        },
+        "parent": {
+            "type": "belongsTo",
+            "polymorphic": {
+                "foreignKey": "parentId",
+                "discriminator": "parentType"
+            }
+        },
+        "comments":{
+            "type": "hasMany",
+            "model": "Comment"
+        }
+    },
     "acls": [],
     "methods": {}
 }

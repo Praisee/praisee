@@ -60,6 +60,10 @@
         "topics": {
             "type": "hasAndBelongsToMany",
             "model": "Topic"
+        },
+        "comments":{
+            "type": "hasMany",
+            "model": "Comment"
         }
     },
     "acls": [],

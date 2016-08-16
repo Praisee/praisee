@@ -59,7 +59,11 @@ export default {
     },
     'CommunityItem': {
         'dataSource': 'vagrant-postgres',
-        'public': false,
+        'public': true,
+    },
+    'Comment': {
+        'dataSource': 'vagrant-postgres',
+        'public': true,
     },
     'Review': {
         'dataSource': 'vagrant-postgres',

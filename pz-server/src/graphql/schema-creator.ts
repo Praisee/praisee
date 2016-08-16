@@ -40,7 +40,8 @@ export default function createSchema(repositoryAuthorizers: IAppRepositoryAuthor
     const {
         users: usersAuthorizer,
         topics: topicsAuthorizer,
-        communityItems: communityItemsAuthorizer
+        communityItems: communityItemsAuthorizer,
+        comments: commentsAuthorizer
     } = repositoryAuthorizers;
 
     const BiCursorFromGraphqlArgs = (graphqlArgs): TBiCursor => {
@@ -95,9 +96,25 @@ export default function createSchema(repositoryAuthorizers: IAppRepositoryAuthor
             return {id: 'viewer'};
         }
 
-        const lowercaseType = type[0].toLowerCase() + type.slice(1);
+        let repositoryAuthorizer;
 
-        const repositoryAuthorizer = repositoryAuthorizers[lowercaseType];
+        switch(type) {
+            case 'User':
+                repositoryAuthorizer = usersAuthorizer;
+                break;
+
+            case 'Topic':
+                repositoryAuthorizer = topicsAuthorizer;
+                break;
+
+            case 'CommunityItem':
+                repositoryAuthorizer = communityItemsAuthorizer;
+                break;
+
+            case 'Comment':
+                repositoryAuthorizer = commentsAuthorizer;
+                break;
+        }
 
         if (!repositoryAuthorizer) {
             return null;
@@ -119,6 +136,9 @@ export default function createSchema(repositoryAuthorizers: IAppRepositoryAuthor
 
             case 'CommunityItem':
                 return CommunityItemType;
+
+            case 'Comment':
+                return CommentType;
         }
 
         return null;
@@ -306,13 +326,24 @@ export default function createSchema(repositoryAuthorizers: IAppRepositoryAuthor
                 type: GraphQLInt
             },
 
-            text: {
+            body: {
                 type: GraphQLString
             },
 
             createdAt: {
                 type: GraphQLString
-            }
+            },
+
+            comments: {
+                type: CommentConnection.connectionType,
+                args: connectionArgs,
+                resolve: async (comment, args, {user}) => {
+                    const comments = await commentsAuthorizer
+                            .as(user)
+                            .findSomeComments(comment.id)
+                    return connectionFromArray(comments, args);
+                }
+            },
         }),
 
         interfaces: [nodeInterface]
@@ -387,6 +418,29 @@ export default function createSchema(repositoryAuthorizers: IAppRepositoryAuthor
 
             udpdatedAt: {
                 type: GraphQLString
+            },
+
+            comments: {
+                type: CommentConnection.connectionType,
+                args: connectionArgs,
+                resolve: async (communityItem, args, {user}) => {
+                    const comments = await communityItemsAuthorizer
+                            .as(user)
+                            .findSomeComments(communityItem.id)
+                    return connectionFromArray(comments, args);
+                }
+            },
+            ocommunityItems: {
+                type: CommunityItemConnection.connectionType,
+                args: connectionArgs,
+
+                resolve: async (topic, args, {user}) => {
+                    const communityItems = await topicsAuthorizer
+                            .as(user)
+                            .findAllCommunityItemsRanked(topic.id)
+
+                    return connectionFromArray(communityItems, args);
+                }
             }
         }),
 

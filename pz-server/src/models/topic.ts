@@ -1,4 +1,11 @@
+import {
+    IRepository,
+    IRepositoryRecord,
+    createRecordFromLoopback
+} from 'pz-server/src/support/repository';
+
 import {ISluggable, ISluggableInstance} from 'pz-server/src/url-slugs/mixins/sluggable';
+import {ICommunityItemInstance} from 'pz-server/src/models/community-item';
 
 export type TTopicType = (
     'topic'
@@ -6,7 +13,7 @@ export type TTopicType = (
     | 'product'
 );
 
-export interface ITopic extends IPersistedModel, ISluggable {
+export interface ITopicModel extends IPersistedModel, ISluggable {
     type: TTopicType
 }
 
@@ -17,8 +24,8 @@ export interface ITopicInstance extends IPersistedModelInstance, ISluggableInsta
     thumbnailPath: string
     overviewContent: string
     isVerified: boolean
-    communityItems: IRelatedPersistedModel    
+    communityItems: IRelatedPersistedModel<ICommunityItemInstance>
 }
 
-module.exports = function (Topic: ITopic) {
+module.exports = function (Topic: ITopicModel) {
 };

@@ -1,5 +1,12 @@
-import {ICommunityItem} from 'pz-server/src/models/community-item';
+import {IComment, IComments} from 'pz-server/src/comments/comments';
 
-module.exports = function (Comment: ICommunityItem) {
-    Comment.type = 'comment';
+export interface ICommentModel extends IPersistedModel {
+
+}
+
+export interface ICommentInstance extends IPersistedModelInstance {
+    comments?: IRelatedPersistedModel<ICommentInstance[]>
+}
+
+module.exports = function (Comment: IComment) {
 };

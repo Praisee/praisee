@@ -1,4 +1,6 @@
 import promisify from 'pz-support/src/promisify';
+import {ITopic, ITopicInstance} from 'pz-server/src/models/topic'
+
 
 export class DevEnvSeeder {
     app: IApp;
@@ -76,14 +78,41 @@ export class DevEnvSeeder {
     communityItemSeeds() {
         return [
             {
+                topicId: 4,
                 type: "Question",
                 summary: 'Is there any D810 successor is coming in 2016?',
                 body:
                 `I have seen lots of people selling D810 these days in gulf countries. Also its used price gone a bit up than old days. (Don't know why)
-                    is there any successor to D810? 
-                    I want a D810 badly and I can hold a bit if any new camera is going to release in 2016. 
-                    What is your opinion ? Should I wait or its time to buy D810 ?`
+                is there any successor to D810? 
+                I want a D810 badly and I can hold a bit if any new camera is going to release in 2016. 
+                What is your opinion ? Should I wait or its time to buy D810 ?`
             }]
+    }
+
+    commentSeeds() {
+        return [
+            {
+                id: 1,
+                createdAt: new Date(),
+                communityItemId: 1,
+                body:
+                    `There are rumors about a Photokina launch
+                The D810 is (almost) 2 years old and and with the normal timeframe it would be replaced this year.
+                It's time for Nikon to make use of some of their current technology into a new camera body.
+                The 153 point AF, the wireless solutions, new Expeed processor, new Sensor ( we'll see what Sony been sittning on) to take a big step forwardThe launch of the Canon 5DIV and the D900 will be close in time and this should be this year
+                `
+            },
+            {
+                id: 2,
+                commentId: 1,
+                body: 'Given the impact of the earthquake in Japan, my guesstimate is announcement this year, availability next'
+            },
+            {
+                id: 3,
+                commentId: 2,
+                body: 'yeah, true we will wait and see...'
+            }
+        ]
     }
 
     async seed(): Promise<any> {
@@ -96,6 +125,7 @@ export class DevEnvSeeder {
         await this._seedWith(this.userSeeds(), this.app.models.User);
         await this._seedWith(this.topicSeeds(), this.app.models.Topic);
         await this._seedWith(this.communityItemSeeds(), this.app.models.Topic);
+        await this._seedWith(this.commentSeeds(), this.app.models.Topic);
 
         console.log('Seeding complete')
     }
@@ -110,7 +140,8 @@ export class DevEnvSeeder {
 
             } catch (error) {
 
-                console.error(error);
+                console.log(error);
+                console.log('Failed to seed: ' + error.message);
                 throw error;
             }
         }));

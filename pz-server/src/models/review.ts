@@ -1,6 +1,6 @@
-import {ICommunityItem, ICommunityItemInstance} from 'pz-server/src/models/community-item';
+import {ICommunityItemModel, ICommunityItemInstance} from 'pz-server/src/models/community-item';
 
-export interface IReview extends ICommunityItem {
+export interface IReview extends ICommunityItemModel {
 }
 
 export interface IReviewInstance extends ICommunityItemInstance {

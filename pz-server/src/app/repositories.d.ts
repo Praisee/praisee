@@ -9,10 +9,14 @@ import {IAuthorizedTopics} from 'pz-server/src/topics/topics-authorizer';
 import {ICommunityItems} from '../community-items/community-items';
 import {IAuthorizedCommunityItems} from 'pz-server/src/community-items/community-items-authorizer';
 
+import {IComments} from '../comments/comments';
+import {IAuthorizedComments} from 'pz-server/src/comments/comments-authorizer';
+
 export interface IAppRepositories {
     users: IUsers,
     topics: ITopics,
-    communityItems: ICommunityItems
+    communityItems: ICommunityItems,
+    comments: IComments
 }
 
 export interface IAppAuthorizedRepository {
@@ -25,4 +29,5 @@ export interface IAppRepositoryAuthorizers {
     users: TAppAuthorizer<IAuthorizedUsers>
     topics: TAppAuthorizer<IAuthorizedTopics>
     communityItems: TAppAuthorizer<IAuthorizedCommunityItems>
+    comments: TAppAuthorizer<IAuthorizedComments>
 }

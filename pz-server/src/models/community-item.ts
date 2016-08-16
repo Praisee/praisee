@@ -1,4 +1,7 @@
 import {ISluggable, ISluggableInstance} from 'pz-server/src/url-slugs/mixins/sluggable';
+import {ICommunityItem} from 'pz-server/src/community-items/community-items';
+import {ITopicInstance} from 'pz-server/src/models/topic';
+import {ICommentInstance} from 'pz-server/src/models/comment';
 import {IContentData, isValidContentData} from 'pz-server/src/content/content-data';
 import convertTextToData from 'pz-server/src/content/text-to-data-converter';
 
@@ -11,18 +14,19 @@ export type TCommunityItemType = (
     | 'review'
 );
 
-export interface ICommunityItem extends IPersistedModel, ISluggable {
+export interface ICommunityItemModel extends IPersistedModel, ISluggable {
     type: TCommunityItemType
-    topics: IRelatedPersistedModel
 }
 
-export interface ICommunityItemInstance extends IPersistedModelInstance, ISluggableInstance {
+export interface ICommunityItemInstance extends IPersistedModelInstance, ISluggableInstance, ICommunityItem {
     id: number
     summary: string
     body: string
     bodyData: IContentData
     createdAt: Date
     updatedAt: Date
+    topics: IRelatedPersistedModel<ITopicInstance[]>
+    comments?: IRelatedPersistedModel<ICommentInstance[]>
 }
 
 module.exports = function (CommunityItem: ICommunityItem) {

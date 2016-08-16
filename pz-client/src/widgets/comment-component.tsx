@@ -3,6 +3,8 @@ import * as React from 'react';
 import * as Relay from 'react-relay';
 import SchemaInjector, {ISchemaType} from 'pz-client/src/support/schema-injector';
 import { DateDisplay } from 'pz-client/src/widgets/date-display.component'
+import {IComment} from 'pz-server/src/comments/comments';
+import CommentList from 'pz-client/src/widgets/comment-list-component'
 
 class Comment extends Component<ICommentProps, any>{
     schemaInjector: SchemaInjector;
@@ -13,40 +15,62 @@ class Comment extends Component<ICommentProps, any>{
     }
 
     render() {
-        const {text, upVotes, downVotes, createdAt} = this.props;
+        const {comment, currentLevel, maxLevel} = this.props;
+        const {body, upVotes, downVotes, createdAt} = comment;
 
-        return this.schemaInjector.inject(
-            <div className="comment">
+        let commentList = null;
+        if (this.props.relay.expanded) {
+            commentList = (<CommentList key={`comment-commentList-${comment.id}`}
+                communityItem={null}
+                comment={comment}
+                currentLevel={currentLevel}
+                maxLevel={maxLevel} />)
+        }
+
+        return (
+            <div className="comment" style={{ paddingLeft: "15px" }}>
                 <DateDisplay date={createdAt} type="date-created" />
-                <p className="text">{text}</p>
+                <p className="text">{body}</p>
                 <p>
                     <span className="upvote-count">{upVotes}</span>/5
                     <span className="downvote-count">{downVotes}</span> reviews
                 </p>
+
+                {!this.props.relay.variables.expanded ?
+                    <div className="btn btn-primary" onClick={this.onClickHead.bind(this) }>More Comments</div>
+                    : null }
+                {commentList}
             </div>
         );
+    }
+
+    onClickHead() {
+        this.props.relay.setVariables({ expanded: true });
     }
 }
 
 export default Relay.createContainer(Comment, {
+    initialVariables: {
+        expanded: false,
+    },
     fragments: {
-        votes: () => Relay.QL`
+        comment: ({expanded, depth}) => Relay.QL`
             fragment on Comment {
-                text,
+                body,
                 createdAt,
                 upVotes,
-                downVotes
-            }
+                downVotes,
+                ${CommentList.getFragment('comment').if(expanded)}
+            } 
         `
     }
 });
 
 export interface ICommentProps {
-    text: string,
-    commentId: number,
-    upVotes: number,
-    downVotes: number,
-    createdAt: string
+    comment: IComment
+    relay
+    currentLevel
+    maxLevel
 }
 
 var commentSchema: ISchemaType = {

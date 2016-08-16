@@ -1,5 +1,5 @@
-import {ITopic} from 'pz-server/src/models/topic';
+import {ITopicModel} from 'pz-server/src/models/topic';
 
-module.exports = function (Product: ITopic) {
+module.exports = function (Product: ITopicModel) {
     Product.type = 'product';
 };

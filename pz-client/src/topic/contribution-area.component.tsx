@@ -29,7 +29,7 @@ export default class ContributionArea extends Component<IContributionProps, ICon
                     <textarea ref="body" 
                         placeholder="Say something nice about {this.props.topic.summary}" 
                         onChange={this._contentChangeHandler.bind(this)} 
-                        style="width: 100%" />
+                        style={{width: "100%"}} />
                     { this.state.content ?
                         <button className="btn btn-primary" type="submit" disabled={this.state.isLoading}>Submit</button>
                         : null

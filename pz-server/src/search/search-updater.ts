@@ -6,8 +6,8 @@ import {
     TOperation
 } from 'pz-server/src/search/models/search-update-job';
 
-import {ICommunityItem, ICommunityItemInstance} from 'pz-server/src/models/community-item';
-import {ITopicInstance, ITopic} from 'pz-server/src/models/topic';
+import {ICommunityItemModel, ICommunityItemInstance} from 'pz-server/src/models/community-item';
+import {ITopicInstance, ITopicModel} from 'pz-server/src/models/topic';
 import SearchClient from 'pz-server/src/search/search-client';
 import searchSchema from 'pz-server/src/search/schema';
 import {IBulkUpsert, IDocumentPath, IBulkDelete} from './search';
@@ -16,8 +16,8 @@ import routePaths from 'pz-server/src/vanity-route-paths/route-path-templates';
 
 export interface ISearchUpdaterModels {
     SearchUpdateJob: ISearchUpdateJob
-    CommunityItem: ICommunityItem
-    Topic: ITopic
+    CommunityItem: ICommunityItemModel
+    Topic: ITopicModel
     UrlSlug: IUrlSlug
     [modelName: string]: IPersistedModel
 }
@@ -184,7 +184,7 @@ export default class SearchUpdater {
     }
 
     private _createCommunityItemJob(operation: TOperation, communityItem: ICommunityItemInstance) {
-        const Model = communityItem.constructor as ICommunityItem ;
+        const Model = communityItem.constructor as ICommunityItemModel;
 
         const path = {
             index: searchSchema.index,
