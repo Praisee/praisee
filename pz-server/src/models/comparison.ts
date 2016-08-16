@@ -1,5 +1,5 @@
-import {ICommunityItemInstance} from 'pz-server/src/models/community-item';
+import {ICommunityItemModel} from 'pz-server/src/models/community-item';
 
-module.exports = function (Comparison: ICommunityItemInstance) {
+module.exports = function (Comparison: ICommunityItemModel) {
     Comparison.type = 'comparison';
 };

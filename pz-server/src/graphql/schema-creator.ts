@@ -338,9 +338,11 @@ export default function createSchema(repositoryAuthorizers: IAppRepositoryAuthor
                 type: CommentConnection.connectionType,
                 args: connectionArgs,
                 resolve: async (comment, args, {user}) => {
+
                     const comments = await commentsAuthorizer
-                            .as(user)
-                            .findSomeComments(comment.id)
+                        .as(user)
+                        .findAllByParentCommentId(comment.id);
+
                     return connectionFromArray(comments, args);
                 }
             },
@@ -424,9 +426,11 @@ export default function createSchema(repositoryAuthorizers: IAppRepositoryAuthor
                 type: CommentConnection.connectionType,
                 args: connectionArgs,
                 resolve: async (communityItem, args, {user}) => {
+
                     const comments = await communityItemsAuthorizer
                             .as(user)
-                            .findSomeComments(communityItem.id)
+                            .findAllComments(communityItem.id);
+
                     return connectionFromArray(comments, args);
                 }
             },

@@ -69,7 +69,7 @@ export default class CommunityItems implements ICommunityItems {
         );
     }
 
-    async findSomeComments(communityItemId: number): Promise<Array<IComment>> {
+    async findAllComments(communityItemId: number): Promise<Array<IComment>> {
         const communityItemModel: ICommunityItemInstance = await promisify(
             this._CommunityItemModel.findById, this._CommunityItemModel)(communityItemId);
 

@@ -1,6 +1,4 @@
 import promisify from 'pz-support/src/promisify';
-import {ITopic, ITopicInstance} from 'pz-server/src/models/topic'
-
 
 export class DevEnvSeeder {
     app: IApp;
@@ -124,8 +122,8 @@ export class DevEnvSeeder {
 
         await this._seedWith(this.userSeeds(), this.app.models.User);
         await this._seedWith(this.topicSeeds(), this.app.models.Topic);
-        await this._seedWith(this.communityItemSeeds(), this.app.models.Topic);
-        await this._seedWith(this.commentSeeds(), this.app.models.Topic);
+        await this._seedWith(this.communityItemSeeds(), this.app.models.CommunityItem);
+        await this._seedWith(this.commentSeeds(), this.app.models.Comment);
 
         console.log('Seeding complete')
     }

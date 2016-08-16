@@ -33,7 +33,7 @@ export interface ICommunityItems extends IRepository {
     findAllByIds(ids: Array<number>): Promise<Array<ICommunityItem>>
     findSomeByUserId(cursor: TBiCursor, userId: number): Promise<ICursorResults<ICommunityItem>>
     findAllTopics(communityItemId: number): Promise<Array<ITopic>>
-    findSomeComments(communityItemId: number): Promise<Array<IComment>>
+    findAllComments(communityItemId: number): Promise<Array<IComment>>
     isOwner(userId: number, communityItemId: number): Promise<boolean>
     create(communityItem: ICommunityItem, ownerId: number): Promise<ICommunityItem>
     update(communityItem: ICommunityItem): Promise<ICommunityItem>

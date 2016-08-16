@@ -4,6 +4,7 @@ import {ITopic} from 'pz-server/src/topics/topics';
 import {TBiCursor, ICursorResults} from 'pz-server/src/support/cursors/cursors';
 import {IContentFilterer} from 'pz-server/src/content/content-filterer';
 import {promisedMapCursorResults} from 'pz-server/src/support/cursors/map-cursor-results';
+import {IComment} from 'pz-server/src/comments/comments';
 
 export default class FilteredCommunityItems implements ICommunityItems {
     private _CommunityItems: ICommunityItems;
@@ -44,8 +45,12 @@ export default class FilteredCommunityItems implements ICommunityItems {
         return await this._CommunityItems.isOwner(userId, communityItemId);
     }
 
-    async findAllTopics(): Promise<Array<ITopic>> {
-        return await this._CommunityItems.findAllTopics();
+    async findAllTopics(communityItemId: number): Promise<Array<ITopic>> {
+        return await this._CommunityItems.findAllTopics(communityItemId);
+    }
+
+    async findAllComments(communityItemId: number): Promise<Array<IComment>> {
+        return await this._CommunityItems.findAllComments(communityItemId);
     }
 
     async create(communityItem: ICommunityItem, ownerId: number): Promise<ICommunityItem> {

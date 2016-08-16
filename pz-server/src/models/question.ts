@@ -1,5 +1,5 @@
-import {ICommunityItemInstance} from 'pz-server/src/models/community-item';
+import {ICommunityItemModel} from 'pz-server/src/models/community-item';
 
-module.exports = function (Question: ICommunityItemInstance) {
+module.exports = function (Question: ICommunityItemModel) {
     Question.type = 'question';
 };

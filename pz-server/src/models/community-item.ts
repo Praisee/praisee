@@ -1,25 +1,32 @@
 import {ISluggable, ISluggableInstance} from 'pz-server/src/url-slugs/mixins/sluggable';
-import {ICommunityItem} from 'pz-server/src/community-items/community-items';
 import {ITopicInstance} from 'pz-server/src/models/topic';
 import {ICommentInstance} from 'pz-server/src/models/comment';
-import {IContentData, isValidContentData} from 'pz-server/src/content/content-data';
+import {IContentData} from 'pz-server/src/content/content-data';
 import convertTextToData from 'pz-server/src/content/text-to-data-converter';
 
 export type TCommunityItemType = (
+    'Comment'
+        | 'Comparison'
+        | 'Howto'
+        | 'Question'
+        | 'Review'
+    );
+
+export type TLegacyCommunityItemType = (
     'comment'
     | 'comparison'
     | 'howto'
     | 'question'
-    | 'answer'
     | 'review'
 );
 
 export interface ICommunityItemModel extends IPersistedModel, ISluggable {
-    type: TCommunityItemType
+    type: TLegacyCommunityItemType
 }
 
-export interface ICommunityItemInstance extends IPersistedModelInstance, ISluggableInstance, ICommunityItem {
+export interface ICommunityItemInstance extends IPersistedModelInstance, ISluggableInstance {
     id: number
+    type: TCommunityItemType
     summary: string
     body: string
     bodyData: IContentData
@@ -29,7 +36,7 @@ export interface ICommunityItemInstance extends IPersistedModelInstance, ISlugga
     comments?: IRelatedPersistedModel<ICommentInstance[]>
 }
 
-module.exports = function (CommunityItem: ICommunityItem) {
+module.exports = function (CommunityItem: ICommunityItemModel) {
     // TODO: This is a temporary fix to add body content data from plain content
     // TODO: everything uses repositories
     CommunityItem.observe('before save', async (context) => {

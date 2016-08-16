@@ -5,17 +5,14 @@ import {
     NotAuthenticatedError,
     AuthorizationError
 } from 'pz-server/src/support/authorization';
-import promisify from 'pz-support/src/promisify';
+
 import {IComment, IComments} from 'pz-server/src/comments/comments';
-import isOwnerOfModel from 'pz-server/src/support/is-owner-of-model';
-import {ICommunityItems, ICommunityItem} from 'pz-server/src/community-items/community-items';
-import {IForwardCursor, ICursorResults} from 'pz-server/src/support/cursors';
 
 export interface IAuthorizedComments {
     findById(id: number): Promise<IComment>
     create(comment: IComment): Promise<IComment | AuthorizationError>
     update(comment: IComment): Promise<IComment | AuthorizationError>
-    findSomeComments(commentId: number): Promise<Array<IComment>>
+    findAllByParentCommentId(commentId: number): Promise<Array<IComment>>
 }
 
 class AuthorizedComments implements IAuthorizedComments {
@@ -31,8 +28,8 @@ class AuthorizedComments implements IAuthorizedComments {
         return await this._comments.findById(id);
     }
 
-    async findSomeComments(commentId: number): Promise<Array<IComment>> {
-        return await this._comments.findSomeComments(commentId);
+    async findAllByParentCommentId(commentId: number): Promise<Array<IComment>> {
+        return await this._comments.findAllByParentCommentId(commentId);
     }
 
     async create(comment: IComment): Promise<IComment | AuthorizationError> {
