@@ -62,12 +62,7 @@ export class DevEnvSeeder {
             },
 
             {
-                name: 'Beauty',
-                isVerified: true
-            },
-
-            {
-                name: 'Makeup',
+                name: 'Cosmetics',
                 isVerified: true
             }
         ];
