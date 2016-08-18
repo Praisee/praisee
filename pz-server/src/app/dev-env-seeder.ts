@@ -82,6 +82,14 @@ export class DevEnvSeeder {
             }]
     }
 
+    topicCommunityItemSeeds() {
+        return [
+            {
+                communityItemId: 1,
+                topicId: 4
+            }]
+    }
+
     commentSeeds() {
         return [
             {
@@ -118,6 +126,7 @@ export class DevEnvSeeder {
         await this._seedWith(this.userSeeds(), this.app.models.User);
         await this._seedWith(this.topicSeeds(), this.app.models.Topic);
         await this._seedWith(this.communityItemSeeds(), this.app.models.CommunityItem);
+        await this._seedWith(this.topicCommunityItemSeeds(), this.app.models.TopicCommunityItem);
         await this._seedWith(this.commentSeeds(), this.app.models.Comment);
 
         console.log('Seeding complete')
@@ -128,8 +137,8 @@ export class DevEnvSeeder {
 
         await Promise.all(seeds.map(async (seed) => {
             try {
-                const topic = new Model(seed);
-                await promisify(topic.save, topic)()
+                const model = new Model(seed);
+                await promisify(model.save, model)()
 
             } catch (error) {
 
