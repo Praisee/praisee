@@ -53,11 +53,33 @@ export default class Comments implements IComments {
         const comment: ICommentInstance = await promisify(
             this._CommentModel.findById, this._CommentModel)(commentId);
 
-        const comments = await promisify(comment.comments, comment)();
+        const comments = await promisify<ICommentInstance[]>(comment.comments, comment)();
 
         return comments.map((comment) =>
             createRecordFromLoopback<IComment>('Comment', comment)
         );
+    }
+
+    async getCommentTree(commentId: number): Promise<IComment> {
+        const comment: ICommentInstance = await promisify(
+            this._CommentModel.findById, this._CommentModel)(commentId);
+            
+        const comments = await this.getCommentsForComment(comment);
+        return comments
+    }
+
+    async getCommentsForComment(commentInstance: ICommentInstance): Promise<IComment> {
+        let comment = createRecordFromLoopback<IComment>('Comment', commentInstance);
+        comment.comments = [];
+        
+        const comments = await promisify<ICommentInstance[]>(commentInstance.comments, commentInstance)();
+
+        for (var i = 0; i < comments.length; i++) {
+            var currentComment = comments[i];
+            comment.comments.push(await this.getCommentsForComment(currentComment));
+        }
+
+        return comment;
     }
 
     async update(comment: IComment): Promise<IComment> {

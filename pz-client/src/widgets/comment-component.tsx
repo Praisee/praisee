@@ -4,9 +4,8 @@ import * as Relay from 'react-relay';
 import SchemaInjector, {ISchemaType} from 'pz-client/src/support/schema-injector';
 import { DateDisplay } from 'pz-client/src/widgets/date-display.component'
 import {IComment} from 'pz-server/src/comments/comments';
-import CommentList from 'pz-client/src/widgets/comment-list-component'
 
-class Comment extends Component<ICommentProps, any>{
+export class Comment extends Component<any, any>{
     schemaInjector: SchemaInjector;
 
     constructor(props, context) {
@@ -15,16 +14,16 @@ class Comment extends Component<ICommentProps, any>{
     }
 
     render() {
-        const {comment, currentLevel, maxLevel} = this.props;
-        const {body, upVotes, downVotes, createdAt} = comment;
+        const {comment} = this.props;
+        const {comments, body, upVotes, downVotes, createdAt} = comment;
 
         let commentList = null;
-        if (this.props.relay.expanded) {
-            commentList = (<CommentList key={`comment-commentList-${comment.id}`}
-                communityItem={null}
-                comment={comment}
-                currentLevel={currentLevel}
-                maxLevel={maxLevel} />)
+        if (comments.length > 0) {
+            commentList = (
+                <CommentList key={`comment-commentList-${comment.id}`}
+                    comments={comments}
+                />
+            );
         }
 
         return (
@@ -36,41 +35,56 @@ class Comment extends Component<ICommentProps, any>{
                     <span className="downvote-count">{downVotes}</span> reviews
                 </p>
 
-                {!this.props.relay.variables.expanded ?
-                    <div className="btn btn-primary" onClick={this.onClickHead.bind(this) }>More Comments</div>
-                    : null }
                 {commentList}
             </div>
         );
     }
-
-    onClickHead() {
-        this.props.relay.setVariables({ expanded: true });
-    }
 }
 
-export default Relay.createContainer(Comment, {
-    initialVariables: {
-        expanded: false,
-    },
-    fragments: {
-        comment: ({expanded, depth}) => Relay.QL`
-            fragment on Comment {
-                body,
-                createdAt,
-                upVotes,
-                downVotes,
-                ${CommentList.getFragment('comment').if(expanded)}
-            } 
-        `
+export class CommentList extends Component<any, any>{
+    expandChildren: boolean;
+
+    constructor(props, context) {
+        super(props, context);
     }
-});
+
+    render() {
+        const {comments} = this.props;
+
+        return (
+            <div>
+                {comments.map((comment) => (
+                    <Comment
+                        key={'comment' + comment.id}
+                        comment={comment} />
+                )) }
+            </div>
+        );
+    }
+}
+// export default Relay.createContainer(Comment, {
+//     initialVariables: {
+//         expanded: false,
+//         currentDepth: 0
+//     },
+//     fragments: {
+//         comment: ({expanded, currentDepth}) => Relay.QL`
+//             fragment on Comment {
+//                 body,
+//                 createdAt,
+//                 upVotes,
+//                 downVotes,
+//                 ${CommentList.getFragment('comment', { currentDepth }).if(expanded)}
+//             } 
+//         `
+//     }
+// });
 
 export interface ICommentProps {
     comment: IComment
     relay
-    currentLevel
     maxLevel
+    currentDepth
 }
 
 var commentSchema: ISchemaType = {

@@ -16,9 +16,11 @@ class Topic extends Component<ICommunityItemProps, ICommuintyItemState> {
             <div className="community-item">
                 <h4>{communityItem.summary}</h4>
                 <p>{communityItem.body}</p>
-                <CommentList key={`communityItem-commentList-${communityItem.id}`}
+                <CommentList
+                    key={`communityItem-commentList-${communityItem.id}`}
                     communityItem={communityItem}
-                    maxLevel={5}
+                    comment={null}
+                    expandTo={this.props.relay.variables.expandTo}
                     currentLevel={0} />
             </div>
         )
@@ -26,12 +28,15 @@ class Topic extends Component<ICommunityItemProps, ICommuintyItemState> {
 }
 
 export default Relay.createContainer(Topic, {
+    initialVariables: {
+        expandTo: 5
+    },
     fragments: {
-        communityItem: () => Relay.QL`
+        communityItem: (variables) => Relay.QL`
             fragment on CommunityItem {
                 summary,
                 body,
-                ${CommentList.getFragment('communityItem')}
+                ${CommentList.getFragment('communityItem', { expandTo: variables.expandTo })}
             }
         `
     }
@@ -43,4 +48,5 @@ interface ICommuintyItemState {
 interface ICommunityItemProps {
     communityItem: ICommunityItem;
     body: string;
+    relay: any;
 }

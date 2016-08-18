@@ -19,6 +19,7 @@ export interface IComments extends IRepository {
     findSomeByUserId(cursor: TBiCursor, userId: number): Promise<ICursorResults<IComment>>
     create(comment: IComment, userId: number): Promise<IComment>
     findAllByParentCommentId(commentId: number): Promise<Array<IComment>>
+    getCommentTree(commentId: number): Promise<IComment>
     isOwner(userId: number, commentId: number): Promise<boolean>
     update(comment: IComment): Promise<IComment>
 }

@@ -334,18 +334,29 @@ export default function createSchema(repositoryAuthorizers: IAppRepositoryAuthor
                 type: GraphQLString
             },
 
+            // comments: {
+            //     type: CommentConnection.connectionType,
+            //     args: connectionArgs,
+            //     resolve: async (comment, args, {user}) => {
+
+            //         const comments = await commentsAuthorizer
+            //             .as(user)
+            //             .getCommentTree(comment.id);
+
+            //         return connectionFromArray(comments, args);
+            //     }
+            // },
+
             comments: {
-                type: CommentConnection.connectionType,
-                args: connectionArgs,
-                resolve: async (comment, args, {user}) => {
-
-                    const comments = await commentsAuthorizer
+                type: GraphQLString,
+                resolve: async (comment, _, {user}) => {
+ 
+                    const fuckcomment = await commentsAuthorizer
                         .as(user)
-                        .findAllByParentCommentId(comment.id);
-
-                    return connectionFromArray(comments, args);
+                        .getCommentTree(comment.id);
+                    return JSON.stringify(fuckcomment.comments);
                 }
-            },
+            }
         }),
 
         interfaces: [nodeInterface]
@@ -423,27 +434,14 @@ export default function createSchema(repositoryAuthorizers: IAppRepositoryAuthor
             },
 
             comments: {
-                type: CommentConnection.connectionType,
-                args: connectionArgs,
-                resolve: async (communityItem, args, {user}) => {
+                type: new GraphQLList(CommentType),
+                resolve: async (communityItem, _, {user}) => {
 
                     const comments = await communityItemsAuthorizer
                             .as(user)
                             .findAllComments(communityItem.id);
 
-                    return connectionFromArray(comments, args);
-                }
-            },
-            ocommunityItems: {
-                type: CommunityItemConnection.connectionType,
-                args: connectionArgs,
-
-                resolve: async (topic, args, {user}) => {
-                    const communityItems = await topicsAuthorizer
-                            .as(user)
-                            .findAllCommunityItemsRanked(topic.id)
-
-                    return connectionFromArray(communityItems, args);
+                    return comments;
                 }
             }
         }),
