@@ -93,12 +93,16 @@ export default function createSchema(repositoryAuthorizers: IAppRepositoryAuthor
         const {type, id} = graphqlRelay.fromGlobalId(globalId);
 
         if (type === 'Viewer') {
-            return {id: 'viewer'};
+            return { id: 'viewer' };
+        }
+        
+        if (type === 'OtherUser') {
+            return usersAuthorizer.as(user).findOtherUserById(id);
         }
 
         let repositoryAuthorizer;
 
-        switch(type) {
+        switch (type) {
             case 'User':
                 repositoryAuthorizer = usersAuthorizer;
                 break;
@@ -247,6 +251,20 @@ export default function createSchema(repositoryAuthorizers: IAppRepositoryAuthor
         interfaces: [nodeInterface]
     });
 
+    const OtherUserType = new GraphQLObjectType({
+        name: 'OtherUser',
+
+        fields: () => ({
+            id: globalIdField(OtherUserType.name),
+
+            displayName: {
+                type: GraphQLString
+            },
+        }),
+
+        interfaces: [nodeInterface]
+    });
+
     const TopicType = new GraphQLObjectType({
         name: 'Topic',
 
@@ -279,8 +297,8 @@ export default function createSchema(repositoryAuthorizers: IAppRepositoryAuthor
 
                 resolve: async (topic, args, {user}) => {
                     const communityItems = await topicsAuthorizer
-                            .as(user)
-                            .findAllCommunityItemsRanked(topic.id)
+                        .as(user)
+                        .findAllCommunityItemsRanked(topic.id)
 
                     return connectionFromArray(communityItems, args);
                 }
@@ -350,7 +368,7 @@ export default function createSchema(repositoryAuthorizers: IAppRepositoryAuthor
             comments: {
                 type: GraphQLString,
                 resolve: async (comment, _, {user}) => {
- 
+
                     const fuckcomment = await commentsAuthorizer
                         .as(user)
                         .getCommentTree(comment.id);
@@ -433,13 +451,24 @@ export default function createSchema(repositoryAuthorizers: IAppRepositoryAuthor
                 type: GraphQLString
             },
 
+            user: {
+                type: OtherUserType,
+                resolve: async (communityItem, _, {user: currentUser}) => {
+                    const user = await usersAuthorizer
+                        .as(currentUser)
+                        .findOtherUserById(communityItem.userId)
+
+                    return user;
+                }
+            },
+
             comments: {
                 type: new GraphQLList(CommentType),
                 resolve: async (communityItem, _, {user}) => {
 
                     const comments = await communityItemsAuthorizer
-                            .as(user)
-                            .findAllComments(communityItem.id);
+                        .as(user)
+                        .findAllComments(communityItem.id);
 
                     return comments;
                 }
@@ -520,7 +549,7 @@ export default function createSchema(repositoryAuthorizers: IAppRepositoryAuthor
         outputFields: {
             viewer: {
                 type: ViewerType,
-                resolve: () => ({id: 'viewer'})
+                resolve: () => ({ id: 'viewer' })
             }
         },
 
@@ -553,7 +582,7 @@ export default function createSchema(repositoryAuthorizers: IAppRepositoryAuthor
                 // See https://github.com/facebook/relay/issues/112
                 viewer: {
                     type: ViewerType,
-                    resolve: () => ({id: 'viewer'})
+                    resolve: () => ({ id: 'viewer' })
                 },
 
                 currentUser: {

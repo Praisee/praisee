@@ -51,7 +51,6 @@ export class TopicController extends Component<ITopicProps, ITopicState> {
         const rows = this.props.topic.communityItems.edges
             .map(({node}) =>
                 <div key={node.id}>
-                    <h5>Mr.Jones</h5>
                     <CommunityItem key={node.id} communityItem={node} />
                 </div>
             );

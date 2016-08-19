@@ -3,7 +3,7 @@
     "base": "User",
     "emailVerificationRequired": false,
     "mixins": {
-        "Sluggable" : {
+        "Sluggable": {
             "property": "displayName"
         }
     },
@@ -12,6 +12,16 @@
             "type": "string",
             "required": true,
             "description": "The displayed name of the user"
+        }
+    },
+    "relations": {
+        "communityItems": {
+            "type": "hasMany",
+            "model": "CommunityItem"
+        },
+        "comments": {
+            "type": "hasMany",
+            "model": "Comment"
         }
     },
     "acls": [

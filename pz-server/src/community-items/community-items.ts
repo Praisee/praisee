@@ -19,6 +19,7 @@ export interface ICommunityItem extends IRepositoryRecord {
     recordType: 'CommunityItem'
 
     id?: number
+    userId?: number
     type?: TCommunityItemType
     summary?: string
     body?: string

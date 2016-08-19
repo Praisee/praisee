@@ -8,6 +8,7 @@ import promisify from 'pz-support/src/promisify';
 import {ISluggable} from 'pz-server/src/url-slugs/mixins/sluggable';
 import {IUrlSlug, IUrlSlugInstance} from 'pz-server/src/url-slugs/models/url-slug';
 import {ICommunityItem} from 'pz-server/src/community-items/community-items';
+import {createRecordFromLoopbackCommunityItem} from 'pz-server/src/community-items/loopback-community-items';
 import {ITopicModel as ILoopbackTopic, ITopicInstance as ILookbackTopicInstance} from 'pz-server/src/models/topic'
 
 import {
@@ -95,27 +96,10 @@ export default class Topics implements ITopics {
            topic.communityItems, this._TopicModel)({});
 
          return communityItemModels.map((communityItem) =>
-            createRecordFromLoopback<ICommunityItem>('CommunityItem', communityItem)
+            createRecordFromLoopbackCommunityItem(communityItem)
         );
     }
 
     create(topic: ITopic) {
     }
-
-    _modelsToCursorResults(models: Array<IPersistedModelInstance>): ICursorResults<ICommunityItem> {
-        const results = models.map(model => {
-            const record = createRecordFromLoopback<ICommunityItem>('CommunityItem', model);
-
-            return {
-                cursor: toDateCursor((model as any).createdAt),
-                item: record
-            };
-        });
-
-        return {
-            results,
-            hasNextPage: false //TODO:
-        }
-    }
 }
-

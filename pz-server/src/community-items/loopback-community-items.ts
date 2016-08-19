@@ -11,7 +11,13 @@ import {ICommunityItemModel, ICommunityItemInstance} from 'pz-server/src/models/
 import {ICursorResults, TBiCursor} from 'pz-server/src/support/cursors/cursors';
 
 import {findWithCursor} from 'pz-server/src/support/cursors/loopback-helpers';
-import {cursorLoopbackModelsToRecords} from 'pz-server/src/support/cursors/repository-helpers';
+import {mapCursorResult} from 'pz-server/src/support/cursors/map-cursor-results';
+
+export function createRecordFromLoopbackCommunityItem(communityItem: ICommunityItemInstance): ICommunityItem {
+    return Object.assign({}, createRecordFromLoopback<ICommunityItem>('CommunityItem', communityItem), {
+        userId: communityItem.praiseeUserId
+    });
+}
 
 export default class CommunityItems implements ICommunityItems {
     private _CommunityItemModel: ICommunityItemModel;
@@ -28,7 +34,7 @@ export default class CommunityItems implements ICommunityItems {
             return null;
         }
 
-        return createRecordFromLoopback<ICommunityItem>('CommunityItem', communityItemModel);
+        return createRecordFromLoopbackCommunityItem(communityItemModel);
     }
 
     async findAllByIds(ids: Array<number>): Promise<Array<ICommunityItem>> {
@@ -39,18 +45,23 @@ export default class CommunityItems implements ICommunityItems {
         });
 
         return communityItemModels.map(communityItemModel => {
-            return createRecordFromLoopback<ICommunityItem>('CommunityItem', communityItemModel);
+            return createRecordFromLoopbackCommunityItem(communityItemModel);
         });
     }
 
     async findSomeByUserId(cursor: TBiCursor, userId: number): Promise<ICursorResults<ICommunityItem>> {
-        const cursorResults = await findWithCursor(
+        const cursorResults = await findWithCursor<ICommunityItemInstance>(
             this._CommunityItemModel,
             cursor,
             { where: { userId } }
         );
 
-        return cursorLoopbackModelsToRecords<ICommunityItem>('CommunityItem', cursorResults);
+        return mapCursorResult<ICommunityItemInstance, ICommunityItem>(
+            cursorResults,
+            cursorResult => Object.assign({}, cursorResult, {
+                item: createRecordFromLoopbackCommunityItem(cursorResult.item)
+            }
+        ));
     }
 
     isOwner(userId: number, communityItemId: number): Promise<boolean> {
@@ -87,11 +98,11 @@ export default class CommunityItems implements ICommunityItems {
             summary: communityItem.summary,
             body: communityItem.body,
             bodyData: communityItem.bodyData,
-            userId: ownerId
+            praiseeUserId: ownerId
         });
 
         const result = await promisify(communityItemModel.save, communityItemModel)();
-        return createRecordFromLoopback<ICommunityItem>('CommunityItem', result);
+        return createRecordFromLoopbackCommunityItem(result);
     }
 
     async update(communityItem: ICommunityItem): Promise<ICommunityItem> {
@@ -108,7 +119,7 @@ export default class CommunityItems implements ICommunityItems {
         });
 
         const result = await promisify(communityItemModel.save, communityItemModel)();
-        return createRecordFromLoopback<ICommunityItem>('CommunityItem', result);
+        return createRecordFromLoopbackCommunityItem(result);
     }
 }
 

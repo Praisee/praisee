@@ -12,8 +12,11 @@ class Topic extends Component<ICommunityItemProps, ICommuintyItemState> {
 
     render() {
         const {communityItem} = this.props;
+        const {user} = communityItem;
+
         return (
             <div className="community-item">
+                <h5>{user.displayName}</h5>
                 <h4>{communityItem.summary}</h4>
                 <p>{communityItem.body}</p>
                 <CommentList
@@ -36,6 +39,9 @@ export default Relay.createContainer(Topic, {
             fragment on CommunityItem {
                 summary,
                 body,
+                user{
+                    displayName
+                }
                 ${CommentList.getFragment('communityItem', { expandTo: variables.expandTo })}
             }
         `
@@ -46,7 +52,15 @@ interface ICommuintyItemState {
 }
 
 interface ICommunityItemProps {
-    communityItem: ICommunityItem;
+    communityItem: {
+        id: number
+        user: { displayName: string }
+        summary: string
+        body: string
+        // bodyData?: IContentData
+        createdAt: Date
+        comments: any
+    }
     body: string;
     relay: any;
 }

@@ -26,6 +26,7 @@ export interface ICommunityItemModel extends IPersistedModel, ISluggable {
 
 export interface ICommunityItemInstance extends IPersistedModelInstance, ISluggableInstance {
     id: number
+    praiseeUserId: number
     type: TCommunityItemType
     summary: string
     body: string

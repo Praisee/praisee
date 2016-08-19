@@ -30,10 +30,6 @@ export class Comment extends Component<any, any>{
             <div className="comment" style={{ paddingLeft: "15px" }}>
                 <DateDisplay date={createdAt} type="date-created" />
                 <p className="text">{body}</p>
-                <p>
-                    <span className="upvote-count">{upVotes}</span>/5
-                    <span className="downvote-count">{downVotes}</span> reviews
-                </p>
 
                 {commentList}
             </div>

@@ -19,7 +19,7 @@ export default {
     },
 
     // User
-    'User': {
+    'PraiseeUser': {
         'dataSource': 'vagrant-postgres',
         'public': true
     },

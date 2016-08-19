@@ -65,14 +65,14 @@ export class AuthenticationInitializer {
         // passportConfigurator.init();
 
         passportConfigurator.setupModels({
-            userModel: this._app.models.User,
+            userModel: this._app.models.PraiseeUser,
             userIdentityModel: this._app.models.UserIdentity,
             userCredentialModel: this._app.models.UserCredential
         });
     }
 
     _provideAuthStrategies() {
-        provideLocalAuth(this._app, this._app.models.User, authProvidersConfig.local);
+        provideLocalAuth(this._app, this._app.models.PraiseeUser, authProvidersConfig.local);
     }
 }
 

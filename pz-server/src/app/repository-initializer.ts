@@ -23,7 +23,7 @@ import VanityRoutePaths from 'pz-server/src/vanity-route-paths/vanity-route-path
 module.exports = function initializeRepositories(app: IApp) {
     const routePaths = new VanityRoutePaths(app.models.UrlSlug);
 
-    const users = new Users(app.models.User);
+    const users = new Users(app.models.PraiseeUser);
     const usersAuthorizer = new UsersAuthorizer(users);
 
     const topics = new Topics(app.models.Topic, app.models.UrlSlug);

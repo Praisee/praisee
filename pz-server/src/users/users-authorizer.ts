@@ -5,9 +5,20 @@ import {
 } from 'pz-server/src/support/authorization';
 
 import {IUsers, IUser} from 'pz-server/src/users/users';
+import {
+    IRepository, IRepositoryRecord, createRecordFromLoopback
+} from 'pz-server/src/support/repository';
 
-export interface IAuthorizedUsers extends IUsers {
+export interface IOtherUser extends IRepositoryRecord {
+    recordType: 'OtherUser'
+    id: number
+    displayName: string
+}
+
+export interface IAuthorizedUsers {
+    findById(userId: number): Promise<IUser>
     findCurrentUser(): Promise<IUser>
+    findOtherUserById(userId: number): Promise<IOtherUser>
 }
 
 class AuthorizedUsers {
@@ -17,6 +28,18 @@ class AuthorizedUsers {
     constructor(user: TOptionalUser, users: IUsers) {
         this._user = user;
         this._users = users;
+    }
+
+    async findOtherUserById(userId) {
+        const {id, displayName} = await this._users.findById(userId);
+
+        const otherUser: IOtherUser = {
+            id,
+            displayName,
+            recordType: 'OtherUser'
+        }
+
+        return otherUser;
     }
 
     findById(userId) {

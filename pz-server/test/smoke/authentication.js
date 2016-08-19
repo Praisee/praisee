@@ -10,7 +10,7 @@ createServerTestFor('authentication', function () {
     let User, requestWithSession;
 
     beforeEach(async () => {
-        User = context.models.User;
+        User = context.models.PraiseeUser;
 
         requestWithSession = supertestSession(context.app);
 
@@ -57,9 +57,10 @@ createServerTestFor('authentication', function () {
 
     async function registerUser(email, password) {
         await requestWithSession
-            .post('/i/api/Users')
+            .post('/i/api/PraiseeUsers')
             .send({
                 'email': email,
+                'displayName': email,
                 'password': password
             })
             .expect(200);

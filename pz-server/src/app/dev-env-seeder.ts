@@ -11,9 +11,20 @@ export class DevEnvSeeder {
         return [
             {
                 email: 'test@praisee.com',
-                displayName: 'Test',
+                displayName: 'Andesl Adams',
+                password: 'test'
+            },
+            {
+                email: 'test2@praisee.com',
+                displayName: 'Puh Z.',
+                password: 'test'
+            },
+            {
+                email: 'test2@praisee.com',
+                displayName: 'P. Ness',
                 password: 'test'
             }
+
         ];
     }
 
@@ -72,6 +83,7 @@ export class DevEnvSeeder {
         return [
             {
                 topicId: 4,
+                praiseeUserId: 1,
                 type: "Question",
                 summary: 'Is there any D810 successor is coming in 2016?',
                 body:
@@ -94,7 +106,7 @@ export class DevEnvSeeder {
         return [
             {
                 id: 1,
-                createdAt: new Date(),
+                praiseeUserId: 2,
                 communityItemId: 1,
                 body:
                     `There are rumors about a Photokina launch
@@ -105,13 +117,39 @@ export class DevEnvSeeder {
             },
             {
                 id: 2,
+                praiseeUserId: 1,
                 commentId: 1,
                 body: 'Given the impact of the earthquake in Japan, my guesstimate is announcement this year, availability next'
             },
             {
                 id: 3,
+                praiseeUserId: 2,
                 commentId: 2,
                 body: 'yeah, true we will wait and see...'
+            },
+            {
+                id: 4,
+                praiseeUserId: 3,
+                communityItemId: 1,
+                body: 'Sometimes I like to take pictures of mountains'
+            },
+            {
+                id: 5,
+                praiseeUserId: 2,
+                communityItemId: 1,
+                body: 'This is probably the most useless topic ever...'
+            },
+            {
+                id: 6,
+                praiseeUserId: 1,
+                commentId: 5,
+                body: `that's pretty rude, ur a dick`
+            },
+            {
+                id: 7,
+                praiseeUserId: 2,
+                commentId: 6,
+                body: `u're***`
             }
         ]
     }
@@ -123,7 +161,7 @@ export class DevEnvSeeder {
 
         console.log('Seeding development environment...');
 
-        await this._seedWith(this.userSeeds(), this.app.models.User);
+        await this._seedWith(this.userSeeds(), this.app.models.PraiseeUser);
         await this._seedWith(this.topicSeeds(), this.app.models.Topic);
         await this._seedWith(this.communityItemSeeds(), this.app.models.CommunityItem);
         await this._seedWith(this.topicCommunityItemSeeds(), this.app.models.TopicCommunityItem);
