@@ -7,6 +7,7 @@ import {
 } from 'pz-server/src/support/authorization';
 
 import {ITopic} from 'pz-server/src/topics/topics';
+import {IVote} from 'pz-server/src/votes/votes';
 
 import {ICommunityItems, ICommunityItem} from 'pz-server/src/community-items/community-items';
 import {TBiCursor, ICursorResults} from 'pz-server/src/support/cursors/cursors';
@@ -17,6 +18,7 @@ export interface IAuthorizedCommunityItems {
     findSomeByCurrentUser(cursor: TBiCursor): Promise<ICursorResults<ICommunityItem>>
     findAllComments(communityItemId: number): Promise<Array<IComment>>
     findAllTopics(communityItemId: number): Promise<Array<ITopic>>
+    findVotesForCommunityItem(communityItemId: number): Promise<Array<IVote>>
     create(communityItem: ICommunityItem): Promise<ICommunityItem | AuthorizationError>
     update(communityItem: ICommunityItem): Promise<ICommunityItem | AuthorizationError>
 }
@@ -36,7 +38,7 @@ class AuthorizedCommunityItems implements IAuthorizedCommunityItems {
 
     async findSomeByCurrentUser(cursor: TBiCursor): Promise<ICursorResults<ICommunityItem>> {
         if (!this._user) {
-            return {results: []};
+            return { results: [] };
         }
 
         return await this._communityItems.findSomeByUserId(cursor, this._user.id);
@@ -48,6 +50,10 @@ class AuthorizedCommunityItems implements IAuthorizedCommunityItems {
 
     async findAllComments(communityItemId: number): Promise<Array<IComment>> {
         return await this._communityItems.findAllComments(communityItemId);
+    }
+
+    async findVotesForCommunityItem(communityItemId: number): Promise<Array<IVote>> {
+        return await this._communityItems.findVotesForCommunityItem(communityItemId);
     }
 
     async create(communityItem): Promise<ICommunityItem | AuthorizationError> {

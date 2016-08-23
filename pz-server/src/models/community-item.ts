@@ -3,6 +3,7 @@ import {ITopicInstance} from 'pz-server/src/models/topic';
 import {ICommentInstance} from 'pz-server/src/models/comment';
 import {IContentData} from 'pz-server/src/content/content-data';
 import convertTextToData from 'pz-server/src/content/text-to-data-converter';
+import {IVoteInstance} from 'pz-server/src/models/vote';
 
 export type TCommunityItemType = (
     'Comment'
@@ -26,7 +27,7 @@ export interface ICommunityItemModel extends IPersistedModel, ISluggable {
 
 export interface ICommunityItemInstance extends IPersistedModelInstance, ISluggableInstance {
     id: number
-    praiseeUserId: number
+    userId: number
     type: TCommunityItemType
     summary: string
     body: string
@@ -35,6 +36,7 @@ export interface ICommunityItemInstance extends IPersistedModelInstance, ISlugga
     updatedAt: Date
     topics: IRelatedPersistedModel<ITopicInstance[]>
     comments?: IRelatedPersistedModel<ICommentInstance[]>
+    votes?: IRelatedPersistedModel<IVoteInstance[]>
 }
 
 module.exports = function (CommunityItem: ICommunityItemModel) {

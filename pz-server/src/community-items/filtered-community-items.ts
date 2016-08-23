@@ -5,6 +5,7 @@ import {TBiCursor, ICursorResults} from 'pz-server/src/support/cursors/cursors';
 import {IContentFilterer} from 'pz-server/src/content/content-filterer';
 import {promisedMapCursorResults} from 'pz-server/src/support/cursors/map-cursor-results';
 import {IComment} from 'pz-server/src/comments/comments';
+import {IVote} from 'pz-server/src/votes/votes';
 
 export default class FilteredCommunityItems implements ICommunityItems {
     private _CommunityItems: ICommunityItems;
@@ -51,6 +52,10 @@ export default class FilteredCommunityItems implements ICommunityItems {
 
     async findAllComments(communityItemId: number): Promise<Array<IComment>> {
         return await this._CommunityItems.findAllComments(communityItemId);
+    }
+
+    async findVotesForCommunityItem(communityItemId: number): Promise<Array<IVote>> {
+        return await this._CommunityItems.findVotesForCommunityItem(communityItemId);
     }
 
     async create(communityItem: ICommunityItem, ownerId: number): Promise<ICommunityItem> {

@@ -5,6 +5,8 @@ import promisify from 'pz-support/src/promisify';
 import isOwnerOfModel from 'pz-server/src/support/is-owner-of-model';
 import {ICommentInstance, ICommentModel} from 'pz-server/src/models/comment'
 import {IComment, IComments} from 'pz-server/src/comments/comments';
+import {IVote} from 'pz-server/src/votes/votes';
+import {IVoteInstance} from 'pz-server/src/models/vote';
 
 import {ICursorResults, TBiCursor} from 'pz-server/src/support/cursors/cursors';
 import {findWithCursor} from '../support/cursors/loopback-helpers';
@@ -60,26 +62,37 @@ export default class Comments implements IComments {
         );
     }
 
-    async getCommentTree(commentId: number): Promise<IComment> {
+    async findCommentTreeForComment(commentId: number): Promise<IComment> {
         const comment: ICommentInstance = await promisify(
             this._CommentModel.findById, this._CommentModel)(commentId);
-            
-        const comments = await this.getCommentsForComment(comment);
+
+        const comments = await this._getCommentsForComment(comment);
         return comments
     }
 
-    async getCommentsForComment(commentInstance: ICommentInstance): Promise<IComment> {
+    private async _getCommentsForComment(commentInstance: ICommentInstance): Promise<IComment> {
         let comment = createRecordFromLoopback<IComment>('Comment', commentInstance);
         comment.comments = [];
-        
+
         const comments = await promisify<ICommentInstance[]>(commentInstance.comments, commentInstance)();
 
         for (var i = 0; i < comments.length; i++) {
             var currentComment = comments[i];
-            comment.comments.push(await this.getCommentsForComment(currentComment));
+            comment.comments.push(await this._getCommentsForComment(currentComment));
         }
 
         return comment;
+    }
+
+    async findVotesForComment(commentId: number): Promise<Array<IVote>> {
+        const comment: ICommentInstance = await promisify(
+            this._CommentModel.findById, this._CommentModel)(commentId);
+
+        const votes = await promisify<IVoteInstance[]>(comment.votes, comment)();
+
+        return votes.map((vote) =>
+            createRecordFromLoopback<IVote>('Vote', vote)
+        );
     }
 
     async update(comment: IComment): Promise<IComment> {

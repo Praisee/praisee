@@ -7,6 +7,8 @@ import {ITopicInstance} from 'pz-server/src/models/topic';
 import {ITopic} from 'pz-server/src/topics/topics';
 import {IComment} from 'pz-server/src/comments/comments';
 import {ICommunityItemModel, ICommunityItemInstance} from 'pz-server/src/models/community-item';
+import {IVote} from 'pz-server/src/votes/votes';
+import {IVoteInstance} from 'pz-server/src/models/vote';
 
 import {ICursorResults, TBiCursor} from 'pz-server/src/support/cursors/cursors';
 
@@ -14,9 +16,7 @@ import {findWithCursor} from 'pz-server/src/support/cursors/loopback-helpers';
 import {mapCursorResult} from 'pz-server/src/support/cursors/map-cursor-results';
 
 export function createRecordFromLoopbackCommunityItem(communityItem: ICommunityItemInstance): ICommunityItem {
-    return Object.assign({}, createRecordFromLoopback<ICommunityItem>('CommunityItem', communityItem), {
-        userId: communityItem.praiseeUserId
-    });
+    return createRecordFromLoopback<ICommunityItem>('CommunityItem', communityItem);
 }
 
 export default class CommunityItems implements ICommunityItems {
@@ -64,6 +64,18 @@ export default class CommunityItems implements ICommunityItems {
         ));
     }
 
+    async findVotesForCommunityItem(communityItemId: number): Promise<Array<IVote>> {
+        const communityItemModel: ICommunityItemInstance = await promisify(
+            this._CommunityItemModel.findById, this._CommunityItemModel)(communityItemId);
+
+        const votes = await promisify<IVoteInstance[]>(
+            communityItemModel.votes, communityItemModel)();
+
+        return votes.map((vote) =>
+            createRecordFromLoopback<IVote>('Vote', vote)
+        );
+    }
+
     isOwner(userId: number, communityItemId: number): Promise<boolean> {
         return isOwnerOfModel(userId, this._CommunityItemModel, communityItemId);
     }
@@ -98,7 +110,7 @@ export default class CommunityItems implements ICommunityItems {
             summary: communityItem.summary,
             body: communityItem.body,
             bodyData: communityItem.bodyData,
-            praiseeUserId: ownerId
+            userId: ownerId
         });
 
         const result = await promisify(communityItemModel.save, communityItemModel)();

@@ -15,6 +15,9 @@ import CommunityItemsAuthorizer from 'pz-server/src/community-items/community-it
 import Comments from 'pz-server/src/comments/loopback-comments';
 import CommentsAuthorizer from 'pz-server/src/comments/comments-authorizer';
 
+import Votes from 'pz-server/src/votes/loopback-votes';
+import VotesAuthorizer from 'pz-server/src/votes/votes-authorizer';
+
 import ContentFilterer from 'pz-server/src/content/content-filterer';
 import convertContentDataToText from 'pz-server/src/content/data-to-text-converter';
 import FilteredCommunityItems from 'pz-server/src/community-items/filtered-community-items';
@@ -29,9 +32,10 @@ module.exports = function initializeRepositories(app: IApp) {
     const topics = new Topics(app.models.Topic, app.models.UrlSlug);
     const topicsAuthorizer = new TopicsAuthorizer(topics);
 
-    const communityItems = new CommunityItems(
-        app.models.CommunityItem
-    );
+    const votes = new Votes(app.models.Votes);
+    const votesAuthorizer = new VotesAuthorizer(votes);
+
+    const communityItems = new CommunityItems(app.models.CommunityItem);
 
     const contentFilterer = new ContentFilterer(routePaths, topics, communityItems);
 
@@ -50,14 +54,16 @@ module.exports = function initializeRepositories(app: IApp) {
         users,
         topics,
         communityItems: filteredCommunityItems,
-        comments
+        comments,
+        votes
     };
 
     const repositoryAuthorizers: IAppRepositoryAuthorizers = {
         users: usersAuthorizer,
         topics: topicsAuthorizer,
         communityItems: communityItemsAuthorizer,
-        comments: commentsAuthorizer
+        comments: commentsAuthorizer,
+        votes: votesAuthorizer
     };
 
     app.services.repositories = repositories;

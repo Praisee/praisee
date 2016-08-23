@@ -1,6 +1,7 @@
 import {ITopic} from 'pz-server/src/topics/topics';
 import {IComment} from 'pz-server/src/comments/comments';
 import { IRepository, IRepositoryRecord } from 'pz-server/src/support/repository';
+import {IVote} from 'pz-server/src/votes/votes';
 
 import {
     ICursorResults, TBiCursor
@@ -27,6 +28,7 @@ export interface ICommunityItem extends IRepositoryRecord {
     createdAt?: Date
     updatedAt?: Date
     comments?: any
+    votes?: any
 }
 
 export interface ICommunityItems extends IRepository {
@@ -35,6 +37,7 @@ export interface ICommunityItems extends IRepository {
     findSomeByUserId(cursor: TBiCursor, userId: number): Promise<ICursorResults<ICommunityItem>>
     findAllTopics(communityItemId: number): Promise<Array<ITopic>>
     findAllComments(communityItemId: number): Promise<Array<IComment>>
+    findVotesForCommunityItem(communityItemId: number): Promise<Array<IVote>>
     isOwner(userId: number, communityItemId: number): Promise<boolean>
     create(communityItem: ICommunityItem, ownerId: number): Promise<ICommunityItem>
     update(communityItem: ICommunityItem): Promise<ICommunityItem>

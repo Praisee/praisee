@@ -12,11 +12,15 @@ import {IAuthorizedCommunityItems} from 'pz-server/src/community-items/community
 import {IComments} from '../comments/comments';
 import {IAuthorizedComments} from 'pz-server/src/comments/comments-authorizer';
 
+import {IVotes} from 'pz-server/src/votes/votes';
+import {IAuthorizedVotes} from 'pz-server/src/votes/votes-authorizer';
+
 export interface IAppRepositories {
     users: IUsers,
     topics: ITopics,
     communityItems: ICommunityItems,
     comments: IComments
+    votes: IVotes
 }
 
 export interface IAppAuthorizedRepository {
@@ -30,4 +34,5 @@ export interface IAppRepositoryAuthorizers {
     topics: TAppAuthorizer<IAuthorizedTopics>
     communityItems: TAppAuthorizer<IAuthorizedCommunityItems>
     comments: TAppAuthorizer<IAuthorizedComments>
+    votes: TAppAuthorizer<IAuthorizedVotes>
 }

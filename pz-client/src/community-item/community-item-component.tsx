@@ -1,9 +1,9 @@
 import * as React from 'react';
 import {Component} from 'react';
 import * as Relay from 'react-relay';
-import * as util from 'util';
 import {ICommunityItem} from 'pz-server/src/community-items/community-items';
 import CommentList from 'pz-client/src/widgets/comment-list-component'
+import Votes from 'pz-client/src/widgets/votes-component';
 
 class Topic extends Component<ICommunityItemProps, ICommuintyItemState> {
     constructor(props, context) {
@@ -19,12 +19,17 @@ class Topic extends Component<ICommunityItemProps, ICommuintyItemState> {
                 <h5>{user.displayName}</h5>
                 <h4>{communityItem.summary}</h4>
                 <p>{communityItem.body}</p>
+                 <Votes
+                    key={`communityItem-votes-${communityItem.id}`}
+                    communityItem={communityItem}
+                    />
                 <CommentList
                     key={`communityItem-commentList-${communityItem.id}`}
                     communityItem={communityItem}
                     comment={null}
                     expandTo={this.props.relay.variables.expandTo}
-                    currentLevel={0} />
+                    currentLevel={0}
+                    />
             </div>
         )
     }
@@ -39,10 +44,11 @@ export default Relay.createContainer(Topic, {
             fragment on CommunityItem {
                 summary,
                 body,
-                user{
+                user {
                     displayName
                 }
                 ${CommentList.getFragment('communityItem', { expandTo: variables.expandTo })}
+                ${Votes.getFragment('communityItem')}
             }
         `
     }

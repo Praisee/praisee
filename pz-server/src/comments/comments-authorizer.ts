@@ -7,13 +7,15 @@ import {
 } from 'pz-server/src/support/authorization';
 
 import {IComment, IComments} from 'pz-server/src/comments/comments';
+import {IVote} from 'pz-server/src/votes/votes';
 
 export interface IAuthorizedComments {
     findById(id: number): Promise<IComment>
     create(comment: IComment): Promise<IComment | AuthorizationError>
     update(comment: IComment): Promise<IComment | AuthorizationError>
     findAllByParentCommentId(commentId: number): Promise<Array<IComment>>
-    getCommentTree(commentId: number): Promise<IComment>
+    findCommentTreeForComment(commentId: number): Promise<IComment>
+    findVotesForComment(commentId: number): Promise<Array<IVote>>    
 }
 
 class AuthorizedComments implements IAuthorizedComments {
@@ -33,8 +35,12 @@ class AuthorizedComments implements IAuthorizedComments {
         return await this._comments.findAllByParentCommentId(commentId);
     }
 
-    async getCommentTree(commentId: number): Promise<IComment> {
-        return await this._comments.getCommentTree(commentId);
+    async findCommentTreeForComment(commentId: number): Promise<IComment> {
+        return await this._comments.findCommentTreeForComment(commentId);
+    }
+
+     async findVotesForComment(commentId: number): Promise<Array<IVote>> {
+        return await this._comments.findVotesForComment(commentId);
     }
 
     async create(comment: IComment): Promise<IComment | AuthorizationError> {

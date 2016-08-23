@@ -6,9 +6,26 @@
     "options": {
         "validateUpsert": true
     },
-    "properties": {},
+    "properties": {
+        "upVote": {
+            "type": "boolean",
+            "required": true,
+            "description": "Upvote if true, Downvote if false"
+        }
+    },
     "validations": [],
-    "relations": {},
+    "relations": {
+        "user": {
+            "type": "belongsTo",
+            "model": "PraiseeUser",
+            "foreignKey": "userId"
+        },
+        "affectedUser": {
+            "type": "belongsTo",
+            "model": "PraiseeUser",
+            "foreignKey": "affectedUserId"
+        }
+    },
     "acls": [],
     "methods": {}
 }

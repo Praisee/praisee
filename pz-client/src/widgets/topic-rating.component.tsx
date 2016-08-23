@@ -13,7 +13,7 @@ class CommunityItemRating extends Component<ICommunityItemRatingProps, any>{
 
     render() {
         const {rating, count} = this.props.votes;
-        
+
         return this.schemaInjector.inject(
             <div className="aggregate-rating">
                 <p>
@@ -27,10 +27,12 @@ class CommunityItemRating extends Component<ICommunityItemRatingProps, any>{
 
 export default Relay.createContainer(CommunityItemRating, {
     fragments: {
-        votes: ()=> Relay.QL`
-            fragment on Votes {
-                rating,
-                count
+        communityItem: () => Relay.QL`
+            fragment on CommunityItem {
+                votes {
+                    upVotes,
+                    count
+                }
             }
         `
     }

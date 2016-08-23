@@ -95,7 +95,7 @@ export default function createSchema(repositoryAuthorizers: IAppRepositoryAuthor
         if (type === 'Viewer') {
             return { id: 'viewer' };
         }
-        
+
         if (type === 'OtherUser') {
             return usersAuthorizer.as(user).findOtherUserById(id);
         }
@@ -302,7 +302,8 @@ export default function createSchema(repositoryAuthorizers: IAppRepositoryAuthor
 
                     return connectionFromArray(communityItems, args);
                 }
-            }
+            },
+
         }),
 
         interfaces: [nodeInterface]
@@ -369,10 +370,26 @@ export default function createSchema(repositoryAuthorizers: IAppRepositoryAuthor
                 type: GraphQLString,
                 resolve: async (comment, _, {user}) => {
 
-                    const fuckcomment = await commentsAuthorizer
+                    const jsonComment = await commentsAuthorizer
                         .as(user)
-                        .getCommentTree(comment.id);
-                    return JSON.stringify(fuckcomment.comments);
+                        .findCommentTreeForComment(comment.id);
+                    return JSON.stringify(jsonComment.comments);
+                }
+            },
+
+            votes: {
+                type: VotesType,
+                resolve: async (comment, _, {user}) => {
+                    const votes = await commentsAuthorizer
+                        .as(user)
+                        .findVotesForComment(comment.id);
+
+                    let upVotes = votes.filter(vote => vote.upVote);
+
+                    return {
+                        upVotes: upVotes.length,
+                        count: votes.length
+                    };
                 }
             }
         }),
@@ -408,7 +425,7 @@ export default function createSchema(repositoryAuthorizers: IAppRepositoryAuthor
         fields: () => ({
             id: globalIdField('Votes'),
 
-            rating: {
+            upVotes: {
                 type: GraphQLInt
             },
 
@@ -471,6 +488,22 @@ export default function createSchema(repositoryAuthorizers: IAppRepositoryAuthor
                         .findAllComments(communityItem.id);
 
                     return comments;
+                }
+            },
+            votes: {
+                type: VotesType,
+                resolve: async (communityItem, _, {user}) => {
+                    const votes = await communityItemsAuthorizer
+                        .as(user)
+                        .findVotesForCommunityItem(communityItem.id);
+
+                    //TODO: Aggregate this in a comment repository
+                    let upVotes = votes.filter(vote => vote.upVote);
+                    
+                    return {
+                        upVotes: upVotes.length,
+                        count: votes.length
+                    };
                 }
             }
         }),
