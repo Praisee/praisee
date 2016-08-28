@@ -2,7 +2,7 @@ import {createRecordFromLoopback} from 'pz-server/src/support/repository';
 
 import promisify from 'pz-support/src/promisify';
 import isOwnerOfModel from 'pz-server/src/support/is-owner-of-model';
-import {IVote, IVotes} from 'pz-server/src/votes/votes';
+import {IVote, IVotes, IVoteAggregate} from 'pz-server/src/votes/votes';
 import {IVoteInstance, IVoteModel} from 'pz-server/src/models/vote';
 
 import {ICursorResults, TBiCursor} from 'pz-server/src/support/cursors/cursors';
@@ -44,6 +44,56 @@ export default class Votes implements IVotes {
         });
     }
 
+    async findOne(vote: IVote): Promise<IVote> {
+        let filters = Object.keys(vote).map((key) => {
+            return { [key]: vote[key] }
+        });
+
+        let where = { and: filters };
+
+        const VoteModel = await promisify(this._VoteModel.findOne, this._VoteModel)(
+            {
+                where: where
+            }
+        );
+
+        if (!VoteModel) {
+            return null;
+        }
+
+        return createRecordFromLoopbackVote(VoteModel);
+    }
+
+    async getAggregateForParent(vote: IVote): Promise<IVoteAggregate> {
+        let filters = Object.keys(vote).map((key) => {
+            return { [key]: vote[key] }
+        });
+
+        let where = { and: filters };
+
+        const count = await promisify(this._VoteModel.count, this._VoteModel)(where);
+
+        filters.push({ isUpVote: true });
+
+        const upVotes = await promisify(this._VoteModel.count, this._VoteModel)(where);
+
+        return { upVotes, count };
+    }
+
+    async findMany(vote: IVote): Promise<Array<IVote>> {
+        const VoteModel = await promisify(this._VoteModel.find, this._VoteModel)(
+            {
+                where: { vote }
+            }
+        );
+
+        if (!VoteModel) {
+            return null;
+        }
+
+        return VoteModel.map(vote => createRecordFromLoopbackVote(VoteModel));
+    }
+
     async findSomeByUserId(cursor: TBiCursor, userId: number): Promise<ICursorResults<IVote>> {
         const cursorResults = await findWithCursor<IVoteInstance>(
             this._VoteModel,
@@ -79,12 +129,7 @@ export default class Votes implements IVotes {
     }
 
     async create(vote: IVote, ownerId: number): Promise<IVote> {
-        //TODO: Get affectedUserId from the owner of the parentId
-        let VoteModel = new this._VoteModel({
-            affectedUserId: vote.affectedUserId,
-            userId: vote.userId,
-            upVote: vote.upVote
-        });
+        let VoteModel = new this._VoteModel(vote);
 
         const result = await promisify(VoteModel.save, VoteModel)();
         return createRecordFromLoopbackVote(result);
@@ -97,13 +142,25 @@ export default class Votes implements IVotes {
 
         let VoteModel = new this._VoteModel({
             id: vote.id,
-            affectedUserId: vote.affectedUserId,
             userId: vote.userId,
-            upVote: vote.upVote
+            upVote: vote.isUpVote
         });
 
         const result = await promisify(VoteModel.save, VoteModel)();
         return createRecordFromLoopbackVote(result);
+    }
+
+    async delete(vote: IVote) {
+        if (!vote.id) {
+            throw new Error('Cannot delete record without an id');
+        }
+
+        let destoryPromise = promisify(this._VoteModel.destroyAll, this._VoteModel)({
+            id: vote.id,
+            userId: vote.userId
+        });
+
+        return await destoryPromise;
     }
 }
 

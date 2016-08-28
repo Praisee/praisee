@@ -32,7 +32,7 @@ module.exports = function initializeRepositories(app: IApp) {
     const topics = new Topics(app.models.Topic, app.models.UrlSlug);
     const topicsAuthorizer = new TopicsAuthorizer(topics);
 
-    const votes = new Votes(app.models.Votes);
+    const votes = new Votes(app.models.Vote);
     const votesAuthorizer = new VotesAuthorizer(votes);
 
     const communityItems = new CommunityItems(app.models.CommunityItem);

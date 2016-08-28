@@ -19,7 +19,8 @@
     "relations": {
         "user": {
             "type": "belongsTo",
-            "model": "PraiseeUser"
+            "model": "PraiseeUser",
+            "foreignKey": "userId"
         },
         "votes": {
             "type": "hasMany",

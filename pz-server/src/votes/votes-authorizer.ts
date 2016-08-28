@@ -6,7 +6,7 @@ import {
     AuthorizationError
 } from 'pz-server/src/support/authorization';
 
-import {IVotes, IVote} from 'pz-server/src/votes/votes';
+import {IVotes, IVote, IVoteAggregate} from 'pz-server/src/votes/votes';
 import {TBiCursor, ICursorResults} from 'pz-server/src/support/cursors/cursors';
 
 export interface IAuthorizedVotes {
@@ -15,9 +15,14 @@ export interface IAuthorizedVotes {
     findSomeByUserId(cursor: TBiCursor, userId: number): Promise<ICursorResults<IVote>>
     findSomeByAffectedUserId(cursor: TBiCursor, affectedUserId: number): Promise<ICursorResults<IVote>>
     findSomeByCurrentUser(cursor: TBiCursor): Promise<ICursorResults<IVote>>
+    findCurrentUserVoteForCommunityItem(communityItemId: number): Promise<IVote | AuthorizationError>
+    findCurrentUserVoteForParent(parentType: string, id: number): Promise<IVote | AuthorizationError>
+    findAllVotesForParent(parentType: string, id: number): Promise<Array<IVote> | AuthorizationError>
+    getAggregateForParent(parentType: string, id: number): Promise<IVoteAggregate>
     isOwner(userId: number, voteId: number): Promise<boolean>
     create(vote: IVote): Promise<IVote | AuthorizationError>
     update(vote: IVote): Promise<IVote | AuthorizationError>
+    delete(vote: IVote): Promise<AuthorizationError>
 }
 
 class AuthorizedVotes implements IAuthorizedVotes {
@@ -33,13 +38,13 @@ class AuthorizedVotes implements IAuthorizedVotes {
         return await this._votes.findById(id);
     }
 
-    async findAllByIds(ids: Array<number>): Promise<Array<IVote>>{
+    async findAllByIds(ids: Array<number>): Promise<Array<IVote>> {
         return await this._votes.findAllByIds(ids);
     }
 
     async findSomeByUserId(cursor: TBiCursor, userId: number): Promise<ICursorResults<IVote>> {
         if (!this._user) {
-            return {results: []};
+            return { results: [] };
         }
 
         return await this._votes.findSomeByUserId(cursor, this._user.id);
@@ -47,7 +52,7 @@ class AuthorizedVotes implements IAuthorizedVotes {
 
     async findSomeByAffectedUserId(cursor: TBiCursor, affectedUserId: number): Promise<ICursorResults<IVote>> {
         if (!this._user) {
-            return {results: []};
+            return { results: [] };
         }
 
         return await this._votes.findSomeByUserId(cursor, this._user.id);
@@ -55,14 +60,57 @@ class AuthorizedVotes implements IAuthorizedVotes {
 
     async findSomeByCurrentUser(cursor: TBiCursor): Promise<ICursorResults<IVote>> {
         if (!this._user) {
-            return {results: []};
+            return { results: [] };
         }
 
         return await this._votes.findSomeByUserId(cursor, this._user.id);
     }
 
-    async isOwner(userId: number, voteId: number): Promise<boolean>{
+    async isOwner(userId: number, voteId: number): Promise<boolean> {
         return await this._votes.isOwner(userId, voteId);
+    }
+
+    async findCurrentUserVoteForCommunityItem(communityItemId: number): Promise<IVote | AuthorizationError> {
+        if (!this._user) {
+            return new NotAuthenticatedError();
+        }
+
+        return await this._votes.findOne({
+            recordType: "Vote",
+            userId: this._user.id,
+            communityItemId: communityItemId
+        });
+    }
+
+    async findCurrentUserVoteForParent(parentType: string, id: number): Promise<IVote | AuthorizationError> {
+        if (!this._user) {
+            return new NotAuthenticatedError();
+        }
+        const parentIdColumn = parentType.charAt(0).toLowerCase() + parentType.substring(1) + "Id";
+
+        return await this._votes.findOne({
+            recordType: "Vote",
+            userId: this._user.id,
+            [parentIdColumn]: id
+        });
+    }
+
+    async findAllVotesForParent(parentType: string, id: number): Promise<Array<IVote> | AuthorizationError> {
+        const parentIdColumn = parentType.charAt(0).toLowerCase() + parentType.substring(1) + "Id";
+
+        return await this._votes.findMany({
+            recordType: "Vote",
+            [parentIdColumn]: id
+        });
+    }
+
+    async getAggregateForParent(parentType: string, id: number): Promise<IVoteAggregate> {
+        const parentIdColumn = parentType.charAt(0).toLowerCase() + parentType.substring(1) + "Id";
+
+        return await this._votes.getAggregateForParent({
+            recordType: "Vote",
+            [parentIdColumn]: id
+        });
     }
 
     async create(vote): Promise<IVote | AuthorizationError> {
@@ -70,6 +118,7 @@ class AuthorizedVotes implements IAuthorizedVotes {
             return new NotAuthenticatedError();
         }
 
+        vote.userId = this._user.id;
         return await this._votes.create(vote, this._user.id);
     }
 
@@ -87,6 +136,17 @@ class AuthorizedVotes implements IAuthorizedVotes {
         }
 
         return await this._votes.update(vote);
+    }
+
+    async delete(vote): Promise<boolean | AuthorizationError> {
+        if (!this._user) {
+            return new NotAuthenticatedError();
+        }
+
+        vote.userId = this._user.id;
+        var result = await this._votes.delete(vote);
+
+        return result;
     }
 }
 

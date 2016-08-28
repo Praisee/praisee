@@ -34,14 +34,14 @@ interface IReviewProps {
 
 export default Relay.createContainer(ReviewComponent, {
     fragments: {
-        review: () => Relay.QL`
-            fragment on Review {
-                id,
-                summary,
-                body,
-                createdAt
-            }
-        `
+        // review: () => Relay.QL`
+        //     fragment on Review {
+        //         id,
+        //         summary,
+        //         body,
+        //         createdAt
+        //     }
+        // `
     }
 });
 

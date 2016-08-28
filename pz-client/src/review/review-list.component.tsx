@@ -30,17 +30,17 @@ export default Relay.createContainer(ReviewListComponent, {
         limit: 3
     },
     fragments: {
-        viewer: () => Relay.QL`
-            fragment on Viewer {
-                reviewConnection(first: $limit) {
-                    edges {
-                        node {
-                            id,
-                            ${Review.getFragment('review')}
-                        }
-                    }
-                }
-            }
-        `
+        // viewer: () => Relay.QL`
+        //     fragment on Viewer {
+        //         reviewConnection(first: $limit) {
+        //             edges {
+        //                 node {
+        //                     id,
+        //                     ${Review.getFragment('review')}
+        //                 }
+        //             }
+        //         }
+        //     }
+        // `
     }
 });

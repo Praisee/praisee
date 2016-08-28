@@ -17,11 +17,13 @@
     "relations": {
         "communityItems": {
             "type": "hasMany",
-            "model": "CommunityItem"
+            "model": "CommunityItem",
+            "foreignKey": "userId"
         },
         "comments": {
             "type": "hasMany",
-            "model": "Comment"
+            "model": "Comment",
+            "foreignKey": "userId"
         }
     },
     "acls": [

@@ -29,13 +29,13 @@ class Avatar extends Component<IAvatarProps, any>{
 
 export default Relay.createContainer(Avatar, {
     fragments: {
-        votes: ()=> Relay.QL`
-            fragment on Author {
-                name,
-                reputation,
-                image
-            }
-        `
+        // votes: ()=> Relay.QL`
+        //     fragment on Author {
+        //         name,
+        //         reputation,
+        //         image
+        //     }
+        // `
     }
 });
 

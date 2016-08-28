@@ -7,7 +7,7 @@
         "validateUpsert": true
     },
     "properties": {
-        "upVote": {
+        "isUpVote": {
             "type": "boolean",
             "required": true,
             "description": "Upvote if true, Downvote if false"

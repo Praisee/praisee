@@ -5,7 +5,6 @@ import {
     homeQuery,
     appQuery,
     topicQuery,
-    reviewQuery,
     createItemQuery
 } from 'pz-client/src/router/route-queries';
 

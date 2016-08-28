@@ -44,15 +44,15 @@ export var topicQuery: IRouteQuery = {
     }
 };
 
-export var reviewQuery: IRouteQuery = {
-    queries: {
-        review: () => Relay.QL`
-            query {
-                review(urlSlug: $urlSlug)
-            }
-        `
-    }
-};
+// export var reviewQuery: IRouteQuery = {
+//     queries: {
+//         review: () => Relay.QL`
+//             query {
+//                 review(urlSlug: $urlSlug)
+//             }
+//         `
+//     }
+// };
 
 export var createItemQuery: IRouteQuery = {
     queries: {
