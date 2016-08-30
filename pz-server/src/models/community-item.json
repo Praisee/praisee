@@ -7,9 +7,8 @@
         "validateUpsert": true
     },
     "mixins": {
-        "TimeStamp" : true,
-
-        "Sluggable" : {
+        "TimeStamp": true,
+        "Sluggable": {
             "property": "summary"
         }
     },
@@ -43,9 +42,12 @@
                 "dataType": "json"
             }
         },
-
-        "createdAt": { "type": "date" },
-        "updatedAt": { "type": "date" }
+        "createdAt": {
+            "type": "date"
+        },
+        "updatedAt": {
+            "type": "date"
+        }
     },
     "validations": [],
     "relations": {
@@ -56,15 +58,23 @@
         },
         "votes": {
             "type": "hasMany",
-            "model": "Vote"
+            "model": "Vote",
+            "polymorphic": {
+                "foreignKey": "parentId",
+                "discriminator": "parentType"
+            }
         },
         "topics": {
             "type": "hasAndBelongsToMany",
             "model": "Topic"
         },
-        "comments":{
+        "comments": {
             "type": "hasMany",
-            "model": "Comment"
+            "model": "Comment",
+            "polymorphic": {
+                "foreignKey": "parentId",
+                "discriminator": "parentType"
+            }
         }
     },
     "acls": [],

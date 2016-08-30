@@ -107,7 +107,8 @@ export class DevEnvSeeder {
             {
                 id: 1,
                 userId: 2,
-                communityItemId: 1,
+                parentId: 1,
+                parentType: "CommunityItem",
                 body:
                     `There are rumors about a Photokina launch
                 The D810 is (almost) 2 years old and and with the normal timeframe it would be replaced this year.
@@ -118,37 +119,43 @@ export class DevEnvSeeder {
             {
                 id: 2,
                 userId: 1,
-                commentId: 1,
+                parentId: 1,
+                parentType: "Comment",
                 body: 'Given the impact of the earthquake in Japan, my guesstimate is announcement this year, availability next'
             },
             {
                 id: 3,
                 userId: 2,
-                commentId: 2,
+                parentId: 2,
+                parentType: "Comment",
                 body: 'yeah, true we will wait and see...'
             },
             {
                 id: 4,
                 userId: 3,
-                communityItemId: 1,
+                parentId: 1,
+                parentType: "CommunityItem",
                 body: 'Sometimes I like to take pictures of mountains'
             },
             {
                 id: 5,
                 userId: 2,
-                communityItemId: 1,
+                parentId: 1,
+                parentType: "CommunityItem",
                 body: 'This is probably the most useless topic ever...'
             },
             {
                 id: 6,
                 userId: 1,
-                commentId: 5,
+                parentId: 5,
+                parentType: "Comment",
                 body: `thats pretty rude, ur a dick`
             },
             {
                 id: 7,
                 userId: 2,
-                commentId: 6,
+                parentId: 6,
+                parentType: "Comment",
                 body: `u're***`
             }
         ]

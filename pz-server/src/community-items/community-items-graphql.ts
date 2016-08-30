@@ -223,7 +223,8 @@ export default function CommunityItemTypes(repositoryAuthorizers: IAppRepository
 
             const vote = await votesAuthorizer.as(user).create({
                 recordType: 'Vote',
-                communityItemId: id,
+                parentId: id,
+                parentType: 'CommunityItem',
                 isUpVote: isUpVote
             });
 

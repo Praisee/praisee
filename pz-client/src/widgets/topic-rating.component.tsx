@@ -31,7 +31,7 @@ export default Relay.createContainer(CommunityItemRating, {
             fragment on CommunityItem {
                 votes {
                     upVotes,
-                    count
+                    total
                 }
             }
         `

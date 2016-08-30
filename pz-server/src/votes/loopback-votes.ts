@@ -44,9 +44,9 @@ export default class Votes implements IVotes {
         });
     }
 
-    async findOne(vote: IVote): Promise<IVote> {
-        let filters = Object.keys(vote).map((key) => {
-            return { [key]: vote[key] }
+    async findOneByFilter(voteFilter: IVote): Promise<IVote> {
+        let filters = Object.keys(voteFilter).map((key) => {
+            return { [key]: voteFilter[key] }
         });
 
         let where = { and: filters };
@@ -64,6 +64,22 @@ export default class Votes implements IVotes {
         return createRecordFromLoopbackVote(VoteModel);
     }
 
+    async findAllByFilter(voteFilter: IVote): Promise<Array<IVote>> {
+        let filters = Object.keys(voteFilter).map((key) => {
+            return { [key]: voteFilter[key] }
+        });
+
+        let where = { and: filters };
+
+        const VoteModel = await promisify(this._VoteModel.find, this._VoteModel)(where);
+
+        if (!VoteModel) {
+            return null;
+        }
+
+        return VoteModel.map(vote => createRecordFromLoopbackVote(VoteModel));
+    }
+
     async getAggregateForParent(vote: IVote): Promise<IVoteAggregate> {
         let filters = Object.keys(vote).map((key) => {
             return { [key]: vote[key] }
@@ -71,27 +87,15 @@ export default class Votes implements IVotes {
 
         let where = { and: filters };
 
-        const count = await promisify(this._VoteModel.count, this._VoteModel)(where);
+        const total = await promisify(this._VoteModel.count, this._VoteModel)(where);
 
         filters.push({ isUpVote: true });
 
         const upVotes = await promisify(this._VoteModel.count, this._VoteModel)(where);
 
-        return { upVotes, count };
-    }
+        const downVotes = total - upVotes;
 
-    async findMany(vote: IVote): Promise<Array<IVote>> {
-        const VoteModel = await promisify(this._VoteModel.find, this._VoteModel)(
-            {
-                where: { vote }
-            }
-        );
-
-        if (!VoteModel) {
-            return null;
-        }
-
-        return VoteModel.map(vote => createRecordFromLoopbackVote(VoteModel));
+        return { upVotes, downVotes, total };
     }
 
     async findSomeByUserId(cursor: TBiCursor, userId: number): Promise<ICursorResults<IVote>> {

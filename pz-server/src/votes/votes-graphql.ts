@@ -6,7 +6,6 @@ import {ITypes} from 'pz-server/src/graphql/types';
 import * as graphqlRelay from 'graphql-relay';
 import * as graphql from 'graphql';
 
-
 var {
     GraphQLBoolean,
     GraphQLID,
@@ -88,7 +87,11 @@ export default function VoteTypes(repositoryAuthorizers: IAppRepositoryAuthorize
                 type: GraphQLInt
             },
 
-            count: {
+            downVotes: {
+                type: GraphQLInt
+            },
+            
+            total: {
                 type: GraphQLInt
             }
         })

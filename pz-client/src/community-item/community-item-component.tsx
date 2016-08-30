@@ -90,7 +90,7 @@ export default Relay.createContainer(CommunityItem, {
                 currentUserVote
                 votes {
                     upVotes,
-                    count
+                    total
                 }
                 ${CommentList.getFragment('communityItem', { expandTo: variables.expandTo })}
                 ${CreateCommunityItemVoteMutation.getFragment('communityItem')}

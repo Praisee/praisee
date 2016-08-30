@@ -24,6 +24,13 @@
             "type": "belongsTo",
             "model": "PraiseeUser",
             "foreignKey": "affectedUserId"
+        },
+         "parent": {
+            "type": "belongsTo",
+            "polymorphic": {
+                "foreignKey": "parentId",
+                "discriminator": "parentType"
+            }
         }
     },
     "acls": [],

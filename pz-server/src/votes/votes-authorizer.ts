@@ -15,7 +15,6 @@ export interface IAuthorizedVotes {
     findSomeByUserId(cursor: TBiCursor, userId: number): Promise<ICursorResults<IVote>>
     findSomeByAffectedUserId(cursor: TBiCursor, affectedUserId: number): Promise<ICursorResults<IVote>>
     findSomeByCurrentUser(cursor: TBiCursor): Promise<ICursorResults<IVote>>
-    findCurrentUserVoteForCommunityItem(communityItemId: number): Promise<IVote | AuthorizationError>
     findCurrentUserVoteForParent(parentType: string, id: number): Promise<IVote | AuthorizationError>
     findAllVotesForParent(parentType: string, id: number): Promise<Array<IVote> | AuthorizationError>
     getAggregateForParent(parentType: string, id: number): Promise<IVoteAggregate>
@@ -70,46 +69,32 @@ class AuthorizedVotes implements IAuthorizedVotes {
         return await this._votes.isOwner(userId, voteId);
     }
 
-    async findCurrentUserVoteForCommunityItem(communityItemId: number): Promise<IVote | AuthorizationError> {
-        if (!this._user) {
-            return new NotAuthenticatedError();
-        }
-
-        return await this._votes.findOne({
-            recordType: "Vote",
-            userId: this._user.id,
-            communityItemId: communityItemId
-        });
-    }
-
     async findCurrentUserVoteForParent(parentType: string, id: number): Promise<IVote | AuthorizationError> {
         if (!this._user) {
             return new NotAuthenticatedError();
         }
-        const parentIdColumn = parentType.charAt(0).toLowerCase() + parentType.substring(1) + "Id";
 
-        return await this._votes.findOne({
+        return await this._votes.findOneByFilter({
             recordType: "Vote",
             userId: this._user.id,
-            [parentIdColumn]: id
+            parentType: parentType,
+            parentId: id
         });
     }
 
     async findAllVotesForParent(parentType: string, id: number): Promise<Array<IVote> | AuthorizationError> {
-        const parentIdColumn = parentType.charAt(0).toLowerCase() + parentType.substring(1) + "Id";
-
-        return await this._votes.findMany({
+        return await this._votes.findAllByFilter({
             recordType: "Vote",
-            [parentIdColumn]: id
+            parentType: parentType,
+            parentId: id
         });
     }
 
     async getAggregateForParent(parentType: string, id: number): Promise<IVoteAggregate> {
-        const parentIdColumn = parentType.charAt(0).toLowerCase() + parentType.substring(1) + "Id";
-
         return await this._votes.getAggregateForParent({
             recordType: "Vote",
-            [parentIdColumn]: id
+            parentType: parentType,
+            parentId: id
         });
     }
 

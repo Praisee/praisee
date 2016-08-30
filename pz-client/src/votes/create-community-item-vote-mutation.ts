@@ -19,7 +19,7 @@ export default class CreateCommunityItemVoteMutation extends Relay.Mutation {
                     currentUserVote
                     votes {
                         upVotes,
-                        count
+                        total
                     }
                 }
             }

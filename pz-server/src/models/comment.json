@@ -6,7 +6,7 @@
         "validateUpsert": true
     },
     "mixins": {
-        "TimeStamp" : true
+        "TimeStamp": true
     },
     "properties": {
         "body": {
@@ -24,7 +24,11 @@
         },
         "votes": {
             "type": "hasMany",
-            "model": "Vote"
+            "model": "Vote",
+            "polymorphic": {
+                "foreignKey": "parentId",
+                "discriminator": "parentType"
+            }
         },
         "parent": {
             "type": "belongsTo",
@@ -33,9 +37,13 @@
                 "discriminator": "parentType"
             }
         },
-        "comments":{
+        "comments": {
             "type": "hasMany",
-            "model": "Comment"
+            "model": "Comment",
+            "polymorphic": {
+                "foreignKey": "parentId",
+                "discriminator": "parentType"
+            }
         }
     },
     "acls": [],
