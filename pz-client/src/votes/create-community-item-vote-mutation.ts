@@ -14,7 +14,7 @@ export default class CreateCommunityItemVoteMutation extends Relay.Mutation {
 
     getFatQuery() {
         return Relay.QL`
-            fragment on CreateVotePayload {
+            fragment on CreateCommunityItemVotePayload {
                 communityItem { 
                     currentUserVote
                     votes {
@@ -30,16 +30,35 @@ export default class CreateCommunityItemVoteMutation extends Relay.Mutation {
         return [{
             type: 'FIELDS_CHANGE',
             fieldIDs: {
-                communityItem: this.props.communityItemId
+                communityItem: this.props.communityItem.id
             }
         }];
+    }
+
+    getOptimisticResponse() {
+        const {currentUserVote, votes} = this.props.communityItem;
+        return {
+            communityItem: {
+                id: this.props.communityItem.id,
+                currentUserVote: this.props.isUpVote,
+                votes: {
+                    upVotes: this.props.isUpVote ? votes.upVotes + 1 : votes.upVotes,
+                    total: votes.total + 1,
+                }
+            }
+        };
     }
 
     static fragments = {
         communityItem: () => Relay.QL`
             fragment on CommunityItem {
                 id
-          }
+                currentUserVote
+                votes {
+                    upVotes,
+                    total
+                }
+            }
         `
     };
 }

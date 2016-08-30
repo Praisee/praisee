@@ -6,6 +6,7 @@ import CommentList from 'pz-client/src/widgets/comment-list-component'
 import Votes from 'pz-client/src/votes/votes-component';
 import CreateCommunityItemVoteMutation from 'pz-client/src/votes/create-community-item-vote-mutation'
 import DeleteCommunityItemVoteMutation from 'pz-client/src/votes/delete-community-item-vote-mutation'
+import Error from 'pz-client/src/widgets/error-component';
 
 class CommunityItem extends Component<ICommunityItemProps, ICommuintyItemState> {
     constructor(props, context) {
@@ -16,16 +17,22 @@ class CommunityItem extends Component<ICommunityItemProps, ICommuintyItemState> 
         const {communityItem} = this.props;
         const {user} = communityItem;
 
+        //TODO: Look into how to get the error from payloads
+        const error = this.props.createCommunityItemVoteMutation ?
+                <Error message={this.props.createCommunityItemVoteMutation.error} /> :
+                null;
+
         return (
             <div className="community-item">
                 <h5>{user.displayName}</h5>
                 <h4>{communityItem.summary}</h4>
                 <p>{communityItem.body}</p>
+                {error} 
                 <Votes
                     key={`communityItem-votes-${communityItem.id}`}
                     upVoteClicked={this._onUpVoteClicked.bind(this) }
                     downVoteClicked={this._onDownVoteClicked.bind(this) }
-                    totalVotes={communityItem.votes.count}
+                    totalVotes={communityItem.votes.total}
                     upVotes={communityItem.votes.upVotes}
                     userVote={communityItem.currentUserVote}
                     />
@@ -41,37 +48,31 @@ class CommunityItem extends Component<ICommunityItemProps, ICommuintyItemState> 
     }
 
     private _deleteCurrentvote() {
-        if (this.props.communityItem.currentUserVote !== null) {
-            this.props.relay.commitUpdate(new DeleteCommunityItemVoteMutation({
-                communityItem: this.props.communityItem
-            }));
+        this.props.relay.commitUpdate(new DeleteCommunityItemVoteMutation({
+            communityItem: this.props.communityItem
+        }));
+    }
+
+    private _createVote(isUpVote: boolean) {
+        const {currentUserVote} = this.props.communityItem;
+
+        if (currentUserVote !== null) {
+            this._deleteCurrentvote();
+            if (currentUserVote === isUpVote) return;
         }
+
+        this.props.relay.commitUpdate(new CreateCommunityItemVoteMutation({
+            isUpVote: isUpVote,
+            communityItem: this.props.communityItem
+        }));
     }
 
     private _onUpVoteClicked() {
-        const {currentUserVote} = this.props.communityItem;
-
-        if (currentUserVote !== null) {
-            this._deleteCurrentvote();
-        }
-
-        this.props.relay.commitUpdate(new CreateCommunityItemVoteMutation({
-            isUpVote: true,
-            communityItem: this.props.communityItem
-        }));
+        this._createVote(true);
     }
 
     private _onDownVoteClicked() {
-        const {currentUserVote} = this.props.communityItem;
-
-        if (currentUserVote !== null) {
-            this._deleteCurrentvote();
-        }
-
-        this.props.relay.commitUpdate(new CreateCommunityItemVoteMutation({
-            isUpVote: false,
-            communityItem: this.props.communityItem
-        }));
+        this._createVote(false);
     }
 }
 
@@ -94,6 +95,7 @@ export default Relay.createContainer(CommunityItem, {
                 }
                 ${CommentList.getFragment('communityItem', { expandTo: variables.expandTo })}
                 ${CreateCommunityItemVoteMutation.getFragment('communityItem')}
+                ${DeleteCommunityItemVoteMutation.getFragment('communityItem')}
             }
         `
     }
@@ -116,4 +118,5 @@ interface ICommunityItemProps {
     }
     body: string;
     relay: any;
+    createCommunityItemVoteMutation: any;
 }

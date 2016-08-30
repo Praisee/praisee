@@ -1,6 +1,7 @@
 import * as React from 'react';
 import {Component} from 'react';
 import * as Relay from 'react-relay';
+var classnames = require('classnames');
 import SchemaInjector, {ISchemaType} from 'pz-client/src/support/schema-injector';
 
 export default class Votes extends React.Component<VotesProps, any> {
@@ -21,19 +22,23 @@ export default class Votes extends React.Component<VotesProps, any> {
 
   render() {
     const {upVotes, totalVotes, userVote} = this.props;
+    const upVoteClass = classnames('col-md-6', 'btn', 'btn-sm', { 'btn-success': userVote })
+    const downVoteClass = classnames('col-md-6', 'btn', 'btn-sm', { 'btn-success': userVote === false })
 
     return this.schemaInjector.inject(
-      <div>
-        <em className="col-md-12">{upVotes} out of {totalVotes} people found this helpful {""+userVote}</em>
+      <div className="aggregate-rating">
+        <em className="col-md-12">
+          <span className='rating-value'>{upVotes}</span> out of <span className='rating-count'>{totalVotes}</span> people found this helpful
+        </em>
         <div className="col-md-6">
           <button type="button"
-            className="col-md-6 btn btn-sm {userVote ? 'btn-success' :''}"
+            className={upVoteClass}
             onClick={this._onUpVoteClicked}>Up vote
           </button>
         </div>
         <div className="col-md-6">
           <button type="button"
-            className="col-md-6 btn btn-sm {userVote ? 'btn-success' :''}"
+            className={downVoteClass}
             onClick={this._onDownVoteClicked}>Down vote
           </button>
         </div>
@@ -47,7 +52,7 @@ interface VotesProps {
   downVoteClicked: Function
   upVotes: number
   totalVotes: number
-  userVote?: boolean 
+  userVote?: boolean
 }
 
 var aggregateRatingSchema: ISchemaType = {

@@ -198,7 +198,7 @@ export default function CommunityItemTypes(repositoryAuthorizers: IAppRepository
     });
 
     const CreateCommunityItemVoteMutation = mutationWithClientMutationId({
-        name: 'CreateVote',
+        name: 'CreateCommunityItemVote',
         inputFields: {
             communityItemId: {
                 type: new GraphQLNonNull(GraphQLString)
@@ -209,12 +209,15 @@ export default function CommunityItemTypes(repositoryAuthorizers: IAppRepository
         },
         outputFields: () => ({
             vote: {
-                type: types.VoteType
+                type: types.VoteType,
+                resolve: async ({ vote }) => {
+                    return vote;
+                }
             },
             communityItem: {
                 type: CommunityItemType,
-                resolve: async ({ vote, user }) => {
-                    return await communityItemsAuthorizer.as(user).findById(vote.communityItemId);
+                resolve: async ({ communityItemId, user }) => {
+                    return await communityItemsAuthorizer.as(user).findById(communityItemId);
                 }
             }
         }),
@@ -229,40 +232,50 @@ export default function CommunityItemTypes(repositoryAuthorizers: IAppRepository
             });
 
             if (vote instanceof AuthorizationError) {
-                return { vote: null };
+                return { vote: null, communityItemId: id };
             }
 
-            return { vote, user };
+            return { vote, user, communityItemId: id };
         }
     })
 
     const DeleteCommunityItemVoteMutation = mutationWithClientMutationId({
-        name: 'DeleteVote',
+        name: 'DeleteCommunityItemVote',
         inputFields: {
             communityItemId: {
                 type: new GraphQLNonNull(GraphQLString)
             }
         },
-        outputFields: {
-            success: {
-                type: GraphQLBoolean
+        outputFields: () => ({
+            error: {
+                type: GraphQLString
+            },
+             vote: {
+                type: types.VoteType,
+                resolve: async ({ vote }) => {
+                    return vote;
+                }
+            },
+            communityItem: {
+                type: CommunityItemType,
+                resolve: async ({ communityItemId, user }) => {
+                    return await communityItemsAuthorizer.as(user).findById(communityItemId);
+                }
             }
-        },
+        }),
         mutateAndGetPayload: async ({communityItemId, isUpVote}, {user}) => {
             let {id} = fromGlobalId(communityItemId);
 
             const voteResult = await votesAuthorizer.as(user).findCurrentUserVoteForParent("CommunityItem", id);
             
             if (voteResult instanceof AuthorizationError) {
-                return { success: false };
+                return { error: 'You are not authorized to do this', vote: null, communityItemId: id };
             }
 
             let vote = <IVote>voteResult;
             let deleteResult = await votesAuthorizer.as(user).delete(vote);
-            //TODO: Add community item to return statement and payload
 
-            if(voteResult instanceof Boolean)
-                return { success: !voteResult };
+            return { error: null, vote: null, communityItemId: id };
         }
     })
 

@@ -14,7 +14,7 @@ export default class DeleteCommunityItemVoteMutation extends Relay.Mutation {
 
     getFatQuery() {
         return Relay.QL`
-            fragment on CreateVotePayload {
+            fragment on DeleteCommunityItemVotePayload {
                 communityItem { 
                     currentUserVote
                     votes {
@@ -30,16 +30,36 @@ export default class DeleteCommunityItemVoteMutation extends Relay.Mutation {
         return [{
             type: 'FIELDS_CHANGE',
             fieldIDs: {
-                communityItem: this.props.communityItemId
+                communityItem: this.props.communityItem.id
             }
         }];
     }
 
+    getOptimisticResponse() {
+        const {currentUserVote, votes} = this.props.communityItem;
+        return {
+            communityItem: {
+                id: this.props.communityItem.id,
+                currentUserVote: null,
+                votes: {
+                    upVotes: currentUserVote ? votes.upVotes - 1 : votes.upVotes,
+                    total: votes.total - 1,
+                }
+            }
+        };
+    }
+
+    //Added more to the query here for optimistic updates, could just pass into props though?
     static fragments = {
         communityItem: () => Relay.QL`
-            fragment on CommunityItem {
-                id
-          }
+         fragment on CommunityItem {
+            id
+            currentUserVote
+            votes {
+                upVotes,
+                total
+            }
+        }
         `
     };
 }
