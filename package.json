@@ -6,6 +6,8 @@
     "start": "cd ./pz-server && export DEBUG=* && npm start",
     "startWin": "cd ./pz-server && SET DEBUG=* && npm start",
     "startQuiet": "cd ./pz-server && npm start",
+    "startRankingWorker": "cd ./pz-server && npm run startRankingWorker",
+    "debugRankingWorker": "cd ./pz-server && npm run debugRankingWorker",
     "typingsInstall": "cd ./pz-client && typings install && cd ../pz-server && typings install && cd ../pz-support && typings install",
     "postinstall": "npm run typingsInstall",
     "buildDev": "cd ./pz-builder && npm run buildDev",
@@ -19,9 +21,11 @@
     "clientIntegTests": "npm run testsIn pz-client/build/test/integration",
     "clientUnitTests": "npm run testsIn pz-client/build/test/unit",
     "clientTests": "npm run testsIn pz-client/build/test/acceptance pz-client/build/test/integration pz-client/build/test/unit",
-    "test": "npm run testsIn pz-server/build/test/unit pz-server/build/test/smoke pz-server/build/test/integration pz-client/build/test/acceptance pz-client/build/test/integration pz-client/build/test/unit"
+    "test": "npm run testsIn pz-server/build/test/unit pz-server/build/test/smoke pz-server/build/test/integration pz-client/build/test/acceptance pz-client/build/test/integration pz-client/build/test/unit",
+    "redisCommander": "redis-commander"
   },
   "dependencies": {
+    "amqplib": "^0.4.2",
     "autoprefixer": "^6.3.6",
     "babel-plugin-transform-async-to-generator": "^6.7.4",
     "babel-plugin-transform-es2015-destructuring": "^6.9.0",
@@ -108,6 +112,7 @@
     "mocha": "^2.5.3",
     "mute": "^2.0.6",
     "nsp": "^2.1.0",
+    "redis-commander": "^0.4.2",
     "sinon": "^1.17.4",
     "source-map-support": "^0.4.1",
     "strongloop": "^6.0.0",

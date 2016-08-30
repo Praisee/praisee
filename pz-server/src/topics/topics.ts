@@ -42,6 +42,7 @@ export interface ITopics extends IRepository {
     findAllByIds(ids: Array<number>): Promise<Array<ITopic>>
     findByUrlSlugName(urlSlugName: string): Promise<ITopic>
     findAllCommunityItemsRanked(topicId: number): Promise<Array<ICommunityItem>>
+    findAllCommunityItemIds(topicId: number): Promise<Array<number>>
 }
 
 //Loopback specific implementation of ITopics repository
@@ -98,6 +99,16 @@ export default class Topics implements ITopics {
          return communityItemModels.map((communityItem) =>
             createRecordFromLoopbackCommunityItem(communityItem)
         );
+    }
+
+    async findAllCommunityItemIds(topicId: number): Promise<Array<number>> {
+        const topic: ILookbackTopicInstance = await promisify(
+            this._TopicModel.findById, this._TopicModel)(topicId);
+
+        const communityItemModels = await promisify(
+            topic.communityItems, this._TopicModel)({fields: {id: true}});
+
+        return communityItemModels.map(communityItemModels => communityItemModels.id);
     }
 
     create(topic: ITopic) {

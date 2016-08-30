@@ -22,12 +22,15 @@ Vagrant.configure(2) do |config|
   # Create a forwarded port mapping which allows access to a specific port
   # within the machine from a port on the host machine. In the example below,
   # accessing "localhost:8080" will access port 80 on the guest machine.
-  config.vm.network "forwarded_port", guest: 3000, host: 3001
-  config.vm.network "forwarded_port", guest: 5432, host: 5432
-  config.vm.network "forwarded_port", guest: 9200, host: 9200
-  config.vm.network "forwarded_port", guest: 9300, host: 9300
-  config.vm.network "forwarded_port", guest: 5601, host: 5601
-  config.vm.network "forwarded_port", guest: 5858, host: 5859
+  config.vm.network "forwarded_port", guest: 3000, host: 3001 # Guest server
+  config.vm.network "forwarded_port", guest: 5432, host: 5432 # PostgreSQL
+  config.vm.network "forwarded_port", guest: 9200, host: 9200 # Elasticsearch
+  config.vm.network "forwarded_port", guest: 9300, host: 9300 # Elasticsearch
+  config.vm.network "forwarded_port", guest: 5601, host: 5601 # Kibana
+  config.vm.network "forwarded_port", guest: 5858, host: 5859 # NodeJS Debugger
+  config.vm.network "forwarded_port", guest: 6379, host: 6379 # Redis
+  config.vm.network "forwarded_port", guest: 5672, host: 5672 # RabbitMQ
+  config.vm.network "forwarded_port", guest: 15672, host: 15672 # RabbitMQ Management
 
   # Create a private network, which allows host-only access to the machine
   # using a specific IP.
@@ -105,7 +108,7 @@ Vagrant.configure(2) do |config|
 
     sudo debconf-set-selections <<< 'oracle-java8-installer shared/accepted-oracle-license-v1-1 select true'
     sudo DEBIAN_FRONTEND=noninteractive apt-get install -y oracle-java8-installer
-    sudo DEBIAN_FRONTEND=noninteractive sudo apt-get install oracle-java8-set-default
+    sudo DEBIAN_FRONTEND=noninteractive apt-get install -y oracle-java8-set-default
 
     printf '-'
     printf 'Installing Elastic'
@@ -128,6 +131,42 @@ Vagrant.configure(2) do |config|
     sudo service kibana start
 
     printf '-'
+    printf 'Installing Redis'
+    printf '-'
+
+    # https://www.digitalocean.com/community/tutorials/how-to-configure-a-redis-cluster-on-ubuntu-14-04
+    sudo DEBIAN_FRONTEND=noninteractive add-apt-repository -y ppa:chris-lea/redis-server
+    sudo DEBIAN_FRONTEND=noninteractive apt-get update
+    sudo DEBIAN_FRONTEND=noninteractive apt-get install -y redis-server
+    sudo sed -i -E "s/bind\s+[^\s]+/bind 0.0.0.0/g" /etc/redis/redis.conf
+    sudo update-rc.d redis-server defaults
+    sudo /etc/init.d/redis-server restart
+
+    printf '-'
+    printf 'Installing RabbitMQ'
+    printf '-'
+
+    echo 'deb http://www.rabbitmq.com/debian/ testing main' | sudo tee /etc/apt/sources.list.d/rabbitmq.list
+    wget -O- https://www.rabbitmq.com/rabbitmq-release-signing-key.asc | sudo apt-key add -
+    sudo apt-get update
+    sudo apt-get install rabbitmq-server
+    sudo rabbitmq-plugins enable rabbitmq_management
+    sudo rabbitmq-plugins enable rabbitmq_management_visualiser
+
+    printf '-'
+    printf 'Adding RabbitMQ management user admin/admin and dev/dev at http://localhost:15672'
+    printf '-'
+
+    # Admin user
+    sudo rabbitmqctl add_user admin admin
+    sudo rabbitmqctl set_user_tags admin administrator
+    sudo rabbitmqctl set_permissions -p / admin ".*" ".*" ".*"
+
+    # Development environment user
+    sudo rabbitmqctl add_user dev dev
+    sudo rabbitmqctl set_permissions -p / dev ".*" ".*" ".*"
+
+    printf '-'
     printf 'Provisioning complete'
     printf '-'
 
@@ -135,3 +174,19 @@ Vagrant.configure(2) do |config|
 
   SHELL
 end
+
+# Unused Recipes:
+
+# printf '-'
+# printf 'Installing ZeroMQ 4.1.5'
+# printf '-'
+#
+# # https://gist.github.com/cdjhlee/b8e3c927a01b0948b42d
+# sudo DEBIAN_FRONTEND=noninteractive sudo apt-get install -y libtool pkg-config build-essential autoconf automake uuid-dev
+# wget https://github.com/zeromq/zeromq4-1/releases/download/v4.1.5/zeromq-4.1.5.tar.gz
+# tar -zxf zeromq-4.1.5.tar.gz
+# cd zeromq-4.1.5
+# ./configure
+# sudo make install
+# sudo ldconfig # Install ZeroMQ driver on Linux
+
