@@ -156,7 +156,8 @@ export default function createSchema(repositoryAuthorizers: IAppRepositoryAuthor
             fields: {
                 createCommunityItem: Types.CreateCommunityItemMutation,
                 createCommunityItemVote: Types.CreateCommunityItemVoteMutation,
-                deleteCommunityItemVote: Types.DeleteCommunityItemVoteMutation
+                deleteCommunityItemVote: Types.DeleteCommunityItemVoteMutation,
+                updateCommunityItemVote: Types.UpdateCommunityItemVoteMutation
             }
         })
     });

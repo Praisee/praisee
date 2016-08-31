@@ -27,7 +27,7 @@ export interface IVotes extends IRepository {
     isOwner(userId: number, voteId: number): Promise<boolean>
     create(vote: IVote, ownerId: number): Promise<IVote>
     update(vote: IVote): Promise<IVote>
-    delete(vote: IVote): Promise<boolean>
+    destroy(vote: IVote): Promise<boolean>
 }
 
 export interface IVoteAggregate {

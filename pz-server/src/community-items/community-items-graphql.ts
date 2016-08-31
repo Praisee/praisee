@@ -250,7 +250,7 @@ export default function CommunityItemTypes(repositoryAuthorizers: IAppRepository
             error: {
                 type: GraphQLString
             },
-             vote: {
+            vote: {
                 type: types.VoteType,
                 resolve: async ({ vote }) => {
                     return vote;
@@ -267,23 +267,71 @@ export default function CommunityItemTypes(repositoryAuthorizers: IAppRepository
             let {id} = fromGlobalId(communityItemId);
 
             const voteResult = await votesAuthorizer.as(user).findCurrentUserVoteForParent("CommunityItem", id);
-            
+
             if (voteResult instanceof AuthorizationError) {
                 return { error: 'You are not authorized to do this', vote: null, communityItemId: id };
             }
+            else {
+                let deleteResult = await votesAuthorizer.as(user).destroy(voteResult);
 
-            let vote = <IVote>voteResult;
-            let deleteResult = await votesAuthorizer.as(user).delete(vote);
+                return { error: null, vote: null, communityItemId: id };
+            }
+        }
+    });
 
-            return { error: null, vote: null, communityItemId: id };
+    const UpdateCommunityItemVoteMutation = mutationWithClientMutationId({
+        name: 'UpdateCommunityItemVote',
+        inputFields: {
+            communityItemId: {
+                type: new GraphQLNonNull(GraphQLString)
+            },
+            isUpVote: {
+                type: new GraphQLNonNull(GraphQLBoolean)
+            }
+        },
+        outputFields: () => ({
+            vote: {
+                type: types.VoteType,
+                resolve: async ({ vote }) => {
+                    return vote;
+                }
+            },
+            communityItem: {
+                type: CommunityItemType,
+                resolve: async ({ communityItemId, user }) => {
+                    return await communityItemsAuthorizer.as(user).findById(communityItemId);
+                }
+            }
+        }),
+        mutateAndGetPayload: async ({communityItemId, isUpVote}, {user}) => {
+            let {id} = fromGlobalId(communityItemId);
+
+            const findVoteResult = await votesAuthorizer.as(user).findCurrentUserVoteForParent(
+                'CommunityItem',
+                id);
+
+            if (findVoteResult instanceof AuthorizationError) {
+                return { vote: null, communityItemId: id };
+            }
+            else {
+                findVoteResult.isUpVote = isUpVote;
+                const updateVoteResult = await votesAuthorizer.as(user).update(findVoteResult);
+
+                if (findVoteResult instanceof AuthorizationError) {
+                    return { vote: null, communityItemId: id };
+                }
+                else {
+                    return { vote: updateVoteResult, user, communityItemId: id };
+                }
+            }
         }
     })
-
     return {
         CommunityItemType,
         CommunityItemConnection,
         CreateCommunityItemMutation,
         CreateCommunityItemVoteMutation,
-        DeleteCommunityItemVoteMutation
+        DeleteCommunityItemVoteMutation,
+        UpdateCommunityItemVoteMutation
     };
 }

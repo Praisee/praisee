@@ -127,7 +127,7 @@ export default class Votes implements IVotes {
             }
             ));
     }
-
+    
     isOwner(userId: number, voteId: number): Promise<boolean> {
         return isOwnerOfModel(userId, this._VoteModel, voteId);
     }
@@ -144,17 +144,15 @@ export default class Votes implements IVotes {
             throw new Error('Cannot update record without an id');
         }
 
-        let VoteModel = new this._VoteModel({
-            id: vote.id,
-            userId: vote.userId,
-            upVote: vote.isUpVote
-        });
+        let existingVote = await promisify(this._VoteModel.findById, this._VoteModel)(vote.id);
+        
+        existingVote.isUpVote = vote.isUpVote;
 
-        const result = await promisify(VoteModel.save, VoteModel)();
+        const result = await promisify<IVoteInstance>(existingVote.save, existingVote)();
         return createRecordFromLoopbackVote(result);
     }
 
-    async delete(vote: IVote) {
+    async destroy(vote: IVote) {
         if (!vote.id) {
             throw new Error('Cannot delete record without an id');
         }

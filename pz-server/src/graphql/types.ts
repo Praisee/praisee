@@ -32,6 +32,7 @@ export interface ITypes {
     CommunityItemConnection;
     CreateCommunityItemMutation;
     CreateCommunityItemVoteMutation;
+    UpdateCommunityItemVoteMutation;
     DeleteCommunityItemVoteMutation;
     CommentType;
     CommentConnection;

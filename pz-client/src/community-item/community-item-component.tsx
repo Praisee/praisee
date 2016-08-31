@@ -5,6 +5,7 @@ import {ICommunityItem} from 'pz-server/src/community-items/community-items';
 import CommentList from 'pz-client/src/widgets/comment-list-component'
 import Votes from 'pz-client/src/votes/votes-component';
 import CreateCommunityItemVoteMutation from 'pz-client/src/votes/create-community-item-vote-mutation'
+import UpdateCommunityItemVoteMutation from 'pz-client/src/votes/update-community-item-vote-mutation'
 import DeleteCommunityItemVoteMutation from 'pz-client/src/votes/delete-community-item-vote-mutation'
 import Error from 'pz-client/src/widgets/error-component';
 
@@ -19,15 +20,15 @@ class CommunityItem extends Component<ICommunityItemProps, ICommuintyItemState> 
 
         //TODO: Look into how to get the error from payloads
         const error = this.props.createCommunityItemVoteMutation ?
-                <Error message={this.props.createCommunityItemVoteMutation.error} /> :
-                null;
+            <Error message={this.props.createCommunityItemVoteMutation.error} /> :
+            null;
 
         return (
             <div className="community-item">
                 <h5>{user.displayName}</h5>
                 <h4>{communityItem.summary}</h4>
                 <p>{communityItem.body}</p>
-                {error} 
+                {error}
                 <Votes
                     key={`communityItem-votes-${communityItem.id}`}
                     upVoteClicked={this._onUpVoteClicked.bind(this) }
@@ -47,32 +48,46 @@ class CommunityItem extends Component<ICommunityItemProps, ICommuintyItemState> 
         )
     }
 
-    private _deleteCurrentvote() {
-        this.props.relay.commitUpdate(new DeleteCommunityItemVoteMutation({
-            communityItem: this.props.communityItem
-        }));
-    }
-
     private _createVote(isUpVote: boolean) {
-        const {currentUserVote} = this.props.communityItem;
-
-        if (currentUserVote !== null) {
-            this._deleteCurrentvote();
-            if (currentUserVote === isUpVote) return;
-        }
-
         this.props.relay.commitUpdate(new CreateCommunityItemVoteMutation({
             isUpVote: isUpVote,
             communityItem: this.props.communityItem
         }));
     }
+    
+    private _deleteCurrentVote() {
+        this.props.relay.commitUpdate(new DeleteCommunityItemVoteMutation({
+            communityItem: this.props.communityItem
+        }));
+    }
+
+    private _updateCurrentVote(isUpVote: boolean) {
+        this.props.relay.commitUpdate(new UpdateCommunityItemVoteMutation({
+            communityItem: this.props.communityItem,
+            isUpVote: isUpVote
+        }));
+    }
+
+    private _doVoteLogic(isUpVote: boolean){
+        const {currentUserVote} = this.props.communityItem;
+
+        if (currentUserVote !== null) {
+            if (currentUserVote === isUpVote)
+                this._deleteCurrentVote();
+            if (currentUserVote !== isUpVote)
+                this._updateCurrentVote(isUpVote);
+        }
+        else {
+            this._createVote(isUpVote);
+        }
+    }
 
     private _onUpVoteClicked() {
-        this._createVote(true);
+        this._doVoteLogic(true);
     }
 
     private _onDownVoteClicked() {
-        this._createVote(false);
+        this._doVoteLogic(false);
     }
 }
 
@@ -96,6 +111,7 @@ export default Relay.createContainer(CommunityItem, {
                 ${CommentList.getFragment('communityItem', { expandTo: variables.expandTo })}
                 ${CreateCommunityItemVoteMutation.getFragment('communityItem')}
                 ${DeleteCommunityItemVoteMutation.getFragment('communityItem')}
+                ${UpdateCommunityItemVoteMutation.getFragment('communityItem')}
             }
         `
     }
