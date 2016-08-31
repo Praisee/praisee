@@ -4,6 +4,7 @@ import * as Relay from 'react-relay';
 import {ICommunityItem} from 'pz-server/src/community-items/community-items';
 import CommentList from 'pz-client/src/widgets/comment-list-component'
 import Votes from 'pz-client/src/votes/votes-component';
+import Avatar from 'pz-client/src/user/avatar.component';
 import CreateCommunityItemVoteMutation from 'pz-client/src/votes/create-community-item-vote-mutation'
 import UpdateCommunityItemVoteMutation from 'pz-client/src/votes/update-community-item-vote-mutation'
 import DeleteCommunityItemVoteMutation from 'pz-client/src/votes/delete-community-item-vote-mutation'
@@ -25,7 +26,7 @@ class CommunityItem extends Component<ICommunityItemProps, ICommuintyItemState> 
 
         return (
             <div className="community-item">
-                <h5>{user.displayName}</h5>
+                <Avatar communityItem={communityItem} comment={null} />
                 <h4>{communityItem.summary}</h4>
                 <p>{communityItem.body}</p>
                 {error}
@@ -109,6 +110,7 @@ export default Relay.createContainer(CommunityItem, {
                     total
                 }
                 ${CommentList.getFragment('communityItem', { expandTo: variables.expandTo })}
+                ${Avatar.getFragment('communityItem')}
                 ${CreateCommunityItemVoteMutation.getFragment('communityItem')}
                 ${DeleteCommunityItemVoteMutation.getFragment('communityItem')}
                 ${UpdateCommunityItemVoteMutation.getFragment('communityItem')}

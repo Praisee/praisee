@@ -13,15 +13,13 @@ class Avatar extends Component<IAvatarProps, any>{
     }
 
     render() {
-        const {image, name, reputation} = this.props;
-        
+        const {image, displayName, reputation} = this.props.communityItem.user;
+
         return this.schemaInjector.inject(
             <div className="avatar">
-            <h3>{name}</h3>
-                <p>
-                    <img className="image" src={image} />
-                    <span className="reputation">{reputation}</span>
-                </p>
+                <img className="image" src={image || "/unknown.png"} />
+                <strong>{displayName}</strong>
+                <span className="reputation">{reputation || 0}</span>
             </div>
         );
     }
@@ -29,28 +27,40 @@ class Avatar extends Component<IAvatarProps, any>{
 
 export default Relay.createContainer(Avatar, {
     fragments: {
-        // votes: ()=> Relay.QL`
-        //     fragment on Author {
-        //         name,
-        //         reputation,
-        //         image
-        //     }
-        // `
+        communityItem: () => Relay.QL`
+            fragment on CommunityItem{
+                user {
+                    displayName,
+                    reputation,
+                    image
+                }
+            }
+        `,
+        comment: () => Relay.QL`
+            fragment on Comment{
+                user {
+                    displayName,
+                    reputation,
+                    image
+                }
+            }
+        `
     }
 });
 
 export interface IAvatarProps {
-    name: string,
-    reputation: number,
-    image: string
+    communityItem: any;
+    displayName: string;
+    reputation: number;
+    image: string;
 }
 
 var avatarSchema: ISchemaType = {
-    "author":{
+    "author": {
         property: "author",
         typeof: "Person"
     },
-    "name":{
+    "name": {
         property: "name"
     },
     "image":

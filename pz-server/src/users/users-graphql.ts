@@ -55,6 +55,14 @@ export default function UsersTypes(repositoryAuthorizers: IAppRepositoryAuthoriz
             displayName: {
                 type: GraphQLString
             },
+
+            reputation:{
+                type: GraphQLInt
+            },
+
+            image: {
+                type: GraphQLString
+            }
         }),
 
         interfaces: [nodeInterface]
