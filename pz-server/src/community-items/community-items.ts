@@ -1,6 +1,6 @@
 import {ITopic} from 'pz-server/src/topics/topics';
 import {IComment} from 'pz-server/src/comments/comments';
-import { IRepository, IRepositoryRecord } from 'pz-server/src/support/repository';
+import {IRepository, IRepositoryRecord} from 'pz-server/src/support/repository';
 import {IVote} from 'pz-server/src/votes/votes';
 
 import {
@@ -29,6 +29,7 @@ export interface ICommunityItem extends IRepositoryRecord {
     updatedAt?: Date
     comments?: any
     votes?: any
+    topics?: ITopic[]
 }
 
 export interface ICommunityItems extends IRepository {

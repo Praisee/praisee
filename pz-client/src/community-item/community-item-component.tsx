@@ -5,10 +5,12 @@ import {ICommunityItem} from 'pz-server/src/community-items/community-items';
 import CommentList from 'pz-client/src/widgets/comment-list-component'
 import Votes from 'pz-client/src/votes/votes-component';
 import Avatar from 'pz-client/src/user/avatar.component';
-import CreateCommunityItemVoteMutation from 'pz-client/src/votes/create-community-item-vote-mutation'
-import UpdateCommunityItemVoteMutation from 'pz-client/src/votes/update-community-item-vote-mutation'
-import DeleteCommunityItemVoteMutation from 'pz-client/src/votes/delete-community-item-vote-mutation'
+import CommunityItemContent from 'pz-client/src/editor/community-item-content.component';
+import CreateCommunityItemVoteMutation from 'pz-client/src/votes/create-community-item-vote-mutation';
+import UpdateCommunityItemVoteMutation from 'pz-client/src/votes/update-community-item-vote-mutation';
+import DeleteCommunityItemVoteMutation from 'pz-client/src/votes/delete-community-item-vote-mutation';
 import Error from 'pz-client/src/widgets/error-component';
+import {IContentData} from 'pz-server/src/content/content-data';
 
 class CommunityItem extends Component<ICommunityItemProps, ICommuintyItemState> {
     constructor(props, context) {
@@ -28,7 +30,7 @@ class CommunityItem extends Component<ICommunityItemProps, ICommuintyItemState> 
             <div className="community-item">
                 <Avatar communityItem={communityItem} comment={null} />
                 <h4>{communityItem.summary}</h4>
-                <p>{communityItem.body}</p>
+                <CommunityItemContent communityItem={communityItem} />
                 {error}
                 <Votes
                     key={`communityItem-votes-${communityItem.id}`}
@@ -111,6 +113,7 @@ export default Relay.createContainer(CommunityItem, {
                 }
                 ${CommentList.getFragment('communityItem', { expandTo: variables.expandTo })}
                 ${Avatar.getFragment('communityItem')}
+                ${CommunityItemContent.getFragment('communityItem')}
                 ${CreateCommunityItemVoteMutation.getFragment('communityItem')}
                 ${DeleteCommunityItemVoteMutation.getFragment('communityItem')}
                 ${UpdateCommunityItemVoteMutation.getFragment('communityItem')}
@@ -128,7 +131,7 @@ interface ICommunityItemProps {
         user: { displayName: string }
         summary: string
         body: string
-        // bodyData?: IContentData
+        bodyData?: IContentData
         createdAt: Date
         comments: any
         votes: any

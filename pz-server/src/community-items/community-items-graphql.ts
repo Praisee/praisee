@@ -88,6 +88,18 @@ export default function CommunityItemTypes(repositoryAuthorizers: IAppRepository
                     return comments;
                 }
             },
+
+            topics: {
+                type: new GraphQLList(types.TopicType),
+                resolve: async (communityItem, _, {user}) => {
+                    const topics = await communityItemsAuthorizer
+                        .as(user)
+                        .findAllTopics(communityItem.id);
+
+                    return topics;
+                }
+            },
+
             currentUserVote: {
                 type: GraphQLBoolean,
                 resolve: async ({id}, __, {user}) => {
@@ -187,6 +199,54 @@ export default function CommunityItemTypes(repositoryAuthorizers: IAppRepository
                 type,
                 summary,
                 bodyData: parsedBodyData
+            });
+
+            if (communityItem instanceof AuthorizationError) {
+                return { communityItem: null };
+            }
+
+            return { communityItem };
+        },
+    });
+
+    const CreateCommunityItemFromTopicMutation = mutationWithClientMutationId({
+        name: 'CreateCommunityItemFromTopic',
+
+        inputFields: {
+            type: { type: new GraphQLNonNull(GraphQLString) },
+            summary: { type: new GraphQLNonNull(GraphQLString) },
+            body: { type: GraphQLString },
+            bodyData: { type: InputContentDataType },
+            topicId: { type: GraphQLString }
+        },
+
+        outputFields: () => ({
+            communityItem: {
+                type: types.CommunityItemType,
+                resolve: ({communityItem}) => { 
+                    return communityItem;
+                 }
+            },
+            topic: {
+                type: types.TopicType,
+                resolve: () => ({ id: 'topic' })
+            },
+            viewer: {
+                type: types.ViewerType,
+                resolve: () => ({ id: 'viewer' })
+            }
+        }),
+
+        mutateAndGetPayload: async ({type, summary, body, bodyData, topicId}, context) => {
+            const parsedBodyData = parseInputContentData(body || bodyData);
+
+            const {id} = fromGlobalId(topicId);
+            const communityItem = await communityItemsAuthorizer.as(context.user).create({
+                recordType: 'CommunityItem',
+                type,
+                summary,
+                bodyData: parsedBodyData,
+                topics: [id]
             });
 
             if (communityItem instanceof AuthorizationError) {
@@ -330,6 +390,7 @@ export default function CommunityItemTypes(repositoryAuthorizers: IAppRepository
         CommunityItemType,
         CommunityItemConnection,
         CreateCommunityItemMutation,
+        CreateCommunityItemFromTopicMutation,
         CreateCommunityItemVoteMutation,
         DeleteCommunityItemVoteMutation,
         UpdateCommunityItemVoteMutation

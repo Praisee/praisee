@@ -86,13 +86,11 @@ export class DevEnvSeeder {
                 userId: 1,
                 type: "Question",
                 summary: 'Is there any D810 successor is coming in 2016?',
-                body:
-                `I have seen lots of people selling D810 these days in gulf countries. Also its used price gone a bit up than old days. (Don't know why)
-                is there any successor to D810? 
-                I want a D810 badly and I can hold a bit if any new camera is going to release in 2016. 
-                What is your opinion ? Should I wait or its time to buy D810 ?`
+                body: "I have seen lots of people selling D810 these days in gulf countries. Also its used price gone a bit up than old days. (Don't know why) is there any successor to D810? I want a D810 badly and I can hold a bit if any new camera is going to release in 2016. What is your opinion ? Should I wait or its time to buy D810?",
+                bodyData: `{"version":"0.8.0","type":"draftjs","value":{"entityMap":{},"blocks":[{"text":"I have seen lots of people selling D810 these days in gulf countries. Also its used price gone a bit up than old days. (Don't know why) is there any successor to D810? I want a D810 badly and I can hold a bit if any new camera is going to release in 2016. What is your opinion ? Should I wait or its time to buy D810?","entityRanges":[],"depth":0,"data":{},"key":"18l7p","inlineStyleRanges":[],"type":"unstyled"}]}}`
             }]
     }
+    	
 
     topicCommunityItemSeeds() {
         return [
@@ -110,7 +108,7 @@ export class DevEnvSeeder {
                 parentId: 1,
                 parentType: "CommunityItem",
                 body:
-                    `There are rumors about a Photokina launch
+                `There are rumors about a Photokina launch
                 The D810 is (almost) 2 years old and and with the normal timeframe it would be replaced this year.
                 It's time for Nikon to make use of some of their current technology into a new camera body.
                 The 153 point AF, the wireless solutions, new Expeed processor, new Sensor ( we'll see what Sony been sittning on) to take a big step forwardThe launch of the Canon 5DIV and the D900 will be close in time and this should be this year

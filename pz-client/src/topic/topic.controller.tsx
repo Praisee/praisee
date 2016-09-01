@@ -3,6 +3,7 @@ import {Component} from 'react';
 import * as Relay from 'react-relay';
 import * as util from 'util';
 import ContributionArea from 'pz-client/src/topic/contribution-area.component';
+import {CreateItemEditor} from 'pz-client/src/community-item/commuity-item-editor.controller';
 import SideSection from 'pz-client/src/side-section/side-section.component';
 import {ITopic} from 'pz-server/src/topics/topics';
 import SchemaInjector, {ISchemaType} from 'pz-client/src/support/schema-injector';
@@ -34,7 +35,7 @@ export class TopicController extends Component<ITopicProps, ITopicState> {
 
     _renderContributionSection() {
         return (
-            <ContributionArea addContribution={this._addContribution} />
+            <CreateItemEditor topic={this.props.topic} />
         )
     }
 
@@ -104,7 +105,8 @@ export default Relay.createContainer(TopicController, {
                             ${CommunityItem.getFragment('communityItem')}
                         }
                     }
-                }
+                },
+                ${CreateItemEditor.getFragment('topic')}
             }
         `
     }

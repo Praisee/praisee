@@ -155,6 +155,7 @@ export default function createSchema(repositoryAuthorizers: IAppRepositoryAuthor
 
             fields: {
                 createCommunityItem: Types.CreateCommunityItemMutation,
+                createCommunityItemFromTopic: Types.CreateCommunityItemFromTopicMutation,
                 createCommunityItemVote: Types.CreateCommunityItemVoteMutation,
                 deleteCommunityItemVote: Types.DeleteCommunityItemVoteMutation,
                 updateCommunityItemVote: Types.UpdateCommunityItemVoteMutation

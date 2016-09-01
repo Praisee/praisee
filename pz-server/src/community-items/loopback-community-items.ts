@@ -113,7 +113,16 @@ export default class CommunityItems implements ICommunityItems {
             userId: ownerId
         });
 
-        const result = await promisify(communityItemModel.save, communityItemModel)();
+        const result = await promisify<ICommunityItemInstance>(communityItemModel.save, communityItemModel)();
+
+        const topicPromises = [];
+
+        communityItem.topics.forEach((topic) => {
+            topicPromises.push(promisify(result.topics.add, result)(topic));
+        });
+
+        await topicPromises;
+
         return createRecordFromLoopbackCommunityItem(result);
     }
 
