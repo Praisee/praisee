@@ -74,9 +74,10 @@ export default class RedisRankingsCache implements IRankingsCache {
             return;
         }
 
-        await this._connection.zadd(
+        await this._addOrderedSetWithTimeout(
             this._generateTopicCommunityItemRanksKey(topicId),
-            ...rankings.map(([communityItemId, rank]) => [rank, communityItemId])
+            10,
+            rankings.map(([communityItemId, rank]) => [rank, communityItemId])
         );
     }
 
@@ -94,9 +95,10 @@ export default class RedisRankingsCache implements IRankingsCache {
             return;
         }
 
-        await this._connection.zadd(
+        await this._addOrderedSetWithTimeout(
             this._generateViewerTopicCommunityItemRanksKey(viewerId, topicId),
-            ...rankings.map(([communityItemId, rank]) => [rank, communityItemId])
+            10,
+            rankings.map(([communityItemId, rank]) => [rank, communityItemId])
         );
     }
 
@@ -121,6 +123,15 @@ export default class RedisRankingsCache implements IRankingsCache {
         const result = await this._connection.exists(key);
         const oneOrZero = Number(result);
         return !!oneOrZero;
+    }
+
+    private async _addOrderedSetWithTimeout(key, timeoutSeconds, orderedSetArgs) {
+        (await this._connection
+            .pipeline()
+            .zadd(key, ...orderedSetArgs)
+            .expire(key, timeoutSeconds)
+            .exec()
+        );
     }
 
     private _orderedSetResultsToRankingTuples(orderedSet): TRankingTuples {
