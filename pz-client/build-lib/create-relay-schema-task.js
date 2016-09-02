@@ -10,9 +10,6 @@ module.exports = function(gulp) {
     var dependencies = [];
 
     gulp.task('pzClient:createRelaySchema', dependencies, function() {
-        requireClean('pz-server/build/src/remote-app/app-creator');
-        var createRemoteApp = require('pz-server/build/src/remote-app/app-creator').default;
-
         requireClean('pz-server/build/src/graphql/schema-creator');
         var createSchema = require('pz-server/build/src/graphql/schema-creator').default;
 
@@ -21,11 +18,7 @@ module.exports = function(gulp) {
         // Save JSON of full schema introspection for Babel Relay Plugin to use
         (Promise.resolve()
             .then(function() {
-                return createRemoteApp();
-            })
-
-            .then(function(app) {
-                return createSchema(app.services.repositoryAuthorizers);
+                return createSchema({});
             })
 
             .then(function(schema) {
