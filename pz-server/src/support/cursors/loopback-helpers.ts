@@ -4,14 +4,12 @@ import {
     TBiCursor,
     ICursorResults,
     opaqueCursor,
-    isForwardCursor,
-    shouldSkipAfter,
-    shouldSkipBefore,
-    reverseBiCursor, toStringCursor, fromStringCursor, toNumberCursor,
-    fromNumberCursor, isInvalidBiCursor
+    toStringCursor, fromStringCursor, toNumberCursor,
+    fromNumberCursor
 } from 'pz-server/src/support/cursors/cursors';
 
 import {toDateCursor, fromDateCursor} from 'pz-server/src/support/cursors/cursors';
+import {applyCursorToSearch} from './search-helpers';
 
 interface IPersistedModelInstanceWithTimestamp extends IPersistedModelInstance {
     createdAt: Date
@@ -30,39 +28,66 @@ interface ICursorResolvers {
     fromCursor: IFromCursorResolver
 }
 
-export async function findWithCursor<T extends IPersistedModelInstanceWithTimestamp>(
+export async function findWithCursor<TModelInstance extends IPersistedModelInstanceWithTimestamp>(
         Model: IPersistedModel,
         cursor: TBiCursor,
         additionalFilter?: IFinderFilter
-    ): Promise<ICursorResults<T>> {
+    ): Promise<ICursorResults<TModelInstance>> {
 
-    if (isInvalidBiCursor(cursor)) {
-        throw new Error('Invalid bi-cursor provided');
-    }
-
-    let filter: IFinderFilter = Object.assign({
+    const filter: IFinderFilter = Object.assign({
         order: 'createdAt'
     }, additionalFilter);
 
-    const cursorField = getCursorFieldFromFilter(Model, filter);
+    const searchField = getCursorFieldFromFilter(Model, filter);
 
-    const {toCursor, fromCursor} = createCursorResolversFrom(Model, cursorField);
+    const {toCursor, fromCursor} = createCursorResolversFrom(Model, searchField);
 
-    filter = applyCursorToFilter(
-        cursor,
-        filter,
-        cursorField,
-        fromCursor
-    );
+    const isAscendingSortValue = isAscendingSort(filter.order);
 
-    const models = await promisify(Model.find, Model)(filter);
+    return await applyCursorToSearch<IFinderFilter, TModelInstance>({
+            cursor,
 
-    return createCursorResultsFromModels<T>(
-        cursor,
-        models,
-        cursorField,
-        toCursor
-    );
+            search: filter,
+
+            searchFields: [searchField],
+
+            getCursorFromSearchResult: (model) => {
+                return toCursor(model[searchField]);
+            },
+
+            getSearchFieldValueFromCursor: (cursor) => {
+                return fromCursor(cursor);
+            },
+
+            isAscendingSort: () => isAscendingSortValue,
+
+            updateSearchFilter: (filter, searchField, toGreaterThan, searchFieldValue) => Object.assign({}, filter, {
+                where: Object.assign({}, filter.where, {
+                    [searchField]: { [toGreaterThan ? 'gt' : 'lt']: searchFieldValue }
+                })
+            }),
+
+            updateSearchOrder: (filter, searchField, toAscending) => {
+                let order;
+
+                // Reverse the sort order based on which direction it is currently
+                // (isAscendingSortValue) and which direction it needs to be (toAscending).
+
+                if (isAscendingSortValue) {
+                    order = toAscending ? filter.order : reverseSortOrder(filter.order);
+                } else {
+                    order = toAscending ? reverseSortOrder(filter.order) : filter.order;
+                }
+
+                return Object.assign({}, filter, { order });
+            },
+
+            updateSearchLimit: (filter, toLimit) => Object.assign({}, filter, {
+                limit: toLimit
+            }),
+
+            performSearch: async (filter) => await promisify(Model.find, Model)(filter)
+    });
 }
 
 function getCursorFieldFromFilter(Model: IPersistedModel, filter: IFinderFilter) {
@@ -157,85 +182,3 @@ function createCursorResolversFrom(Model: IPersistedModel, field: string): ICurs
     return defaultCursorResolvers;
 }
 
-function applyCursorToFilter(
-        cursor: TBiCursor,
-        filter: IFinderFilter,
-        cursorField: string,
-        fromCursor: IFromCursorResolver
-    ): IFinderFilter {
-
-    let cursorOrder: string | Array<string>;
-    let cursorLimit: number;
-    let cursorWhere: any = {};
-
-    if (isForwardCursor(cursor)) {
-        cursorOrder = filter.order;
-        cursorLimit = cursor.takeFirst + 1;
-
-        if (cursor.skipAfter) {
-            const sortOperator = isAscendingSort(cursorOrder) ? 'gt' : 'lt';
-            cursorWhere[cursorField] = { [sortOperator]: fromCursor(cursor.skipAfter) };
-        }
-
-    } else {
-        cursorOrder = filter.order ? reverseSortOrder(filter.order) : cursorField + ' DESC';
-        cursorLimit = cursor.takeLast + 1;
-
-        if (cursor.skipBefore) {
-            const sortOperator = isAscendingSort(cursorOrder) ? 'gt' : 'lt';
-            cursorWhere[cursorField] = { [sortOperator]: fromCursor(cursor.skipBefore) };
-        }
-    }
-
-    filter = Object.assign({}, filter, {
-        where: Object.assign({}, filter.where, cursorWhere),
-        order: cursorOrder,
-        limit: cursorLimit
-    });
-
-    return filter;
-}
-
-function createCursorResultsFromModels<T extends IPersistedModelInstance>(
-        cursor: TBiCursor,
-        models: Array<T>,
-        cursorField: string,
-        toCursor: IToCursorResolver
-    ): ICursorResults<T> {
-
-    let expectedModels, hasPreviousPage = false, hasNextPage = false;
-
-    // Note: nextPage and previousPage should always be false in some circumstances
-    // due to the Connections spec. See:
-    // https://github.com/graphql/graphql-relay-js/issues/58
-
-    if (isForwardCursor(cursor)) {
-        if (models.length >= (cursor.takeFirst + 1)) {
-            expectedModels = models.slice(0, models.length - 1);
-            hasNextPage = true;
-
-        } else {
-            expectedModels = models;
-        }
-    } else {
-        if (models.length >= (cursor.takeLast + 1)) {
-            expectedModels = models.slice(0, models.length - 1).reverse();
-            hasPreviousPage = true;
-
-        } else {
-            expectedModels = models.slice(0).reverse();
-        }
-    }
-
-    return {
-        results: expectedModels.map(model => {
-            return {
-                cursor: toCursor(model[cursorField]),
-                item: model
-            };
-        }),
-
-        hasNextPage,
-        hasPreviousPage
-    };
-}
