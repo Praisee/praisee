@@ -22,9 +22,11 @@ import ContentFilterer from 'pz-server/src/content/content-filterer';
 import convertContentDataToText from 'pz-server/src/content/data-to-text-converter';
 import FilteredCommunityItems from 'pz-server/src/community-items/filtered-community-items';
 import VanityRoutePaths from 'pz-server/src/vanity-route-paths/vanity-route-paths';
+import VanityRoutePathsAuthorizer from 'pz-server/src/vanity-route-paths/vanity-route-paths-authorizer';
 
 module.exports = function initializeRepositories(app: IApp) {
-    const routePaths = new VanityRoutePaths(app.models.UrlSlug);
+    const vanityRoutePaths = new VanityRoutePaths(app.models.UrlSlug);
+    const vanityRoutePathsAuthorizer = new VanityRoutePathsAuthorizer(vanityRoutePaths);
 
     const users = new Users(app.models.PraiseeUser);
     const usersAuthorizer = new UsersAuthorizer(users);
@@ -37,7 +39,7 @@ module.exports = function initializeRepositories(app: IApp) {
 
     const communityItems = new CommunityItems(app.models.CommunityItem);
 
-    const contentFilterer = new ContentFilterer(routePaths, topics, communityItems);
+    const contentFilterer = new ContentFilterer(vanityRoutePaths, topics, communityItems);
 
     const filteredCommunityItems = new FilteredCommunityItems(
         communityItems,
@@ -55,7 +57,8 @@ module.exports = function initializeRepositories(app: IApp) {
         topics,
         communityItems: filteredCommunityItems,
         comments,
-        votes
+        votes,
+        vanityRoutePaths: vanityRoutePaths
     };
 
     const repositoryAuthorizers: IAppRepositoryAuthorizers = {
@@ -63,7 +66,8 @@ module.exports = function initializeRepositories(app: IApp) {
         topics: topicsAuthorizer,
         communityItems: communityItemsAuthorizer,
         comments: commentsAuthorizer,
-        votes: votesAuthorizer
+        votes: votesAuthorizer,
+        vanityRoutePaths: vanityRoutePathsAuthorizer
     };
 
     app.services.repositories = repositories;

@@ -9,6 +9,8 @@ import {
 
 import createMentionPlugin from 'pz-client/src/editor/mention-plugin/create-mention-plugin';
 import createDecoratorFromPlugins from 'pz-client/src/editor/create-decorator-from-plugins';
+import {isTextContent} from 'pz-server/src/content/content-data';
+import convertToText from 'pz-server/src/content/data-to-text-converter';
 
 var DraftJsEditor = require('draft-js-plugins-editor').default;
 var createLinkifyPlugin = require('draft-js-linkify-plugin').default;
@@ -28,14 +30,27 @@ export class CommunityItemContent extends React.Component<IProps, any> {
     ];
 
     render() {
-        return (
-            <div className="community-item-content">
+        let {bodyData} = this.props.communityItem;
+
+        let content;
+        let bodyDataAsObj = JSON.parse(bodyData);
+        if (isTextContent(bodyDataAsObj)) {
+            content = (<p>{convertToText(bodyDataAsObj)}</p>);
+        }
+        else {
+            content = (
                 <DraftJsEditor
                     readOnly={true}
                     editorState={this._getEditorState()}
                     onChange={() => {}}
                     plugins={this._editorPlugins}
-                />
+                    />
+            );
+        }
+
+        return (
+            <div className="community-item-content">
+                {content}
             </div>
         );
     }

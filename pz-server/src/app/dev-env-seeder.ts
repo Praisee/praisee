@@ -97,6 +97,12 @@ export class DevEnvSeeder {
             {
                 communityItemId: 1,
                 topicId: 4
+            },{
+                communityItemId: 1,
+                topicId: 3
+            },{
+                communityItemId: 1,
+                topicId: 1
             }]
     }
 

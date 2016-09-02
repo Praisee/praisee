@@ -32,6 +32,7 @@ export var isCommunityItemRecord = (record: TVanityRoutePathSupportedRecord): re
 
 export interface IVanityRoutePaths extends IRepository {
     findAllTuplesByRecords(records: Array<TVanityRoutePathSupportedRecord>): Promise<RecordRoutePathTuples>
+    findByRecord(record: TVanityRoutePathSupportedRecord): Promise<IVanityRoutePath>
 }
 
 export interface IVanityRoutePath extends IRepositoryRecord {
@@ -48,6 +49,23 @@ export default class VanityRoutePaths implements IVanityRoutePaths {
 
     constructor(UrlSlug: ILoopbackUrlSlugModel) {
         this._UrlSlug = UrlSlug;
+    }
+
+    async findByRecord(record: TVanityRoutePathSupportedRecord): Promise<IVanityRoutePath> {
+        const recordToUrlSlugTuples = await this._getRecordToUrlSlugTuples([record]);
+
+        if(!recordToUrlSlugTuples[0]){
+            return null;
+        }
+        
+        const tuple = recordToUrlSlugTuples[0];
+
+        const routePath = createRecord<IVanityRoutePath>('RoutePath', {
+            //TODO: Maybe move from tuple to interface to avoid [0]/[1] code
+            routePath: this._resolveRoutePath(tuple[0], tuple[1])
+        });
+
+        return routePath;
     }
 
     async findAllTuplesByRecords(records: Array<TVanityRoutePathSupportedRecord>): Promise<RecordRoutePathTuples> {
@@ -97,8 +115,8 @@ export default class VanityRoutePaths implements IVanityRoutePaths {
 
     private async _getRecordToUrlSlugTuples(
         records: Array<TVanityRoutePathSupportedRecord>
-    ): Promise<Array<TRecordUrlSlugTuple>> {
-
+        ): Promise<Array<TRecordUrlSlugTuple>> {
+            
         if (!records.length) {
             return [];
         }

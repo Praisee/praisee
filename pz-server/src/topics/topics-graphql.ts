@@ -28,48 +28,57 @@ var {
 
 export default function CommentTypes(repositoryAuthorizers: IAppRepositoryAuthorizers, nodeInterface, types) {
     const topicsAuthorizer = repositoryAuthorizers.topics;
+    const vanityRoutePathAuthorizer = repositoryAuthorizers.vanityRoutePaths;
 
     const TopicType = new GraphQLObjectType({
         name: 'Topic',
 
         fields: () => {
             return ({
-            id: globalIdField('Topic'),
+                id: globalIdField('Topic'),
 
-            name: {
-                type: GraphQLString
-            },
+                name: {
+                    type: GraphQLString
+                },
 
-            description: {
-                type: GraphQLString
-            },
+                description: {
+                    type: GraphQLString
+                },
 
-            thumbnailPath: {
-                type: GraphQLString
-            },
+                thumbnailPath: {
+                    type: GraphQLString
+                },
 
-            overviewContent: {
-                type: GraphQLString
-            },
+                overviewContent: {
+                    type: GraphQLString
+                },
 
-            isVerified: {
-                type: GraphQLBoolean
-            },
+                isVerified: {
+                    type: GraphQLBoolean
+                },
 
-            communityItems: {
-                type: types.CommunityItemConnection.connectionType,
-                args: connectionArgs,
+                communityItems: {
+                    type: types.CommunityItemConnection.connectionType,
+                    args: connectionArgs,
 
-                resolve: async (topic, args, {user}) => {
-                    const communityItems = await topicsAuthorizer
-                        .as(user)
-                        .findAllCommunityItemsRanked(topic.id)
+                    resolve: async (topic, args, {user}) => {
+                        const communityItems = await topicsAuthorizer
+                            .as(user)
+                            .findAllCommunityItemsRanked(topic.id)
 
-                    return connectionFromArray(communityItems, args);
+                        return connectionFromArray(communityItems, args);
+                    }
+                },
+
+                routePath: {
+                    type: GraphQLString,
+                    resolve: async (topic, _, {user}) => {
+                        let route = await vanityRoutePathAuthorizer.as(user).findByRecord(topic);
+                        return route.routePath;
+                    }
                 }
-            },
-
-        }); },
+            });
+        },
 
         interfaces: [nodeInterface]
     });

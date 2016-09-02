@@ -15,12 +15,16 @@ import {IAuthorizedComments} from 'pz-server/src/comments/comments-authorizer';
 import {IVotes} from 'pz-server/src/votes/votes';
 import {IAuthorizedVotes} from 'pz-server/src/votes/votes-authorizer';
 
+import {IVanityRoutePaths} from 'pz-server/src/vanity-route-paths/vanity-route-paths';
+import {IAuthorizedVanityRoutePaths} from 'pz-server/src/vanity-route-paths/vanity-route-paths-authorizer';
+
 export interface IAppRepositories {
-    users: IUsers,
-    topics: ITopics,
-    communityItems: ICommunityItems,
-    comments: IComments
-    votes: IVotes
+    users: IUsers;
+    topics: ITopics;
+    communityItems: ICommunityItems;
+    comments: IComments;
+    votes: IVotes;
+    vanityRoutePaths: IVanityRoutePaths;
 }
 
 export interface IAppAuthorizedRepository {
@@ -35,4 +39,5 @@ export interface IAppRepositoryAuthorizers {
     communityItems: TAppAuthorizer<IAuthorizedCommunityItems>
     comments: TAppAuthorizer<IAuthorizedComments>
     votes: TAppAuthorizer<IAuthorizedVotes>
+    vanityRoutePaths: IAuthorizer<IAuthorizedVanityRoutePaths>
 }

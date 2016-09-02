@@ -6,6 +6,7 @@ import CommentList from 'pz-client/src/widgets/comment-list-component'
 import Votes from 'pz-client/src/votes/votes-component';
 import Avatar from 'pz-client/src/user/avatar.component';
 import CommunityItemContent from 'pz-client/src/editor/community-item-content.component';
+import Tags from 'pz-client/src/community-item/tags-component';
 import CreateCommunityItemVoteMutation from 'pz-client/src/votes/create-community-item-vote-mutation';
 import UpdateCommunityItemVoteMutation from 'pz-client/src/votes/update-community-item-vote-mutation';
 import DeleteCommunityItemVoteMutation from 'pz-client/src/votes/delete-community-item-vote-mutation';
@@ -40,6 +41,7 @@ class CommunityItem extends Component<ICommunityItemProps, ICommuintyItemState> 
                     upVotes={communityItem.votes.upVotes}
                     userVote={communityItem.currentUserVote}
                     />
+                <Tags topics={this.props.communityItem.topics} />
                 <CommentList
                     key={`communityItem-commentList-${communityItem.id}`}
                     communityItem={communityItem}
@@ -57,7 +59,7 @@ class CommunityItem extends Component<ICommunityItemProps, ICommuintyItemState> 
             communityItem: this.props.communityItem
         }));
     }
-    
+
     private _deleteCurrentVote() {
         this.props.relay.commitUpdate(new DeleteCommunityItemVoteMutation({
             communityItem: this.props.communityItem
@@ -71,7 +73,7 @@ class CommunityItem extends Component<ICommunityItemProps, ICommuintyItemState> 
         }));
     }
 
-    private _doVoteLogic(isUpVote: boolean){
+    private _doVoteLogic(isUpVote: boolean) {
         const {currentUserVote} = this.props.communityItem;
 
         if (currentUserVote !== null) {
@@ -110,6 +112,11 @@ export default Relay.createContainer(CommunityItem, {
                 votes {
                     upVotes,
                     total
+                },
+                topics {
+                    id,
+                    name,
+                    routePath
                 }
                 ${CommentList.getFragment('communityItem', { expandTo: variables.expandTo })}
                 ${Avatar.getFragment('communityItem')}
@@ -136,6 +143,7 @@ interface ICommunityItemProps {
         comments: any
         votes: any
         currentUserVote: any
+        topics: Array<{ id: string, name: string, routePath: string }>
     }
     body: string;
     relay: any;
