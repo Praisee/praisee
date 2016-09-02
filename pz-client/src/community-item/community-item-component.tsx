@@ -2,7 +2,7 @@ import * as React from 'react';
 import {Component} from 'react';
 import * as Relay from 'react-relay';
 import {ICommunityItem} from 'pz-server/src/community-items/community-items';
-import CommentList from 'pz-client/src/widgets/comment-list-component'
+import CommentList from 'pz-client/src/comments/comment-list-component'
 import Votes from 'pz-client/src/votes/votes-component';
 import Avatar from 'pz-client/src/user/avatar.component';
 import CommunityItemContent from 'pz-client/src/editor/community-item-content.component';
@@ -46,7 +46,7 @@ class CommunityItem extends Component<ICommunityItemProps, ICommuintyItemState> 
                     key={`communityItem-commentList-${communityItem.id}`}
                     communityItem={communityItem}
                     comment={null}
-                    expandTo={this.props.relay.variables.expandTo}
+                    expandCommentsTo={this.props.relay.variables.expandCommentsTo}
                     currentLevel={0}
                     />
             </div>
@@ -98,27 +98,27 @@ class CommunityItem extends Component<ICommunityItemProps, ICommuintyItemState> 
 
 export default Relay.createContainer(CommunityItem, {
     initialVariables: {
-        expandTo: 5
+        expandCommentsTo: 5
     },
     fragments: {
-        communityItem: (variables) => Relay.QL`
+        communityItem: ({expandCommentsTo}) => Relay.QL`
             fragment on CommunityItem {
                 summary,
                 body,
                 user {
                     displayName
                 },
-                currentUserVote
-                votes {
+                votes{
                     upVotes,
                     total
                 },
+                currentUserVote,
                 topics {
                     id,
                     name,
                     routePath
                 }
-                ${CommentList.getFragment('communityItem', { expandTo: variables.expandTo })}
+                ${CommentList.getFragment('communityItem', { expandCommentsTo })}
                 ${Avatar.getFragment('communityItem')}
                 ${CommunityItemContent.getFragment('communityItem')}
                 ${CreateCommunityItemVoteMutation.getFragment('communityItem')}

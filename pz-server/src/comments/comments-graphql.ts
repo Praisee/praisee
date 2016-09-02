@@ -52,29 +52,45 @@ export default function CommentTypes(repositoryAuthorizers: IAppRepositoryAuthor
                 type: GraphQLString
             },
 
+            bodyData: {
+                type: GraphQLString,
+                resolve: (source) => JSON.stringify(source.bodyData)
+            },
+
             createdAt: {
                 type: GraphQLString
             },
 
             user: {
                 type: types.OtherUserType,
-                resolve: async ({id}, _, {user: currentUser}) => {
+                resolve: async (comment, _, {user: currentUser}) => {
                     const user = await usersAuthorizer
                         .as(currentUser)
-                        .findOtherUserById(id);
+                        .findOtherUserById(comment.userId);
 
                     return user;
                 }
             },
 
             comments: {
+                type: new GraphQLList(CommentType),
+                resolve: async ({id}, _, {user}) => {
+                    const commentTree = await commentsAuthorizer
+                        .as(user)
+                        .findCommentTreeForComment(id);
+
+                    return commentTree.comments;
+                }
+            },
+
+            commentsAsJson: {
                 type: GraphQLString,
                 resolve: async (comment, _, {user}) => {
-
-                    const jsonComment = await commentsAuthorizer
+                    const commentTree = await commentsAuthorizer
                         .as(user)
                         .findCommentTreeForComment(comment.id);
-                    return JSON.stringify(jsonComment.comments);
+
+                    return JSON.stringify(commentTree.comments);
                 }
             },
 

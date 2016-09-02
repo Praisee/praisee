@@ -13,7 +13,8 @@ class Avatar extends Component<IAvatarProps, any>{
     }
 
     render() {
-        const {image, displayName, reputation} = this.props.communityItem.user;
+        const parent = this.props.communityItem || this.props.comment;
+        const {image, displayName, reputation} = parent.user;
 
         return this.schemaInjector.inject(
             <div className="avatar">
@@ -50,6 +51,7 @@ export default Relay.createContainer(Avatar, {
 
 export interface IAvatarProps {
     communityItem: any;
+    comment: any;
     displayName: string;
     reputation: number;
     image: string;

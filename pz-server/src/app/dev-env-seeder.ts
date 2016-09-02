@@ -86,10 +86,8 @@ export class DevEnvSeeder {
                 userId: 1,
                 type: "Question",
                 summary: 'Is there any D810 successor is coming in 2016?',
-                body: "I have seen lots of people selling D810 these days in gulf countries. Also its used price gone a bit up than old days. (Don't know why) is there any successor to D810? I want a D810 badly and I can hold a bit if any new camera is going to release in 2016. What is your opinion ? Should I wait or its time to buy D810?",
-                bodyData: `{"version":"0.8.0","type":"draftjs","value":{"entityMap":{},"blocks":[{"text":"I have seen lots of people selling D810 these days in gulf countries. Also its used price gone a bit up than old days. (Don't know why) is there any successor to D810? I want a D810 badly and I can hold a bit if any new camera is going to release in 2016. What is your opinion ? Should I wait or its time to buy D810?","entityRanges":[],"depth":0,"data":{},"key":"18l7p","inlineStyleRanges":[],"type":"unstyled"}]}}`
+                body: "I have seen lots of people selling D810 these days in gulf countries. Also its used price gone a bit up than old days. (Don't know why) is there any successor to D810? I want a D810 badly and I can hold a bit if any new camera is going to release in 2016. What is your opinion ? Should I wait or its time to buy D810?"
             },
-
             { topicId: 4, userId: 3, type: 'Howto', summary: 'Luke...', body: `I am your father.` },
             { topicId: 4, userId: 3, type: 'Howto', summary: 'Luuuuukkkee', body: `I AM your father.` },
             { topicId: 4, userId: 3, type: 'Howto', summary: 'I AM', body: `^^^` },
@@ -135,49 +133,57 @@ export class DevEnvSeeder {
                 The D810 is (almost) 2 years old and and with the normal timeframe it would be replaced this year.
                 It's time for Nikon to make use of some of their current technology into a new camera body.
                 The 153 point AF, the wireless solutions, new Expeed processor, new Sensor ( we'll see what Sony been sittning on) to take a big step forwardThe launch of the Canon 5DIV and the D900 will be close in time and this should be this year
-                `
+                `,
+                bodyData:
+                { "version": "0", "type": "text", "value": "There are rumors about a Photokina launch. The D810 is (almost) 2 years old and and with the normal timeframe it would be replaced this year. It's time for Nikon to make use of some of their current technology into a new camera body.The 153 point AF, the wireless solutions, new Expeed processor, new Sensor (we'll see what Sony been sittning on) to take a big step forward The launch of the Canon 5DIV and the D900 will be close in time and this should be this year." }
             },
             {
                 id: 2,
                 userId: 1,
                 parentId: 1,
                 parentType: "Comment",
-                body: 'Given the impact of the earthquake in Japan, my guesstimate is announcement this year, availability next'
+                body: 'Given the impact of the earthquake in Japan, my guesstimate is announcement this year, availability next',
+                bodyData: { "version": "0", "type": "text", "value": "Given the impact of the earthquake in Japan, my guesstimate is announcement this year, availability next" }
             },
             {
                 id: 3,
                 userId: 2,
                 parentId: 2,
                 parentType: "Comment",
-                body: 'yeah, true we will wait and see...'
+                body: 'yeah, true we will wait and see...',
+                bodyData: { "version": "0", "type": "text", "value": "yeah, true we will wait and see..." }
             },
             {
                 id: 4,
                 userId: 3,
                 parentId: 1,
                 parentType: "CommunityItem",
-                body: 'Sometimes I like to take pictures of mountains'
+                body: 'Sometimes I like to take pictures of mountains',
+                bodyData: { "version": "0", "type": "text", "value": "Sometimes I like to take pictures of mountains" }
             },
             {
                 id: 5,
                 userId: 2,
                 parentId: 1,
                 parentType: "CommunityItem",
-                body: 'This is probably the most useless topic ever...'
+                body: 'This is probably the most useless topic ever...',
+                bodyData: { "version": "0", "type": "text", "value": "This is probably the most useless topic ever..." }
             },
             {
                 id: 6,
                 userId: 1,
                 parentId: 5,
                 parentType: "Comment",
-                body: `thats pretty rude, ur a dick`
+                body: `thats pretty rude, ur a dick`,
+                bodyData: { "version": "0", "type": "text", "value": "thats pretty rude, ur a dick" }
             },
             {
                 id: 7,
                 userId: 2,
                 parentId: 6,
                 parentType: "Comment",
-                body: `u're***`
+                body: `u're***`,
+                bodyData: { "version": "0", "type": "text", "value": "u're**" }
             }
         ]
     }

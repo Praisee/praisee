@@ -13,6 +13,14 @@
             "type": "string",
             "required": true,
             "description": "The content of the comment"
+        },
+        "bodyData": {
+            "type": "object",
+            "required": true,
+            "description": "The item's body content with formatting and embedded content",
+            "postgresql": {
+                "dataType": "json"
+            }
         }
     },
     "validations": [],

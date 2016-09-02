@@ -83,7 +83,6 @@ module.exports = function (app: IApp) {
 
             } else if (renderProps) {
                 renderApp(request, response, renderProps, next);
-
             } else {
                 next();
             }
