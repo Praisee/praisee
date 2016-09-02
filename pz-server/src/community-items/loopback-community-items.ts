@@ -13,10 +13,14 @@ import {IVoteInstance} from 'pz-server/src/models/vote';
 import {ICursorResults, TBiCursor} from 'pz-server/src/support/cursors/cursors';
 
 import {findWithCursor} from 'pz-server/src/support/cursors/loopback-helpers';
-import {mapCursorResult} from 'pz-server/src/support/cursors/map-cursor-results';
+import {cursorLoopbackModelsToRecords} from 'pz-server/src/support/cursors/repository-helpers';
 
 export function createRecordFromLoopbackCommunityItem(communityItem: ICommunityItemInstance): ICommunityItem {
     return createRecordFromLoopback<ICommunityItem>('CommunityItem', communityItem);
+}
+
+export function cursorCommunityItemLoopbackModelsToRecords(communityItems: ICursorResults<ICommunityItemInstance>): ICursorResults<ICommunityItem> {
+    return cursorLoopbackModelsToRecords<ICommunityItem>('CommunityItem', communityItems);
 }
 
 export default class CommunityItems implements ICommunityItems {
@@ -56,12 +60,7 @@ export default class CommunityItems implements ICommunityItems {
             { where: { userId } }
         );
 
-        return mapCursorResult<ICommunityItemInstance, ICommunityItem>(
-            cursorResults,
-            cursorResult => Object.assign({}, cursorResult, {
-                item: createRecordFromLoopbackCommunityItem(cursorResult.item)
-            }
-        ));
+        return cursorCommunityItemLoopbackModelsToRecords(cursorResults);
     }
 
     async findVotesForCommunityItem(communityItemId: number): Promise<Array<IVote>> {

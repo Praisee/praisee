@@ -4,10 +4,11 @@ import {AuthorizationError} from 'pz-server/src/support/authorization';
 import VoteTypes from 'pz-server/src/votes/votes-graphql';
 import * as graphqlRelay from 'graphql-relay';
 import * as graphql from 'graphql';
+
 import {
-    ICursorResults,
-    TBiCursor, IBackwardCursor, IForwardCursor
-} from 'pz-server/src/support/cursors/cursors';
+    connectionFromCursorResults,
+    biCursorFromGraphqlArgs
+} from 'pz-server/src/graphql/cursor-helpers';
 
 var {
     GraphQLBoolean,
@@ -38,51 +39,6 @@ export default function CommentTypes(repositoryAuthorizers: IAppRepositoryAuthor
     const topicsAuthorizer = repositoryAuthorizers.topics;
     const communityItemsAuthorizer = repositoryAuthorizers.communityItems;
 
-    const BiCursorFromGraphqlArgs = (graphqlArgs): TBiCursor => {
-        const take = graphqlArgs.first || graphqlArgs.last || 10;
-
-        if (graphqlArgs.last) {
-            let cursor: IBackwardCursor = {
-                takeLast: take
-            };
-
-            if (graphqlArgs.before) {
-                cursor.skipBefore = graphqlArgs.before;
-            }
-
-            return cursor;
-
-        } else {
-            let cursor: IForwardCursor = {
-                takeFirst: take
-            };
-
-            if (graphqlArgs.after) {
-                cursor.skipAfter = graphqlArgs.after;
-            }
-
-            return cursor;
-        }
-    };
-
-    const connectionFromCursorResults = <T>(cursorResults: ICursorResults<T>) => {
-        let pageInfo: any = {
-            hasNextPage: cursorResults.hasNextPage || false,
-            hasPreviousPage: cursorResults.hasPreviousPage || false
-        };
-
-        return {
-            edges: cursorResults.results.map(result => {
-                return {
-                    cursor: result.cursor,
-                    node: result.item
-                };
-            }),
-
-            pageInfo
-        };
-    };
-
     const ViewerType = new GraphQLObjectType({
         name: 'Viewer',
 
@@ -100,7 +56,7 @@ export default function CommentTypes(repositoryAuthorizers: IAppRepositoryAuthor
                 args: connectionArgs,
 
                 resolve: async (_, args, {user}) => {
-                    const cursor = BiCursorFromGraphqlArgs(args);
+                    const cursor = biCursorFromGraphqlArgs(args);
 
                     return connectionFromCursorResults(
                         await communityItemsAuthorizer

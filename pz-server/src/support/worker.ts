@@ -1,17 +1,17 @@
 var amqp = require('amqplib/callback_api');
 
-export interface IWorker<WorkerRequest, WorkerResponse> {
-    (message: WorkerRequest): Promise<WorkerResponse>
+export interface IWorker<TWorkerRequest, TWorkerResponse> {
+    (message: TWorkerRequest): Promise<TWorkerResponse>
 }
 
-export interface IWorkerRequester<WorkerRequest, WorkerResponse> {
+export interface ITWorkerRequester<TWorkerRequest, TWorkerResponse> {
     channelName: string
-    send(message: WorkerRequest): Promise<WorkerResponse>
-    sendWithTimeout(message: WorkerRequest, timeoutMilliseconds: number): Promise<WorkerResponse>
+    send(message: TWorkerRequest): Promise<TWorkerResponse>
+    sendWithTimeout(message: TWorkerRequest, timeoutMilliseconds: number): Promise<TWorkerResponse>
 }
 
 export interface IWorkerServer {
-    registerWorker<WorkerRequest, WorkerResponse>(channel: string, worker: IWorker<WorkerRequest, WorkerResponse>)
+    registerWorker<TWorkerRequest, TWorkerResponse>(channel: string, worker: IWorker<TWorkerRequest, TWorkerResponse>)
     start(): Promise<void>
 }
 
@@ -20,7 +20,7 @@ export interface IWorkerClient {
 
     isConnected: boolean
 
-    getRequester<WorkerRequest, WorkerResponse>(channelName: string): IWorkerRequester<WorkerRequest, WorkerResponse>
+    getRequester<TWorkerRequest, TWorkerResponse>(channelName: string): ITWorkerRequester<TWorkerRequest, TWorkerResponse>
 }
 
 function translateInputMessage(inputMessage) {
@@ -152,7 +152,7 @@ export class AmqpWorkerServer implements IWorkerServer {
     }
 }
 
-class AmqpWorkerRequester<T, U> implements IWorkerRequester<T, U> {
+class AmqpTWorkerRequester<T, U> implements ITWorkerRequester<T, U> {
     public channelName;
 
     private _client;
@@ -265,10 +265,14 @@ export class AmqpWorkerClient implements IWorkerClient {
     }
 
     get connection() {
+        if (!this.isConnected) {
+            throw new Error('Worker connection requested without first connecting');
+        }
+
         return this._connection;
     }
 
     getRequester<T, U>(channelName) {
-        return new AmqpWorkerRequester<T, U>(channelName, this);
+        return new AmqpTWorkerRequester<T, U>(channelName, this);
     }
 }

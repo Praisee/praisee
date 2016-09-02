@@ -8,10 +8,14 @@ import {IVoteInstance, IVoteModel} from 'pz-server/src/models/vote';
 import {ICursorResults, TBiCursor} from 'pz-server/src/support/cursors/cursors';
 
 import {findWithCursor} from 'pz-server/src/support/cursors/loopback-helpers';
-import {mapCursorResult} from 'pz-server/src/support/cursors/map-cursor-results';
+import {cursorLoopbackModelsToRecords} from 'pz-server/src/support/cursors/repository-helpers';
 
 export function createRecordFromLoopbackVote(vote: IVoteInstance): IVote {
     return createRecordFromLoopback<IVote>('Vote', vote);
+}
+
+export function cursorVoteLoopbackModelsToRecords(votes: ICursorResults<IVoteInstance>): ICursorResults<IVote> {
+    return cursorLoopbackModelsToRecords<IVote>('Vote', votes);
 }
 
 export default class Votes implements IVotes {
@@ -105,12 +109,7 @@ export default class Votes implements IVotes {
             { where: { userId } }
         );
 
-        return mapCursorResult<IVoteInstance, IVote>(
-            cursorResults,
-            cursorResult => Object.assign({}, cursorResult, {
-                item: createRecordFromLoopbackVote(cursorResult.item)
-            }
-            ));
+        return cursorVoteLoopbackModelsToRecords(cursorResults);
     }
 
     async findSomeByAffectedUserId(cursor: TBiCursor, affectedUserId: number): Promise<ICursorResults<IVote>> {
@@ -120,14 +119,9 @@ export default class Votes implements IVotes {
             { where: { affectedUserId } }
         );
 
-        return mapCursorResult<IVoteInstance, IVote>(
-            cursorResults,
-            cursorResult => Object.assign({}, cursorResult, {
-                item: createRecordFromLoopbackVote(cursorResult.item)
-            }
-            ));
+        return cursorVoteLoopbackModelsToRecords(cursorResults);
     }
-    
+
     isOwner(userId: number, voteId: number): Promise<boolean> {
         return isOwnerOfModel(userId, this._VoteModel, voteId);
     }
@@ -145,7 +139,7 @@ export default class Votes implements IVotes {
         }
 
         let existingVote = await promisify(this._VoteModel.findById, this._VoteModel)(vote.id);
-        
+
         existingVote.isUpVote = vote.isUpVote;
 
         const result = await promisify<IVoteInstance>(existingVote.save, existingVote)();

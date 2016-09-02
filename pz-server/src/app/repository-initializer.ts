@@ -6,7 +6,7 @@ import {
 import Users from 'pz-server/src/users/users';
 import UsersAuthorizer from 'pz-server/src/users/users-authorizer';
 
-import Topics from 'pz-server/src/topics/topics';
+import Topics from 'pz-server/src/topics/loopback-topics';
 import TopicsAuthorizer from 'pz-server/src/topics/topics-authorizer';
 
 import CommunityItems from 'pz-server/src/community-items/loopback-community-items';
@@ -24,14 +24,25 @@ import FilteredCommunityItems from 'pz-server/src/community-items/filtered-commu
 import VanityRoutePaths from 'pz-server/src/vanity-route-paths/vanity-route-paths';
 import VanityRoutePathsAuthorizer from 'pz-server/src/vanity-route-paths/vanity-route-paths-authorizer';
 
+import {IConnectionManager} from 'pz-server/src/cache/connection-manager';
+import RankingsCache from 'pz-server/src/rankings/redis-rankings-cache';
+import Rankings from 'pz-server/src/rankings/rankings';
+
+import {ITrackedEvents} from 'pz-server/src/tracked-events/tracked-events'; // TODO: Finish for rankings
+
 module.exports = function initializeRepositories(app: IApp) {
+    const cacheConnections: IConnectionManager = app.services.cacheConnections;
+
+    const rankingsCache = new RankingsCache(cacheConnections.getConnection('rankings'));
+    const rankings = new Rankings(rankingsCache, app.services.workerClient);
+
     const vanityRoutePaths = new VanityRoutePaths(app.models.UrlSlug);
     const vanityRoutePathsAuthorizer = new VanityRoutePathsAuthorizer(vanityRoutePaths);
 
     const users = new Users(app.models.PraiseeUser);
     const usersAuthorizer = new UsersAuthorizer(users);
 
-    const topics = new Topics(app.models.Topic, app.models.UrlSlug);
+    const topics = new Topics(app.models.Topic, app.models.CommunityItem, app.models.UrlSlug, rankings);
     const topicsAuthorizer = new TopicsAuthorizer(topics);
 
     const votes = new Votes(app.models.Vote);
@@ -58,7 +69,10 @@ module.exports = function initializeRepositories(app: IApp) {
         communityItems: filteredCommunityItems,
         comments,
         votes,
-        vanityRoutePaths: vanityRoutePaths
+        vanityRoutePaths: vanityRoutePaths,
+        trackedEvents: {} as ITrackedEvents, // Finish for rankings
+        rankingsCache,
+        rankings
     };
 
     const repositoryAuthorizers: IAppRepositoryAuthorizers = {

@@ -15,15 +15,23 @@ import {IAuthorizedComments} from 'pz-server/src/comments/comments-authorizer';
 import {IVotes} from 'pz-server/src/votes/votes';
 import {IAuthorizedVotes} from 'pz-server/src/votes/votes-authorizer';
 
+import {ITrackedEvents} from 'pz-server/src/tracked-events/tracked-events';
+
+import {IRankingsCache} from 'pz-server/src/rankings/rankings-cache';
+import {IRankings} from 'pz-server/src/rankings/rankings';
+
 import {IVanityRoutePaths} from 'pz-server/src/vanity-route-paths/vanity-route-paths';
 import {IAuthorizedVanityRoutePaths} from 'pz-server/src/vanity-route-paths/vanity-route-paths-authorizer';
 
 export interface IAppRepositories {
-    users: IUsers;
-    topics: ITopics;
-    communityItems: ICommunityItems;
-    comments: IComments;
-    votes: IVotes;
+    users: IUsers
+    topics: ITopics
+    communityItems: ICommunityItems
+    comments: IComments
+    votes: IVotes
+    trackedEvents: ITrackedEvents
+    rankingsCache: IRankingsCache
+    rankings: IRankings
     vanityRoutePaths: IVanityRoutePaths;
 }
 

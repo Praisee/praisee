@@ -1,21 +1,11 @@
 import {
     IRepository,
-    IRepositoryRecord,
-    createRecordFromLoopback
+    IRepositoryRecord
 } from 'pz-server/src/support/repository';
 
-import promisify from 'pz-support/src/promisify';
-import {ISluggable} from 'pz-server/src/url-slugs/mixins/sluggable';
-import {IUrlSlug, IUrlSlugInstance} from 'pz-server/src/url-slugs/models/url-slug';
 import {ICommunityItem} from 'pz-server/src/community-items/community-items';
-import {createRecordFromLoopbackCommunityItem} from 'pz-server/src/community-items/loopback-community-items';
-import {ITopicModel as ILoopbackTopic, ITopicInstance as ILookbackTopicInstance} from 'pz-server/src/models/topic'
-
-import {
-    IForwardCursor, ICursorResults, fromDateCursor,
-    shouldSkipAfter, toDateCursor
-} from 'pz-server/src/support/cursors/cursors';
-
+import {TBiCursor, ICursorResults} from 'pz-server/src/support/cursors/cursors';
+import {TOptionalUser} from 'pz-server/src/users/users';
 
 export type TTopicType = (
     'topic'
@@ -41,76 +31,7 @@ export interface ITopics extends IRepository {
     findById(id: number): Promise<ITopic>
     findAllByIds(ids: Array<number>): Promise<Array<ITopic>>
     findByUrlSlugName(urlSlugName: string): Promise<ITopic>
-    findAllCommunityItemsRanked(topicId: number): Promise<Array<ICommunityItem>>
+    findSomeCommunityItemsRanked(topicId: number, asUser: TOptionalUser, cursor: TBiCursor): Promise<ICursorResults<ICommunityItem>>
     findAllCommunityItemIds(topicId: number): Promise<Array<number>>
 }
 
-//Loopback specific implementation of ITopics repository
-export default class Topics implements ITopics {
-    private _TopicModel: ILoopbackTopic;
-    private _UrlSlugsModel: IPersistedModel;
-
-    constructor(Topic: ILoopbackTopic, UrlSlug: IPersistedModel) {
-        this._TopicModel = Topic;
-        this._UrlSlugsModel = UrlSlug;
-    }
-
-    async findAll() {
-        const results = await promisify(this._TopicModel.find, this._TopicModel)();
-        return results.map(result => createRecordFromLoopback('Topic', result));
-    }
-
-    async findById(id: number) {
-        const result = await promisify(this._TopicModel.findById, this._TopicModel)(id);
-        return createRecordFromLoopback<ITopic>('Topic', result);
-    }
-
-    async findAllByIds(ids: Array<number>): Promise<Array<ITopic>> {
-        const find = promisify(this._TopicModel.find, this._TopicModel);
-
-        const topicModels = await find({
-            where: { id: {inq: ids} }
-        });
-
-        return topicModels.map(topicModel => {
-            return createRecordFromLoopback<ITopic>('Topic', topicModel);
-        });
-    }
-
-    async findByUrlSlugName(fullSlug: string) {
-        let urlSlug: IUrlSlugInstance = await promisify(this._UrlSlugsModel.findOne, this._UrlSlugsModel)({
-            where: {
-                sluggableType: this._TopicModel.sluggableType,
-                fullSlugLowercase: fullSlug.toLowerCase()
-            }
-        }) as IUrlSlugInstance;
-
-        const result = await promisify(this._TopicModel.findById, this._TopicModel)(urlSlug.sluggableId);
-        return createRecordFromLoopback<ITopic>('Topic', result);
-    }
-
-    async findAllCommunityItemsRanked(topicId: number): Promise<Array<ICommunityItem>> {
-        const topic: ILookbackTopicInstance = await promisify(
-            this._TopicModel.findById, this._TopicModel)(topicId);
-
-        const communityItemModels = await promisify(
-           topic.communityItems, this._TopicModel)({});
-
-         return communityItemModels.map((communityItem) =>
-            createRecordFromLoopbackCommunityItem(communityItem)
-        );
-    }
-
-    async findAllCommunityItemIds(topicId: number): Promise<Array<number>> {
-        const topic: ILookbackTopicInstance = await promisify(
-            this._TopicModel.findById, this._TopicModel)(topicId);
-
-        const communityItemModels = await promisify(
-            topic.communityItems, this._TopicModel)({fields: {id: true}});
-
-        return communityItemModels.map(communityItemModels => communityItemModels.id);
-    }
-
-    create(topic: ITopic) {
-    }
-}

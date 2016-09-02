@@ -1,6 +1,10 @@
 import {IAppRepositoryAuthorizers} from 'pz-server/src/app/repositories';
 import * as graphqlRelay from 'graphql-relay';
 import * as graphql from 'graphql';
+import {
+    biCursorFromGraphqlArgs,
+    connectionFromCursorResults
+} from 'pz-server/src/graphql/cursor-helpers';
 
 var {
     GraphQLBoolean,
@@ -62,11 +66,13 @@ export default function CommentTypes(repositoryAuthorizers: IAppRepositoryAuthor
                     args: connectionArgs,
 
                     resolve: async (topic, args, {user}) => {
+                        const cursor = biCursorFromGraphqlArgs(args);
+
                         const communityItems = await topicsAuthorizer
                             .as(user)
-                            .findAllCommunityItemsRanked(topic.id)
+                            .findSomeCommunityItemsRanked(topic.id, cursor);
 
-                        return connectionFromArray(communityItems, args);
+                        return connectionFromCursorResults(communityItems);
                     }
                 },
 

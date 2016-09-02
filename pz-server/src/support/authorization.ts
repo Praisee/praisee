@@ -3,11 +3,8 @@ import ExtendableError from './extendable-error';
 import {IRepository} from 'pz-server/src/support/repository';
 export {IRepository} from 'pz-server/src/support/repository';
 
-export interface IUser {
-    id: number
-}
-
-export type TOptionalUser = IUser; // TODO: Add null as option for TypeScript 2
+import {TOptionalUser} from 'pz-server/src/users/users';
+export {TOptionalUser} from 'pz-server/src/users/users';
 
 export interface IAuthorizer<IAuthorizedRepository> {
     as(user: TOptionalUser): IAuthorizedRepository

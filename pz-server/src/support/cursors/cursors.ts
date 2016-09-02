@@ -142,3 +142,11 @@ export function reverseBiCursor(cursor: TBiCursor): TBiCursor {
         return reversedCursor;
     }
 }
+
+export function createEmptyCursorResults<T>(): ICursorResults<T> {
+    return {
+        results: [],
+        hasPreviousPage: false,
+        hasNextPage: false
+    };
+}

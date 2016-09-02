@@ -88,22 +88,39 @@ export class DevEnvSeeder {
                 summary: 'Is there any D810 successor is coming in 2016?',
                 body: "I have seen lots of people selling D810 these days in gulf countries. Also its used price gone a bit up than old days. (Don't know why) is there any successor to D810? I want a D810 badly and I can hold a bit if any new camera is going to release in 2016. What is your opinion ? Should I wait or its time to buy D810?",
                 bodyData: `{"version":"0.8.0","type":"draftjs","value":{"entityMap":{},"blocks":[{"text":"I have seen lots of people selling D810 these days in gulf countries. Also its used price gone a bit up than old days. (Don't know why) is there any successor to D810? I want a D810 badly and I can hold a bit if any new camera is going to release in 2016. What is your opinion ? Should I wait or its time to buy D810?","entityRanges":[],"depth":0,"data":{},"key":"18l7p","inlineStyleRanges":[],"type":"unstyled"}]}}`
-            }]
+            },
+
+            { topicId: 4, userId: 3, type: 'Howto', summary: 'Luke...', body: `I am your father.` },
+            { topicId: 4, userId: 3, type: 'Howto', summary: 'Luuuuukkkee', body: `I AM your father.` },
+            { topicId: 4, userId: 3, type: 'Howto', summary: 'I AM', body: `^^^` },
+            { topicId: 4, userId: 3, type: 'Howto', summary: 'YOUR', body: `^^^^` },
+            { topicId: 4, userId: 3, type: 'Howto', summary: 'FATHER.', body: `^^^^^^` }
+        ];
     }
-    	
 
     topicCommunityItemSeeds() {
         return [
             {
                 communityItemId: 1,
                 topicId: 4
-            },{
+            },
+
+            {
                 communityItemId: 1,
                 topicId: 3
-            },{
+            },
+
+            {
                 communityItemId: 1,
                 topicId: 1
-            }]
+            },
+
+            { communityItemId: 2, topicId: 4 },
+            { communityItemId: 3, topicId: 4 },
+            { communityItemId: 4, topicId: 4 },
+            { communityItemId: 5, topicId: 4 },
+            { communityItemId: 6, topicId: 4 }
+        ];
     }
 
     commentSeeds() {

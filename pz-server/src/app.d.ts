@@ -8,6 +8,8 @@ interface IServices {
     searchClient?: any
     searchUpdater?: any
     remoteApp?: IApp
+    cacheConnections?: any
+    workerClient?: any
     repositories?: any
     repositoryAuthorizers?: any
 }

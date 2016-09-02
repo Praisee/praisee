@@ -6,6 +6,8 @@ export default {
     models: modelConfig,
 
     bootScripts: [
+        pzPath('pz-server', 'src/cache/initialize-cache'),
+        pzPath('pz-server', 'src/app/initialize-worker-client'),
         pzPath('pz-server', 'src/app/repository-initializer'),
         pzPath('pz-server', 'src/app/auto-update-models'),
 

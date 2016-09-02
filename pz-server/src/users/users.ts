@@ -4,6 +4,8 @@ import {
 
 import promisify from 'pz-support/src/promisify';
 
+export type TOptionalUser = {id: number}; // TODO: Add null as option for TypeScript 2
+
 export interface IUser extends IRepositoryRecord {
     recordType: 'User'
     id: number

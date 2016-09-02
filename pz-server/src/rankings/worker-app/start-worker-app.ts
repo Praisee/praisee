@@ -1,5 +1,5 @@
 import promisify from 'pz-support/src/promisify';
-import bootConfig from 'pz-server/src/ranking/worker-app/boot-config';
+import bootConfig from 'pz-server/src/rankings/worker-app/boot-config';
 
 process.on('unhandledRejection', (error, promise) => {
     console.error('Unhandled promise rejection: ', error);

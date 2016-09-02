@@ -1,0 +1,5 @@
+{
+    "server": {
+        "url": "amqp://dev:dev@localhost"
+    }
+}
