@@ -9,12 +9,27 @@ import {ITopic} from 'pz-server/src/topics/topics';
 import SchemaInjector, {ISchemaType} from 'pz-client/src/support/schema-injector';
 import CommunityItem from 'pz-client/src/community-item/community-item-component';
 
+interface IContext {
+    showNotFoundError: any
+}
+
 export class TopicController extends Component<ITopicProps, ITopicState> {
+    static contextTypes: React.ValidationMap<any> = {
+        showNotFoundError: React.PropTypes.func.isRequired
+    };
+
+    context: IContext;
+
     constructor() {
         super();
     }
 
     render() {
+        if (!this.props.topic) {
+            this.context.showNotFoundError();
+            return <span />;
+        }
+
         return (
             <div className="topic-namespace" >
                 <h2>{this.props.topic.name}</h2>
@@ -117,5 +132,5 @@ interface ITopicState {
 
 interface ITopicProps {
     params;
-    topic;
+    topic?;
 }

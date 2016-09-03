@@ -73,7 +73,11 @@ export default class LoopbackTopics implements ITopics {
                 sluggableType: this._TopicModel.sluggableType,
                 fullSlugLowercase: fullSlug.toLowerCase()
             }
-        }) as IUrlSlugInstance;
+        });
+
+        if (!urlSlug) {
+            return null;
+        }
 
         const result = await promisify(this._TopicModel.findById, this._TopicModel)(urlSlug.sluggableId);
         return createRecordFromLoopback<ITopic>('Topic', result);

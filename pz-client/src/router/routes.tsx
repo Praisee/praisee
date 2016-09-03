@@ -24,7 +24,7 @@ import {CreateItemEditor} from 'pz-client/src/editor/proofofconcept/editor.contr
 
 export default (
     <Router>
-        <Route path="/" component={AppController}>
+        <Route path="/" component={AppController as any}>
 
             <IndexRoute
                 component={HomeController}

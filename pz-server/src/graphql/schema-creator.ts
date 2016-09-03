@@ -44,7 +44,7 @@ export default function createSchema(repositoryAuthorizers: IAppRepositoryAuthor
         votes: votesAuthorizer
     } = repositoryAuthorizers;
 
-   
+
     const idResolver = (globalId, {user}) => {
         const {type, id} = graphqlRelay.fromGlobalId(globalId);
 
@@ -107,7 +107,7 @@ export default function createSchema(repositoryAuthorizers: IAppRepositoryAuthor
     const {nodeInterface, nodeField} = nodeDefinitions(
         idResolver, typeResolver
     );
-    
+
     const Types = initializeTypes(repositoryAuthorizers, nodeInterface);
 
     return new GraphQLSchema({
@@ -138,13 +138,11 @@ export default function createSchema(repositoryAuthorizers: IAppRepositoryAuthor
                             type: GraphQLString
                         }
                     },
-                    resolve: (_, {urlSlug}, {user}) => {
+                    resolve: async (_, {urlSlug}, {user}) => {
                         const topics = topicsAuthorizer.as(user);
 
-                        return topics.findByUrlSlugName(urlSlug)
-                            .catch((err) => {
-                                console.log(err);
-                            });
+                        const topic = await topics.findByUrlSlugName(urlSlug);
+                        return topic;
                     }
                 }
             })

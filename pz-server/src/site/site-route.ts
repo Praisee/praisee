@@ -14,6 +14,13 @@ import IsomorphicContext from 'pz-client/src/app/isomorphic-context.component';
 const GRAPHQL_URL = `http://localhost:3000/i/graphql`; // TODO: Unhardcode this
 
 export function renderApp(request, response, renderProps, next) {
+    if (process.env.NO_ISOMORPHIC) {
+        response.render('site/layout', {
+            cachedRequestData: 'null',
+            content: ''
+        });
+    }
+
     const graphqlNetworkLayer = new Relay.DefaultNetworkLayer(GRAPHQL_URL, {
         headers: request.headers
     });
@@ -26,21 +33,35 @@ export function renderApp(request, response, renderProps, next) {
         .then(({data, props}) => {
             const router = IsomorphicRouter.render(props);
 
+            let hasError = false;
+
             var isomorphicContext = React.createElement(IsomorphicContext, {
-                children: router
+                children: router,
+
+                notFoundHandler: () => {
+                    hasError = true;
+                }
             });
 
-            response.render('site/layout', {
-                cachedRequestData: JSON.stringify(data),
-                content: ReactDomServer.renderToString(isomorphicContext)
-            });
+            const content = ReactDomServer.renderToString(isomorphicContext);
+
+            if (!hasError) {
+                response.render('site/layout', {
+                    cachedRequestData: JSON.stringify(data),
+                    content: content
+                });
+
+            } else {
+
+                next();
+            }
         })
 
         .catch((error) => {
             if (error.response && error.response.text) {
                 error.response.text().then(console.error);
             }
-            
+
             next(error);
         })
     );

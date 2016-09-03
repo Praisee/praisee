@@ -2,7 +2,8 @@ import * as React from 'react';
 import ReactElement = __React.ReactElement;
 
 export interface IIsomorphicContextProps {
-    children: any
+    children: any,
+    notFoundHandler?: (errorComponent) => any
 }
 
 /**
@@ -10,13 +11,15 @@ export interface IIsomorphicContextProps {
  */
 export default React.createClass<IIsomorphicContextProps, any>({
     childContextTypes: {
+        notFoundHandler: React.PropTypes.func
     },
-    
+
     getChildContext() {
         return {
+            notFoundHandler: this.props.notFoundHandler
         };
     },
-    
+
     render() {
         return this.props.children as ReactElement<any>;
     }
