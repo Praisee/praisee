@@ -63,14 +63,6 @@ export default Relay.createContainer(Comment, {
         expand: false,
         currentDepth: 1
     },
-    prepareVariables: (previousVariables: any) => {
-        let {currentDepth, expand} = previousVariables;
-
-        return {
-            currentDepth: currentDepth + 1,
-            expand 
-        };
-    },
     fragments: {
         comment: ({expand, currentDepth}) => Relay.QL`
             fragment on Comment {

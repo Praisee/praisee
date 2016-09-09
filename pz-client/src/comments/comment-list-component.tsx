@@ -33,7 +33,7 @@ class CommentList extends Component<ICommentProps, any>{
 
 export default Relay.createContainer(CommentList, {
     initialVariables: {
-        currentDepth: 1,
+        currentDepth: 0,
         expandCommentsTo: 5,
         expand: false
     },
@@ -41,8 +41,8 @@ export default Relay.createContainer(CommentList, {
         let {currentDepth, expandCommentsTo} = previousVariables;
 
         return {
+            currentDepth: currentDepth + 1,
             expand: currentDepth < expandCommentsTo,
-            currentDepth
         };
     },
     fragments: {

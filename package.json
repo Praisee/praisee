@@ -6,6 +6,7 @@
     "start": "cd ./pz-server && export DEBUG=* && npm start",
     "startWin": "cd ./pz-server && SET DEBUG=* && npm start",
     "startQuiet": "cd ./pz-server && npm start",
+    "startQuietNoIso": "cd ./pz-server && export NO_ISOMORPHIC=true && npm start",
     "startRankingsWorker": "cd ./pz-server && npm run startRankingsWorker",
     "debugRankingsWorker": "cd ./pz-server && npm run debugRankingsWorker",
     "typingsInstall": "cd ./pz-client && typings install && cd ../pz-server && typings install && cd ../pz-support && typings install",
