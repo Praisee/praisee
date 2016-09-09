@@ -2,7 +2,6 @@ import * as React from 'react';
 import {Component} from 'react';
 import * as Relay from 'react-relay';
 import * as util from 'util';
-import ContributionArea from 'pz-client/src/topic/contribution-area.component';
 import {CreateItemEditor} from 'pz-client/src/community-item/commuity-item-editor.controller';
 import SideSection from 'pz-client/src/side-section/side-section.component';
 import {ITopic} from 'pz-server/src/topics/topics';

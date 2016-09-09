@@ -124,7 +124,6 @@ export class DevEnvSeeder {
     commentSeeds() {
         return [
             {
-                id: 1,
                 userId: 2,
                 parentId: 1,
                 parentType: "CommunityItem",
@@ -138,7 +137,6 @@ export class DevEnvSeeder {
                 { "version": "0", "type": "text", "value": "There are rumors about a Photokina launch. The D810 is (almost) 2 years old and and with the normal timeframe it would be replaced this year. It's time for Nikon to make use of some of their current technology into a new camera body.The 153 point AF, the wireless solutions, new Expeed processor, new Sensor (we'll see what Sony been sittning on) to take a big step forward The launch of the Canon 5DIV and the D900 will be close in time and this should be this year." }
             },
             {
-                id: 2,
                 userId: 1,
                 parentId: 1,
                 parentType: "Comment",
@@ -146,7 +144,6 @@ export class DevEnvSeeder {
                 bodyData: { "version": "0", "type": "text", "value": "Given the impact of the earthquake in Japan, my guesstimate is announcement this year, availability next" }
             },
             {
-                id: 3,
                 userId: 2,
                 parentId: 2,
                 parentType: "Comment",
@@ -154,7 +151,6 @@ export class DevEnvSeeder {
                 bodyData: { "version": "0", "type": "text", "value": "yeah, true we will wait and see..." }
             },
             {
-                id: 4,
                 userId: 3,
                 parentId: 1,
                 parentType: "CommunityItem",
@@ -162,7 +158,6 @@ export class DevEnvSeeder {
                 bodyData: { "version": "0", "type": "text", "value": "Sometimes I like to take pictures of mountains" }
             },
             {
-                id: 5,
                 userId: 2,
                 parentId: 1,
                 parentType: "CommunityItem",
@@ -170,7 +165,6 @@ export class DevEnvSeeder {
                 bodyData: { "version": "0", "type": "text", "value": "This is probably the most useless topic ever..." }
             },
             {
-                id: 6,
                 userId: 1,
                 parentId: 5,
                 parentType: "Comment",
@@ -178,7 +172,6 @@ export class DevEnvSeeder {
                 bodyData: { "version": "0", "type": "text", "value": "thats pretty rude, ur a dick" }
             },
             {
-                id: 7,
                 userId: 2,
                 parentId: 6,
                 parentType: "Comment",

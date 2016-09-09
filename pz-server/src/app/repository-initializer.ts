@@ -14,6 +14,7 @@ import CommunityItemsAuthorizer from 'pz-server/src/community-items/community-it
 
 import Comments from 'pz-server/src/comments/loopback-comments';
 import CommentsAuthorizer from 'pz-server/src/comments/comments-authorizer';
+import FilteredComments from 'pz-server/src/comments/filtered-comments';
 
 import Votes from 'pz-server/src/votes/loopback-votes';
 import VotesAuthorizer from 'pz-server/src/votes/votes-authorizer';
@@ -61,13 +62,19 @@ module.exports = function initializeRepositories(app: IApp) {
     const communityItemsAuthorizer = new CommunityItemsAuthorizer(filteredCommunityItems);
 
     const comments = new Comments(app.models.Comment);
-    const commentsAuthorizer = new CommentsAuthorizer(comments);
+    const filteredComments = new FilteredComments(
+        comments,
+        contentFilterer,
+        convertContentDataToText
+    );
+
+    const commentsAuthorizer = new CommentsAuthorizer(filteredComments);
 
     const repositories: IAppRepositories = {
         users,
         topics,
         communityItems: filteredCommunityItems,
-        comments,
+        comments: filteredComments,
         votes,
         vanityRoutePaths: vanityRoutePaths,
         trackedEvents: {} as ITrackedEvents, // Finish for rankings

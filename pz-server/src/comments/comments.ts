@@ -2,15 +2,19 @@ import {IRepository, IRepositoryRecord} from 'pz-server/src/support/repository';
 
 import {TBiCursor, ICursorResults} from 'pz-server/src/support/cursors/cursors';
 import {IVote} from 'pz-server/src/votes/votes';
+import {IContentData} from 'pz-server/src/content/content-data';
 
 export interface IComment extends IRepositoryRecord {
     recordType: 'Comment'
 
     id?: number
-    body: string
-    upVotes: number
-    downVotes: number
+    body?: string
+    bodyData?: IContentData
+    upVotes?: number
+    downVotes?: number
     createdAt?: Date
+    parentType?: string
+    parentId?: number
     updatedAt?: Date
     comments?: any
     votes?: any
@@ -22,7 +26,7 @@ export interface IComments extends IRepository {
     create(comment: IComment, userId: number): Promise<IComment>
     findAllByParentCommentId(commentId: number): Promise<Array<IComment>>
     findCommentTreeForComment(commentId: number): Promise<IComment>
-    findVotesForComment(commentId: number): Promise<Array<IVote>>    
+    findVotesForComment(commentId: number): Promise<Array<IVote>>
     isOwner(userId: number, commentId: number): Promise<boolean>
     update(comment: IComment): Promise<IComment>
 }

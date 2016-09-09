@@ -45,9 +45,15 @@ export default class Comments implements IComments {
     }
 
     async create(comment: IComment, userId: number): Promise<IComment> {
-        comment = Object.assign({}, comment, userId);
-
-        let result = await this._CommentModel.create(comment);
+         let commentModel = new this._CommentModel({
+            body: comment.body,
+            bodyData: comment.bodyData,
+            parentType: comment.parentType,
+            parentId: comment.parentId,
+            userId: userId
+        });
+        
+        let result = await commentModel.save();
         return createRecordFromLoopback<IComment>('Comment', result);
     }
 

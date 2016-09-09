@@ -7,6 +7,7 @@ import {IComment} from 'pz-server/src/comments/comments';
 import CommentContent from 'pz-client/src/comments/comment-content-component';
 import CommentList from 'pz-client/src/comments/comment-list-component';
 import Avatar from 'pz-client/src/user/avatar.component';
+import {CreateCommentEditor} from 'pz-client/src/comments/comment-editor-controller';
 
 export class Comment extends Component<any, any>{
     schemaInjector: SchemaInjector;
@@ -45,6 +46,7 @@ export class Comment extends Component<any, any>{
                 <Avatar communityItem={null} comment={comment} />
                 <DateDisplay date={createdAt} type="date-created" />
                 <CommentContent comment={comment} />
+                <CreateCommentEditor comment={comment} />
                 {expandButton}
                 {commentList}
             </div>
@@ -66,12 +68,13 @@ export default Relay.createContainer(Comment, {
     fragments: {
         comment: ({expand, currentDepth}) => Relay.QL`
             fragment on Comment {
-                createdAt,
-                upVotes,
-                downVotes,
-                ${CommentContent.getFragment('comment')},
+                createdAt
+                upVotes
+                downVotes
+                ${CommentContent.getFragment('comment')}
                 ${Avatar.getFragment('comment')}
-                ${CommentList.getFragment('comment', { currentDepth}).if(expand)},
+                ${CommentList.getFragment('comment', { currentDepth}).if(expand)}
+                ${CreateCommentEditor.getFragment('comment')}
             } 
         `
     }

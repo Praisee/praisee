@@ -5,6 +5,7 @@ import UserTypes from 'pz-server/src/users/users-graphql';
 import CommentTypes from 'pz-server/src/comments/comments-graphql';
 import ViewerTypes from 'pz-server/src/graphql/viewer-graphql';
 import TopicTypes from 'pz-server/src/topics/topics-graphql';
+import InputDataTypes from 'pz-server/src/content/input-content-data';
 
 export function initializeTypes(repositoryAuthorizers: IAppRepositoryAuthorizers, nodeInterface): ITypes {
     let types: any = {};
@@ -17,7 +18,8 @@ export function initializeTypes(repositoryAuthorizers: IAppRepositoryAuthorizers
         UserTypes(repositoryAuthorizers, nodeInterface, types),
         TopicTypes(repositoryAuthorizers, nodeInterface, types),
         CommunityItemTypes(repositoryAuthorizers, nodeInterface, types),
-        ViewerTypes(repositoryAuthorizers, nodeInterface, types)
+        ViewerTypes(repositoryAuthorizers, nodeInterface, types),
+        InputDataTypes(repositoryAuthorizers, nodeInterface, types)
     );
 
     return types;
@@ -39,6 +41,8 @@ export interface ITypes {
     CommentConnection;
     TopicType;
     ViewerType;
+    InputContentDataType;
+    CreateCommentFromCommunityItemMutation;
 }
 
 

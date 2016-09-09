@@ -5,6 +5,7 @@ import * as graphqlRelay from 'graphql-relay';
 import * as graphql from 'graphql';
 import {IVote} from 'pz-server/src/votes/votes';
 import convertTextToData from 'pz-server/src/content/text-to-data-converter';
+import {parseInputContentData} from 'pz-server/src/content/input-content-data';
 
 var {
     GraphQLBoolean,
@@ -140,48 +141,15 @@ export default function CommunityItemTypes(repositoryAuthorizers: IAppRepository
         nodeType: CommunityItemType
     });
 
-    const InputContentDataType = new GraphQLInputObjectType({
-        name: 'InputContentData',
-
-        fields: {
-            type: { type: new GraphQLNonNull(GraphQLString) },
-            version: { type: new GraphQLNonNull(GraphQLString) },
-            value: { type: new GraphQLNonNull(GraphQLString) },
-            isJson: { type: GraphQLBoolean, defaultValue: false }
-        }
-    });
-
-    type TInputContentData = string | {
-        type: string
-        version: string
-        isJson: boolean
-        value: any
-    }
-
-    const parseInputContentData = (inputContentData: TInputContentData) => {
-        if (typeof inputContentData === 'string') {
-            return convertTextToData(inputContentData);
-
-        } else {
-
-            return {
-                type: inputContentData.type,
-                version: inputContentData.version,
-                value: inputContentData.isJson ?
-                    JSON.parse(inputContentData.value) : inputContentData.value,
-            };
-        }
-    };
-
     const CreateCommunityItemMutation = mutationWithClientMutationId({
         name: 'CreateCommunityItem',
 
-        inputFields: {
+        inputFields: () => ({
             type: { type: new GraphQLNonNull(GraphQLString) },
             summary: { type: new GraphQLNonNull(GraphQLString) },
             body: { type: GraphQLString },
-            bodyData: { type: InputContentDataType }
-        },
+            bodyData: { type: types.InputContentDataType }
+        }),
 
         outputFields: () => ({
 
@@ -212,20 +180,20 @@ export default function CommunityItemTypes(repositoryAuthorizers: IAppRepository
     const CreateCommunityItemFromTopicMutation = mutationWithClientMutationId({
         name: 'CreateCommunityItemFromTopic',
 
-        inputFields: {
+        inputFields: () => ({
             type: { type: new GraphQLNonNull(GraphQLString) },
             summary: { type: new GraphQLNonNull(GraphQLString) },
             body: { type: GraphQLString },
-            bodyData: { type: InputContentDataType },
+            bodyData: { type: types.InputContentDataType },
             topicId: { type: GraphQLString }
-        },
+        }),
 
         outputFields: () => ({
             communityItem: {
                 type: types.CommunityItemType,
-                resolve: ({communityItem}) => { 
+                resolve: ({communityItem}) => {
                     return communityItem;
-                 }
+                }
             },
             topic: {
                 type: types.TopicType,
@@ -259,14 +227,14 @@ export default function CommunityItemTypes(repositoryAuthorizers: IAppRepository
 
     const CreateCommunityItemVoteMutation = mutationWithClientMutationId({
         name: 'CreateCommunityItemVote',
-        inputFields: {
+        inputFields: () => ({
             communityItemId: {
                 type: new GraphQLNonNull(GraphQLString)
             },
             isUpVote: {
                 type: new GraphQLNonNull(GraphQLBoolean)
             }
-        },
+        }),
         outputFields: () => ({
             vote: {
                 type: types.VoteType,
@@ -385,7 +353,8 @@ export default function CommunityItemTypes(repositoryAuthorizers: IAppRepository
                 }
             }
         }
-    })
+    });
+
     return {
         CommunityItemType,
         CommunityItemConnection,
