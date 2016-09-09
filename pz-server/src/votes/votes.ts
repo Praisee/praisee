@@ -23,8 +23,8 @@ export interface IVotes extends IRepository {
     findSomeByAffectedUserId(cursor: TBiCursor, affectedUserId: number): Promise<ICursorResults<IVote>>
     findOneByFilter(vote: IVote) : Promise<IVote>
     findAllByFilter(vote: IVote): Promise<Array<IVote>>
-    getAggregateForParent(vote: IVote): Promise<IVoteAggregate>
-    // getAggregateForUser(userId: number): Promise<IVoteAggregate> // Finish for rankings
+    getAggregateForParent(parentType: string, parentId: number): Promise<IVoteAggregate>
+    getAggregateForAffectedUser(userId: number): Promise<IVoteAggregate>
     isOwner(userId: number, voteId: number): Promise<boolean>
     create(vote: IVote, ownerId: number): Promise<IVote>
     update(vote: IVote): Promise<IVote>

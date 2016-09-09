@@ -3,7 +3,7 @@ import {
     IAppRepositoryAuthorizers
 } from 'pz-server/src/app/repositories';
 
-import Users from 'pz-server/src/users/users';
+import Users from 'pz-server/src/users/loopback-users';
 import UsersAuthorizer from 'pz-server/src/users/users-authorizer';
 
 import Topics from 'pz-server/src/topics/loopback-topics';

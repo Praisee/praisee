@@ -3,6 +3,8 @@
     "base": "User",
     "emailVerificationRequired": false,
     "mixins": {
+        "TimeStamp": true,
+
         "Sluggable": {
             "property": "displayName"
         }

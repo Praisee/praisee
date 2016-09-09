@@ -84,22 +84,12 @@ export default class Votes implements IVotes {
         return VoteModel.map(vote => createRecordFromLoopbackVote(VoteModel));
     }
 
-    async getAggregateForParent(vote: IVote): Promise<IVoteAggregate> {
-        let filters = Object.keys(vote).map((key) => {
-            return { [key]: vote[key] }
-        });
+    async getAggregateForParent(parentType: string, parentId: number): Promise<IVoteAggregate> {
+        return await this._getAggregateForConditions({parentType, parentId});
+    }
 
-        let where = { and: filters };
-
-        const total = await promisify(this._VoteModel.count, this._VoteModel)(where);
-
-        filters.push({ isUpVote: true });
-
-        const upVotes = await promisify(this._VoteModel.count, this._VoteModel)(where);
-
-        const downVotes = total - upVotes;
-
-        return { upVotes, downVotes, total };
+    async getAggregateForAffectedUser(userId: number): Promise<IVoteAggregate> {
+        return await this._getAggregateForConditions({affectedUserId: userId});
     }
 
     async findSomeByUserId(cursor: TBiCursor, userId: number): Promise<ICursorResults<IVote>> {
@@ -157,6 +147,22 @@ export default class Votes implements IVotes {
         });
 
         return await destoryPromise;
+    }
+
+    private async _getAggregateForConditions(conditions: {}): Promise<IVoteAggregate> {
+        const getCount = promisify(this._VoteModel.count, this._VoteModel);
+
+        const [total, upVotes] = await Promise.all([
+            getCount(conditions),
+
+            getCount(Object.assign({}, conditions, {
+                isUpVote: true
+            }))
+        ]);
+
+        const downVotes = total - upVotes;
+
+        return { upVotes, downVotes, total };
     }
 }
 

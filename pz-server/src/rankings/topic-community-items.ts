@@ -1,5 +1,9 @@
 import {IWorkerServer, IWorkerClient} from 'pz-server/src/support/worker';
 import {IAppRepositories} from 'pz-server/src/app/repositories';
+import {IVotes} from 'pz-server/src/votes/votes';
+import {ICommunityItems} from 'pz-server/src/community-items/community-items';
+import {IComments} from 'pz-server/src/comments/comments';
+import {IUsers} from '../users/users';
 
 var rankAndCacheChannel = 'pz-server/src/rankings/topicCommunityItems/rankAndCache';
 var rankAndCacheAsViewerChannel = 'pz-server/src/rankings/topicCommunityItems/rankAndCacheAsViewer';
@@ -198,16 +202,29 @@ export interface IGetFeaturesAsViewerResponse {
 async function getFeaturesWorker(message, repositories) {
     const {topicId, communityItemId} = message;
 
-    const featurePromises = Object.keys(features).map(async (featureName) => {
-        return [featureName, await features[featureName]()];
-    });
+    const featurePromiseMap = {
+        itemUpVotes: features.itemUpVotes(repositories.votes, 'CommunityItem', communityItemId),
+        itemAge: features.itemAge(repositories.communityItems, communityItemId),
+        itemUniqueWordCount: features.itemUniqueWordCount(repositories.communityItems, communityItemId),
+        authorUpVotes: features.authorUpVotes(repositories.communityItems, repositories.votes, communityItemId),
+        authorAccountAge: features.authorAccountAge(repositories.communityItems, repositories.users, communityItemId),
+        authorTotalCommunityItems: features.authorTotalCommunityItems(repositories.communityItems, repositories.users, communityItemId),
+    };
 
-    const featureValues = await Promise.all<[string, any]>(featurePromises);
+    const featureNames = Object.keys(featurePromiseMap);
 
-    const featureMap = featureValues.reduce((featureMap, [featureName, featureValue]) => {
+    const featureValues = await Promise.all(featureNames.map(
+        featureName => featurePromiseMap[featureName]
+    ));
+
+    let featureMap = {};
+
+    for (let i = 0; i < featureNames.length; ++i) {
+        const featureName = featureNames[i];
+        const featureValue = featureValues[i];
+
         featureMap[featureName] = featureValue;
-        return featureMap;
-    }, {});
+    }
 
     return {featureMap};
 }
@@ -224,20 +241,22 @@ async function calculateFallbackRankFromFeaturesWorker({featureMap}) {
     let rank = 0, weight, score;
 
     weight = 10;
-    score = upVotesToViewsConfidenceScore(featureMap.itemViews, featureMap.itemUpVotes);
+    score = upVotesToViewsConfidenceScore(featureMap.itemUpVotes, featureMap.itemUpVotes); // TODO: Include views
     rank += weight * score;
 
     weight = 0.01;
     score = freshnessScore(featureMap.itemAge);
     rank += weight * score;
 
-    weight = 0.1;
-    score = wordCountScore(featureMap.itemWordCount);
-    rank += weight * score;
+    if (featureMap.itemUniqueWordCount > 0) {
+        weight = 0.1;
+        score = wordCountScore(featureMap.itemUniqueWordCount);
+        rank += weight * score;
+    }
 
     weight = 0.5;
     score = authorContributionScore(
-        featureMap.authorContributionsAmount,
+        featureMap.authorTotalCommunityItems,
         featureMap.authorUpVotes,
         featureMap.authorAccountAge
     );
@@ -252,15 +271,15 @@ async function calculateFallbackRankFromFeaturesWorker({featureMap}) {
  * Shamelessly ripped from:
  * https://medium.com/hacking-and-gonzo/how-reddit-ranking-algorithms-work-ef111e33d0d9#.67unndydz
  */
-function upVotesToViewsConfidenceScore(views, upvotes) {
-    const total = views + upvotes;
+function upVotesToViewsConfidenceScore(upVotes, views) {
+    const total = views + upVotes;
 
     if (total < 1) {
         return 0;
     }
 
     const z = 1.281551565545;
-    const p = upvotes / total;
+    const p = upVotes / total;
 
     const left = p + 1/(2 * total) * z * z;
     const right = z * Math.sqrt(p * (1 - p) / total + z * z / (4 * total * total));
@@ -331,14 +350,14 @@ function freshnessScore(itemAge) {
  * Item (community items, comments) features
  */
 export interface IItemFeatureMap {
-    itemViews: number
+    // itemViews: number
     itemUpVotes: number
     // itemDownvotes: number
     // itemReportedCount: number
     itemAge: number
     // itemResponseOverallSentimentScore: number
     // itemResponseControversyScore: number
-    itemWordCount: number
+    itemUniqueWordCount: number
 }
 
 /**
@@ -364,7 +383,8 @@ export interface IAuthorFeatureMap {
     // authorProfileScore: number
     // authorReportedCount: number
     authorAccountAge: number
-    authorContributionsAmount: number
+    authorTotalCommunityItems: number
+    // authorTotalComments: number
     // authorFollowersScore: number
 }
 
@@ -398,22 +418,51 @@ const features = {
      * Item features
      */
 
-    itemViews: async (repositories: IAppRepositories, itemType, itemId) => {
-        // return await repositories.trackedEvents.getCountForTypeWithMatchingData(
-        //     'ItemViewEvent',
-        //     {itemType, itemId}
-        // );
-        return randomNumber(0, 100);
-    },
+    // itemViews: async () => {
+    //     // return await repositories.trackedEvents.getCountForTypeWithMatchingData(
+    //     //     'ItemViewEvent',
+    //     //     {itemType, itemId}
+    //     // );
+    //     return randomNumber(0, 100);
+    // },
 
-    itemUpVotes: async () => randomNumber(0, 100),
+    itemUpVotes: async (votesRepository: IVotes, itemType: string, itemId: number) => {
+        const {upVotes} = await votesRepository.getAggregateForParent(
+            itemType,
+            itemId
+        );
+
+        return upVotes;
+    },
 
     // itemDownvotes: async () => 0,
     // itemReportedCount: async () => 0,
-    itemAge: async () => randomNumber(0, 4398),
+
+    itemAge: async (itemRepository: IRepositoryWithAge, itemId: number) => {
+        const {createdAt} = await itemRepository.findById(itemId);
+
+        const age = Date.now().valueOf() - createdAt.valueOf();
+
+        return age;
+    },
+
     // itemResponseOverallSentimentScore: async () => 0,
     // itemResponseControversyScore: async () => 0,
-    itemWordCount: async () => randomNumber(0, 235),
+
+    itemUniqueWordCount: async (itemRepository: TWordCountRepository, itemId: number) => {
+        const item = await itemRepository.findById(itemId);
+
+        const content: string = item.body;
+
+        const words = content.match(/[^\s]+/g);
+
+        if (!words || !words.length) {
+            return -1;
+        }
+
+        const uniqueWords = new Set(words);
+        return uniqueWords.size;
+    },
 
     /*
      * Content features
@@ -432,12 +481,34 @@ const features = {
      */
 
     // authorActivityScore: async () => 0,
-    authorUpVotes: async () => randomNumber(0, 234),
+
+    authorUpVotes: async (itemRepository: IRepositoryWithAuthor, votesRepository: IVotes, itemId: number) => {
+        const {userId} = await itemRepository.findById(itemId);
+        const {upVotes} = await votesRepository.getAggregateForAffectedUser(userId);
+
+        return upVotes;
+    },
+
     // authorDownvotes: async () => 0,
     // authorProfileScore: async () => 0,
     // authorReportedCount: async () => 0,
-    authorAccountAge: async () => randomNumber(0, 392489),
-    authorContributionsAmount: async () => randomNumber(0, 30),
+
+    authorAccountAge: async (itemRepository: IRepositoryWithAuthor, usersRepository: IUsers, itemId: number) => {
+        const {userId} = await itemRepository.findById(itemId);
+        const {createdAt} = await usersRepository.findById(userId);
+
+        const age = Date.now().valueOf() - createdAt.valueOf();
+
+        return age;
+    },
+
+    authorTotalCommunityItems: async (itemRepository: IRepositoryWithAuthor, usersRepository: IUsers, itemId: number) => {
+        const {userId} = await itemRepository.findById(itemId);
+        const total = await usersRepository.getTotalCommunityItems(userId);
+
+        return total;
+    },
+
     // authorFollowersScore: async () => 0,
 
     /*
@@ -462,3 +533,20 @@ const features = {
     // authorFollowersTopicExpertiseScore: async () => 0,
 };
 
+interface IRepositoryRecordWithAuthor {
+    userId: number
+}
+
+interface IRepositoryWithAuthor {
+    findById(id: number): Promise<IRepositoryRecordWithAuthor>
+}
+
+interface IRepositoryRecordWithAge {
+    createdAt: Date
+}
+
+interface IRepositoryWithAge {
+    findById(id: number): Promise<IRepositoryRecordWithAge>
+}
+
+type TWordCountRepository = ICommunityItems | IComments;

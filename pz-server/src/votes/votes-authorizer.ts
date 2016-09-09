@@ -91,11 +91,10 @@ class AuthorizedVotes implements IAuthorizedVotes {
     }
 
     async getAggregateForParent(parentType: string, parentId: number): Promise<IVoteAggregate> {
-        return await this._votes.getAggregateForParent({
-            recordType: "Vote",
-            parentType: parentType,
-            parentId: parentId
-        });
+        return await this._votes.getAggregateForParent(
+            parentType,
+            parentId
+        );
     }
 
     async create(vote): Promise<IVote | AuthorizationError> {
