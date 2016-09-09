@@ -19,6 +19,8 @@ export function renderApp(request, response, renderProps, next) {
             cachedRequestData: 'null',
             content: ''
         });
+        
+        return;
     }
 
     const graphqlNetworkLayer = new Relay.DefaultNetworkLayer(GRAPHQL_URL, {
