@@ -4,7 +4,8 @@ export interface ISluggerOptions {
     minChars?: number
     replacementPattern?: RegExp
     reservedWords?: Array<string>
-    
+    nonRepeatableChars?: string
+
     onFailureThrowError?: boolean
     onFailureUse?: string
     onFailureCall?: Function
@@ -12,40 +13,40 @@ export interface ISluggerOptions {
 
 export var defaultOptions: ISluggerOptions = {
     duplicateOffset: 0,
-    
+
     separator: '-',
-    
+
     minChars: 4,
-    
-    replacementPattern: /[^a-zA-Z0-9_\.]/g,
-    
+
+    replacementPattern: /[^a-zA-Z0-9]/g,
+
     reservedWords: [
         'about', 'account', 'accounts', 'contact', 'settings', 'admin', 'admins',
         'api', 'app', 'index', 'login', 'logout', 'signin', 'signup', 'register',
         'user', 'profile', 'session', 'sitemap'
-    ]
+    ],
 };
 
 export default function createSlug(fromText: string, options: ISluggerOptions) {
     const mergedOptions = Object.assign({}, defaultOptions, options);
     const {duplicateOffset, minChars, reservedWords, separator} = mergedOptions;
-    
+
     if (everyCharIsANumber(fromText)) {
         return handleFailure(fromText, mergedOptions);
     }
-    
+
     const normalizedText = normalizeText(fromText, mergedOptions);
-    
+
     if (normalizedText.length < minChars) {
         return handleFailure(fromText, mergedOptions);
     }
-    
+
     const lowercaseNormalizedText = normalizedText.toLowerCase();
-    
+
     if (reservedWords.indexOf(lowercaseNormalizedText) !== -1) {
         return handleFailure(fromText, mergedOptions);
     }
-    
+
     if (duplicateOffset) {
         return normalizedText + separator + duplicateOffset;
     } else {
@@ -68,19 +69,26 @@ function everyCharIsANumber(fromText: string) {
 }
 
 function normalizeText(fromText: string, options: ISluggerOptions) {
-    const {replacementPattern, separator} = options;
-    
+    const {replacementPattern, separator, nonRepeatableChars} = options;
+
     const replacedText = fromText.replace(replacementPattern, separator);
-    
+
     const dedupedSeparator = replacedText.replace(
         new RegExp(separator + '{2,}', 'g'),
         separator
     );
-    
-    const removeSeparatorFromEdges = dedupedSeparator.replace(
+
+    const dedupedNonRepeatableChars = nonRepeatableChars && nonRepeatableChars.length ?
+        (dedupedSeparator.replace(
+            new RegExp('([' + nonRepeatableChars + '])' + '[' + nonRepeatableChars + ']+', 'g'),
+            '$1'
+        ))
+        : dedupedSeparator;
+
+    const removeSeparatorFromEdges = dedupedNonRepeatableChars.replace(
         new RegExp('^' + separator + '|' + separator + '$', 'g'),
         ''
     );
-    
+
     return removeSeparatorFromEdges;
 }
