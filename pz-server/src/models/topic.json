@@ -29,12 +29,6 @@
             "description": "Short summary of the topic used for search results"
         },
 
-        "thumbnailPath": {
-            "type": "string",
-            "required": false,
-            "description": "Thumbnail path stub for lookup of topic thumbnail images"
-        },
-
         "overviewContent": {
             "type": "string",
             "required": false,
@@ -50,13 +44,18 @@
             "default": false,
             "description": "Whether or not the topic has been verified by a moderator yet"
         },
-        
+
         "createdAt": { "type": "date" },
         "updatedAt": { "type": "date" }
     },
     "validations": [],
     "relations": {
-        "communityItems":{
+        "attributes": {
+            "type": "hasMany",
+            "model": "TopicAttribute"
+        },
+
+        "communityItems": {
             "type": "hasAndBelongsToMany",
             "model": "CommunityItem"
         }

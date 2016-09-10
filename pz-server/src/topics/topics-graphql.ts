@@ -5,6 +5,7 @@ import {
     biCursorFromGraphqlArgs,
     connectionFromCursorResults
 } from 'pz-server/src/graphql/cursor-helpers';
+import {ITypes} from 'pz-server/src/graphql/types';
 
 var {
     GraphQLBoolean,
@@ -30,8 +31,9 @@ var {
     mutationWithClientMutationId
 } = graphqlRelay;
 
-export default function CommentTypes(repositoryAuthorizers: IAppRepositoryAuthorizers, nodeInterface, types) {
+export default function CommentTypes(repositoryAuthorizers: IAppRepositoryAuthorizers, nodeInterface, types: ITypes) {
     const topicsAuthorizer = repositoryAuthorizers.topics;
+    const topicAttributesAuthorizer = repositoryAuthorizers.topicAttributes;
     const vanityRoutePathAuthorizer = repositoryAuthorizers.vanityRoutePaths;
 
     const TopicType = new GraphQLObjectType({
@@ -59,6 +61,14 @@ export default function CommentTypes(repositoryAuthorizers: IAppRepositoryAuthor
 
                 isVerified: {
                     type: GraphQLBoolean
+                },
+
+                attributes: {
+                    type: new GraphQLNonNull(new GraphQLList(types.TopicAttributeInterfaceType)),
+
+                    resolve: async (topic, _, {user}) => topicAttributesAuthorizer
+                        .as(user)
+                        .findAllByTopicId(topic.id)
                 },
 
                 communityItems: {

@@ -9,6 +9,9 @@ import UsersAuthorizer from 'pz-server/src/users/users-authorizer';
 import Topics from 'pz-server/src/topics/loopback-topics';
 import TopicsAuthorizer from 'pz-server/src/topics/topics-authorizer';
 
+import TopicAttributes from 'pz-server/src/topics/topic-attributes/loopback-topic-attributes';
+import TopicAttributesAuthorizer from 'pz-server/src/topics/topic-attributes/topic-attributes-authorizer';
+
 import CommunityItems from 'pz-server/src/community-items/loopback-community-items';
 import CommunityItemsAuthorizer from 'pz-server/src/community-items/community-items-authorizer';
 
@@ -46,6 +49,9 @@ module.exports = function initializeRepositories(app: IApp) {
     const topics = new Topics(app.models.Topic, app.models.CommunityItem, app.models.UrlSlug, rankings);
     const topicsAuthorizer = new TopicsAuthorizer(topics);
 
+    const topicAttributes = new TopicAttributes(app.models.TopicAttribute);
+    const topicAttributesAuthorizer = new TopicAttributesAuthorizer(topicAttributes);
+
     const votes = new Votes(app.models.Vote);
     const votesAuthorizer = new VotesAuthorizer(votes);
 
@@ -73,6 +79,7 @@ module.exports = function initializeRepositories(app: IApp) {
     const repositories: IAppRepositories = {
         users,
         topics,
+        topicAttributes,
         communityItems: filteredCommunityItems,
         comments: filteredComments,
         votes,
@@ -88,7 +95,8 @@ module.exports = function initializeRepositories(app: IApp) {
         communityItems: communityItemsAuthorizer,
         comments: commentsAuthorizer,
         votes: votesAuthorizer,
-        vanityRoutePaths: vanityRoutePathsAuthorizer
+        vanityRoutePaths: vanityRoutePathsAuthorizer,
+        topicAttributes: topicAttributesAuthorizer
     };
 
     app.services.repositories = repositories;

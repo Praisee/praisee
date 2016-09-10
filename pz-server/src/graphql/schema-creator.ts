@@ -10,6 +10,10 @@ import {
     ICursorResults,
     TBiCursor, IBackwardCursor, IForwardCursor
 } from 'pz-server/src/support/cursors/cursors';
+import {
+    topicAttributeTypeResolver,
+    topicAttributeIdResolver
+} from '../topics/topic-attributes/topic-attributes-graphql';
 
 var {
     connectionDefinitions,
@@ -34,6 +38,8 @@ var {
     GraphQLSchema,
     GraphQLString
 } = graphql;
+
+var {isType: isGraphqlType} = require('graphql/type');
 
 export default function createSchema(repositoryAuthorizers: IAppRepositoryAuthorizers) {
     const {
@@ -76,29 +82,39 @@ export default function createSchema(repositoryAuthorizers: IAppRepositoryAuthor
                 break;
         }
 
-        if (!repositoryAuthorizer) {
-            return null;
+        if (repositoryAuthorizer) {
+            return repositoryAuthorizer.as(user).findById(id);
         }
 
-        return repositoryAuthorizer.as(user).findById(id);
+        const topicAttribute = topicAttributeIdResolver(repositoryAuthorizers, type, id, user);
+        if (topicAttribute) {
+            return topicAttribute;
+        }
+
+        return null;
     };
 
     const typeResolver = (repositoryRecord: IRepositoryRecord) => {
         switch (repositoryRecord.recordType) {
             case 'Viewer':
-                return Types.ViewerType;
+                return types.ViewerType;
 
             case 'User':
-                return Types.UserType;
+                return types.UserType;
 
             case 'Topic':
-                return Types.TopicType;
+                return types.TopicType;
 
             case 'CommunityItem':
-                return Types.CommunityItemType;
+                return types.CommunityItemType;
 
             case 'Comment':
-                return Types.CommentType;
+                return types.CommentType;
+        }
+
+        const topicAttributeType = topicAttributeTypeResolver(types, repositoryRecord);
+        if (topicAttributeType) {
+            return topicAttributeType;
         }
 
         return null;
@@ -108,7 +124,8 @@ export default function createSchema(repositoryAuthorizers: IAppRepositoryAuthor
         idResolver, typeResolver
     );
 
-    const Types = initializeTypes(repositoryAuthorizers, nodeInterface);
+    const types = initializeTypes(repositoryAuthorizers, nodeInterface);
+    const typesArray = reduceTypesToArray(types);
 
     return new GraphQLSchema({
         query: new GraphQLObjectType({
@@ -120,19 +137,19 @@ export default function createSchema(repositoryAuthorizers: IAppRepositoryAuthor
                 // Viewer must be at the query root due to a limitation in Relay's design
                 // See https://github.com/facebook/relay/issues/112
                 viewer: {
-                    type: Types.ViewerType,
+                    type: types.ViewerType,
                     resolve: () => ({ id: 'viewer' })
                 },
 
                 currentUser: {
-                    type: Types.UserType,
+                    type: types.UserType,
                     resolve: (_, __, {user}) => {
                         return usersAuthorizer.as(user).findCurrentUser();
                     }
                 },
 
                 topic: {
-                    type: Types.TopicType,
+                    type: types.TopicType,
                     args: {
                         urlSlug: {
                             type: GraphQLString
@@ -152,15 +169,34 @@ export default function createSchema(repositoryAuthorizers: IAppRepositoryAuthor
             name: 'Mutation',
 
             fields: {
-                createCommunityItem: Types.CreateCommunityItemMutation,
-                createCommunityItemFromTopic: Types.CreateCommunityItemFromTopicMutation,
-                
-                createCommunityItemVote: Types.CreateCommunityItemVoteMutation,
-                deleteCommunityItemVote: Types.DeleteCommunityItemVoteMutation,
-                updateCommunityItemVote: Types.UpdateCommunityItemVoteMutation,
-                
-                createCommentFromCommunityItem: Types.CreateCommentFromCommunityItemMutation
+                createCommunityItem: types.CreateCommunityItemMutation,
+                createCommunityItemFromTopic: types.CreateCommunityItemFromTopicMutation,
+
+                createCommunityItemVote: types.CreateCommunityItemVoteMutation,
+                deleteCommunityItemVote: types.DeleteCommunityItemVoteMutation,
+                updateCommunityItemVote: types.UpdateCommunityItemVoteMutation,
+
+                createCommentFromCommunityItem: types.CreateCommentFromCommunityItemMutation
             }
-        })
+        }),
+
+        // By default, GraphQL crawls the entire schema to find types, but if any
+        // types are not on the schema, they will not be available to use.
+        // This is specifically an issue for interfaces because GraphQL will not
+        // know all the implementations of an interface unless they're used in the
+        // schema or explicitly defined here.
+        types: typesArray
     });
+}
+
+function reduceTypesToArray(types) {
+    return Object.keys(types).reduce((typesArray, key) => {
+        if (isGraphqlType(types[key])) {
+            typesArray.push(types[key]);
+            return typesArray;
+        } else {
+            return [...typesArray, ...reduceTypesToArray(types[key])];
+        }
+
+    }, []);
 }

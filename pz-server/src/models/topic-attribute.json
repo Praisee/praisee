@@ -1,0 +1,39 @@
+{
+    "name": "TopicAttribute",
+    "base": "PersistedModel",
+    "strict": true,
+    "options": {
+        "validateUpsert": true
+    },
+    "mixins": {
+        "TimeStamp": true
+    },
+    "properties": {
+        "attributeType": {
+            "type": "string",
+            "required": true,
+            "description": "The type of attribute"
+        },
+
+        "value": {
+            "type": "object",
+            "required": true,
+            "description": "The value of the attribute",
+            "postgresql": {
+                "dataType": "json"
+            }
+        },
+
+        "createdAt": { "type": "date" },
+        "updatedAt": { "type": "date" }
+    },
+    "validations": [],
+    "relations": {
+        "topic":{
+            "type": "belongsTo",
+            "model": "Topic"
+        }
+    },
+    "acls": [],
+    "methods": {}
+}

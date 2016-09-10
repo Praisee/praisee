@@ -1,48 +1,61 @@
 import {IAppRepositoryAuthorizers} from 'pz-server/src/app/repositories';
-import CommunityItemTypes from 'pz-server/src/community-items/community-items-graphql';
-import VoteTypes from 'pz-server/src/votes/votes-graphql';
-import UserTypes from 'pz-server/src/users/users-graphql';
-import CommentTypes from 'pz-server/src/comments/comments-graphql';
-import ViewerTypes from 'pz-server/src/graphql/viewer-graphql';
-import TopicTypes from 'pz-server/src/topics/topics-graphql';
-import InputDataTypes from 'pz-server/src/content/input-content-data';
+import communityItemTypes from 'pz-server/src/community-items/community-items-graphql';
+import voteTypes from 'pz-server/src/votes/votes-graphql';
+import userTypes from 'pz-server/src/users/users-graphql';
+import commentTypes from 'pz-server/src/comments/comments-graphql';
+import viewerTypes from 'pz-server/src/graphql/viewer-graphql';
+import topicTypes from 'pz-server/src/topics/topics-graphql';
+import {getTopicAttributeTypes} from 'pz-server/src/topics/topic-attributes/topic-attributes-graphql';
+import inputDataTypes from 'pz-server/src/content/input-content-data';
 
 export function initializeTypes(repositoryAuthorizers: IAppRepositoryAuthorizers, nodeInterface): ITypes {
     let types: any = {};
 
     types = Object.assign(
         types,
-        VoteTypes(repositoryAuthorizers, nodeInterface, types),
-        CommentTypes(repositoryAuthorizers, nodeInterface, types),
-        UserTypes(repositoryAuthorizers, nodeInterface, types),
-        UserTypes(repositoryAuthorizers, nodeInterface, types),
-        TopicTypes(repositoryAuthorizers, nodeInterface, types),
-        CommunityItemTypes(repositoryAuthorizers, nodeInterface, types),
-        ViewerTypes(repositoryAuthorizers, nodeInterface, types),
-        InputDataTypes(repositoryAuthorizers, nodeInterface, types)
+        voteTypes(repositoryAuthorizers, nodeInterface, types),
+        commentTypes(repositoryAuthorizers, nodeInterface, types),
+        userTypes(repositoryAuthorizers, nodeInterface, types),
+        userTypes(repositoryAuthorizers, nodeInterface, types),
+        topicTypes(repositoryAuthorizers, nodeInterface, types),
+        getTopicAttributeTypes(repositoryAuthorizers, nodeInterface, types),
+        communityItemTypes(repositoryAuthorizers, nodeInterface, types),
+        viewerTypes(repositoryAuthorizers, nodeInterface, types),
+        inputDataTypes(repositoryAuthorizers, nodeInterface, types)
     );
 
     return types;
 }
 
 export interface ITypes {
-    UserType;
-    OtherUserType;
-    VoteType;
-    VoteAggregateType;
-    CommunityItemType;
-    CommunityItemConnection;
-    CreateCommunityItemMutation;
-    CreateCommunityItemFromTopicMutation;
-    CreateCommunityItemVoteMutation;
-    UpdateCommunityItemVoteMutation;
-    DeleteCommunityItemVoteMutation;
-    CommentType;
-    CommentConnection;
-    TopicType;
-    ViewerType;
-    InputContentDataType;
-    CreateCommentFromCommunityItemMutation;
+    UserType
+    OtherUserType
+
+    VoteType
+    VoteAggregateType
+
+    CommunityItemType
+    CommunityItemConnection
+    CreateCommunityItemMutation
+    CreateCommunityItemFromTopicMutation
+    CreateCommunityItemVoteMutation
+    UpdateCommunityItemVoteMutation
+    DeleteCommunityItemVoteMutation
+
+    CommentType
+    CommentConnection
+    CreateCommentFromCommunityItemMutation
+
+    TopicType
+
+    TopicAttributeInterfaceType
+    topicAttributes: {
+        [topicAttributeType: string]: any
+    }
+
+    ViewerType
+
+    InputContentDataType
 }
 
 

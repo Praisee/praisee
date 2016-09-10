@@ -56,6 +56,10 @@ export default class LoopbackTopics implements ITopics {
     }
 
     async findAllByIds(ids: Array<number>): Promise<Array<ITopic>> {
+        if (!ids.length) {
+            return [];
+        }
+
         const find = promisify(this._TopicModel.find, this._TopicModel);
 
         const topicModels = await find({

@@ -52,8 +52,8 @@ export default {
 
     // We need to put the junction table in for loopback to detect it in automigrations:
     // https://groups.google.com/forum/#!topic/loopbackjs/dKOI4UHqfcU
-    // The link he refers it should be: https://github.com/strongloop/loopback-datasource-juggler/blob/master/lib/relation-definition.js#L1552-L1558 
-    'TopicCommunityItem': { 
+    // The link he refers it should be: https://github.com/strongloop/loopback-datasource-juggler/blob/master/lib/relation-definition.js#L1552-L1558
+    'TopicCommunityItem': {
         'dataSource': 'vagrant-postgres',
         'public': false
     },
@@ -95,10 +95,9 @@ export default {
         '$promise': {},
         '$resolved': true
     },
-    
-    'Product': {
+    'TopicAttribute': {
         'dataSource': 'vagrant-postgres',
-        'public': true,
+        'public': false,
         '$promise': {},
         '$resolved': true
     },

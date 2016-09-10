@@ -3,7 +3,7 @@ import {Component} from 'react';
 import * as Relay from 'react-relay';
 import * as util from 'util';
 import {CreateItemEditor} from 'pz-client/src/community-item/commuity-item-editor.controller';
-import SideSection from 'pz-client/src/side-section/side-section.component';
+import SideSection from 'pz-client/src/topic/side-section/side-section.component';
 import {ITopic} from 'pz-server/src/topics/topics';
 import SchemaInjector, {ISchemaType} from 'pz-client/src/support/schema-injector';
 import CommunityItem from 'pz-client/src/community-item/community-item-component';
@@ -108,10 +108,7 @@ export default Relay.createContainer(TopicController, {
             fragment on Topic {
                 id,
                 name,
-                description,
-                thumbnailPath,
-                overviewContent,
-                isVerified,
+                
                 communityItems(first: $limit) {
                      edges{
                         node{
@@ -120,6 +117,8 @@ export default Relay.createContainer(TopicController, {
                         }
                     }
                 },
+                
+                ${SideSection.getFragment('topic')}
                 ${CreateItemEditor.getFragment('topic')}
             }
         `

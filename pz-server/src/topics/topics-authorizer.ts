@@ -10,6 +10,7 @@ import {TBiCursor, ICursorResults} from 'pz-server/src/support/cursors/cursors';
 export interface IAuthorizedTopics {
     findAll(): Promise<Array<ITopic>>
     findById(id: number): Promise<ITopic>
+    findAllByIds(ids: Array<number>): Promise<Array<ITopic>>
     findByUrlSlugName(urlSlugName: string): Promise<ITopic>
     findSomeCommunityItemsRanked(topicId: number, cursor: TBiCursor): Promise<ICursorResults<ICommunityItem>>
 }
@@ -29,6 +30,10 @@ class AuthorizedTopics implements IAuthorizedTopics {
 
     findById(id: number) {
         return this._topics.findById(id);
+    }
+
+    findAllByIds(ids: Array<number>): Promise<Array<ITopic>> {
+        return this._topics.findAllByIds(ids);
     }
 
     findByUrlSlugName(fullSlug: string){

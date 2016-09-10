@@ -1,5 +1,7 @@
 import promisify from 'pz-support/src/promisify';
 
+import {createRelatedTopicsAttribute} from 'pz-server/src/topics/topic-attributes/topic-attribute-types';
+
 export class DevEnvSeeder {
     app: IApp;
 
@@ -76,6 +78,12 @@ export class DevEnvSeeder {
                 name: 'Cosmetics',
                 isVerified: true
             }
+        ];
+    }
+
+    topicAttributeSeeds() {
+        return [
+            createRelatedTopicsAttribute(4, [1, 3])
         ];
     }
 
@@ -190,6 +198,7 @@ export class DevEnvSeeder {
 
         await this._seedWith(this.userSeeds(), this.app.models.PraiseeUser);
         await this._seedWith(this.topicSeeds(), this.app.models.Topic);
+        await this._seedWith(this.topicAttributeSeeds(), this.app.models.TopicAttribute);
         await this._seedWith(this.communityItemSeeds(), this.app.models.CommunityItem);
         await this._seedWith(this.topicCommunityItemSeeds(), this.app.models.TopicCommunityItem);
         await this._seedWith(this.commentSeeds(), this.app.models.Comment);

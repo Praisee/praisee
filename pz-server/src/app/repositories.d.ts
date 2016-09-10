@@ -6,10 +6,13 @@ import {IAuthorizedUsers} from 'pz-server/src/users/users-authorizer';
 import {ITopics} from 'pz-server/src/topics/topics';
 import {IAuthorizedTopics} from 'pz-server/src/topics/topics-authorizer';
 
-import {ICommunityItems} from '../community-items/community-items';
+import {ITopicAttributes} from 'pz-server/src/topics/topic-attributes/topic-attributes';
+import {IAuthorizedTopicAttributes} from 'pz-server/src/topics/topic-attributes/topic-attributes-authorizer';
+
+import {ICommunityItems} from 'pz-server/src/community-items/community-items';
 import {IAuthorizedCommunityItems} from 'pz-server/src/community-items/community-items-authorizer';
 
-import {IComments} from '../comments/comments';
+import {IComments} from 'pz-server/src/comments/comments';
 import {IAuthorizedComments} from 'pz-server/src/comments/comments-authorizer';
 
 import {IVotes} from 'pz-server/src/votes/votes';
@@ -26,6 +29,7 @@ import {IAuthorizedVanityRoutePaths} from 'pz-server/src/vanity-route-paths/vani
 export interface IAppRepositories {
     users: IUsers
     topics: ITopics
+    topicAttributes: ITopicAttributes
     communityItems: ICommunityItems
     comments: IComments
     votes: IVotes
@@ -48,4 +52,5 @@ export interface IAppRepositoryAuthorizers {
     comments: TAppAuthorizer<IAuthorizedComments>
     votes: TAppAuthorizer<IAuthorizedVotes>
     vanityRoutePaths: IAuthorizer<IAuthorizedVanityRoutePaths>
+    topicAttributes: IAuthorizer<IAuthorizedTopicAttributes>
 }
