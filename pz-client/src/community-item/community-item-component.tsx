@@ -10,12 +10,15 @@ import Tags from 'pz-client/src/community-item/tags-component';
 import CreateCommunityItemVoteMutation from 'pz-client/src/votes/create-community-item-vote-mutation';
 import UpdateCommunityItemVoteMutation from 'pz-client/src/votes/update-community-item-vote-mutation';
 import DeleteCommunityItemVoteMutation from 'pz-client/src/votes/delete-community-item-vote-mutation';
+import CreateCommentForCommunityItemMutation from 'pz-client/src/comments/create-comment-for-community-item-mutation';
 import Error from 'pz-client/src/widgets/error-component';
 import {IContentData} from 'pz-server/src/content/content-data';
+import {CreateCommentEditor} from 'pz-client/src/comments/comment-editor-controller';
 
 class CommunityItem extends Component<ICommunityItemProps, ICommuintyItemState> {
     constructor(props, context) {
         super(props, context);
+        this.state = { isEditingComment: false };
     };
 
     render() {
@@ -33,15 +36,24 @@ class CommunityItem extends Component<ICommunityItemProps, ICommuintyItemState> 
                 <h4>{communityItem.summary}</h4>
                 <CommunityItemContent communityItem={communityItem} />
                 {error}
-                <Votes
-                    key={`communityItem-votes-${communityItem.id}`}
-                    upVoteClicked={this._onUpVoteClicked.bind(this) }
-                    downVoteClicked={this._onDownVoteClicked.bind(this) }
-                    totalVotes={communityItem.votes.total}
-                    upVotes={communityItem.votes.upVotes}
-                    userVote={communityItem.currentUserVote}
-                    />
                 <Tags topics={this.props.communityItem.topics} />
+                <div className="community-item-bottom">
+                    {!this.state.isEditingComment && (
+                        <Votes
+                            key={`communityItem-votes-${communityItem.id}`}
+                            upVoteClicked={this._onUpVoteClicked.bind(this) }
+                            downVoteClicked={this._onDownVoteClicked.bind(this) }
+                            totalVotes={communityItem.votes.total}
+                            upVotes={communityItem.votes.upVotes}
+                            userVote={communityItem.currentUserVote}
+                            />
+                    )}
+                   <CreateCommentEditor
+                            comment={null}
+                            communityItem={communityItem}
+                            onSave={this._onCommentSave.bind(this) }
+                            onEditing={this._onEditingComment.bind(this) } />
+                </div>
                 <CommentList
                     key={`communityItem-commentList-${communityItem.id}`}
                     communityItem={communityItem}
@@ -51,6 +63,13 @@ class CommunityItem extends Component<ICommunityItemProps, ICommuintyItemState> 
                     />
             </div>
         )
+    }
+
+    private _onCommentSave(bodyData) {
+        this.props.relay.commitUpdate(new CreateCommentForCommunityItemMutation({
+            bodyData: bodyData,
+            communityItem: this.props.communityItem
+        }));
     }
 
     private _createVote(isUpVote: boolean) {
@@ -94,6 +113,10 @@ class CommunityItem extends Component<ICommunityItemProps, ICommuintyItemState> 
     private _onDownVoteClicked() {
         this._doVoteLogic(false);
     }
+
+    private _onEditingComment(isEditingComment) {
+        this.setState({ isEditingComment });
+    }
 }
 
 export default Relay.createContainer(CommunityItem, {
@@ -121,15 +144,18 @@ export default Relay.createContainer(CommunityItem, {
                 ${CommentList.getFragment('communityItem', { expandCommentsTo })}
                 ${Avatar.getFragment('communityItem')}
                 ${CommunityItemContent.getFragment('communityItem')}
+                ${CreateCommentEditor.getFragment('communityItem')}
                 ${CreateCommunityItemVoteMutation.getFragment('communityItem')}
                 ${DeleteCommunityItemVoteMutation.getFragment('communityItem')}
                 ${UpdateCommunityItemVoteMutation.getFragment('communityItem')}
+                ${CreateCommentForCommunityItemMutation.getFragment('communityItem')}
             }
         `
     }
 });
 
 interface ICommuintyItemState {
+    isEditingComment: boolean
 }
 
 interface ICommunityItemProps {

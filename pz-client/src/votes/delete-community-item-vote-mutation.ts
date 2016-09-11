@@ -2,7 +2,7 @@ import * as Relay from 'react-relay';
 
 export default class DeleteCommunityItemVoteMutation extends Relay.Mutation {
     getMutation() {
-        return Relay.QL`mutation {deleteCommunityItemVote}`;
+        return Relay.QL`mutation {deleteVote}`;
     }
 
     getVariables() {
@@ -14,7 +14,7 @@ export default class DeleteCommunityItemVoteMutation extends Relay.Mutation {
 
     getFatQuery() {
         return Relay.QL`
-            fragment on DeleteCommunityItemVotePayload {
+            fragment on DeleteVotePayload {
                 communityItem { 
                     currentUserVote
                     votes {

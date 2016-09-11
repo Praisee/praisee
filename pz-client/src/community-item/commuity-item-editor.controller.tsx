@@ -30,7 +30,7 @@ class Editor extends React.Component<IProps, any> {
 
     render() {
         return (
-            <div className="community-item-editor-namespace">
+            <div className="community-item-editor">
                 <form className="editor-form" onSubmit={this._saveCommunityItem.bind(this)}>
                     <input
                         className="editor-summary"

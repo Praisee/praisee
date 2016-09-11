@@ -1,0 +1,53 @@
+@mixin community-item {
+  .community-item{
+        @include avatar();
+        @include comment();
+
+        .community-item-bottom{
+            @include make-container();
+            @include make-row();
+        }
+        
+        .tags {
+            @include make-row();
+            @include make-col-span(12);
+        }
+
+        .votes {
+            @include make-col-span(4);
+        }
+
+        .tags, .votes {
+            @include make-col();
+        }
+
+        .topic-tag {
+            @extend .btn;
+            @extend .btn-primary-outline;
+            @extend .btn-sm;
+            margin-right: 1rem;
+            margin-top: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .vote-btn {
+            @extend .btn;
+            @extend .btn-sm;
+            margin-right: .5rem;
+            margin-top: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .comment-editor {
+            .editor-area {
+                @extend .form-control;
+                @import '../../../node_modules/draft-js/dist/Draft';
+                @import '../../../node_modules/draft-js-mention-plugin/lib/plugin';
+
+                .public-DraftEditor-content {
+                    min-height: 2rem;
+                }
+            }
+        }
+    }
+}

@@ -38,13 +38,14 @@ export interface ITypes {
     CommunityItemConnection
     CreateCommunityItemMutation
     CreateCommunityItemFromTopicMutation
-    CreateCommunityItemVoteMutation
-    UpdateCommunityItemVoteMutation
-    DeleteCommunityItemVoteMutation
+
+    CreateVoteMutation
+    UpdateVoteMutation
+    DeleteVoteMutation
 
     CommentType
     CommentConnection
-    CreateCommentFromCommunityItemMutation
+    CreateCommentMutation
 
     TopicType
 

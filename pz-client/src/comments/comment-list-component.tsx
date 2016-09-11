@@ -24,7 +24,7 @@ class CommentList extends Component<ICommentProps, any>{
         );
 
         return (
-            <div className="comment-list-namespace">
+            <div className="comment-list">
                 {comments}
             </div>
         );

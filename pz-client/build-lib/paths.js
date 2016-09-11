@@ -13,6 +13,10 @@ var paths = {
         return paths.publicDir('styles');
     },
     
+    publicAssetsDir: function(additionalPath) {
+        return paths.publicDir('assets');
+    },
+
     relaySchema: function () {
         return pzPath('pz-client', 'build/relay/schema.json');
     }

@@ -1,0 +1,30 @@
+@mixin comment {
+    .comment {
+        padding-left: 1rem;
+
+        .comment-inner {
+            border-bottom: 1px solid $gray-lighter;
+            padding-bottom: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .reply-button {
+            @extend .form-control;
+        }
+
+        .comment-editor {
+            .editor-area {
+                @extend .form-control;
+                @import '../../../node_modules/draft-js/dist/Draft';
+                @import '../../../node_modules/draft-js-mention-plugin/lib/plugin';
+
+                .public-DraftEditor-content {
+                    min-height: 2rem;
+                }
+            }
+        }
+    }
+
+    .comment-list{
+    }
+}

@@ -172,11 +172,11 @@ export default function createSchema(repositoryAuthorizers: IAppRepositoryAuthor
                 createCommunityItem: types.CreateCommunityItemMutation,
                 createCommunityItemFromTopic: types.CreateCommunityItemFromTopicMutation,
 
-                createCommunityItemVote: types.CreateCommunityItemVoteMutation,
-                deleteCommunityItemVote: types.DeleteCommunityItemVoteMutation,
-                updateCommunityItemVote: types.UpdateCommunityItemVoteMutation,
+                createComment: types.CreateCommentMutation,
 
-                createCommentFromCommunityItem: types.CreateCommentFromCommunityItemMutation
+                createVote: types.CreateVoteMutation,
+                updateVote: types.UpdateVoteMutation,
+                deleteVote: types.DeleteVoteMutation
             }
         }),
 

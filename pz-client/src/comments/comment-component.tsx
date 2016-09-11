@@ -8,6 +8,11 @@ import CommentContent from 'pz-client/src/comments/comment-content-component';
 import CommentList from 'pz-client/src/comments/comment-list-component';
 import Avatar from 'pz-client/src/user/avatar.component';
 import {CreateCommentEditor} from 'pz-client/src/comments/comment-editor-controller';
+import Votes from 'pz-client/src/votes/votes-component';
+import CreateCommentVoteMutation from 'pz-client/src/votes/create-comment-vote-mutation';
+import UpdateCommentVoteMutation from 'pz-client/src/votes/update-comment-vote-mutation';
+import DeleteCommentVoteMutation from 'pz-client/src/votes/delete-comment-vote-mutation';
+import CreateCommentForCommentMutation from 'pz-client/src/comments/create-comment-for-comment-mutation';
 
 export class Comment extends Component<any, any>{
     schemaInjector: SchemaInjector;
@@ -15,6 +20,7 @@ export class Comment extends Component<any, any>{
     constructor(props, context) {
         super(props, context);
         this.schemaInjector = new SchemaInjector(commentSchema);
+        this.state = { isEditingComment: false };
     }
 
     render() {
@@ -35,19 +41,37 @@ export class Comment extends Component<any, any>{
         }
 
         let expandButton = null;
-        if(!expand){
+        if (!expand) {
             expandButton = (
-                <button type="button" onClick={this.expand.bind(this)} >...</button>
+                <button type="button" onClick={this.expand.bind(this) } >...</button>
             )
         }
 
         return this.schemaInjector.inject(
-            <div className="comment" style={{ paddingLeft: "15px" }}>
-                <Avatar communityItem={null} comment={comment} />
-                <DateDisplay date={createdAt} type="date-created" />
-                <CommentContent comment={comment} />
-                <CreateCommentEditor comment={comment} />
-                {expandButton}
+            <div className="comment">
+                <div className="comment-inner">
+                    <Avatar communityItem={null} comment={comment} />
+                    <DateDisplay date={createdAt} type="date-created" />
+                    <CommentContent comment={comment} />
+                    <div className="comment-bottom-content">
+                        {!this.state.isEditingComment && (
+                            <Votes
+                                key={`comment-votes-${comment.id}`}
+                                upVoteClicked={this._onUpVoteClicked.bind(this) }
+                                downVoteClicked={this._onDownVoteClicked.bind(this) }
+                                totalVotes={comment.votes.total}
+                                upVotes={comment.votes.upVotes}
+                                userVote={comment.currentUserVote}
+                                />
+                        )}
+                        <CreateCommentEditor
+                            comment={comment}
+                            communityItem={null}
+                            onSave={this._onCommentSave.bind(this) }
+                            onEditing={this._onEditing.bind(this) } />
+                    </div>
+                    {expandButton}
+                </div>
                 {commentList}
             </div>
         );
@@ -57,6 +81,59 @@ export class Comment extends Component<any, any>{
         this.props.relay.setVariables({
             expand: !this.props.relay.variables.expand
         });
+    }
+
+    private _onCommentSave(bodyData) {
+        this.props.relay.commitUpdate(new CreateCommentForCommentMutation({
+            bodyData: bodyData,
+            comment: this.props.comment
+        }));
+    }
+
+    private _onEditing(isEditingComment) {
+        this.setState({ isEditingComment });
+    }
+
+    private _createVote(isUpVote: boolean) {
+        this.props.relay.commitUpdate(new CreateCommentVoteMutation({
+            isUpVote: isUpVote,
+            comment: this.props.comment
+        }));
+    }
+
+    private _deleteCurrentVote() {
+        this.props.relay.commitUpdate(new DeleteCommentVoteMutation({
+            comment: this.props.comment
+        }));
+    }
+
+    private _updateCurrentVote(isUpVote: boolean) {
+        this.props.relay.commitUpdate(new UpdateCommentVoteMutation({
+            comment: this.props.comment,
+            isUpVote: isUpVote
+        }));
+    }
+
+    private _doVoteLogic(isUpVote: boolean) {
+        const {currentUserVote} = this.props.comment;
+
+        if (currentUserVote !== null) {
+            if (currentUserVote === isUpVote)
+                this._deleteCurrentVote();
+            if (currentUserVote !== isUpVote)
+                this._updateCurrentVote(isUpVote);
+        }
+        else {
+            this._createVote(isUpVote);
+        }
+    }
+
+    private _onUpVoteClicked() {
+        this._doVoteLogic(true);
+    }
+
+    private _onDownVoteClicked() {
+        this._doVoteLogic(false);
     }
 }
 
@@ -69,12 +146,19 @@ export default Relay.createContainer(Comment, {
         comment: ({expand, currentDepth}) => Relay.QL`
             fragment on Comment {
                 createdAt
-                upVotes
-                downVotes
+                votes {
+                    upVotes
+                    total
+                }
+                currentUserVote
                 ${CommentContent.getFragment('comment')}
                 ${Avatar.getFragment('comment')}
-                ${CommentList.getFragment('comment', { currentDepth}).if(expand)}
+                ${CommentList.getFragment('comment', { currentDepth }).if(expand)}
                 ${CreateCommentEditor.getFragment('comment')}
+                ${CreateCommentVoteMutation.getFragment('comment')}
+                ${DeleteCommentVoteMutation.getFragment('comment')}
+                ${UpdateCommentVoteMutation.getFragment('comment')}
+                ${CreateCommentForCommentMutation.getFragment('comment')}
             } 
         `
     }
@@ -83,8 +167,6 @@ export default Relay.createContainer(Comment, {
 export interface ICommentProps {
     comment: IComment
     relay
-    maxLevel: number
-    currentDepth: number
 }
 
 var commentSchema: ISchemaType = {

@@ -11,17 +11,13 @@ export default class Tags extends Component<ITagsProps, any> {
     render() {
         let tags = this.props.topics.map((topic) => {
             return (
-                <li key={`communityItem-tag-${topic.id}`}>
-                    <Link to={topic.routePath}>{topic.name}</Link>
-                </li>
+                <Link key={topic.id} className="topic-tag" to={topic.routePath}>{topic.name}</Link>
             );
         });
 
         return (
-            <div className="tags-namespace">
-                <ul>
-                    {tags}
-                </ul>
+            <div className="tags">
+                {tags}
             </div>
         );
     }

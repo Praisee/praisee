@@ -33,6 +33,7 @@ var {
 
 export default function CommentTypes(repositoryAuthorizers: IAppRepositoryAuthorizers, nodeInterface, types: ITypes) {
     const commentsAuthorizer = repositoryAuthorizers.comments;
+    const communityItemsAuthorizer = repositoryAuthorizers.communityItems;
     const usersAuthorizer = repositoryAuthorizers.users;
     const votesAuthorizer = repositoryAuthorizers.votes;
 
@@ -136,8 +137,8 @@ export default function CommentTypes(repositoryAuthorizers: IAppRepositoryAuthor
         nodeType: CommentType
     });
 
-    const CreateCommentFromCommunityItemMutation = mutationWithClientMutationId({
-        name: 'CreateCommentFromCommunityItem',
+    const CreateCommentMutation = mutationWithClientMutationId({
+        name: 'CreateComment',
 
         inputFields: () => ({
             body: { type: GraphQLString },
@@ -155,14 +156,18 @@ export default function CommentTypes(repositoryAuthorizers: IAppRepositoryAuthor
             },
             comment: {
                 type: types.CommentType,
-                resolve: ({comment}) => {
-                    return comment;
+                resolve: async ({commentId, user}) => {
+                    return await commentsAuthorizer
+                        .as(user)
+                        .findById(commentId);
                 }
             },
             communityItem: {
                 type: types.CommunityItemType,
-                resolve: ({communityItem}) => {
-                    return communityItem;
+                resolve: async ({communityItemId, user}) => {
+                    return await communityItemsAuthorizer
+                        .as(user)
+                        .findById(communityItemId);
                 }
             }
         }),
@@ -179,16 +184,16 @@ export default function CommentTypes(repositoryAuthorizers: IAppRepositoryAuthor
             });
 
             if (newComment instanceof AuthorizationError) {
-                return { newComment: null };
+                return { newComment: null, commentId: id, communityItemId: id };
             }
 
-            return { newComment };
+            return { newComment, commentId: id, communityItemId: id };
         },
     });
 
     return {
         CommentType,
         CommentConnection,
-        CreateCommentFromCommunityItemMutation
+        CreateCommentMutation
     };
 }

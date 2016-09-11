@@ -1,60 +1,65 @@
 import * as React from 'react';
 import * as Relay from 'react-relay';
 
-import CreateCommentForCommunityItemMutation from 'pz-client/src/comments/create-comment-for-community-item-mutation';
-import CreateCommentForCommentMutation from 'pz-client/src/comments/create-comment-for-comment-mutation';
 import EditorComponent from 'pz-client/src/editor/editor.component';
 import CommunityItemContent from 'pz-client/src/editor/community-item-content.component';
 import serializeEditorState from 'pz-client/src/editor/serialize-editor-state';
 
 interface IProps {
     relay: any
-
-    comment?: {
-        id: number
-        body: string,
-    }
+    onSave: Function
+    onEditing: Function
 }
 
 class Editor extends React.Component<IProps, any> {
     state = {
-        editorState: null,
+        editorContent: null,
         enableCommentEditor: false
     };
 
     render() {
         return (
-            <div className="comment-editor-namespace">
+            <div className="comment-editor">
                 { this.state.enableCommentEditor
                     ? (<form className="editor-form" onSubmit={this._saveComment.bind(this) }>
-                            <EditorComponent
-                                placeholder="Write something about this comment..."
-                                onChange={this._updateEditor.bind(this) }
-                                />
+                        <EditorComponent
+                            placeholder="Share your thoughts..."
+                            onChange={this._updateEditor.bind(this) }
+                            />
 
-                            <button>Save</button>
-                        </form>)
-                    : (<span onClick={this._enableCommentEditor.bind(this)}>Add a comment...</span>)
+                        <button type="submit">Save</button>
+                        <button onClick={this._toggleEditor.bind(this, false)}>Cancel</button>
+                    </form>)
+                    : (<input type="text" className="reply-button" onClick={this._toggleEditor.bind(this, true)} value="Reply" />)
                 }
             </div>
         );
     }
 
-    private _enableCommentEditor(event) {
-        this.setState({ enableCommentEditor: true });
+    private _toggleEditor(event, showEditor) {
+        this.setState({ enableCommentEditor: showEditor });
+        
+        if(this.props.onEditing){
+            this.props.onEditing(showEditor);
+        }
     }
 
     private _saveComment(event) {
         event.preventDefault();
 
-        this.props.relay.commitUpdate(new CreateCommentForCommentMutation({
-            bodyData: serializeEditorState(this.state.editorState),
-            comment: this.props.comment
-        }));
+        if(this.props.onSave){
+            this.props.onSave(serializeEditorState(this.state.editorContent));
+        }
+
+        this.setState({ enableCommentEditor: false });
+        
+        if(this.props.onEditing){
+            this.props.onEditing(false);
+        }
     }
 
-    private _updateEditor(editorState) {
-        this.setState({ editorState });
+    private _updateEditor(editorContent) {
+        this.setState({ editorContent });
     }
 }
 
@@ -63,7 +68,11 @@ export let CreateCommentEditor = Relay.createContainer(Editor, {
         comment: () => Relay.QL`
             fragment on Comment {
                 id
-                ${CreateCommentForCommentMutation.getFragment('comment')}
+            }
+        `,
+        communityItem: () => Relay.QL`
+            fragment on CommunityItem {
+                id
             }
         `
     }

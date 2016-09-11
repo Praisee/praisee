@@ -1,21 +1,21 @@
 import * as Relay from 'react-relay';
 
-export default class DeleteCommunityItemVoteMutation extends Relay.Mutation {
+export default class DeleteCommentVoteMutation extends Relay.Mutation {
     getMutation() {
-        return Relay.QL`mutation {updateVote}`;
+        return Relay.QL`mutation {deleteVote}`;
     }
 
     getVariables() {
         return {
-            communityItemId: this.props.communityItem.id,
+            commentId: this.props.comment.id,
             isUpVote: this.props.isUpVote
         };
     }
 
     getFatQuery() {
         return Relay.QL`
-            fragment on UpdateVotePayload {
-                communityItem { 
+            fragment on DeleteVotePayload {
+                comment { 
                     currentUserVote
                     votes {
                         upVotes,
@@ -30,27 +30,28 @@ export default class DeleteCommunityItemVoteMutation extends Relay.Mutation {
         return [{
             type: 'FIELDS_CHANGE',
             fieldIDs: {
-                communityItem: this.props.communityItem.id
+                comment: this.props.comment.id
             }
         }];
     }
 
     getOptimisticResponse() {
-        const {currentUserVote, votes} = this.props.communityItem;
+        const {currentUserVote, votes} = this.props.comment;
         return {
-            communityItem: {
-                id: this.props.communityItem.id,
-                currentUserVote: !currentUserVote,
+            comment: {
+                id: this.props.comment.id,
+                currentUserVote: null,
                 votes: {
-                    upVotes: currentUserVote ? votes.upVotes - 1 : votes.upVotes + 1
+                    upVotes: currentUserVote ? votes.upVotes - 1 : votes.upVotes,
+                    total: votes.total - 1,
                 }
             }
         };
     }
 
     static fragments = {
-        communityItem: () => Relay.QL`
-         fragment on CommunityItem {
+        comment: () => Relay.QL`
+         fragment on Comment {
             id
             currentUserVote
             votes {

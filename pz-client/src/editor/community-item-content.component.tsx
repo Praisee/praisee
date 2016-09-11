@@ -35,7 +35,7 @@ export class CommunityItemContent extends React.Component<IProps, any> {
         let content;
         let bodyDataAsObj = JSON.parse(bodyData);
         if (isTextContent(bodyDataAsObj)) {
-            content = (<p>{convertToText(bodyDataAsObj)}</p>);
+            content = (<div>{convertToText(bodyDataAsObj)}</div>);
         }
         else {
             content = (
