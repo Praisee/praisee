@@ -1,3 +1,4 @@
+import {startBenchmark, endBenchmark} from './benchmark';
 var amqp = require('amqplib/callback_api');
 
 export interface IWorker<TWorkerRequest, TWorkerResponse> {
@@ -128,6 +129,8 @@ export class AmqpWorkerServer implements IWorkerServer {
             channel.assertQueue(channelName, {durable: true});
             channel.prefetch(1);
             channel.consume(channelName, (message) => {
+                let workerBenchmark = startBenchmark('Handle Worker Request @ ' + channelName);
+
                 (worker(translateInputMessage(message))
                     .then(response => {
                         channel.sendToQueue(
@@ -141,9 +144,14 @@ export class AmqpWorkerServer implements IWorkerServer {
                         );
 
                         channel.ack(message);
+
+                        endBenchmark(workerBenchmark);
                     })
                     .catch(error => {
                         channel.nack(message);
+
+                        endBenchmark(workerBenchmark);
+
                         throw error;
                     })
                 );
@@ -172,7 +180,9 @@ class AmqpTWorkerRequester<T, U> implements ITWorkerRequester<T, U> {
     }
 
     _sendWithOptions(message: T, options = {}): Promise<U> {
-        return new Promise((promiseResolver, promiseRejecter) => {
+        let benchmark = startBenchmark('Worker Request @ ' + this.channelName);
+
+        const requestPromise = new Promise((promiseResolver, promiseRejecter) => {
             const {resolve, reject} = createPromiseHandlersThatIgnoreMultipleCalls(
                 promiseResolver, promiseRejecter
             );
@@ -231,6 +241,16 @@ class AmqpTWorkerRequester<T, U> implements ITWorkerRequester<T, U> {
                 });
             });
         });
+
+        requestPromise.then((response) => {
+            endBenchmark(benchmark);
+            return response;
+        }).catch((error) => {
+            endBenchmark(benchmark);
+            throw error;
+        });
+
+        return requestPromise;
     }
 
     private _generateUuid() {

@@ -10,16 +10,18 @@ import routes from 'pz-client/src/router/routes'
 import * as Relay from 'react-relay';
 import IsomorphicRouter from 'isomorphic-relay-router';
 import IsomorphicContext from 'pz-client/src/app/isomorphic-context.component';
+import {startBenchmark, endBenchmark} from 'pz-server/src/support/benchmark';
 
 const GRAPHQL_URL = `http://localhost:3000/i/graphql`; // TODO: Unhardcode this
 
 export function renderApp(request, response, renderProps, next) {
     if (process.env.NO_ISOMORPHIC) {
         response.render('site/layout', {
+            cache: true,
             cachedRequestData: 'null',
             content: ''
         });
-        
+
         return;
     }
 
@@ -27,12 +29,17 @@ export function renderApp(request, response, renderProps, next) {
         headers: request.headers
     });
 
+    let dataPrepBenchmark;
+
     (Promise.resolve()
         .then(() => {
+            dataPrepBenchmark = startBenchmark('Prepare Relay Data');
             return IsomorphicRouter.prepareData(renderProps, graphqlNetworkLayer);
         })
 
         .then(({data, props}) => {
+            endBenchmark(dataPrepBenchmark);
+
             const router = IsomorphicRouter.render(props);
 
             let hasError = false;
@@ -45,10 +52,15 @@ export function renderApp(request, response, renderProps, next) {
                 }
             });
 
+            let renderBenchmark = startBenchmark('Render React Site Content');
+
             const content = ReactDomServer.renderToString(isomorphicContext);
+
+            endBenchmark(renderBenchmark);
 
             if (!hasError) {
                 response.render('site/layout', {
+                    cache: true,
                     cachedRequestData: JSON.stringify(data),
                     content: content
                 });

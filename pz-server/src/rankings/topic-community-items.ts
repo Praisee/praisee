@@ -4,6 +4,7 @@ import {IVotes} from 'pz-server/src/votes/votes';
 import {ICommunityItems} from 'pz-server/src/community-items/community-items';
 import {IComments} from 'pz-server/src/comments/comments';
 import {IUsers} from '../users/users';
+import {startBenchmark, endBenchmark} from '../support/benchmark';
 
 var rankAndCacheChannel = 'pz-server/src/rankings/topicCommunityItems/rankAndCache';
 var rankAndCacheAsViewerChannel = 'pz-server/src/rankings/topicCommunityItems/rankAndCacheAsViewer';
@@ -111,8 +112,6 @@ async function rankAndCacheWorker(
     ) {
 
     const {topicId} = message;
-    const topicCommunityItemIds = await repositories.topics.findAllCommunityItemIds(topicId);
-    const {getFeatures, getFeaturesAsViewer, calculateFallbackRankFromFeatures} = workers;
 
     let viewerId;
     if (isViewerRequest(message)) {
@@ -122,19 +121,33 @@ async function rankAndCacheWorker(
     // TODO: This should be done in the Rankings repository and be based off the cursor instead
     let cacheExists = false;
     if (viewerId) {
+        let benchmark = startBenchmark('Fetch Cached Topic Community Item Rankings For Viewer');
+
         cacheExists = await repositories.rankingsCache.hasViewerTopicCommunityItemRanks(
             viewerId,
             topicId
         );
+
+        endBenchmark(benchmark);
     } else {
+
+        let benchmark = startBenchmark('Fetch Cached Topic Community Item Rankings');
+
         cacheExists = await repositories.rankingsCache.hasTopicCommunityItemRanks(
             topicId
         );
+
+        endBenchmark(benchmark);
     }
 
     if (cacheExists) {
         return {done: true};
     }
+
+    let benchmark = startBenchmark('Process Topic Community Item Rankings');
+
+    const topicCommunityItemIds = await repositories.topics.findAllCommunityItemIds(topicId);
+    const {getFeatures, getFeaturesAsViewer, calculateFallbackRankFromFeatures} = workers;
 
     const communityItemRankPromises = topicCommunityItemIds.map(async (communityItemId) => {
         let featuresResponse;
@@ -161,6 +174,8 @@ async function rankAndCacheWorker(
             topicId, communityItemRanks
         );
     }
+
+    endBenchmark(benchmark);
 
     return {done: true};
 }

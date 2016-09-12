@@ -19,3 +19,4 @@ typings
 .vagrant
 notes
 .DS_Store
+*.cpuprofile
