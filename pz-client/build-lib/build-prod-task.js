@@ -1,10 +1,11 @@
 var runSequence = require('pz-builder/build-lib/run-sequence');
 var clean = require('pz-builder/build-lib/clean-task');
 var createRelaySchema = require('pz-client/build-lib/create-relay-schema-task');
+var buildServerSources = require('pz-server/build-lib/dev-build-sources-task');
 var buildSources = require('pz-client/build-lib/prod-build-sources-task');
 var buildStyles = require('pz-client/build-lib/dev-build-styles-task');
-var pzSupport = require('pz-support/build-lib/build-dev-task');
 var buildAssets = require('pz-client/build-lib/build-assets-task');
+var pzSupport = require('pz-support/build-lib/build-prod-task');
 
 module.exports = function(gulp) {
     var pzSupportTask = pzSupport(gulp);
@@ -13,6 +14,7 @@ module.exports = function(gulp) {
         runSequence.use(gulp)(
             clean(gulp, 'pz-client', 'pzClient:clean'),
             pzSupportTask,
+            buildServerSources(gulp),
             createRelaySchema(gulp),
             [buildSources(gulp), buildStyles(gulp), buildAssets(gulp)],
             done

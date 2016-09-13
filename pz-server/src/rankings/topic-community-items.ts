@@ -1,9 +1,12 @@
 import {IWorkerServer, IWorkerClient} from 'pz-server/src/support/worker';
 import {IAppRepositories} from 'pz-server/src/app/repositories';
 import {IVotes} from 'pz-server/src/votes/votes';
-import {ICommunityItems} from 'pz-server/src/community-items/community-items';
-import {IComments} from 'pz-server/src/comments/comments';
-import {IUsers} from '../users/users';
+import {
+    ICommunityItems,
+    ICommunityItem
+} from 'pz-server/src/community-items/community-items';
+import {IComments, IComment} from 'pz-server/src/comments/comments';
+import {IUsers, IUser} from '../users/users';
 import {startBenchmark, endBenchmark} from '../support/benchmark';
 
 var rankAndCacheChannel = 'pz-server/src/rankings/topicCommunityItems/rankAndCache';
@@ -23,13 +26,13 @@ export function registerWorkers(
 
     workerServer.registerWorker<IRankAndCacheRequest, IRankAndCacheResponse>(
         rankAndCacheChannel, (message) => (
-            rankAndCacheWorker(message, repositories, workers)
+            rankAndCacheWorker(message, repositories, workers, calculateFallbackRankFromFeaturesWorker)
         )
     );
 
     workerServer.registerWorker<IRankAndCacheAsViewerRequest, IRankAndCacheAsViewerResponse>(
         rankAndCacheAsViewerChannel, (message) => (
-            rankAndCacheWorker(message, repositories, workers)
+            rankAndCacheWorker(message, repositories, workers, calculateFallbackRankFromFeaturesWorker)
         )
     );
 
@@ -45,11 +48,13 @@ export function registerWorkers(
         )
     );
 
-    workerServer.registerWorker<ICalculateRankFromFeaturesRequest, ICalculateRankFromFeaturesResponse>(
-        calculateFallbackRankFromFeaturesChannel, (message) => (
-            calculateFallbackRankFromFeaturesWorker(message)
-        )
-    );
+    // This is currently too small of a job to use as a worker:
+
+    // workerServer.registerWorker<ICalculateRankFromFeaturesRequest, ICalculateRankFromFeaturesResponse>(
+    //     calculateFallbackRankFromFeaturesChannel, (message) => (
+    //         calculateFallbackRankFromFeaturesWorker(message)
+    //     )
+    // );
 }
 
 export function getWorkerRequesters(workerClient: IWorkerClient) {
@@ -79,10 +84,10 @@ export function getWorkerRequesters(workerClient: IWorkerClient) {
             ICalculateRankFromFeaturesResponse
         >(calculateRankFromFeaturesChannel),
 
-        calculateFallbackRankFromFeatures: workerClient.getRequester<
-            ICalculateRankFromFeaturesRequest,
-            ICalculateRankFromFeaturesResponse
-        >(calculateFallbackRankFromFeaturesChannel)
+        // calculateFallbackRankFromFeatures: workerClient.getRequester<
+        //     ICalculateRankFromFeaturesRequest,
+        //     ICalculateRankFromFeaturesResponse
+        // >(calculateFallbackRankFromFeaturesChannel)
     };
 }
 
@@ -108,7 +113,8 @@ function isViewerRequest(message): message is IRankAndCacheAsViewerRequest {
 async function rankAndCacheWorker(
         message: IRankAndCacheRequest | IRankAndCacheAsViewerRequest,
         repositories: IAppRepositories,
-        workers
+        workers,
+        calculateFallbackRankFromFeatures
     ) {
 
     const {topicId} = message;
@@ -147,7 +153,7 @@ async function rankAndCacheWorker(
     let benchmark = startBenchmark('Process Topic Community Item Rankings');
 
     const topicCommunityItemIds = await repositories.topics.findAllCommunityItemIds(topicId);
-    const {getFeatures, getFeaturesAsViewer, calculateFallbackRankFromFeatures} = workers;
+    const {getFeatures, getFeaturesAsViewer} = workers;
 
     const communityItemRankPromises = topicCommunityItemIds.map(async (communityItemId) => {
         let featuresResponse;
@@ -158,9 +164,14 @@ async function rankAndCacheWorker(
             featuresResponse = await getFeatures.send({topicId, communityItemId});
         }
 
-        const rankResponse = await calculateFallbackRankFromFeatures.send(featuresResponse);
+        const rankResponse = calculateFallbackRankFromFeatures(featuresResponse);
+        const {rank} = rankResponse;
 
-        return [communityItemId, rankResponse.rank];
+        if (Number.isNaN(rank) || !Number.isFinite(rank)) {
+            throw new Error('Got invalid rank back from fallback ranker: ' + rank);
+        }
+
+        return [communityItemId, rank];
     });
 
     const communityItemRanks = await Promise.all<[number, number]>(communityItemRankPromises);
@@ -196,7 +207,7 @@ export interface IViewerTopicCommunityItemsFeatureMap extends
 {}
 
 export interface IGetFeaturesRequest {
-    topicId: number,
+    topicId: number
     communityItemId: number
 }
 
@@ -204,32 +215,44 @@ export interface IGetFeaturesResponse {
     featureMap: ITopicCommunityItemsFeatureMap
 }
 
-export interface IGetFeaturesAsViewerRequest {
-    viewerId: number,
-    topicId: number,
-    communityItemId: number
+export interface IGetFeaturesAsViewerRequest extends IGetFeaturesRequest {
+    viewerId: number
 }
 
 export interface IGetFeaturesAsViewerResponse {
     featureMap: IViewerTopicCommunityItemsFeatureMap
 }
 
-async function getFeaturesWorker(message, repositories) {
+async function getFeaturesWorker(
+        message: IGetFeaturesRequest | IGetFeaturesAsViewerRequest, repositories
+    ): Promise<IGetFeaturesResponse | IGetFeaturesAsViewerResponse> {
+
     const {topicId, communityItemId} = message;
+
+    const communityItem = await repositories.communityItems.findById(communityItemId);
+    const author = await repositories.users.findById(communityItem.userId);
 
     const featurePromiseMap = {
         itemUpVotes: features.itemUpVotes(repositories.votes, 'CommunityItem', communityItemId),
-        itemAge: features.itemAge(repositories.communityItems, communityItemId),
-        itemUniqueWordCount: features.itemUniqueWordCount(repositories.communityItems, communityItemId),
-        authorUpVotes: features.authorUpVotes(repositories.communityItems, repositories.votes, communityItemId),
-        authorAccountAge: features.authorAccountAge(repositories.communityItems, repositories.users, communityItemId),
-        authorTotalCommunityItems: features.authorTotalCommunityItems(repositories.communityItems, repositories.users, communityItemId),
+        itemAge: features.itemAge(communityItem),
+        itemUniqueWordCount: features.itemUniqueWordCount(communityItem),
+        authorUpVotes: features.authorUpVotes(repositories.votes, author),
+        authorAccountAge: features.authorAccountAge(author),
+        authorTotalCommunityItems: features.authorTotalCommunityItems(repositories.users, author),
     };
 
     const featureNames = Object.keys(featurePromiseMap);
 
     const featureValues = await Promise.all(featureNames.map(
-        featureName => featurePromiseMap[featureName]
+        async (featureName) => {
+            const benchmark = startBenchmark(`Feature - ${featureName}`);
+
+            const result = await featurePromiseMap[featureName];
+
+            endBenchmark(benchmark);
+
+            return result;
+        }
     ));
 
     let featureMap = {};
@@ -241,7 +264,7 @@ async function getFeaturesWorker(message, repositories) {
         featureMap[featureName] = featureValue;
     }
 
-    return {featureMap};
+    return {featureMap} as IGetFeaturesResponse | IGetFeaturesAsViewerResponse;
 }
 
 export interface ICalculateRankFromFeaturesRequest {
@@ -252,7 +275,8 @@ export interface ICalculateRankFromFeaturesResponse {
     rank: number
 }
 
-async function calculateFallbackRankFromFeaturesWorker({featureMap}) {
+function calculateFallbackRankFromFeaturesWorker(request: ICalculateRankFromFeaturesRequest): ICalculateRankFromFeaturesResponse {
+    const {featureMap} = request;
     let rank = 0, weight, score;
 
     weight = 10;
@@ -342,7 +366,7 @@ function authorContributionScore(authorContributionsAmount, authorUpVotes, autho
         return 0; // Statistically irrelevant
 
     } else if (spammyAuthor) {
-        return contributionsPerHour * -0.25 + Math.log(Math.min(upVotesPerContribution, 0.01));
+        return contributionsPerHour * -0.25 + Math.log(Math.max(upVotesPerContribution, 0.01));
 
     } else {
 
@@ -356,7 +380,7 @@ function authorContributionScore(authorContributionsAmount, authorUpVotes, autho
  */
 function freshnessScore(itemAge) {
     const updateRate = 24;
-    const itemAgeInHours = itemAge / oneHour;
+    const itemAgeInHours = Math.max(itemAge / oneHour, 0.001);
 
     return 1 / (1 - Math.pow(Math.E, (-1 * (1 / updateRate) * itemAgeInHours)));
 }
@@ -453,8 +477,8 @@ const features = {
     // itemDownvotes: async () => 0,
     // itemReportedCount: async () => 0,
 
-    itemAge: async (itemRepository: IRepositoryWithAge, itemId: number) => {
-        const {createdAt} = await itemRepository.findById(itemId);
+    itemAge: async (item: IRepositoryRecordWithAge) => {
+        const {createdAt} = item;
 
         const age = Date.now().valueOf() - createdAt.valueOf();
 
@@ -464,9 +488,7 @@ const features = {
     // itemResponseOverallSentimentScore: async () => 0,
     // itemResponseControversyScore: async () => 0,
 
-    itemUniqueWordCount: async (itemRepository: TWordCountRepository, itemId: number) => {
-        const item = await itemRepository.findById(itemId);
-
+    itemUniqueWordCount: async (item: TWordCountRepositoryRecord) => {
         const content: string = item.body;
 
         const words = content.match(/[^\s]+/g);
@@ -497,9 +519,8 @@ const features = {
 
     // authorActivityScore: async () => 0,
 
-    authorUpVotes: async (itemRepository: IRepositoryWithAuthor, votesRepository: IVotes, itemId: number) => {
-        const {userId} = await itemRepository.findById(itemId);
-        const {upVotes} = await votesRepository.getAggregateForAffectedUser(userId);
+    authorUpVotes: async (votesRepository: IVotes, author: IUser) => {
+        const {upVotes} = await votesRepository.getAggregateForAffectedUser(author.id);
 
         return upVotes;
     },
@@ -508,18 +529,16 @@ const features = {
     // authorProfileScore: async () => 0,
     // authorReportedCount: async () => 0,
 
-    authorAccountAge: async (itemRepository: IRepositoryWithAuthor, usersRepository: IUsers, itemId: number) => {
-        const {userId} = await itemRepository.findById(itemId);
-        const {createdAt} = await usersRepository.findById(userId);
+    authorAccountAge: async (author: IUser) => {
+        const {createdAt} = author;
 
         const age = Date.now().valueOf() - createdAt.valueOf();
 
         return age;
     },
 
-    authorTotalCommunityItems: async (itemRepository: IRepositoryWithAuthor, usersRepository: IUsers, itemId: number) => {
-        const {userId} = await itemRepository.findById(itemId);
-        const total = await usersRepository.getTotalCommunityItems(userId);
+    authorTotalCommunityItems: async (usersRepository: IUsers, author: IUser) => {
+        const total = await usersRepository.getTotalCommunityItems(author.id);
 
         return total;
     },
@@ -564,4 +583,4 @@ interface IRepositoryWithAge {
     findById(id: number): Promise<IRepositoryRecordWithAge>
 }
 
-type TWordCountRepository = ICommunityItems | IComments;
+type TWordCountRepositoryRecord = ICommunityItem | IComment;

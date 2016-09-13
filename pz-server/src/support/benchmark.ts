@@ -23,9 +23,11 @@ export function startBenchmark(message: string): number {
         profiler.startProfiling(profilerId);
     }
 
-    console.time(message);
+    const uniqueMessage = `(${id}) ${message}`;
 
-    benchmarks.set(id, {message, profilerId});
+    console.time(uniqueMessage);
+
+    benchmarks.set(id, {message, uniqueMessage, profilerId});
 
     return id++;
 }
@@ -41,9 +43,9 @@ export function endBenchmark(benchmarkId: number) {
         throw new Error('Could not find benchmark for ID: ' + benchmarkId);
     }
 
-    const {message, profilerId} = benchmark;
+    const {message, uniqueMessage, profilerId} = benchmark;
 
-    console.timeEnd(message);
+    console.timeEnd(uniqueMessage);
 
     if (process.env.PZ_PROFILE) {
         const profile = profiler.stopProfiling(profilerId);

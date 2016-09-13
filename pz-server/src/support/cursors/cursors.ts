@@ -1,4 +1,5 @@
 import {fromBase64, toBase64} from 'pz-server/src/support/base64';
+import {inspect} from 'util';
 
 export type opaqueCursor = string;
 
@@ -94,7 +95,7 @@ export function fromNumberCursor(cursor: opaqueCursor): number {
 
 export function toNumberCursor(number: number): opaqueCursor {
     if (Number.isNaN(number) || !Number.isFinite(number)) {
-        throw new Error('Invalid numbers cannot be cursors');
+        throw new Error('Invalid numbers cannot be cursors: ' + inspect(number));
     }
 
     return toBase64(number.toString());

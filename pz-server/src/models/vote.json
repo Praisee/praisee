@@ -33,6 +33,16 @@
             }
         }
     },
+    "indexes": {
+        "vote_IsUpVoteIndex": {
+            "isUpVote": 1
+        },
+
+        "vote_ParentIndex": {
+            "parentId": 1,
+            "parentType": 1
+        }
+    },
     "acls": [],
     "methods": {}
 }
