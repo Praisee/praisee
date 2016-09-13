@@ -47,6 +47,7 @@
     "compression": "^1.0.3",
     "consolidate": "^0.14.1",
     "cors": "^2.5.2",
+    "dataloader": "^1.2.0",
     "del": "^2.2.0",
     "draft-js": "^0.8.0",
     "draft-js-linkify-plugin": "^2.0.0-beta.2",

@@ -13,6 +13,7 @@ import TopicAttributes from 'pz-server/src/topics/topic-attributes/loopback-topi
 import TopicAttributesAuthorizer from 'pz-server/src/topics/topic-attributes/topic-attributes-authorizer';
 
 import CommunityItems from 'pz-server/src/community-items/loopback-community-items';
+import CommunityItemsLoader from 'pz-server/src/community-items/community-items-loader';
 import CommunityItemsAuthorizer from 'pz-server/src/community-items/community-items-authorizer';
 
 import Comments from 'pz-server/src/comments/loopback-comments';
@@ -55,7 +56,7 @@ module.exports = function initializeRepositories(app: IApp) {
     const votes = new Votes(app.models.Vote);
     const votesAuthorizer = new VotesAuthorizer(votes);
 
-    const communityItems = new CommunityItems(app.models.CommunityItem);
+    const communityItems = new CommunityItemsLoader(new CommunityItems(app.models.CommunityItem));
 
     const contentFilterer = new ContentFilterer(vanityRoutePaths, topics, communityItems);
 
