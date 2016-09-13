@@ -4,6 +4,20 @@
            width: 1.5em;
            height: 1.5em; 
            border-radius: 50%;
+           margin-top: .5em;
+           margin-right: .5em;
+           margin-bottom: .5em;
+        }
+
+        .display-name {
+            margin: .5em;
+            font-weight: bold;
+        }
+
+        .reputation {
+            margin-left: 1em;
+            margin-top: .5em;
+            margin-bottom: .5em;
         }
     }
 }

@@ -9,43 +9,61 @@
         }
         
         .tags {
-            @include make-row();
-            @include make-col-span(12);
         }
 
         .votes {
             @include make-col-span(4);
         }
 
-        .tags, .votes {
+        .votes {
             @include make-col();
+        }
+
+        .reply-button{
+            @extend .form-control;
+            display: inline-block;
+            width: auto;
+            margin: .5rem;
+            padding: 0.175rem 0.75rem;
         }
 
         .topic-tag {
             @extend .btn;
             @extend .btn-primary-outline;
             @extend .btn-sm;
-            margin-right: 1rem;
-            margin-top: 1rem;
-            margin-bottom: 1rem;
+            margin-right: .5rem;
+            margin-top: .5rem;
+            margin-bottom: .5rem;
         }
 
         .vote-btn {
             @extend .btn;
             @extend .btn-sm;
             margin-right: .5rem;
-            margin-top: 1rem;
-            margin-bottom: 1rem;
+            margin-top: .5rem;
+            margin-bottom: .5rem;
         }
 
         .comment-editor {
+            .submit, .cancel {
+                @include make-col-span(2);
+                @include make-col();
+                margin-top: .5em;
+                margin-bottom: .5em;
+            }
+
             .editor-area {
                 @extend .form-control;
                 @import '../../../node_modules/draft-js/dist/Draft';
                 @import '../../../node_modules/draft-js-mention-plugin/lib/plugin';
+                @include make-col-span(10);
+                @include make-col();
+
+                margin-top: .5rem;
+                margin-bottom: .5rem;
 
                 .public-DraftEditor-content {
-                    min-height: 2rem;
+                    min-height: 1rem;
                 }
             }
         }

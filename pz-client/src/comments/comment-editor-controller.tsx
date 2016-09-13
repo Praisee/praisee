@@ -16,6 +16,14 @@ class Editor extends React.Component<IProps, any> {
         editorContent: null,
         enableCommentEditor: false
     };
+    private _ctrls: {
+        editor?: any;
+    } = {};
+
+    componentDidUpdate() {
+        if (this.state.enableCommentEditor)
+            this._ctrls.editor.focus();
+    }
 
     render() {
         return (
@@ -25,12 +33,13 @@ class Editor extends React.Component<IProps, any> {
                         <EditorComponent
                             placeholder="Share your thoughts..."
                             onChange={this._updateEditor.bind(this) }
+                            onBlur={this._onBlur.bind(this)}
+                            ref={(editor) => this._ctrls.editor = editor}
                             />
 
-                        <button type="submit">Save</button>
-                        <button onClick={this._toggleEditor.bind(this, false)}>Cancel</button>
+                        <button className="btn btn-primary-outline submit" type="submit">Reply</button>
                     </form>)
-                    : (<input type="text" className="reply-button" onClick={this._toggleEditor.bind(this, true)} value="Reply" />)
+                    : (<input type="text" className="reply-button" onClick={this._toggleEditor.bind(this, true) } value="Reply..." />)
                 }
             </div>
         );
@@ -38,22 +47,27 @@ class Editor extends React.Component<IProps, any> {
 
     private _toggleEditor(event, showEditor) {
         this.setState({ enableCommentEditor: showEditor });
-        
-        if(this.props.onEditing){
+
+        if (this.props.onEditing) {
             this.props.onEditing(showEditor);
         }
+    }
+
+    private _onBlur(event){
+        if(!this.state.editorContent.getCurrentContent().hasText())
+            this._toggleEditor(null, false);
     }
 
     private _saveComment(event) {
         event.preventDefault();
 
-        if(this.props.onSave){
+        if (this.props.onSave) {
             this.props.onSave(serializeEditorState(this.state.editorContent));
         }
 
         this.setState({ enableCommentEditor: false });
-        
-        if(this.props.onEditing){
+
+        if (this.props.onEditing) {
             this.props.onEditing(false);
         }
     }

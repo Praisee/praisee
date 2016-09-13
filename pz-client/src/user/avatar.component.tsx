@@ -19,7 +19,7 @@ class Avatar extends Component<IAvatarProps, any>{
         return this.schemaInjector.inject(
             <div className="avatar">
                 <img className="avatar-image" src={image || "/i/client/assets/images/unknown-avatar.png"} />
-                <strong>{displayName}</strong>
+                <span className="display-name">{displayName}</span>
                 <span className="reputation">{reputation || 0}</span>
             </div>
         );

@@ -17,22 +17,25 @@ export interface IProps {
     placeholder?: any
     initialRawContentState?: any
     onChange?: (editorState) => {}
+    onBlur?: Function
 }
 
 export default class Editor extends React.Component<IProps, any> {
     private _editorPlugins;
     private _MentionSuggestions;
+    private _ctrls: {
+            editor?: HTMLInputElement;
+        } = {};
 
     constructor(props, state) {
         super(props, state);
-
         const mentionPlugin = createMentionPlugin();
 
         this._MentionSuggestions = mentionPlugin.MentionSuggestions;
 
         this._editorPlugins = [
-            createToolbarPlugin({clearTextActions: true}),
-            createLinkifyPlugin({target: 'noopener noreferrer'}),
+            createToolbarPlugin({ clearTextActions: true }),
+            createLinkifyPlugin({ target: 'noopener noreferrer' }),
             mentionPlugin
         ];
 
@@ -63,19 +66,30 @@ export default class Editor extends React.Component<IProps, any> {
             <div className="editor-area">
                 <DraftJsEditor
                     editorState={editorState}
-                    handleKeyCommand={this._updateRichStylingFromCommand.bind(this)}
-                    onChange={this._updateEditor.bind(this)}
+                    handleKeyCommand={this._updateRichStylingFromCommand.bind(this) }
+                    onChange={this._updateEditor.bind(this) }
+                    onBlur={this._onBlur.bind(this) }
                     placeholder={this.props.placeholder}
                     plugins={this._editorPlugins}
-                />
+                    ref={(editor) => this._ctrls.editor = editor}
+                    />
 
                 <MentionSuggestions />
             </div>
         );
     }
 
+    private _onBlur(event) {
+        if(this.props.onBlur)
+            this.props.onBlur();
+    }
+
+    public focus() {
+        this._ctrls.editor.focus();
+    }
+
     private _updateEditor(editorState) {
-        this.setState({editorState});
+        this.setState({ editorState });
 
         if (this.props.onChange) {
             this.props.onChange(editorState);

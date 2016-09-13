@@ -8,18 +8,22 @@
             margin-bottom: 1rem;
         }
 
-        .reply-button {
+        .reply-button{
             @extend .form-control;
+            display: inline-block;
+            width: auto;
+            margin: .5rem;
+            padding: 0.175rem 0.75rem;
         }
 
         .comment-editor {
             .editor-area {
-                @extend .form-control;
+                // @extend .form-control;
                 @import '../../../node_modules/draft-js/dist/Draft';
                 @import '../../../node_modules/draft-js-mention-plugin/lib/plugin';
 
                 .public-DraftEditor-content {
-                    min-height: 2rem;
+                    min-height: 1rem;
                 }
             }
         }
