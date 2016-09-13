@@ -100,6 +100,13 @@ export default class Comments implements IComments {
             createRecordFromLoopback<IVote>('Vote', vote)
         );
     }
+    
+    async getCountForParent(parentType: string, parentId: number): Promise<number>{
+        const conditions = { rootParentType: parentType, rootParentId: parentId };
+        const count = await promisify(this._CommentModel.count, this._CommentModel)(conditions);
+        
+        return count;
+    }
 
     async update(comment: IComment): Promise<IComment> {
         if (!comment.id) {

@@ -65,9 +65,7 @@ export class TopicController extends Component<ITopicProps, ITopicState> {
     _renderTopicContent() {
         const rows = this.props.topic.communityItems.edges
             .map(({node}) =>
-                <div key={node.id}>
-                    <CommunityItem key={node.id} communityItem={node} />
-                </div>
+                <CommunityItem key={node.id} communityItem={node} />
             );
         return (
             <div>

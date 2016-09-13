@@ -1,71 +1,109 @@
 @mixin community-item {
-  .community-item{
-        @include avatar();
-        @include comment();
+  .community-item {
+    @include avatar();
+    @include comment-editor();
+    @include comment();
+    padding-bottom: 1rem;
+    padding-top: 1rem;
 
-        .community-item-bottom{
-            @include make-container();
-            @include make-row();
-        }
-        
-        .tags {
-        }
+    .community-item-bottom {
+      display: flex;
 
-        .votes {
-            @include make-col-span(4);
-        }
-
-        .votes {
-            @include make-col();
-        }
-
-        .reply-button{
-            @extend .form-control;
-            display: inline-block;
-            width: auto;
-            margin: .5rem;
-            padding: 0.175rem 0.75rem;
-        }
-
-        .topic-tag {
-            @extend .btn;
-            @extend .btn-primary-outline;
-            @extend .btn-sm;
-            margin-right: .5rem;
-            margin-top: .5rem;
-            margin-bottom: .5rem;
-        }
-
-        .vote-btn {
-            @extend .btn;
-            @extend .btn-sm;
-            margin-right: .5rem;
-            margin-top: .5rem;
-            margin-bottom: .5rem;
-        }
-
-        .comment-editor {
-            .submit, .cancel {
-                @include make-col-span(2);
-                @include make-col();
-                margin-top: .5em;
-                margin-bottom: .5em;
-            }
-
-            .editor-area {
-                @extend .form-control;
-                @import '../../../node_modules/draft-js/dist/Draft';
-                @import '../../../node_modules/draft-js-mention-plugin/lib/plugin';
-                @include make-col-span(10);
-                @include make-col();
-
-                margin-top: .5rem;
-                margin-bottom: .5rem;
-
-                .public-DraftEditor-content {
-                    min-height: 1rem;
-                }
-            }
-        }
+      @include media-breakpoint-down(sm) {
+        display: block;
+      }
+      border-bottom: 1px solid #ddd;
+      padding-bottom: 1rem;
     }
+
+    .expand-ellipses {
+      margin-top: .5rem;
+      margin-bottom: .5rem;
+      background-color: #fff;
+      border: 1px solid #ddd;
+      border-radius: 5px;
+      display: inline-block;
+      padding: 2px 8px 2px 8px;
+    }
+
+    .bubble {
+      background-color: #fff;
+      border: 1px solid #ddd;
+      border-radius: 5px;
+      display: inline-block;
+      padding: 2px 8px 2px 8px;
+      position: relative;
+      vertical-align: top;
+      margin-top: .5rem;
+      margin-bottom: .5rem;
+    }
+
+    .bubble:after {
+      content: '';
+      position: absolute;
+      border-style: solid;
+      border-width: 7px 5px 0;
+      border-color: #ffffff transparent;
+      display: block;
+      width: 0;
+      z-index: 1;
+      bottom: -7px;
+      left: 9px;
+    }
+
+    .bubble:before {
+      content: '';
+      position: absolute;
+      border-style: solid;
+      border-width: 7px 5px 0;
+      border-color: #ddd transparent;
+      display: block;
+      width: 0;
+      z-index: 0;
+      bottom: -8px;
+      left: 9px;
+    }
+
+    .left {
+      @include media-breakpoint-down(sm) {
+        display: block;
+      }
+    }
+
+    .reply-button {
+      @extend .form-control;
+      flex: 1;
+
+      @include media-breakpoint-down(sm) {
+        width: 100%;
+      }
+      
+      display: inline-block;
+      margin: .5rem;
+      padding: 0.175rem 0.75rem;
+    }
+
+    .topic-tag {
+      @extend .btn;
+      @extend .btn-primary-outline;
+      @extend .btn-sm;
+      margin-right: .5rem;
+      margin-top: .5rem;
+      margin-bottom: .5rem;
+    }
+
+    .up-vote,
+    .down-vote {
+      @extend .btn;
+      @extend .btn-sm;
+      @extend .btn-primary;
+      margin-right: .5rem;
+      margin-top: .5rem;
+      margin-bottom: .5rem;
+    }
+
+    .down-vote {
+      @extend .btn-secondary-outline;
+    }
+  }
 }

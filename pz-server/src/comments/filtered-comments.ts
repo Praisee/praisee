@@ -61,6 +61,10 @@ export default class FilteredComments implements IComments {
         return await this._filterBeforeRead(updatedComment);
     }
 
+     async getCountForParent(parentType: string, parentId: number): Promise<number>{
+        return this._Comments.getCountForParent(parentType, parentId);
+    }
+
     async _filterBeforeRead(comment: IComment): Promise<IComment> {
         const filteredBodyData = await this._contentFilterer.filterBeforeRead(
             comment.bodyData

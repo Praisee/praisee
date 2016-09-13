@@ -22,11 +22,11 @@ export default class Votes extends React.Component<VotesProps, any> {
 
     render() {
         const {upVotes, totalVotes, userVote} = this.props;
-        const upVoteClass = classnames('vote-btn', 'up-vote', { 'btn-success': userVote })
-        const downVoteClass = classnames('vote-btn', 'down-vote', { 'btn-success': userVote === false })
+        const upVoteClass = classnames('up-vote', { 'btn-success': userVote })
+        const downVoteClass = classnames('down-vote', { 'btn-success': userVote === false })
 
         return this.schemaInjector.inject(
-            <div className="aggregate-rating votes">
+            <span className="aggregate-rating votes">
                 {/* <em className="col-md-12">
                     <span className='rating-value'>{upVotes}</span> out of <span className='rating-count'>{totalVotes}</span> people found this helpful
                 </em> */}
@@ -40,7 +40,7 @@ export default class Votes extends React.Component<VotesProps, any> {
                     onClick={this._onDownVoteClicked}>
                     Downvote
                 </button>
-            </div>
+            </span>
         );
     }
 }

@@ -39,7 +39,7 @@ class Editor extends React.Component<IProps, any> {
 
                         <button className="btn btn-primary-outline submit" type="submit">Reply</button>
                     </form>)
-                    : (<input type="text" className="reply-button" onClick={this._toggleEditor.bind(this, true) } value="Reply..." />)
+                    : (<input type="text" className="reply-button" onClick={this._toggleEditor.bind(this, true) } placeholder="Reply..." />)
                 }
             </div>
         );

@@ -33,6 +33,7 @@ var {
 
 export default function CommunityItemTypes(repositoryAuthorizers: IAppRepositoryAuthorizers, nodeInterface, types: ITypes) {
     const communityItemsAuthorizer = repositoryAuthorizers.communityItems;
+    const commentsAuthorizer = repositoryAuthorizers.comments;
     const usersAuthorizer = repositoryAuthorizers.users;
     const votesAuthorizer = repositoryAuthorizers.votes;
 
@@ -75,6 +76,17 @@ export default function CommunityItemTypes(repositoryAuthorizers: IAppRepository
                         .findOtherUserById(communityItem.userId)
 
                     return user;
+                }
+            },
+
+            commentCount: {
+                type: GraphQLInt,
+                resolve: async (communityItem, _, {user}) => {
+                    const count = await commentsAuthorizer
+                        .as(user)
+                        .getCountForParent("CommunityItem", communityItem.id);
+
+                    return count;
                 }
             },
 

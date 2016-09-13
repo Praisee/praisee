@@ -33,36 +33,45 @@ class CommunityItem extends Component<ICommunityItemProps, ICommuintyItemState> 
         return (
             <div className="community-item">
                 <Avatar communityItem={communityItem} comment={null} />
-                <h4>{communityItem.summary}</h4>
+                <h4 className="title">{communityItem.summary}</h4>
                 <CommunityItemContent communityItem={communityItem} />
                 {error}
                 <Tags topics={this.props.communityItem.topics} />
                 <div className="community-item-bottom">
                     {!this.state.isEditingComment && (
-                        <Votes
-                            key={`communityItem-votes-${communityItem.id}`}
-                            upVoteClicked={this._onUpVoteClicked.bind(this) }
-                            downVoteClicked={this._onDownVoteClicked.bind(this) }
-                            totalVotes={communityItem.votes.total}
-                            upVotes={communityItem.votes.upVotes}
-                            userVote={communityItem.currentUserVote}
-                            />
+                        <div className="left">
+                            <Votes
+                                key={`communityItem-votes-${communityItem.id}`}
+                                upVoteClicked={this._onUpVoteClicked.bind(this) }
+                                downVoteClicked={this._onDownVoteClicked.bind(this) }
+                                totalVotes={communityItem.votes.total}
+                                upVotes={communityItem.votes.upVotes}
+                                userVote={communityItem.currentUserVote}
+                                />
+                            <span className="bubble" onClick={this._toggleComments.bind(this)}>{communityItem.commentCount}</span>
+                        </div>
                     )}
-                   <CreateCommentEditor
-                            comment={null}
-                            communityItem={communityItem}
-                            onSave={this._onCommentSave.bind(this) }
-                            onEditing={this._onEditingComment.bind(this) } />
+                    <CreateCommentEditor
+                        comment={null}
+                        communityItem={communityItem}
+                        onSave={this._onCommentSave.bind(this) }
+                        onEditing={this._onEditingComment.bind(this) } />
                 </div>
-                <CommentList
+                {this.props.relay.variables.expandComments && <CommentList
                     key={`communityItem-commentList-${communityItem.id}`}
                     communityItem={communityItem}
                     comment={null}
                     expandCommentsTo={this.props.relay.variables.expandCommentsTo}
                     currentLevel={0}
-                    />
+                    />}
             </div>
         )
+    }
+
+    private _toggleComments() {
+        this.props.relay.setVariables({
+            expandComments: !this.props.relay.variables.expandComments
+        })
     }
 
     private _onCommentSave(bodyData) {
@@ -121,10 +130,11 @@ class CommunityItem extends Component<ICommunityItemProps, ICommuintyItemState> 
 
 export default Relay.createContainer(CommunityItem, {
     initialVariables: {
-        expandCommentsTo: 5
+        expandCommentsTo: 5,
+        expandComments: false
     },
     fragments: {
-        communityItem: ({expandCommentsTo}) => Relay.QL`
+        communityItem: ({expandCommentsTo, expandComments}) => Relay.QL`
             fragment on CommunityItem {
                 summary,
                 body,
@@ -141,7 +151,8 @@ export default Relay.createContainer(CommunityItem, {
                     name,
                     routePath
                 }
-                ${CommentList.getFragment('communityItem', { expandCommentsTo })}
+                commentCount
+                ${CommentList.getFragment('communityItem', { expandCommentsTo }).if(expandComments)}
                 ${Avatar.getFragment('communityItem')}
                 ${CommunityItemContent.getFragment('communityItem')}
                 ${CreateCommentEditor.getFragment('communityItem')}
@@ -166,6 +177,7 @@ interface ICommunityItemProps {
         body: string
         bodyData?: IContentData
         createdAt: Date
+        commentCount: number
         comments: any
         votes: any
         currentUserVote: any

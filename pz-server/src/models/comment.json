@@ -52,6 +52,13 @@
                 "foreignKey": "parentId",
                 "discriminator": "parentType"
             }
+        },
+        "rootParent":{
+            "type": "belongsTo",
+            "polymorphic": {
+                "foreignKey": "rootParentId",
+                "discriminator": "rootParentType"
+            }
         }
     },
     "acls": [],

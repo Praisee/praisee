@@ -16,6 +16,7 @@ export interface IAuthorizedComments {
     findAllByParentCommentId(commentId: number): Promise<Array<IComment>>
     findCommentTreeForComment(commentId: number): Promise<IComment>
     findVotesForComment(commentId: number): Promise<Array<IVote>>    
+    getCountForParent(parentType: string, parentId: number): Promise<number>
 }
 
 class AuthorizedComments implements IAuthorizedComments {
@@ -41,6 +42,10 @@ class AuthorizedComments implements IAuthorizedComments {
 
      async findVotesForComment(commentId: number): Promise<Array<IVote>> {
         return await this._comments.findVotesForComment(commentId);
+    }
+    
+    async getCountForParent(parentType: string, parentId: number): Promise<number>{
+        return this._comments.getCountForParent(parentType, parentId);
     }
 
     async create(comment: IComment): Promise<IComment | AuthorizationError> {

@@ -135,6 +135,8 @@ export class DevEnvSeeder {
                 userId: 2,
                 parentId: 1,
                 parentType: "CommunityItem",
+                rootParentId: 1,
+                rootParentType: "CommunityItem",
                 body:
                 `There are rumors about a Photokina launch
                 The D810 is (almost) 2 years old and and with the normal timeframe it would be replaced this year.
@@ -148,6 +150,8 @@ export class DevEnvSeeder {
                 userId: 1,
                 parentId: 1,
                 parentType: "Comment",
+                rootParentId: 1,
+                rootParentType: "CommunityItem",
                 body: 'Given the impact of the earthquake in Japan, my guesstimate is announcement this year, availability next',
                 bodyData: { "version": "0", "type": "text", "value": "Given the impact of the earthquake in Japan, my guesstimate is announcement this year, availability next" }
             },
@@ -155,6 +159,8 @@ export class DevEnvSeeder {
                 userId: 2,
                 parentId: 2,
                 parentType: "Comment",
+                rootParentId: 1,
+                rootParentType: "CommunityItem",
                 body: 'yeah, true we will wait and see...',
                 bodyData: { "version": "0", "type": "text", "value": "yeah, true we will wait and see..." }
             },
@@ -162,6 +168,8 @@ export class DevEnvSeeder {
                 userId: 3,
                 parentId: 1,
                 parentType: "CommunityItem",
+                rootParentId: 1,
+                rootParentType: "CommunityItem",
                 body: 'Sometimes I like to take pictures of mountains',
                 bodyData: { "version": "0", "type": "text", "value": "Sometimes I like to take pictures of mountains" }
             },
@@ -169,6 +177,8 @@ export class DevEnvSeeder {
                 userId: 2,
                 parentId: 1,
                 parentType: "CommunityItem",
+                rootParentId: 1,
+                rootParentType: "CommunityItem",
                 body: 'This is probably the most useless topic ever...',
                 bodyData: { "version": "0", "type": "text", "value": "This is probably the most useless topic ever..." }
             },
@@ -176,6 +186,8 @@ export class DevEnvSeeder {
                 userId: 1,
                 parentId: 5,
                 parentType: "Comment",
+                rootParentId: 1,
+                rootParentType: "CommunityItem",
                 body: `thats pretty rude, ur a dick`,
                 bodyData: { "version": "0", "type": "text", "value": "thats pretty rude, ur a dick" }
             },
@@ -183,6 +195,8 @@ export class DevEnvSeeder {
                 userId: 2,
                 parentId: 6,
                 parentType: "Comment",
+                rootParentId: 1,
+                rootParentType: "CommunityItem",
                 body: `u're***`,
                 bodyData: { "version": "0", "type": "text", "value": "u're**" }
             }

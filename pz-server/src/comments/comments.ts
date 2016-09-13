@@ -15,6 +15,8 @@ export interface IComment extends IRepositoryRecord {
     createdAt?: Date
     parentType?: string
     parentId?: number
+    rootParentType?: string
+    rootParentId?: number
     updatedAt?: Date
     comments?: any
     votes?: any
@@ -27,6 +29,7 @@ export interface IComments extends IRepository {
     findAllByParentCommentId(commentId: number): Promise<Array<IComment>>
     findCommentTreeForComment(commentId: number): Promise<IComment>
     findVotesForComment(commentId: number): Promise<Array<IVote>>
+    getCountForParent(parentType: string, parentId: number): Promise<number>
     isOwner(userId: number, commentId: number): Promise<boolean>
     update(comment: IComment): Promise<IComment>
 }
