@@ -86,6 +86,17 @@ export default function CommentTypes(repositoryAuthorizers: IAppRepositoryAuthor
                 }
             },
 
+            commentCount: {
+                type: GraphQLInt,
+                resolve: async ({id}, _, {user}) => {
+                    const commentCount = await commentsAuthorizer
+                        .as(user)
+                        .getCountForParent("Comment", id);
+
+                    return commentCount;
+                }
+            },
+
             commentsAsJson: {
                 type: GraphQLString,
                 resolve: async (comment, _, {user}) => {

@@ -1,0 +1,22 @@
+@mixin votes {
+  .votes {
+   
+    .up-vote,
+    .down-vote {
+      @extend .btn;
+      @extend .btn-sm;
+      @extend .btn-primary;
+      margin-right: .5rem;
+      margin-top: .5rem;
+      margin-bottom: .5rem;
+    }
+
+    .down-vote {
+      @extend .btn-secondary-outline;
+    }
+
+    .current-vote{
+        @extend .active;
+    }
+  }
+}

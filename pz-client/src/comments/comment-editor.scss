@@ -7,8 +7,15 @@
 
     .submit,
     .cancel {
+      @extend .btn;
+      @extend .btn-sm;
+      @extend .btn-primary-outline;
       margin-top: .5em;
       margin-bottom: .5em;
+      padding: 0.25rem 0.75rem;
+      font-size: 0.875rem;
+      line-height: 1.5;
+      border-radius: 0.2rem;
     }
 
     .editor-form {
@@ -24,6 +31,8 @@
       margin-top: .5rem;
       margin-bottom: .5rem;
       margin-right: .5rem;
+      padding: 0.25rem 0.75rem;
+      font-size: 0.875rem;
 
       .public-DraftEditor-content {
         min-height: 1rem;

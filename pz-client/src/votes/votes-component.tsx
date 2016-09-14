@@ -22,8 +22,8 @@ export default class Votes extends React.Component<VotesProps, any> {
 
     render() {
         const {upVotes, totalVotes, userVote} = this.props;
-        const upVoteClass = classnames('up-vote', { 'btn-success': userVote })
-        const downVoteClass = classnames('down-vote', { 'btn-success': userVote === false })
+        const upVoteClasses = classnames('up-vote', { 'current-vote': userVote === true })
+        const downVoteClasses = classnames('down-vote', { 'current-vote': userVote === false }) //userVote is true, false or null
 
         return this.schemaInjector.inject(
             <span className="aggregate-rating votes">
@@ -31,14 +31,14 @@ export default class Votes extends React.Component<VotesProps, any> {
                     <span className='rating-value'>{upVotes}</span> out of <span className='rating-count'>{totalVotes}</span> people found this helpful
                 </em> */}
                 <button type="button"
-                    className={upVoteClass}
+                    className={upVoteClasses}
                     onClick={this._onUpVoteClicked}>
-                    Upvote
+                    {userVote === true ? "Upvoted" : "Upvote"}
                 </button>
                 <button type="button"
-                    className={downVoteClass}
+                    className={downVoteClasses}
                     onClick={this._onDownVoteClicked}>
-                    Downvote
+                    {userVote === false ? "Downvoted" : "Downvote"}
                 </button>
             </span>
         );

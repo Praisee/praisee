@@ -1,58 +1,48 @@
 @mixin comment {
   .comment {
     @include comment-editor();
-    
     padding-left: 1rem;
 
-    .comment-inner {
-      @include make-container();
-      @include make-row();
-      border-bottom: 1px solid $gray-lighter;
-      padding-bottom: 1rem;
-      margin-bottom: 1rem;
-    }
-
-    .comment-content,
-    .date,
-    .avatar {
-      @include make-col();
-    }
-
-    .comment-content {
-      @include make-col-span(12);
-    }
-
-    .date {
-      @include make-col-span(5);
-      text-align: right;
-      margin-top: .5rem;
-    }
-
-    .avatar {
-      @include make-col-span(7);
-    }
-
-    .reply-button {
-      @extend .form-control;
-      display: inline-block;
-      width: auto;
-      margin: .5rem;
-      padding: 0.175rem 0.75rem;
-    }
-
-    .comment-editor {
-      flex: 1;
+    .comment-bottom {
       display: flex;
 
       @include media-breakpoint-down(sm) {
         display: block;
       }
+    }
 
-      .submit,
-      .cancel {
-        margin-top: .5em;
-        margin-bottom: .5em;
+    .comment-inner {
+      border-bottom: 1px solid $gray-lighter;
+      padding-bottom: 1rem;
+    }
+
+    .comment-header {
+      display: flex;
+      justify-content: space-between;
+    }
+
+    .date {
+      text-align: right;
+      margin-top: .5rem;
+    }
+
+    .reply-button {
+      @extend .form-control;
+      flex: 1;
+
+      @include media-breakpoint-down(sm) {
+        width: 100%;
       }
+      display: inline-block;
+      margin: .5rem;
+      padding: 0.175rem 0.75rem;
+    }
+
+    .expand {
+      cursor: pointer;
+      border-radius: 3px;
+      padding: 0 25px 5px 25px;
+      background-color: $gray-lighter;
     }
   }
 }

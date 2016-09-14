@@ -30,6 +30,7 @@ export interface IComments extends IRepository {
     findCommentTreeForComment(commentId: number): Promise<IComment>
     findVotesForComment(commentId: number): Promise<Array<IVote>>
     getCountForParent(parentType: string, parentId: number): Promise<number>
+    getCountForRootParent(rootParentType: string, rootParentId: number): Promise<number>
     isOwner(userId: number, commentId: number): Promise<boolean>
     update(comment: IComment): Promise<IComment>
 }

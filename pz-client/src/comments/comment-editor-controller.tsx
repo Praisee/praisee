@@ -37,7 +37,7 @@ class Editor extends React.Component<IProps, any> {
                             ref={(editor) => this._ctrls.editor = editor}
                             />
 
-                        <button className="btn btn-primary-outline submit" type="submit">Reply</button>
+                        <button className="submit" type="submit">Reply</button>
                     </form>)
                     : (<input type="text" className="reply-button" onClick={this._toggleEditor.bind(this, true) } placeholder="Reply..." />)
                 }

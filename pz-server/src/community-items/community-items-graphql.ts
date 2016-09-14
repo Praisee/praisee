@@ -84,7 +84,7 @@ export default function CommunityItemTypes(repositoryAuthorizers: IAppRepository
                 resolve: async (communityItem, _, {user}) => {
                     const count = await commentsAuthorizer
                         .as(user)
-                        .getCountForParent("CommunityItem", communityItem.id);
+                        .getCountForRootParent("CommunityItem", communityItem.id);
 
                     return count;
                 }

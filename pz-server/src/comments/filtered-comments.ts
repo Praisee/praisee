@@ -44,7 +44,7 @@ export default class FilteredComments implements IComments {
     async findAllByParentCommentId(commentId: number): Promise<Array<IComment>> {
         return await this._Comments.findAllByParentCommentId(commentId);
     }
-    
+
     async findCommentTreeForComment(commentId: number): Promise<IComment> {
         return await this._Comments.findCommentTreeForComment(commentId);
     }
@@ -61,8 +61,12 @@ export default class FilteredComments implements IComments {
         return await this._filterBeforeRead(updatedComment);
     }
 
-     async getCountForParent(parentType: string, parentId: number): Promise<number>{
+    async getCountForParent(parentType: string, parentId: number): Promise<number> {
         return this._Comments.getCountForParent(parentType, parentId);
+    }
+
+    async getCountForRootParent(rootParentType: string, rootParentId: number): Promise<number> {
+        return this._Comments.getCountForRootParent(rootParentType, rootParentId);
     }
 
     async _filterBeforeRead(comment: IComment): Promise<IComment> {

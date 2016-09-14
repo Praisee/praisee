@@ -25,7 +25,7 @@ export class Comment extends Component<any, any>{
 
     render() {
         const {comment} = this.props;
-        const {comments, upVotes, downVotes, createdAt} = comment;
+        const {comments, upVotes, downVotes, createdAt, commentCount} = comment;
         const {currentDepth, expand} = this.props.relay.variables;
 
         let commentList = null;
@@ -41,19 +41,21 @@ export class Comment extends Component<any, any>{
         }
 
         let expandButton = null;
-        if (!expand) {
+        if (!expand && commentCount > 0) {
             expandButton = (
-                <button type="button" onClick={this.expand.bind(this) } >...</button>
+                <span type="button" className="expand" onClick={this.expand.bind(this) } >...</span>
             )
         }
 
         return this.schemaInjector.inject(
             <div className="comment">
-                <div className="comment-inner">
+                <header className="comment-header">
                     <Avatar communityItem={null} comment={comment} />
                     <DateDisplay date={createdAt} type="date-created" />
+                </header>
+                <div className="comment-inner">
                     <CommentContent comment={comment} />
-                    <div className="comment-bottom-content">
+                    <div className="comment-bottom">
                         {!this.state.isEditingComment && (
                             <Votes
                                 key={`comment-votes-${comment.id}`}
@@ -63,7 +65,7 @@ export class Comment extends Component<any, any>{
                                 upVotes={comment.votes.upVotes}
                                 userVote={comment.currentUserVote}
                                 />
-                        )}
+                        ) }
                         <CreateCommentEditor
                             comment={comment}
                             communityItem={null}
@@ -151,6 +153,7 @@ export default Relay.createContainer(Comment, {
                     total
                 }
                 currentUserVote
+                commentCount 
                 ${CommentContent.getFragment('comment')}
                 ${Avatar.getFragment('comment')}
                 ${CommentList.getFragment('comment', { currentDepth }).if(expand)}

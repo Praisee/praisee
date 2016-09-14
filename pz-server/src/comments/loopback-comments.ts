@@ -101,8 +101,15 @@ export default class Comments implements IComments {
         );
     }
     
-    async getCountForParent(parentType: string, parentId: number): Promise<number>{
-        const conditions = { rootParentType: parentType, rootParentId: parentId };
+    async getCountForRootParent(rootParentType: string, rootParentId: number): Promise<number>{
+        const conditions = { rootParentType, rootParentId };
+        const count = await promisify(this._CommentModel.count, this._CommentModel)(conditions);
+        
+        return count;
+    }
+
+     async getCountForParent(parentType: string, parentId: number): Promise<number>{
+        const conditions = { parentType, parentId };
         const count = await promisify(this._CommentModel.count, this._CommentModel)(conditions);
         
         return count;
