@@ -1,3 +1,5 @@
+import serverInfo from 'pz-server/src/app/server-info';
+
 export default {
     'memory-db': {
         'name': 'memory-db',
@@ -6,6 +8,6 @@ export default {
 
     'pz-remote': {
         'connector': 'remote',
-        'url': 'http://localhost:3000/i/api' // todo: this shouldn't be hardcoded
+        'url': `http://${serverInfo.getHost()}/i/api`
     }
 }

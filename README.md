@@ -7,8 +7,3 @@ An npm-driven app.
 - NodeJS 4
 
 - Vagrant
-
-- ZeroMQ bindings
-  ```
-  brew install zeromq
-  ```

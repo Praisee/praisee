@@ -11,8 +11,9 @@ import * as Relay from 'react-relay';
 import IsomorphicRouter from 'isomorphic-relay-router';
 import IsomorphicContext from 'pz-client/src/app/isomorphic-context.component';
 import {startBenchmark, endBenchmark} from 'pz-server/src/support/benchmark';
+import serverInfo from 'pz-server/src/app/server-info';
 
-const GRAPHQL_URL = `http://localhost:3000/i/graphql`; // TODO: Unhardcode this
+const GRAPHQL_URL = `http://${serverInfo.getHost()}/i/graphql`; // TODO: Unhardcode this
 
 export function renderApp(request, response, renderProps, next) {
     if (process.env.NO_ISOMORPHIC) {

@@ -31,6 +31,7 @@ Vagrant.configure(2) do |config|
   config.vm.network "forwarded_port", guest: 6379, host: 6379 # Redis
   config.vm.network "forwarded_port", guest: 5672, host: 5672 # RabbitMQ
   config.vm.network "forwarded_port", guest: 15672, host: 15672 # RabbitMQ Management
+  config.vm.network "forwarded_port", guest: 8888, host: 8888 # Thumbor
 
   # Create a private network, which allows host-only access to the machine
   # using a specific IP.
@@ -165,6 +166,37 @@ Vagrant.configure(2) do |config|
     # Development environment user
     sudo rabbitmqctl add_user dev dev
     sudo rabbitmqctl set_permissions -p / dev ".*" ".*" ".*"
+
+    printf '-'
+    printf 'Installing Git'
+    printf '-'
+
+    sudo DEBIAN_FRONTEND=noninteractive sudo apt-add-repository -y ppa:git-core/ppa
+    sudo DEBIAN_FRONTEND=noninteractive sudo apt-get update
+    sudo DEBIAN_FRONTEND=noninteractive sudo apt-get install -y git
+
+    printf '-'
+    printf 'Installing Python'
+    printf '-'
+
+    # https://github.com/yyuu/pyenv/wiki/Common-build-problems
+    sudo DEBIAN_FRONTEND=noninteractive apt-get install -y make build-essential checkinstall gcc libssl-dev zlib1g-dev libbz2-dev libreadline-dev libsqlite3-dev wget curl llvm libncurses5-dev libncursesw5-dev xz-utils
+    curl -L https://raw.githubusercontent.com/yyuu/pyenv-installer/master/bin/pyenv-installer | bash
+    echo 'export PATH="/home/vagrant/.pyenv/bin:$PATH"' >> ~/.bash_profile
+    echo 'eval "$(pyenv init -)"' >> ~/.bash_profile
+    echo 'export PYTHONPATH=/usr/lib/python2.7/dist-packages:$PYTHONPATH' >> ~/.bash_profile
+    source ~/.bash_profile
+    pyenv install 2.7
+    pyenv global 2.7
+    pyenv shell 2.7
+
+    printf '-'
+    printf 'Installing Thumbor at http://localhost:8888'
+    printf '-'
+
+    sudo DEBIAN_FRONTEND=noninteractive sudo apt-get install -y libpng12-dev libtiff5-dev libpng-dev libjasper-dev libwebp-dev libcurl4-openssl-dev python-pgmagick libmagick++-dev graphicsmagick libopencv-dev python-opencv
+    sudo ln /dev/null /dev/raw1394 # http://stackoverflow.com/a/34820475/786810
+    pip install -r /vagrant/pz-server/src/uploads/thumbor/requirements.txt
 
     printf '-'
     printf 'Provisioning complete'

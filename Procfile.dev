@@ -1,0 +1,3 @@
+server: npm run startServer
+rankingsWorker: npm run startRankingsWorker
+imageService: vagrant ssh -c 'thumbor -c "/vagrant/pz-server/src/uploads/thumbor/thumbor.dev.conf" -k "/vagrant/pz-server/src/uploads/thumbor/security.dev.key" & read; kill $!'
