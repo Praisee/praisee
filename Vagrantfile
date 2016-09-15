@@ -184,7 +184,6 @@ Vagrant.configure(2) do |config|
     curl -L https://raw.githubusercontent.com/yyuu/pyenv-installer/master/bin/pyenv-installer | bash
     echo 'export PATH="/home/vagrant/.pyenv/bin:$PATH"' >> ~/.bash_profile
     echo 'eval "$(pyenv init -)"' >> ~/.bash_profile
-    echo 'export PYTHONPATH=/usr/lib/python2.7/dist-packages:$PYTHONPATH' >> ~/.bash_profile
     source ~/.bash_profile
     pyenv install 2.7
     pyenv global 2.7
@@ -195,6 +194,11 @@ Vagrant.configure(2) do |config|
     printf '-'
 
     sudo DEBIAN_FRONTEND=noninteractive sudo apt-get install -y libpng12-dev libtiff5-dev libpng-dev libjasper-dev libwebp-dev libcurl4-openssl-dev python-pgmagick libmagick++-dev graphicsmagick libopencv-dev python-opencv
+    pushd ~/.pyenv/versions/2.7/lib/python2.7/site-packages
+    ln --symbolic /usr/lib/python2.7/dist-packages/cv2.so
+    ln --symbolic /usr/lib/python2.7/dist-packages/cv.py
+    ln --symbolic /usr/lib/python2.7/dist-packages/cv.pyc
+    popd
     sudo ln /dev/null /dev/raw1394 # http://stackoverflow.com/a/34820475/786810
     pip install -r /vagrant/pz-server/src/uploads/thumbor/requirements.txt
 
