@@ -1,3 +1,4 @@
+var path = require('path');
 var paths = require('pz-client/build-lib/paths');
 var pzPath = require('pz-support/pz-path');
 var gulpPrint = require('gulp-print');
@@ -25,7 +26,7 @@ module.exports = function(gulp) {
 
                 modifyUrl({
                     url: function(url) {
-                        return '/client/' + url;
+                        return path.join('/i/client/', url);
                     }
                 })
             ]))

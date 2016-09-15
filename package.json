@@ -61,6 +61,7 @@
     "elasticsearch": "^11.0.1",
     "express-graphql": "^0.5.3",
     "express-session": "^1.13.0",
+    "font-awesome": "^4.6.3",
     "graphql": "^0.6.0",
     "graphql-errors": "^2.1.0",
     "graphql-relay": "^0.4.2",

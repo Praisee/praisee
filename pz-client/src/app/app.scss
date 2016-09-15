@@ -1,11 +1,13 @@
 @import 'variables';
 @import 'bootstrap';
+@import 'font-awesome';
 @import 'layout/app-layout';
 @import '../search/site-search';
 
 @import '../home/home';
 @import '../topic/topic';
 @import '../community-item/community-item';
+@import '../community-item/community-item-editor';
 @import '../user/sign-in-up';
 @import '../user/avatar';
 @import '../comments/comment';
@@ -16,6 +18,7 @@
 
 .app-namespace {
     @extend %bootstrap;
+    @extend %font-awesome;
 
     & > { @include app-layout(); }
 

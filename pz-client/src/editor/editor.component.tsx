@@ -17,7 +17,8 @@ export interface IProps {
     placeholder?: any
     initialRawContentState?: any
     onChange?: (editorState) => {}
-    onBlur?: Function
+    onBlur?: (blurEvent) => {}
+    onFocus?: (focusEvent) => {}
 }
 
 export default class Editor extends React.Component<IProps, any> {
@@ -69,6 +70,7 @@ export default class Editor extends React.Component<IProps, any> {
                     handleKeyCommand={this._updateRichStylingFromCommand.bind(this) }
                     onChange={this._updateEditor.bind(this) }
                     onBlur={this._onBlur.bind(this) }
+                    onFocus={this._onFocus.bind(this) }
                     placeholder={this.props.placeholder}
                     plugins={this._editorPlugins}
                     ref={(editor) => this._ctrls.editor = editor}
@@ -81,9 +83,14 @@ export default class Editor extends React.Component<IProps, any> {
 
     private _onBlur(event) {
         if(this.props.onBlur)
-            this.props.onBlur();
+            this.props.onBlur(event);
     }
 
+    private _onFocus(event) {
+        if(this.props.onFocus)
+            this.props.onFocus(event);
+    }
+    
     public focus() {
         this._ctrls.editor.focus();
     }

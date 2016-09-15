@@ -5,6 +5,7 @@ import CreateCommunityItemForTopicMutation from 'pz-client/src/community-item/cr
 import EditorComponent from 'pz-client/src/editor/editor.component';
 import CommunityItemContent from 'pz-client/src/editor/community-item-content.component';
 import serializeEditorState from 'pz-client/src/editor/serialize-editor-state';
+var classnames = require('classnames');
 
 interface IProps {
     relay: any
@@ -18,37 +19,84 @@ interface IProps {
     }
 
     topic?: {
-        id
+        id: number,
+        name: string
     }
 }
 
 class Editor extends React.Component<IProps, any> {
+    _timer: any;
+    _delayedState = {};
     state = {
-        summary: '',
-        editorState: null
+        summaryContent: '',
+        bodyState: undefined,
+        isEditing: false,
+        summaryHasFocus: false,
+        bodyHasFocus: false
     };
+    saying = '';
+    sayings = [
+        `Say something about`,
+        `Tell us some tips and tricks for`,
+        `Share some tips and tricks for`,
+        `Share something about`,
+        `Review`,
+        `Ask a question about`,
+        `Ask your question about`,
+    ]
 
     render() {
         return (
             <div className="community-item-editor">
-                <form className="editor-form" onSubmit={this._saveCommunityItem.bind(this)}>
+                <form className="editor-form" onSubmit={this._saveCommunityItem.bind(this) }>
                     <input
                         className="editor-summary"
                         type="text"
-                        placeholder="Summary"
-                        onChange={this._updateSummary.bind(this)}
-                        value={this.state.summary}
-                    />
-
-                    <EditorComponent
-                        placeholder="Write something about Topic..."
-                        onChange={this._updateEditor.bind(this)}
-                    />
-
-                    <button>Save</button>
+                        placeholder={this._getRandomSaying() }
+                        onChange={this._onSummaryChange.bind(this) }
+                        onFocus={this._onSummaryFocus.bind(this) }
+                        onBlur={this._onSummaryBlur.bind(this) }
+                        />
+                    {this._isEditing() &&
+                        <div>
+                            <EditorComponent
+                                placeholder="Ellaborate here if you wish..."
+                                onChange={this._onBodyChange.bind(this) }
+                                onFocus={this._onBodyFocus.bind(this) }
+                                onBlur={this._onBodyBlur.bind(this) }
+                                />
+                            <button className="submit">
+                                <i className="save"></i>Post
+                            </button>
+                        </div>
+                    }
                 </form>
             </div>
         );
+    }
+
+    private _onSummaryFocus() {
+        this._setStateDelayed({ summaryHasFocus: true });
+    }
+
+    private _onBodyFocus() {
+        this._setStateDelayed({ bodyHasFocus: true });
+    }
+
+    private _onSummaryBlur(event) {
+        this._setStateDelayed({ summaryHasFocus: false });
+    }
+
+    private _onBodyBlur(event) {
+        this._setStateDelayed({ bodyHasFocus: false });
+    }
+
+    private _getRandomSaying() {
+        if (this.saying !== '') return this.saying;
+        var saying = this.sayings[Math.floor(Math.random() * (this.sayings.length - 1))];
+
+        this.saying = `${saying} ${this.props.topic.name}...`
+        return this.saying;
     }
 
     private _saveCommunityItem(event) {
@@ -56,19 +104,39 @@ class Editor extends React.Component<IProps, any> {
 
         this.props.relay.commitUpdate(new CreateCommunityItemForTopicMutation({
             type: 'Question',
-            summary: this.state.summary,
+            topic: this.props.topic,
 
-            bodyData: serializeEditorState(this.state.editorState),
-            topic: this.props.topic
+            summary: this.state.summaryContent,
+            bodyData: serializeEditorState(this.state.bodyState)
         }));
     }
 
-    private _updateEditor(editorState) {
-        this.setState({editorState});
+    private _onSummaryChange(event) {
+        this.setState({ summaryContent: event.target.value });
     }
 
-    private _updateSummary(event) {
-        this.setState({summary: event.target.value});
+    private _onBodyChange(bodyState) {
+        this.setState({ bodyState });
+    }
+
+    private _setStateDelayed(state) {
+        if (this._timer != null) {
+            clearTimeout(this._timer);
+        }
+
+        this._delayedState = Object.assign(this._delayedState, state);
+
+        this._timer = setTimeout(() => {
+            this.setState(this._delayedState);
+        }, 50);
+    }
+
+    private _isEditing(): boolean {
+        return (
+            this.state.bodyHasFocus ||
+            this.state.summaryHasFocus ||
+            this.state.summaryContent.length > 0 ||
+            (this.state.bodyState && this.state.bodyState.getCurrentContent().hasText()));
     }
 }
 
@@ -77,6 +145,7 @@ export let CreateItemEditor = Relay.createContainer(Editor, {
         topic: () => Relay.QL`
             fragment on Topic {
                 id
+                name
                 ${CreateCommunityItemForTopicMutation.getFragment('topic')}
             }
         `

@@ -16,13 +16,13 @@ class Editor extends React.Component<IProps, any> {
         editorContent: null,
         enableCommentEditor: false
     };
-    private _ctrls: {
+    private _inputs: {
         editor?: any;
     } = {};
 
     componentDidUpdate() {
         if (this.state.enableCommentEditor)
-            this._ctrls.editor.focus();
+            this._inputs.editor.focus();
     }
 
     render() {
@@ -34,7 +34,7 @@ class Editor extends React.Component<IProps, any> {
                             placeholder="Share your thoughts..."
                             onChange={this._updateEditor.bind(this) }
                             onBlur={this._onBlur.bind(this)}
-                            ref={(editor) => this._ctrls.editor = editor}
+                            ref={(editor) => this._inputs.editor = editor}
                             />
 
                         <button className="submit" type="submit">Reply</button>

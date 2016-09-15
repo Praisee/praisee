@@ -4,9 +4,9 @@ var gulpPrint = require('gulp-print');
 var errorHandler = require('pz-builder/build-lib/error-handler');
 
 module.exports = function (gulp) {
-    gulp.task('pzClient:buildAssets', function () {
+    gulp.task('pzClient:buildFontAwesome', function () {
         return (gulp
-            .src(pzPath('pz-client', 'assets/**/*'))
+            .src(pzPath('pz-root', 'node_modules/font-awesome/fonts/**/*'))
 
             .pipe(errorHandler())
 
@@ -14,9 +14,9 @@ module.exports = function (gulp) {
                 return 'Copying assets ' + filePath;
             }))
 
-            .pipe(gulp.dest(paths.publicAssetsDir()))
+            .pipe(gulp.dest(paths.publicAssetsDir('fonts')))
         );
     });
 
-    return 'pzClient:buildAssets';
+    return 'pzClient:buildFontAwesome';
 };

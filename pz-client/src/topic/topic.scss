@@ -1,35 +1,25 @@
 @mixin topic-namespace {
-    @include community-item();
+  @include community-item();
+  @include community-item-editor();
 
-    .topic-namespace {
-        @include make-container();
-        @include make-container-max-widths();
+  .topic-namespace {
+    @include make-container();
+    @include make-container-max-widths();
 
-        .primary-section{
-            @include make-col-span(8);
-        }
-
-        .side-section-container{
-            @include make-col-span(4);
-        }
-
-        .primary-section, .side-section-container {
-            @include make-col();
-            @include media-breakpoint-down(sm){
-                @include make-col-span(12);
-            }
-        }
-
-        .community-item-editor {
-            .editor-area {
-                @extend .form-control;
-                @import '../../../node_modules/draft-js/dist/Draft';
-                @import '../../../node_modules/draft-js-mention-plugin/lib/plugin';
-
-                .public-DraftEditor-content {
-                    min-height: 10rem;
-                }
-            }
-        }
+    .primary-section {
+      @include make-col-span(8);
     }
+
+    .side-section-container {
+      @include make-col-span(4);
+    }
+
+    .primary-section,
+    .side-section-container {
+      @include make-col();
+      @include media-breakpoint-down(sm){
+        @include make-col-span(12);
+      }
+    }
+  }
 }

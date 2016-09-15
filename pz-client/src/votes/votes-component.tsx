@@ -33,11 +33,13 @@ export default class Votes extends React.Component<VotesProps, any> {
                 <button type="button"
                     className={upVoteClasses}
                     onClick={this._onUpVoteClicked}>
+                    <span className="up-vote-icon"></span>
                     {userVote === true ? "Upvoted" : "Upvote"}
                 </button>
                 <button type="button"
                     className={downVoteClasses}
                     onClick={this._onDownVoteClicked}>
+                    <span className="down-vote-icon"></span>
                     {userVote === false ? "Downvoted" : "Downvote"}
                 </button>
             </span>

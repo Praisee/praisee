@@ -1,8 +1,19 @@
 @mixin votes {
   .votes {
-   
-    .up-vote,
-    .down-vote {
+    .up-vote-icon, .down-vote-icon {
+      @extend .fa;
+      padding-right: .5rem;
+    }
+
+    .up-vote-icon {
+      @extend .fa-caret-up;
+    }
+
+    .down-vote-icon {
+      @extend .fa-caret-down;
+    }
+
+    .up-vote, .down-vote {
       @extend .btn;
       @extend .btn-sm;
       @extend .btn-primary;
@@ -15,8 +26,8 @@
       @extend .btn-secondary-outline;
     }
 
-    .current-vote{
-        @extend .active;
+    .current-vote {
+      @extend .active;
     }
   }
 }
