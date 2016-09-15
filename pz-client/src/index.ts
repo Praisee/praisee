@@ -8,11 +8,12 @@ import * as ReactDom from 'react-dom';
 import routes from 'pz-client/src/router/routes';
 import IsomorphicContext from 'pz-client/src/app/isomorphic-context.component';
 import {getCachedRequestData} from 'pz-client/src/support/page-globals';
+import appInfo from 'pz-client/src/app/app-info';
 
 const environment = new Relay.Environment();
 
 environment.injectNetworkLayer(
-    new Relay.DefaultNetworkLayer('/i/graphql', {
+    new Relay.DefaultNetworkLayer(appInfo.addresses.getGraphqlApi(), {
         credentials: 'same-origin',
     })
 );

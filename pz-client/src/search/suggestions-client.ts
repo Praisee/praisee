@@ -1,4 +1,5 @@
 import * as queryString from 'querystring';
+import appInfo from 'pz-client/src/app/app-info';
 
 import {ISearchSuggestionResult} from 'pz-server/src/search/search-results';
 export {ISearchSuggestionResult} from 'pz-server/src/search/search-results';
@@ -6,7 +7,7 @@ export {ISearchSuggestionResult} from 'pz-server/src/search/search-results';
 export default class SuggestionsClient {
     private _apiPath;
 
-    constructor(apiPath = '/i/search/suggestions') {
+    constructor(apiPath = appInfo.addresses.getSearchSuggestionsApi()) {
         this._apiPath = apiPath;
     }
 

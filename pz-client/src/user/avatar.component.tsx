@@ -1,8 +1,11 @@
 import {Component} from 'react';
 import * as React from 'react';
 import * as Relay from 'react-relay';
+import appInfo from 'pz-client/src/app/app-info';
 import SchemaInjector, {ISchemaType} from 'pz-client/src/support/schema-injector';
 import { DateDisplay } from 'pz-client/src/widgets/date-display.component'
+
+const unknownAvatarUrl = appInfo.addresses.getImage('unknown-avatar.png');
 
 class Avatar extends Component<IAvatarProps, any>{
     schemaInjector: SchemaInjector;
@@ -18,7 +21,7 @@ class Avatar extends Component<IAvatarProps, any>{
 
         return this.schemaInjector.inject(
             <div className="avatar">
-                <img className="avatar-image" src={image || "/i/client/assets/images/unknown-avatar.png"} />
+                <img className="avatar-image" src={image || unknownAvatarUrl} />
                 <span className="display-name">{displayName}</span>
                 <span className="reputation" title="This user is the highest rated in this topic.">
                     {reputation || 0}

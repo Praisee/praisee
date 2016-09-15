@@ -1,11 +1,12 @@
 import * as React from 'react';
+import appInfo from 'pz-client/src/app/app-info';
 import SuggestionsClient, {ISearchSuggestionResult} from 'pz-client/src/search/suggestions-client';
 
 import {fromJS} from 'immutable';
 
 export default function createMentionSuggestions(PluginMentionSuggestions) {
     return class MentionSuggestions extends React.Component<any, any> {
-        private _suggester = new SuggestionsClient('/i/search/mention-suggestions');
+        private _suggester = new SuggestionsClient(appInfo.addresses.getMentionSuggestionsApi());
 
         private _hasUnmounted = false;
 
