@@ -36,6 +36,7 @@ export default function CommunityItemTypes(repositoryAuthorizers: IAppRepository
     const commentsAuthorizer = repositoryAuthorizers.comments;
     const usersAuthorizer = repositoryAuthorizers.users;
     const votesAuthorizer = repositoryAuthorizers.votes;
+    const vanityRoutePathAuthorizer = repositoryAuthorizers.vanityRoutePaths;
 
     const CommunityItemType = new GraphQLObjectType({
         name: 'CommunityItem',
@@ -113,6 +114,14 @@ export default function CommunityItemTypes(repositoryAuthorizers: IAppRepository
                 }
             },
 
+            routePath: {
+                type: GraphQLString,
+                resolve: async (communityItem, _, {user}) => {
+                    let route = await vanityRoutePathAuthorizer.as(user).findByRecord(communityItem);
+                    return route.routePath;
+                }
+            },
+            
             currentUserVote: {
                 type: GraphQLBoolean,
                 resolve: async ({id}, __, {user}) => {

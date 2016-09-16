@@ -82,7 +82,6 @@ export default class VanityRoutePaths implements IVanityRoutePaths {
 
     private _resolveRoutePath(record: TVanityRoutePathSupportedRecord, urlSlug?: ILoopbackUrlSlugModelInstance): string {
         const urlSlugOrId = urlSlug ? urlSlug.fullSlug : record.id;
-
         if (isTopicRecord(record)) {
             return routePaths.topic(urlSlugOrId);
 

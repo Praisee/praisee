@@ -1,5 +1,7 @@
 @mixin avatar {
     .avatar {
+        color: $gray-light;
+        
         .avatar-image {
            width: 1.5em;
            height: 1.5em; 
@@ -18,6 +20,12 @@
             margin-left: 1em;
             margin-top: .5em;
             margin-bottom: .5em;
+        }
+
+        .reputation-icon {
+            @extend .fa;
+            @extend .fa-thumbs-o-up;
+            padding-left: .5rem;
         }
     }
 }

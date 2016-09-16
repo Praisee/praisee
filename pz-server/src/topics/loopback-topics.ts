@@ -110,7 +110,7 @@ export default class LoopbackTopics implements ITopics {
 
             const ids = communityItemRankings.results.map(({item: [id]}) => id);
 
-            const finder = promisify(this._CommunityItemModel.find, this._CommunityItemModel);
+            const finder = promisify<ILoopbackCommunityItemInstance[]>(this._CommunityItemModel.find, this._CommunityItemModel);
 
             const communityItemModels = await finder({
                 where: {
@@ -124,7 +124,7 @@ export default class LoopbackTopics implements ITopics {
             }, {});
 
             return mapCursorResultItems(communityItemRankings, ([id]) => {
-                return communityItemMap[id];
+                return createRecordFromLoopbackCommunityItem(communityItemMap[id]);
             });
         }
     }

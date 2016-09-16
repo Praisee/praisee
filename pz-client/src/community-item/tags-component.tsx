@@ -2,6 +2,7 @@ import * as React from 'react';
 import {Component} from 'react';
 import {Link} from 'react-router';
 import {ITopic} from 'pz-server/src/topics/topics';
+var classnames = require('classnames');
 
 interface ITagsProps {
     topics: Array<{ id: string, name: string, routePath: string }>
@@ -9,14 +10,19 @@ interface ITagsProps {
 
 export default class Tags extends Component<ITagsProps, any> {
     render() {
-        let tags = this.props.topics.map((topic) => {
-            return (
-                <Link key={topic.id} className="topic-tag" to={topic.routePath}>{topic.name}</Link>
-            );
-        });
-
+        let tags;
+        if (this.props.topics.length > 1) {
+            tags = this.props.topics.map((topic) => {
+                return (
+                    <Link key={topic.id} className="topic-tag" to={topic.routePath}>{topic.name}</Link>
+                );
+            });
+        }
+        
+        let tagClass = classnames('tags', { 'hidden': this.props.topics.length < 2 });
+        
         return (
-            <div className="tags">
+            <div className={tagClass}>
                 {tags}
             </div>
         );

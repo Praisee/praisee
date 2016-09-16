@@ -11,19 +11,19 @@ const routePaths = {
 
     communityItem: {
         review: (urlSlug: TRoutePathUrlSlug) => path.join(
-            routePaths.index(), 'review', urlSlug.toString()
+            routePaths.index(), 'on', urlSlug.toString()
         ),
 
         question: (urlSlug: TRoutePathUrlSlug) => path.join(
-            routePaths.index(), 'question', urlSlug.toString()
+            routePaths.index(), 'on', urlSlug.toString()
         ),
 
         howto: (urlSlug: TRoutePathUrlSlug) => path.join(
-            routePaths.index(), 'how-to', urlSlug.toString()
+            routePaths.index(), 'on', urlSlug.toString()
         ),
 
         comparison: (urlSlug: TRoutePathUrlSlug) => path.join(
-            routePaths.index(), 'comparison', urlSlug.toString()
+            routePaths.index(), 'on', urlSlug.toString()
         )
     },
 

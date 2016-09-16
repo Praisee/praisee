@@ -20,7 +20,10 @@ class Avatar extends Component<IAvatarProps, any>{
             <div className="avatar">
                 <img className="avatar-image" src={image || "/i/client/assets/images/unknown-avatar.png"} />
                 <span className="display-name">{displayName}</span>
-                <span className="reputation">{reputation || 0}</span>
+                <span className="reputation" title="This user is the highest rated in this topic.">
+                    {reputation || 0}
+                    <i className="reputation-icon"></i>
+                </span>
             </div>
         );
     }

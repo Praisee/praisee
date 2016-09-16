@@ -45,10 +45,7 @@ export default (
 
                 <Route path="profile/:urlSlug" component={ProfileController} />
 
-                <Route path="review/:urlSlug" component={CommunityItemController} />
-                <Route path="question/:urlSlug" component={CommunityItemController} />
-                <Route path="how-to/:urlSlug" component={CommunityItemController} />
-                <Route path="comparison/:urlSlug" component={CommunityItemController} />
+                <Route path="on/:urlSlug" component={CommunityItemController} />
 
                 <Route path="(:urlSlug)-reviews" component={ReviewController} />
                 <Route path="(:urlSlug)-comparisons" component={ComparisonController} />

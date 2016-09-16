@@ -18,15 +18,19 @@ export class DevEnvSeeder {
             },
             {
                 email: 'test2@praisee.com',
-                displayName: 'Puh Z.',
+                displayName: 'Johnny Bravo',
                 password: 'test'
             },
             {
                 email: 'test2@praisee.com',
-                displayName: 'P. Ness',
+                displayName: 'Dexter L.',
+                password: 'test'
+            },
+            {
+                email: 'test2@praisee.com',
+                displayName: 'Jan Itor',
                 password: 'test'
             }
-
         ];
     }
 
@@ -96,11 +100,34 @@ export class DevEnvSeeder {
                 summary: 'Is there any D810 successor is coming in 2016?',
                 body: "I have seen lots of people selling D810 these days in gulf countries. Also its used price gone a bit up than old days. (Don't know why) is there any successor to D810? I want a D810 badly and I can hold a bit if any new camera is going to release in 2016. What is your opinion ? Should I wait or its time to buy D810?"
             },
-            { topicId: 4, userId: 3, type: 'Howto', summary: 'Luke...', body: `I am your father.` },
-            { topicId: 4, userId: 3, type: 'Howto', summary: 'Luuuuukkkee', body: `I AM your father.` },
-            { topicId: 4, userId: 3, type: 'Howto', summary: 'I AM', body: `^^^` },
-            { topicId: 4, userId: 3, type: 'Howto', summary: 'YOUR', body: `^^^^` },
-            { topicId: 4, userId: 3, type: 'Howto', summary: 'FATHER.', body: `^^^^^^` }
+            {
+                topicId: 4,
+                userId: 3,
+                type: 'Howto',
+                summary: 'Tribute to D300/D300s',
+                body: `There is really nothing left to discuss about technical aspects of D300/D300s on this forum, thanks to such a painfully long birth of its successor, which was so long that Nikon even had to fast forward its name by one generation Yet it feels a bit sad to let these legendarty veterans vanish in the history pages of this forum without saying proper goodbye. So please, post some of your best images taken with these cameras to remind how great they were, and still are, despite more than 10 year of camera evolution. For me, I am just re-posting my photos from another recent thread, as I think they represent some of my best efforts with my beloved D300 outside of family portraiture. Look forward to many great examples of D300 legacy. Best shots with D200 are also welcome `
+            },
+            {
+                topicId: 4, userId: 2, type: 'Question', summary: 'Flash for D-500',
+                body: `What is a decent flash for the Nikon D-500?`
+            },
+            {
+                topicId: 4, userId: 3, type: 'Question', summary: 'Hey enthusiasts, how do you justify your purchases?',
+                body: `Hey folks,
+
+I've been silently but actively following this D500 forum for about three months and I thought it was time to ask you all a question. I'm an enthusiast who dreams about doing more, and for the past 5 years I've been a happy Pentax K-5 shooter (great bang-for-the-buck, imho.) In addition to shooting the kids around the house and local high school soccer, I really enjoy the challenge of shooting live theater (mostly the ones my kids are in). If curious, here you go: gallery  My K-5 is showing signs of its age and I'm anxious to upgrade my body and lenses. This site has absolutely convinced me to go with the D500.
+
+I'm 90% certain I'm going to upgrade within the month, but I'm curious how everyone justifies their purchases - both to themselves and more importantly to their significant non-photographer other. Although this question might be more appropriately asked of a psychologist/marriage counselor I figure most of us here have had to convince someone (or even maybe ourselves) that we weren't being irresponsible with our cash. I have my reasons to upgrade now, but I would like to hear yours. Perhaps they will convince me to finally move the items off my wishlist at B&H!
+
+My wife and I together earn slightly above the median family income for our area. We have a number of kids (2 of them are currently in college), we own a house, and pay our bills. But we don't spend much at all on things for ourselves. So dropping around $5,000 on a D500, a Tamron 70-200 2.8 di vc, and a Sigma 18-35 1.8, plus a speed light, card, extra battery, and several other little items is a real big deal. I know I could spend more (and I am bothered by that large gap in my focal lengths), but I think this set-up will give me what I need for shooting theater. I'm all about getting the most for my money.
+
+My wife is happy I enjoy shooting as I do, but she worries that any 'extra' money should go toward deferred maintenance around the house or something more necessary for the kids. I understand her concerns; they are perfectly reasonable. However, we have the money and I'm sure this purchase won't make it impossible for us to continue to pay our bills - even if it means we have to wait a little longer to replace the roof.
+
+I earned several hundred dollars this year selling my youth theater shots to parents, and I'm thinking about getting into the senior portrait business, but I don't think it realistic that I'll ever actually pay for my gear.
+
+So, if you are an enthusiast on a limited budget . . . how do you justify your purchases?` },
+            { topicId: 4, userId: 3, type: 'Review', summary: 'Setting new standards: Nikon D5 Review', body: `Lots more formatted content here` },
+            { topicId: 4, userId: 4, type: 'Review', summary: 'The little camera that could: Nikon D1 Review', body: `Mas stuff ici` }
         ];
     }
 
@@ -147,13 +174,12 @@ export class DevEnvSeeder {
                 { "version": "0", "type": "text", "value": "There are rumors about a Photokina launch. The D810 is (almost) 2 years old and and with the normal timeframe it would be replaced this year. It's time for Nikon to make use of some of their current technology into a new camera body.The 153 point AF, the wireless solutions, new Expeed processor, new Sensor (we'll see what Sony been sittning on) to take a big step forward The launch of the Canon 5DIV and the D900 will be close in time and this should be this year." }
             },
             {
-                userId: 1,
+                userId: 4,
                 parentId: 1,
                 parentType: "Comment",
                 rootParentId: 1,
                 rootParentType: "CommunityItem",
                 body: 'Given the impact of the earthquake in Japan, my guesstimate is announcement this year, availability next',
-                bodyData: { "version": "0", "type": "text", "value": "Given the impact of the earthquake in Japan, my guesstimate is announcement this year, availability next" }
             },
             {
                 userId: 2,
@@ -162,7 +188,6 @@ export class DevEnvSeeder {
                 rootParentId: 1,
                 rootParentType: "CommunityItem",
                 body: 'yeah, true we will wait and see...',
-                bodyData: { "version": "0", "type": "text", "value": "yeah, true we will wait and see..." }
             },
             {
                 userId: 3,
@@ -171,35 +196,56 @@ export class DevEnvSeeder {
                 rootParentId: 1,
                 rootParentType: "CommunityItem",
                 body: 'Sometimes I like to take pictures of mountains',
-                bodyData: { "version": "0", "type": "text", "value": "Sometimes I like to take pictures of mountains" }
             },
             {
-                userId: 2,
+                userId: 1,
                 parentId: 1,
                 parentType: "CommunityItem",
                 rootParentId: 1,
                 rootParentType: "CommunityItem",
                 body: 'This is probably the most useless topic ever...',
-                bodyData: { "version": "0", "type": "text", "value": "This is probably the most useless topic ever..." }
             },
             {
-                userId: 1,
+                userId: 4,
                 parentId: 5,
                 parentType: "Comment",
                 rootParentId: 1,
                 rootParentType: "CommunityItem",
                 body: `thats pretty rude, ur a dick`,
-                bodyData: { "version": "0", "type": "text", "value": "thats pretty rude, ur a dick" }
             },
             {
-                userId: 2,
+                userId: 1,
                 parentId: 6,
                 parentType: "Comment",
                 rootParentId: 1,
                 rootParentType: "CommunityItem",
                 body: `u're***`,
-                bodyData: { "version": "0", "type": "text", "value": "u're**" }
+            },
+            {
+                userId: 2,
+                parentId: 2,
+                parentType: "CommunityItem",
+                rootParentId: 2,
+                rootParentType: "CommunityItem",
+                body: `Really a glorious tribute with so much amazing fine art there.  Wow.`,
+            },
+            {
+                userId: 3,
+                parentId: 8,
+                parentType: "Comment",
+                rootParentId: 2,
+                rootParentType: "CommunityItem",
+                body: `Thanks Ernie. Your Flickr photo stream is awesome. I found it very inspirational. And a great tribute to what D800 is capable of.`,
+            },
+            {
+                userId: 3,
+                parentId: 4,
+                parentType: "CommunityItem",
+                rootParentId: 4,
+                rootParentType: "CommunityItem",
+                body: `My wife said if I buy one more camera she's gonna leave me, gosh, I'm really gonna miss her!`,
             }
+
         ]
     }
 

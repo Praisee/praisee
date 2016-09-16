@@ -1,5 +1,6 @@
 import * as React from 'react';
 import {Component} from 'react';
+import {Link} from 'react-router';
 import * as Relay from 'react-relay';
 import {ICommunityItem} from 'pz-server/src/community-items/community-items';
 import CommentList from 'pz-client/src/comments/comment-list-component'
@@ -14,6 +15,7 @@ import CreateCommentForCommunityItemMutation from 'pz-client/src/comments/create
 import Error from 'pz-client/src/widgets/error-component';
 import {IContentData} from 'pz-server/src/content/content-data';
 import {CreateCommentEditor} from 'pz-client/src/comments/comment-editor-controller';
+var classnames = require('classnames');
 
 class CommunityItem extends Component<ICommunityItemProps, ICommuintyItemState> {
     constructor(props, context) {
@@ -30,11 +32,16 @@ class CommunityItem extends Component<ICommunityItemProps, ICommuintyItemState> 
             <Error message={this.props.createCommunityItemVoteMutation.error} /> :
             null;
 
+        const bubbleClass = classnames('bubble', {'hidden': communityItem.commentCount === 0});
+
+        //TODO: Figure out how to truncate longer content
+        const communityItemClasses = classnames({'long-content': false})
+
         return (
             <div className="community-item">
                 <Avatar communityItem={communityItem} comment={null} />
-                <h4 className="title">{communityItem.summary}</h4>
-                <CommunityItemContent communityItem={communityItem} />
+                <Link to={communityItem.routePath} className="title">{communityItem.summary}</Link>
+                <CommunityItemContent className={communityItemClasses} communityItem={communityItem} />
                 {error}
                 <Tags topics={this.props.communityItem.topics} />
                 <div className="community-item-bottom">
@@ -48,7 +55,7 @@ class CommunityItem extends Component<ICommunityItemProps, ICommuintyItemState> 
                                 upVotes={communityItem.votes.upVotes}
                                 userVote={communityItem.currentUserVote}
                                 />
-                            <span className="bubble" onClick={this._toggleComments.bind(this)}>{communityItem.commentCount}</span>
+                            <span className={bubbleClass} onClick={this._toggleComments.bind(this)}>{communityItem.commentCount}</span>
                         </div>
                     )}
                     <CreateCommentEditor
@@ -136,22 +143,23 @@ export default Relay.createContainer(CommunityItem, {
     fragments: {
         communityItem: ({expandCommentsTo, expandComments}) => Relay.QL`
             fragment on CommunityItem {
-                summary,
-                body,
+                summary
+                body
                 user {
                     displayName
-                },
+                }
                 votes{
-                    upVotes,
+                    upVotes
                     total
-                },
-                currentUserVote,
+                }
+                currentUserVote
                 topics {
-                    id,
-                    name,
+                    id
+                    name
                     routePath
                 }
                 commentCount
+                routePath
                 ${CommentList.getFragment('communityItem', { expandCommentsTo }).if(expandComments)}
                 ${Avatar.getFragment('communityItem')}
                 ${CommunityItemContent.getFragment('communityItem')}
@@ -182,6 +190,7 @@ interface ICommunityItemProps {
         votes: any
         currentUserVote: any
         topics: Array<{ id: string, name: string, routePath: string }>
+        routePath: string
     }
     body: string;
     relay: any;

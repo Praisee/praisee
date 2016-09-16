@@ -7,6 +7,11 @@
     padding-bottom: 1rem;
     padding-top: 1rem;
 
+    .title{
+      font-size: 1.8em;
+      color: $gray;
+    }
+
     .community-item-bottom {
       display: flex;
 
@@ -15,6 +20,23 @@
       }
       border-bottom: 1px solid $gray-lighter;
       padding-bottom: 1rem;
+    }
+
+    .long-content {
+      height: 100px;
+      overflow: hidden;
+    }
+
+    .expand {
+      cursor: pointer;
+      border-radius: 3px;
+      padding: 0 25px 5px 25px;
+      background-color: $gray-lighter;
+    }
+
+    .hidden {
+      opacity: 0;
+      margin-bottom: 1.5rem;
     }
 
     .bubble {
@@ -79,7 +101,7 @@
       @extend .btn-primary-outline;
       @extend .btn-sm;
       margin-right: .5rem;
-      margin-top: .5rem;
+      margin-top: 1.2rem;
       margin-bottom: .5rem;
       padding-top: .1rem;
       padding-bottom: .1rem;
