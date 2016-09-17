@@ -3,6 +3,8 @@ import {
     IAppRepositoryAuthorizers
 } from 'pz-server/src/app/repositories';
 
+import {ITrackedEvents} from 'pz-server/src/tracked-events/tracked-events'; // TODO: Finish for rankings
+
 import Users from 'pz-server/src/users/loopback-users';
 import UsersAuthorizer from 'pz-server/src/users/users-authorizer';
 
@@ -33,7 +35,9 @@ import {IConnectionManager} from 'pz-server/src/cache/connection-manager';
 import RankingsCache from 'pz-server/src/rankings/redis-rankings-cache';
 import Rankings from 'pz-server/src/rankings/rankings';
 
-import {ITrackedEvents} from 'pz-server/src/tracked-events/tracked-events'; // TODO: Finish for rankings
+import Photos from 'pz-server/src/photos/loopback-photos';
+import PhotosLoader from 'pz-server/src/photos/photos-loader';
+import PhotosAuthorizer from 'pz-server/src/photos/photos-authorizer';
 
 module.exports = function initializeRepositories(app: IApp) {
     const cacheConnections: IConnectionManager = app.services.cacheConnections;
@@ -56,9 +60,14 @@ module.exports = function initializeRepositories(app: IApp) {
     const votes = new Votes(app.models.Vote);
     const votesAuthorizer = new VotesAuthorizer(votes);
 
+    const photos = new PhotosLoader(new Photos(app.models.Photo));
+    const photosAuthorizer = new PhotosAuthorizer(photos);
+
     const communityItems = new CommunityItemsLoader(new CommunityItems(app.models.CommunityItem, app.models.UrlSlug));
 
-    const contentFilterer = new ContentFilterer(vanityRoutePaths, topics, communityItems);
+    const contentFilterer = new ContentFilterer(
+        vanityRoutePaths, topics, communityItems, photos
+    );
 
     const filteredCommunityItems = new FilteredCommunityItems(
         communityItems,
@@ -87,7 +96,8 @@ module.exports = function initializeRepositories(app: IApp) {
         vanityRoutePaths: vanityRoutePaths,
         trackedEvents: {} as ITrackedEvents, // Finish for rankings
         rankingsCache,
-        rankings
+        rankings,
+        photos
     };
 
     const repositoryAuthorizers: IAppRepositoryAuthorizers = {
@@ -97,7 +107,8 @@ module.exports = function initializeRepositories(app: IApp) {
         comments: commentsAuthorizer,
         votes: votesAuthorizer,
         vanityRoutePaths: vanityRoutePathsAuthorizer,
-        topicAttributes: topicAttributesAuthorizer
+        topicAttributes: topicAttributesAuthorizer,
+        photos: photosAuthorizer
     };
 
     app.services.repositories = repositories;

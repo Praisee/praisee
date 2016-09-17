@@ -6,6 +6,7 @@ import {
 
 import {ISluggable, ISluggableInstance} from 'pz-server/src/url-slugs/mixins/sluggable';
 import {ICommunityItemInstance} from 'pz-server/src/models/community-item';
+import {IPhotoInstance} from 'pz-server/src/models/photo';
 
 export type TTopicType = (
     'topic'
@@ -25,6 +26,7 @@ export interface ITopicInstance extends IPersistedModelInstance, ISluggableInsta
     overviewContent: string
     isVerified: boolean
     communityItems: IRelatedPersistedModel<ICommunityItemInstance>
+    photos: IRelatedPersistedModel<IPhotoInstance>
 }
 
 module.exports = function (Topic: ITopicModel) {

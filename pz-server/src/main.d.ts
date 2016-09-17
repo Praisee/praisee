@@ -2,6 +2,7 @@
 /// <reference path="../../pz-support/definitions/react-router.d.ts" />
 /// <reference path="../../pz-support/definitions/react-relay.d.ts" />
 /// <reference path="../../pz-support/definitions/dataloader.d.ts" />
+/// <reference path="../../pz-support/definitions/draft-js.d.ts" />
 
 declare module 'graphql' { var x: any; export = x; }
 declare module 'graphql-relay' { var x: any; export = x; }

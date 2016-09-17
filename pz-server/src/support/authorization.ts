@@ -30,6 +30,10 @@ export function authorizer<T>(AuthorizedRepository: IAuthorizedRepositoryConstru
 
 export class AuthorizationError extends ExtendableError { }
 
+export function isAuthorizationError(object: any): object is AuthorizationError {
+    return object && object instanceof AuthorizationError;
+}
+
 export class NotAuthenticatedError extends AuthorizationError {
     constructor(message = 'User is not authenticated') { super(message); }
 }

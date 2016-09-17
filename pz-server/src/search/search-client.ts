@@ -17,11 +17,11 @@ var elasticsearch = require('elasticsearch');
 
 export default class SearchClient {
     public elasticClient;
-    
+
     constructor() {
         this.elasticClient = new elasticsearch.Client(Object.assign({}, elasticSearchConfig.client));
     }
-    
+
     search(query: ISearchQuery, path?: IPath): Promise<ISearchResults> {
         if (path) {
             return this.elasticClient.search(Object.assign({}, path, {body: query}));
@@ -29,7 +29,7 @@ export default class SearchClient {
             return this.elasticClient.search(query);
         }
     }
-    
+
     getDocument(path: IDocumentPath): Promise<ISearchResultHit> {
         return (this.elasticClient
             .get(path)
@@ -42,7 +42,7 @@ export default class SearchClient {
             })
         );
     }
-    
+
     createDocument(path: ITypePath, document: any): Promise<IDocumentUpdateResult> {
         return this.elasticClient.create({
             index: path.index,
@@ -50,7 +50,7 @@ export default class SearchClient {
             body: document
         });
     }
-    
+
     updateDocument(path: IDocumentPath, document: any): Promise<IDocumentUpdateResult> {
         return this.elasticClient.update({
             index: path.index,
@@ -61,7 +61,7 @@ export default class SearchClient {
             }
         });
     }
-    
+
     upsertDocument(path: IDocumentPath, document: any): Promise<IDocumentUpdateResult> {
         return this.elasticClient.update({
             index: path.index,
@@ -73,38 +73,38 @@ export default class SearchClient {
             }
         });
     }
-    
+
     upsertDocumentByQuery(path: ITypePath, query: ISearchQuery, document: any) {
         return (Promise.resolve()
             .then(() => this.search(query, path))
-                
+
             .then((results) => {
                 const resultCount = results.hits.total;
-                
+
                 if (resultCount === 1) {
-                    
+
                     const matchedDocument = results.hits.hits[0];
                     const existingPath = {
                         index: matchedDocument._index,
                         type: matchedDocument._type,
                         id: matchedDocument._id
                     };
-                    
+
                     return this.updateDocument(existingPath, document);
-                    
+
                 } else if (resultCount < 1) {
 
                     return this.createDocument(path, document);
-                    
+
                 } else {
-                    
+
                     throw new Error('Ambiguous createOrUpdate query matches more than one result');
-                    
+
                 }
             })
         );
     }
-    
+
     destroyDocument(path: IDocumentPath) {
         return this.elasticClient.delete({
             index: path.index,
@@ -112,21 +112,21 @@ export default class SearchClient {
             id: path.id,
         });
     }
-    
+
     destroyDocumentByQuery(path: ITypePath, query: ISearchQuery) {
         return (Promise.resolve()
             .then(() => this.search(query, path))
 
             .then((results) => {
                 const resultCount = results.hits.total;
-                
+
                 if (resultCount < 1) {
                     return;
                 }
 
                 if (resultCount === 1) {
                     const matchedDocument = results.hits.hits[0];
-                    
+
                     const fullPath = {
                         index: matchedDocument._index,
                         type: matchedDocument._type,
@@ -156,7 +156,7 @@ export default class SearchClient {
             })
         );
     }
-    
+
     resetIndexFromSchema(schema: ISearchSchema) {
         return this.resetIndex(schema.index, {
             settings: schema.settings || {},
@@ -168,26 +168,26 @@ export default class SearchClient {
         if (!bulkOperations.length) {
             return Promise.resolve();
         }
-        
+
         const bulkBody = bulkOperations.reduce((bulkBody, bulkOperation) => {
             if (bulkOperation.type === 'upsert') {
                 return bulkBody.concat(this._bulkUpsertToBody(bulkOperation as IBulkUpsert));
-                
+
             } else if (bulkOperation.type === 'delete') {
                 return bulkBody.concat(this._bulkDeleteToBody(bulkOperation as IBulkDelete));
-                
+
             } else {
-                console.error('Unable to handle bulk operation: ' + bulkOperation.type);
+                console.error('Unable to handle bulk operation: ' + (bulkOperation as any).type);
                 return bulkBody;
             }
-            
+
         }, []);
 
         return this.elasticClient.bulk({
             body: bulkBody
         });
     }
-    
+
     private _bulkUpsertToBody(bulkUpsert: IBulkUpsert) {
         return [
             {
@@ -203,7 +203,7 @@ export default class SearchClient {
             }
         ];
     }
-    
+
     private _bulkDeleteToBody(bulkDelete: IBulkDelete) {
         return {
             'delete': {

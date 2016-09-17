@@ -11,6 +11,7 @@ import createMentionPlugin from 'pz-client/src/editor/mention-plugin/create-ment
 import createDecoratorFromPlugins from 'pz-client/src/editor/create-decorator-from-plugins';
 import {isTextContent} from 'pz-server/src/content/content-data';
 import convertToText from 'pz-server/src/content/data-to-text-converter';
+import {createAttachmentPlugin} from 'pz-client/src/editor/attachment-plugin/attachment-plugin';
 
 var DraftJsEditor = require('draft-js-plugins-editor').default;
 var createLinkifyPlugin = require('draft-js-linkify-plugin').default;
@@ -26,7 +27,8 @@ const mentionPlugin = createMentionPlugin();
 export class CommunityItemContent extends React.Component<IProps, any> {
     private _editorPlugins = [
         createLinkifyPlugin({target: 'noopener noreferrer'}),
-        mentionPlugin
+        mentionPlugin,
+        createAttachmentPlugin()
     ];
 
     render() {
@@ -44,7 +46,7 @@ export class CommunityItemContent extends React.Component<IProps, any> {
                     editorState={this._getEditorState()}
                     onChange={() => {}}
                     plugins={this._editorPlugins}
-                    />
+                />
             );
         }
 

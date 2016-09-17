@@ -107,6 +107,12 @@ export default {
         '$promise': {},
         '$resolved': true
     },
+    'Photo': {
+        'dataSource': 'vagrant-postgres',
+        'public': true,
+        '$promise': {},
+        '$resolved': true
+    },
     'UrlSlug': {
         'dataSource': 'vagrant-postgres',
         'public': false

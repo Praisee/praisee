@@ -2,8 +2,7 @@ import * as React from 'react';
 import * as Relay from 'react-relay';
 
 import CreateCommunityItemForTopicMutation from 'pz-client/src/community-item/create-community-item-from-topic-mutation';
-import EditorComponent from 'pz-client/src/editor/editor.component';
-import CommunityItemContent from 'pz-client/src/editor/community-item-content.component';
+import CommunityItemEditor from 'pz-client/src/editor/community-item-editor.component';
 import serializeEditorState from 'pz-client/src/editor/serialize-editor-state';
 var classnames = require('classnames');
 
@@ -29,7 +28,7 @@ class Editor extends React.Component<IProps, any> {
     _delayedState = {};
     state = {
         summaryContent: '',
-        bodyState: undefined,
+        bodyState: void(0),
         isEditing: false,
         summaryHasFocus: false,
         bodyHasFocus: false
@@ -43,7 +42,7 @@ class Editor extends React.Component<IProps, any> {
         `Review`,
         `Ask a question about`,
         `Ask your question about`,
-    ]
+    ];
 
     render() {
         return (
@@ -56,17 +55,19 @@ class Editor extends React.Component<IProps, any> {
                         onChange={this._onSummaryChange.bind(this) }
                         onFocus={this._onSummaryFocus.bind(this) }
                         onBlur={this._onSummaryBlur.bind(this) }
-                        />
+                    />
+
                     {this._isEditing() &&
                         <div>
-                            <EditorComponent
-                                placeholder="Ellaborate here if you wish..."
+                            <CommunityItemEditor
+                                placeholder="Elaborate here if you wish..."
                                 onChange={this._onBodyChange.bind(this) }
                                 onFocus={this._onBodyFocus.bind(this) }
                                 onBlur={this._onBodyBlur.bind(this) }
-                                />
+                            />
+
                             <button className="submit">
-                                <i className="save"></i>Post
+                                <i className="save" />Post
                             </button>
                         </div>
                     }
@@ -83,11 +84,11 @@ class Editor extends React.Component<IProps, any> {
         this._setStateDelayed({ bodyHasFocus: true });
     }
 
-    private _onSummaryBlur(event) {
+    private _onSummaryBlur() {
         this._setStateDelayed({ summaryHasFocus: false });
     }
 
-    private _onBodyBlur(event) {
+    private _onBodyBlur() {
         this._setStateDelayed({ bodyHasFocus: false });
     }
 
@@ -140,7 +141,7 @@ class Editor extends React.Component<IProps, any> {
     }
 }
 
-export let CreateItemEditor = Relay.createContainer(Editor, {
+export var CreateItemEditor = Relay.createContainer(Editor, {
     fragments: {
         topic: () => Relay.QL`
             fragment on Topic {

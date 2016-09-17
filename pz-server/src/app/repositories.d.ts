@@ -26,6 +26,9 @@ import {IRankings} from 'pz-server/src/rankings/rankings';
 import {IVanityRoutePaths} from 'pz-server/src/vanity-route-paths/vanity-route-paths';
 import {IAuthorizedVanityRoutePaths} from 'pz-server/src/vanity-route-paths/vanity-route-paths-authorizer';
 
+import {IPhotos} from 'pz-server/src/photos/photos';
+import {IAuthorizedPhotos} from 'pz-server/src/photos/photos-authorizer';
+
 export interface IAppRepositories {
     users: IUsers
     topics: ITopics
@@ -37,6 +40,7 @@ export interface IAppRepositories {
     rankingsCache: IRankingsCache
     rankings: IRankings
     vanityRoutePaths: IVanityRoutePaths;
+    photos: IPhotos
 }
 
 export interface IAppAuthorizedRepository {
@@ -52,5 +56,6 @@ export interface IAppRepositoryAuthorizers {
     comments: TAppAuthorizer<IAuthorizedComments>
     votes: TAppAuthorizer<IAuthorizedVotes>
     vanityRoutePaths: IAuthorizer<IAuthorizedVanityRoutePaths>
-    topicAttributes: IAuthorizer<IAuthorizedTopicAttributes>
+    topicAttributes: TAppAuthorizer<IAuthorizedTopicAttributes>
+    photos: TAppAuthorizer<IAuthorizedPhotos>
 }

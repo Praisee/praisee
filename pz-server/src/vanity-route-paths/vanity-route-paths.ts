@@ -57,7 +57,7 @@ export default class VanityRoutePaths implements IVanityRoutePaths {
         if(!recordToUrlSlugTuples[0]){
             return null;
         }
-        
+
         const tuple = recordToUrlSlugTuples[0];
 
         const routePath = createRecord<IVanityRoutePath>('RoutePath', {
@@ -108,14 +108,14 @@ export default class VanityRoutePaths implements IVanityRoutePaths {
 
         } else {
 
-            throw new Error('Unsupported record type ' + record.recordType);
+            throw new Error('Unsupported record type ' + (record as any).recordType);
         }
     }
 
     private async _getRecordToUrlSlugTuples(
         records: Array<TVanityRoutePathSupportedRecord>
         ): Promise<Array<TRecordUrlSlugTuple>> {
-            
+
         if (!records.length) {
             return [];
         }

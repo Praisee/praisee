@@ -18,5 +18,5 @@ export default class LoadMore extends Component<ILoadMoreProps, any>{
 
 export interface ILoadMoreProps {
     isLoading: boolean,
-    onLoadMore: Function
+    onLoadMore: (event) => any
 }

@@ -4,6 +4,7 @@ import {ICommentInstance} from 'pz-server/src/models/comment';
 import {IContentData} from 'pz-server/src/content/content-data';
 import convertTextToData from 'pz-server/src/content/text-to-data-converter';
 import {IVoteInstance} from 'pz-server/src/models/vote';
+import {IPhotoInstance} from 'pz-server/src/models/photo';
 
 export type TCommunityItemType = (
     'Comment'
@@ -37,6 +38,7 @@ export interface ICommunityItemInstance extends IPersistedModelInstance, ISlugga
     topics: IRelatedPersistedModel<ITopicInstance[]>
     comments?: IRelatedPersistedModel<ICommentInstance[]>
     votes?: IRelatedPersistedModel<IVoteInstance[]>
+    photos: IRelatedPersistedModel<IPhotoInstance>
 }
 
 module.exports = function (CommunityItem: ICommunityItemModel) {

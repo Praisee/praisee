@@ -1,0 +1,55 @@
+{
+    "name": "Photo",
+    "base": "PersistedModel",
+    "strict": true,
+    "options": {
+        "validateUpsert": true
+    },
+    "mixins": {
+        "TimeStamp": true
+    },
+    "properties": {
+        "isUploaded": {
+            "type": "boolean",
+            "required": false,
+            "default": false,
+            "description": "Whether or not the photo has finished uploading"
+        },
+
+        "photoServerPath": {
+            "type": "string",
+            "required": false,
+            "description": "The relative path on the photo server"
+        },
+
+        "createdAt": { "type": "date" },
+        "updatedAt": { "type": "date" }
+    },
+    "validations": [],
+    "relations": {
+        "user": {
+            "type": "belongsTo",
+            "model": "PraiseeUser",
+            "foreignKey": "userId"
+        },
+
+        "parent":{
+            "type": "belongsTo",
+            "polymorphic": {
+                "foreignKey": "parentId",
+                "discriminator": "parentType"
+            }
+        },
+
+        "votes": {
+            "type": "hasMany",
+            "model": "Vote",
+            "polymorphic": {
+                "foreignKey": "parentId",
+                "discriminator": "parentType"
+            }
+        }
+    },
+    "acls": [],
+    "methods": {}
+}

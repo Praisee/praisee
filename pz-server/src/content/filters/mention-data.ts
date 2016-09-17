@@ -1,7 +1,7 @@
 import {ITopics, ITopic} from 'pz-server/src/topics/topics';
 import {ICommunityItems, ICommunityItem} from 'pz-server/src/community-items/community-items';
 
-import {IDraftjs08Data} from 'pz-server/src/content/draftjs-data';
+import {IDraftjs08Data} from 'pz-support/definitions/draftjs-data.d';
 
 import * as Immutable from 'immutable';
 import {IVanityRoutePaths} from 'pz-server/src/vanity-route-paths/vanity-route-paths';

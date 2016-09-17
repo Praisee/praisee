@@ -75,6 +75,14 @@
                 "foreignKey": "parentId",
                 "discriminator": "parentType"
             }
+        },
+        "photos": {
+            "type": "hasMany",
+            "model": "Photo",
+            "polymorphic": {
+                "foreignKey": "parentId",
+                "discriminator": "parentType"
+            }
         }
     },
     "acls": [],

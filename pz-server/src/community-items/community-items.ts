@@ -10,10 +10,10 @@ import {
 import {IContentData} from 'pz-server/src/content/content-data';
 
 export type TCommunityItemType = (
-    'review'
-    | 'question'
-    | 'howto'
-    | 'comparison'
+    'Review'
+    | 'Question'
+    | 'Howto'
+    | 'Comparison'
 );
 
 export interface ICommunityItem extends IRepositoryRecord {
