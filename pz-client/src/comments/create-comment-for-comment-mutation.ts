@@ -16,6 +16,7 @@ export default class CreateCommentForCommentMutation extends Relay.Mutation {
         return Relay.QL`
             fragment on CreateCommentPayload {
                 comment {
+                    commentCount
                     comments
                 }
             }

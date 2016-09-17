@@ -48,6 +48,10 @@ export default class CommunityItemsLoader implements ICommunityItems {
         return this._communityItems.findVotesForCommunityItem(communityItemId);
     }
 
+    findByUrlSlugName(fullSlug: string) : Promise<ICommunityItem>{
+        return this._communityItems.findByUrlSlugName(fullSlug);
+    }
+
     isOwner(userId: number, communityItemId: number): Promise<boolean> {
         return this._communityItems.isOwner(userId, communityItemId);
     }

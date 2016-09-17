@@ -33,11 +33,11 @@ export default class LoopbackTopics implements ITopics {
     private _rankings: IRankings;
 
     constructor(
-            Topic: ILoopbackTopic,
-            CommunityItem: ILoopbackCommunityItem,
-            UrlSlug: IPersistedModel,
-            rankings: IRankings
-        ) {
+        Topic: ILoopbackTopic,
+        CommunityItem: ILoopbackCommunityItem,
+        UrlSlug: IPersistedModel,
+        rankings: IRankings
+    ) {
 
         this._TopicModel = Topic;
         this._CommunityItemModel = CommunityItem;
@@ -63,7 +63,7 @@ export default class LoopbackTopics implements ITopics {
         const find = promisify(this._TopicModel.find, this._TopicModel);
 
         const topicModels = await find({
-            where: { id: {inq: ids} }
+            where: { id: { inq: ids } }
         });
 
         return topicModels.map(topicModel => {
@@ -114,7 +114,7 @@ export default class LoopbackTopics implements ITopics {
 
             const communityItemModels = await finder({
                 where: {
-                    id: {inq: ids}
+                    id: { inq: ids }
                 }
             });
 
@@ -134,9 +134,16 @@ export default class LoopbackTopics implements ITopics {
             this._TopicModel.findById, this._TopicModel)(topicId);
 
         const communityItemModels = await promisify(
-            topic.communityItems, this._TopicModel)({fields: {id: true}});
+            topic.communityItems, this._TopicModel)({ fields: { id: true } });
 
         return communityItemModels.map(communityItemModels => communityItemModels.id);
+    }
+
+    async getCommunityItemCount(topicId: number): Promise<number> {
+        const conditions = { topicId };
+        const count = await promisify(this._CommunityItemModel.count, this._CommunityItemModel)(conditions);
+
+        return count;
     }
 
     create(topic: ITopic) {

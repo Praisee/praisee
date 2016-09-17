@@ -1,4 +1,26 @@
 @mixin community-item {
+  .community-item-page-namespace {
+    @include make-container();
+    @include make-container-max-widths();
+    @include expand-button();
+
+    .primary-section {
+      @include make-col-span(8);
+    }
+
+    .side-section-container {
+      @include make-col-span(4);
+    }
+
+    .primary-section,
+    .side-section-container {
+      @include make-col();
+      @include media-breakpoint-down(sm){
+        @include make-col-span(12);
+      }
+    }
+  }
+
   .community-item {
     @include avatar();
     @include comment-editor();
@@ -7,7 +29,7 @@
     padding-bottom: 1rem;
     padding-top: 1rem;
 
-    .title{
+    .title {
       font-size: 1.8em;
       color: $gray;
     }
@@ -25,13 +47,6 @@
     .long-content {
       height: 100px;
       overflow: hidden;
-    }
-
-    .expand {
-      cursor: pointer;
-      border-radius: 3px;
-      padding: 0 25px 5px 25px;
-      background-color: $gray-lighter;
     }
 
     .hidden {

@@ -86,6 +86,19 @@ export default function CommentTypes(repositoryAuthorizers: IAppRepositoryAuthor
                     }
                 },
 
+                communityItemCount: {
+                    type: GraphQLInt,
+                    resolve: async (topic, args, {user}) => {
+                        const count = await topicsAuthorizer
+                            .as(user)
+                            .getCommunityItemCount(topic.id);
+
+                        return count;
+                    }
+                },
+
+
+                
                 routePath: {
                     type: GraphQLString,
                     resolve: async (topic, _, {user}) => {

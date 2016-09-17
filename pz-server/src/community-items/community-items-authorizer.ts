@@ -19,6 +19,7 @@ export interface IAuthorizedCommunityItems {
     findAllComments(communityItemId: number): Promise<Array<IComment>>
     findAllTopics(communityItemId: number): Promise<Array<ITopic>>
     findVotesForCommunityItem(communityItemId: number): Promise<Array<IVote>>
+    findByUrlSlugName(fullSlug: string): Promise<ICommunityItem>
     create(communityItem: ICommunityItem): Promise<ICommunityItem | AuthorizationError>
     update(communityItem: ICommunityItem): Promise<ICommunityItem | AuthorizationError>
 }
@@ -54,6 +55,10 @@ class AuthorizedCommunityItems implements IAuthorizedCommunityItems {
 
     async findVotesForCommunityItem(communityItemId: number): Promise<Array<IVote>> {
         return await this._communityItems.findVotesForCommunityItem(communityItemId);
+    }
+
+    async findByUrlSlugName(fullSlug: string): Promise<ICommunityItem>{
+        return await this._communityItems.findByUrlSlugName(fullSlug);
     }
 
     async create(communityItem): Promise<ICommunityItem | AuthorizationError> {

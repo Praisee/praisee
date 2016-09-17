@@ -33,5 +33,6 @@ export interface ITopics extends IRepository {
     findByUrlSlugName(urlSlugName: string): Promise<ITopic>
     findSomeCommunityItemsRanked(topicId: number, asUser: TOptionalUser, cursor: TBiCursor): Promise<ICursorResults<ICommunityItem>>
     findAllCommunityItemIds(topicId: number): Promise<Array<number>>
+    getCommunityItemCount(topicId: number): Promise<number>
 }
 

@@ -1,0 +1,8 @@
+@mixin expand-button {
+  .expand-button {
+    cursor: pointer;
+    border-radius: 3px;
+    padding: 0 25px 5px 25px;
+    background-color: $gray-lighter;
+  }
+}

@@ -13,6 +13,7 @@ export interface IAuthorizedTopics {
     findAllByIds(ids: Array<number>): Promise<Array<ITopic>>
     findByUrlSlugName(urlSlugName: string): Promise<ITopic>
     findSomeCommunityItemsRanked(topicId: number, cursor: TBiCursor): Promise<ICursorResults<ICommunityItem>>
+    getCommunityItemCount(topicId: number): Promise<number>
 }
 
 class AuthorizedTopics implements IAuthorizedTopics {
@@ -42,6 +43,10 @@ class AuthorizedTopics implements IAuthorizedTopics {
 
     findSomeCommunityItemsRanked(topicId: number, cursor: TBiCursor){
         return this._topics.findSomeCommunityItemsRanked(topicId, this._user, cursor);
+    }
+    
+    getCommunityItemCount(topicId: number): Promise<number>{
+        return this._topics.getCommunityItemCount(topicId);
     }
 }
 

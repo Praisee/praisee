@@ -16,6 +16,7 @@ export default class CreateCommentFromCommunityItemMutation extends Relay.Mutati
         return Relay.QL `
             fragment on CreateCommentPayload {
                 communityItem {
+                    commentCount
                     comments
                 }
             }

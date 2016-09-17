@@ -3,6 +3,7 @@ import * as React from 'react';
 import * as Relay from 'react-relay';
 import SchemaInjector, {ISchemaType} from 'pz-client/src/support/schema-injector';
 import {DateDisplay} from 'pz-client/src/widgets/date-display.component'
+import ExpandButton from 'pz-client/src/widgets/expand-button-component'
 import {IComment} from 'pz-server/src/comments/comments';
 import CommentContent from 'pz-client/src/comments/comment-content-component';
 import CommentList from 'pz-client/src/comments/comment-list-component';
@@ -43,7 +44,7 @@ export class Comment extends Component<any, any>{
         let expandButton = null;
         if (!expand && commentCount > 0) {
             expandButton = (
-                <span type="button" className="expand" onClick={this.expand.bind(this) } >...</span>
+                <ExpandButton onExpand={this.expand.bind(this)} />
             )
         }
 

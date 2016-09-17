@@ -7,6 +7,7 @@ import SideSection from 'pz-client/src/topic/side-section/side-section.component
 import {ITopic} from 'pz-server/src/topics/topics';
 import SchemaInjector, {ISchemaType} from 'pz-client/src/support/schema-injector';
 import CommunityItem from 'pz-client/src/community-item/community-item-component';
+import ExpandButton from 'pz-client/src/widgets/expand-button-component'
 
 interface IContext {
     showNotFoundError: any
@@ -67,9 +68,18 @@ export class TopicController extends Component<ITopicProps, ITopicState> {
             .map(({node}) =>
                 <CommunityItem key={node.id} communityItem={node} />
             );
+
+        let expandButton = null;
+        if (this.props.topic.communityItemCount > this.props.relay.variables.limit) {
+            expandButton = (
+                <ExpandButton onExpand={this._showMoreCommunityItems.bind(this) } />
+            )
+        }
+
         return (
             <div>
-                { rows }
+                {rows}
+                {expandButton}
             </div>
         );
     }
@@ -95,6 +105,10 @@ export class TopicController extends Component<ITopicProps, ITopicState> {
         var num = Math.random();
         return num > .5 ? Promise.resolve(true) : Promise.resolve(false);
     }
+
+    _showMoreCommunityItems() {
+        this.props.relay.setVariables({ limit: this.props.relay.variables.limit + 5 })
+    }
 }
 
 export default Relay.createContainer(TopicController, {
@@ -104,9 +118,9 @@ export default Relay.createContainer(TopicController, {
     fragments: {
         topic: () => Relay.QL`
             fragment on Topic {
-                id,
-                name,
-                
+                id
+                name                
+                communityItemCount
                 communityItems(first: $limit) {
                      edges{
                         node{
@@ -128,5 +142,11 @@ interface ITopicState {
 
 interface ITopicProps {
     params;
-    topic?;
+    topic?: {
+        id
+        name
+        communityItemCount
+        communityItems
+    };
+    relay;
 }

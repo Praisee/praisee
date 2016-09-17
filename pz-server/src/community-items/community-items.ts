@@ -39,6 +39,7 @@ export interface ICommunityItems extends IRepository {
     findAllTopics(communityItemId: number): Promise<Array<ITopic>>
     findAllComments(communityItemId: number): Promise<Array<IComment>>
     findVotesForCommunityItem(communityItemId: number): Promise<Array<IVote>>
+    findByUrlSlugName(fullSlug: string): Promise<ICommunityItem>
     isOwner(userId: number, communityItemId: number): Promise<boolean>
     create(communityItem: ICommunityItem, ownerId: number): Promise<ICommunityItem>
     update(communityItem: ICommunityItem): Promise<ICommunityItem>

@@ -1,5 +1,6 @@
 @mixin comment {
   .comment {
+    @include expand-button();
     @include comment-editor();
     padding-left: 1rem;
 
@@ -36,13 +37,6 @@
       display: inline-block;
       margin: .5rem;
       padding: 0.175rem 0.75rem;
-    }
-
-    .expand {
-      cursor: pointer;
-      border-radius: 3px;
-      padding: 0 25px 5px 25px;
-      background-color: $gray-lighter;
     }
   }
 }

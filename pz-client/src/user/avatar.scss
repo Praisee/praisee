@@ -1,31 +1,33 @@
 @mixin avatar {
-    .avatar {
-        color: $gray-light;
-        
-        .avatar-image {
-           width: 1.5em;
-           height: 1.5em; 
-           border-radius: 50%;
-           margin-top: .5em;
-           margin-right: .5em;
-           margin-bottom: .5em;
-        }
+  .avatar {
+    color: $gray-light;
 
-        .display-name {
-            margin: .5em;
-            font-weight: bold;
-        }
-
-        .reputation {
-            margin-left: 1em;
-            margin-top: .5em;
-            margin-bottom: .5em;
-        }
-
-        .reputation-icon {
-            @extend .fa;
-            @extend .fa-thumbs-o-up;
-            padding-left: .5rem;
-        }
+    .avatar-image {
+      width: 1.5em;
+      height: 1.5em;
+      border-radius: 50%;
+      margin-top: .5em;
+      margin-right: .5em;
+      margin-bottom: .5em;
     }
+
+    .display-name {
+      margin: .5em;
+      font-weight: bold;
+    }
+
+    .reputation {
+      margin-left: 1em;
+      margin-top: .5em;
+      margin-bottom: .5em;
+      font-size: .75rem;
+    }
+
+    .reputation-icon {
+      @extend .fa;
+      @extend .fa-star;
+      padding-left: .25rem;
+      color: gold;
+    }
+  }
 }

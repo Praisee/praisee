@@ -161,6 +161,21 @@ export default function createSchema(repositoryAuthorizers: IAppRepositoryAuthor
                         const topic = await topics.findByUrlSlugName(urlSlug);
                         return topic;
                     }
+                },
+
+                communityItem: {
+                    type: types.CommunityItemType,
+                    args: {
+                        urlSlug: {
+                            type: GraphQLString
+                        }
+                    },
+                    resolve: async (_, {urlSlug}, {user}) => {
+                        const communityItem = await communityItemsAuthorizer
+                            .as(user) 
+                            .findByUrlSlugName(urlSlug);
+                        return communityItem;
+                    }
                 }
             })
         }),

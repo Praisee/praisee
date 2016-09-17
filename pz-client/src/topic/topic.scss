@@ -1,6 +1,7 @@
 @mixin topic-namespace {
   @include community-item();
   @include community-item-editor();
+  @include expand-button();
 
   .topic-namespace {
     @include make-container();

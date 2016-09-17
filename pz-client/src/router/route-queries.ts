@@ -44,6 +44,16 @@ export var topicQuery: IRouteQuery = {
     }
 };
 
+export var communityItemQuery: IRouteQuery = {
+    queries: {
+        communityItem: () => Relay.QL`
+            query {
+                communityItem(urlSlug: $urlSlug)
+            }
+        `
+    }
+}
+
 // export var reviewQuery: IRouteQuery = {
 //     queries: {
 //         review: () => Relay.QL`

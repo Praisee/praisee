@@ -1,4 +1,5 @@
 import {createRecordFromLoopback} from 'pz-server/src/support/repository';
+import {IUrlSlugInstance} from 'pz-server/src/url-slugs/models/url-slug';
 
 import promisify from 'pz-support/src/promisify';
 import isOwnerOfModel from 'pz-server/src/support/is-owner-of-model';
@@ -25,9 +26,11 @@ export function cursorCommunityItemLoopbackModelsToRecords(communityItems: ICurs
 
 export default class CommunityItems implements ICommunityItems {
     private _CommunityItemModel: ICommunityItemModel;
+    private _UrlSlugsModel: IPersistedModel;
 
-    constructor(CommunityItemModel: ICommunityItemModel) {
+    constructor(CommunityItemModel: ICommunityItemModel, UrlSlug: IPersistedModel) {
         this._CommunityItemModel = CommunityItemModel;
+        this._UrlSlugsModel = UrlSlug;
     }
 
     async findById(id: number): Promise<ICommunityItem> {
@@ -45,7 +48,7 @@ export default class CommunityItems implements ICommunityItems {
         const find = promisify(this._CommunityItemModel.find, this._CommunityItemModel);
 
         const communityItemModels = await find({
-            where: { id: {inq: ids} }
+            where: { id: { inq: ids } }
         });
 
         return communityItemModels.map(communityItemModel => {
@@ -101,6 +104,22 @@ export default class CommunityItems implements ICommunityItems {
         return comments.map((comment) =>
             createRecordFromLoopback<IComment>('Comment', comment)
         );
+    }
+
+    async findByUrlSlugName(fullSlug: string): Promise<ICommunityItem> {
+        let urlSlug: IUrlSlugInstance = await promisify(this._UrlSlugsModel.findOne, this._UrlSlugsModel)({
+            where: {
+                sluggableType: this._CommunityItemModel.sluggableType,
+                fullSlugLowercase: fullSlug.toLowerCase()
+            }
+        });
+
+        if (!urlSlug) {
+            return null;
+        }
+
+        const result = await promisify(this._CommunityItemModel.findById, this._CommunityItemModel)(urlSlug.sluggableId);
+        return createRecordFromLoopbackCommunityItem(result);
     }
 
     async create(communityItem: ICommunityItem, ownerId: number): Promise<ICommunityItem> {

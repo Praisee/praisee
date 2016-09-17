@@ -58,6 +58,10 @@ export default class FilteredCommunityItems implements ICommunityItems {
         return await this._CommunityItems.findVotesForCommunityItem(communityItemId);
     }
 
+    async findByUrlSlugName(fullSlug: string): Promise<ICommunityItem> {
+        return await this._CommunityItems.findByUrlSlugName(fullSlug);
+    }
+
     async create(communityItem: ICommunityItem, ownerId: number): Promise<ICommunityItem> {
         const filteredCommunityItem = await this._filterBeforeWrite(communityItem);
         const newCommunityItem = await this._CommunityItems.create(filteredCommunityItem, ownerId);
