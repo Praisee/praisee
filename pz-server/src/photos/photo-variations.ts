@@ -17,19 +17,23 @@ export interface IPhotoVariations {
     defaultUrl: string
 
     variations: {
+        initialLoad: string
         mobile: string
     }
 }
 
 export function getPhotoVariationsUrls(photoServerPath): IPhotoVariations {
-    const thumborUrlBuilder = new ThumborUrlBuilder(securityKey, appInfo.addresses.getPhotosApi());
-    const thumborUrl = thumborUrlBuilder.setImagePath(photoServerPath).filter('format(jpg)');
-
+    const getPhotoBuilder = () => {
+        const thumborUrlBuilder = new ThumborUrlBuilder(securityKey, appInfo.addresses.getPhotosApi());
+        return thumborUrlBuilder.setImagePath(photoServerPath).filter('format(jpg)');
+    };
+    
     return {
-        defaultUrl: thumborUrl.fitIn(1000, 1000).buildUrl(),
+        defaultUrl: getPhotoBuilder().smartCrop(true).fitIn(1000, 1000).buildUrl(),
 
         variations: {
-            mobile: thumborUrl.fitIn(400, 400).buildUrl()
+            initialLoad: getPhotoBuilder().resize(1, 1).filter('blur(1000)').buildUrl(),
+            mobile: getPhotoBuilder().smartCrop(true).fitIn(400, 400).buildUrl()
         }
     };
 }

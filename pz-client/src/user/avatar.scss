@@ -21,13 +21,14 @@
       margin-top: .5em;
       margin-bottom: .5em;
       font-size: .75rem;
+      color: $gray-light;
     }
 
     .reputation-icon {
       @extend .fa;
       @extend .fa-star;
       padding-left: .25rem;
-      color: gold;
+      color: $gray-lighter;
     }
   }
 }

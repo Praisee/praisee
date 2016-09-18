@@ -22,16 +22,19 @@
       align-items: flex-start;
     }
 
-    .editor-area {
-      @extend .form-control;
-      @import '../../../node_modules/draft-js/dist/Draft';
-      @import '../../../node_modules/draft-js-mention-plugin/lib/plugin';
+    .editor {
       flex: 1;
       margin-top: .5rem;
       margin-bottom: .5rem;
       margin-right: .5rem;
       padding: 0.25rem 0.75rem;
       font-size: 0.875rem;
+    }
+
+    .editor-area {
+      @extend .form-control;
+      @import '../../../node_modules/draft-js/dist/Draft';
+      @import '../../../node_modules/draft-js-mention-plugin/lib/plugin';
 
       .public-DraftEditor-content {
         min-height: 1rem;

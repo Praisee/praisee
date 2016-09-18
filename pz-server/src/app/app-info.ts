@@ -1,4 +1,5 @@
 import * as url from 'url';
+import * as path from 'path';
 
 // This is currently being consumed by pz-client, so sensitive information should
 // not be put in here.
@@ -8,7 +9,7 @@ let appInfo = {
         getImages: () => '/i/client/assets/images',
 
         getImage: (imagePath: string) =>
-            url.resolve(appInfo.addresses.getImages(), imagePath),
+            path.join(appInfo.addresses.getImages(), imagePath),
 
         getGraphqlApi: () => '/i/graphql',
 
