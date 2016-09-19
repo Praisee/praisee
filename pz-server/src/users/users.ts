@@ -15,4 +15,5 @@ export interface IUser extends IRepositoryRecord {
 export interface IUsers extends IRepository {
     findById(userId: number): Promise<IUser>
     getTotalCommunityItems(userId: number): Promise<number>
+    create(email: string, password: string, displayName: string): Promise<IUser>
 }

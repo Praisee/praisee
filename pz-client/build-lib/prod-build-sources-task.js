@@ -5,6 +5,7 @@ var gulpPrint = require('gulp-print');
 var source = require('vinyl-source-stream');
 var buffer = require('vinyl-buffer');
 var uglify = require('gulp-uglify');
+var errorHandler = require('pz-builder/build-lib/error-handler');
 
 module.exports = function(gulp) {
     var dependencies = [transpile(gulp)];
@@ -14,10 +15,12 @@ module.exports = function(gulp) {
             .pipe(source('index.js'))
             .pipe(buffer())
 
+            .pipe(errorHandler())
+
             .pipe(gulpPrint(function (filePath) {
                 return 'Building ' + filePath;
             }))
-            
+
             .pipe(uglify())
 
             .pipe(gulp.dest(paths.publicScriptsDir()))

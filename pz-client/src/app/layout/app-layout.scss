@@ -1,55 +1,93 @@
 @mixin app-header {
-    @include make-row();
-    padding-top: 0.8rem;
-    padding-bottom: 0.8rem;
+  @include make-row();
+  padding-top: 0.8rem;
+  padding-bottom: 0.8rem;
 
-    .app-layout-container {
-        @include make-container();
-        @include make-container-max-widths();
-    }
+  .app-layout-container {
+    @include make-container();
+    @include make-container-max-widths();
+  }
 
-    .app-branding {
-        @include make-col();
-        @include make-col-span(2);
-    }
+  .app-branding {
+    @include make-col();
+    @include make-col-span(2);
+  }
 
-    .app-search {
-        @include make-col();
-        @include make-col-span(7);
-        @include site-search();
-    }
+  .app-search {
+    @include make-col();
+    @include make-col-span(7);
+    @include site-search();
+  }
 
-    .app-controls {
-        @include pull-right();
+  .app-controls {
+    @include pull-right();
 
-        margin-left: auto;
-    }
+    margin-left: auto;
+    margin-top: 0.4rem;
+  }
 
-    .sign-in {
-        @extend .btn;
-        @extend .btn-primary-outline;
-        @extend .btn-sm;
-    }
+  .sign-in,
+  .user-account-menu,
+  .user-account-menu .current-user,
+  .user-account-menu .account-menu-options {
+    font-size: 0.9rem;
+  }
 
+  .user-account-menu {
     .current-user {
-        font-size: 0.8rem;
+      color: $link-color;
+      background: none;
+      border: none;
+      padding: 0;
+      margin: 0;
+      margin-top: 0.3rem;
+
+      &:hover, &:active, &:focus {
+        background: none;
+        text-decoration: $link-hover-decoration;
+        outline: none;
+      }
     }
+  }
 }
 
 @mixin app-layout {
-    .app-layout {
-        @include make-container();
+  .app-layout {
+    @include make-container();
 
-        .app-layout-container {
-            @include make-container();
-        }
-
-        .app-header, .app-content, .app-footer {
-            @include make-row();
-        }
-
-        .app-header {
-            @include app-header();
-        }
+    .app-layout-container {
+      @include make-container();
     }
+
+    .app-header, .app-content, .app-footer {
+      @include make-row();
+    }
+
+    .app-header {
+      @include app-header();
+    }
+  }
+}
+
+// TODO: Remove this crap eventually plx
+.sign-in-up-overlay {
+  @extend %bootstrap;
+  @extend %font-awesome;
+  @include sign-in-up();
+
+  .sign-in-up-overlay-hide-button {
+    @extend .fa;
+    @extend .fa-close;
+
+    position: absolute;
+    right: 2rem;
+    margin-top: 0.2rem;
+    background: none;
+    border: none;
+
+    &:focus, &:active, &:hover {
+      color: $brand-primary;
+      outline: none;
+    }
+  }
 }

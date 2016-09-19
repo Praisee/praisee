@@ -27,4 +27,10 @@ export default class Users implements IUsers {
     async getTotalCommunityItems(userId: number): Promise<number> {
         return await this._UserModel.getTotalCommunityItems(userId);
     }
+
+    async create(email: string, password: string, displayName: string): Promise<IUser> {
+        const createUser = promisify(this._UserModel.create, this._UserModel);
+        const user = await createUser({email, password, displayName});
+        return user;
+    }
 }

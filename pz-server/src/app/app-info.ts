@@ -1,9 +1,6 @@
 import * as url from 'url';
 import * as path from 'path';
 
-// This is currently being consumed by pz-client, so sensitive information should
-// not be put in here.
-
 let appInfo = {
     addresses: {
         getImages: () => '/i/client/assets/images',
@@ -13,8 +10,9 @@ let appInfo = {
 
         getGraphqlApi: () => '/i/graphql',
 
-        getSignInApi: () => '/i/login',
-        getSignUpApi: () => '/i/api/Users',
+        getSignInApi: () => '/i/sign-in',
+        getSignUpApi: () => '/i/sign-up',
+        getSignOutApi: () => '/i/sign-out',
 
         getSearchSuggestionsApi: () => '/i/search/suggestions',
         getMentionSuggestionsApi: () => '/i/search/mention-suggestions',

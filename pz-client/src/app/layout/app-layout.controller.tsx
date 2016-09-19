@@ -16,14 +16,14 @@ export class AppLayout extends React.Component<IAppLayoutProps, any> {
     render() {
         return (
             <div className="app-layout">
-                <Header currentUser={this.props.currentUser} />
-                
+                <Header currentUser={this.props.currentUser || null} />
+
                 <div className="app-content">
                     <div className="app-layout-container">
                         {this.props.children}
                     </div>
                 </div>
-                
+
                 <Footer />
             </div>
         );

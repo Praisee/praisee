@@ -29,6 +29,7 @@ declare interface IApp {
     put: Function
     patch: Function
     'delete': Function
+    all: Function
     engine: Function
     set: Function
     listen: Function

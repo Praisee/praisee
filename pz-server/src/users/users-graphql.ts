@@ -34,6 +34,10 @@ export default function UsersTypes(repositoryAuthorizers: IAppRepositoryAuthoriz
         fields: () => ({
             id: globalIdField(UserType.Name),
 
+            displayName: {
+                type: GraphQLString
+            },
+
             username: {
                 type: GraphQLString
             },

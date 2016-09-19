@@ -19,6 +19,7 @@ export interface IAuthorizedUsers {
     findById(userId: number): Promise<IUser>
     findCurrentUser(): Promise<IUser>
     findOtherUserById(userId: number): Promise<IOtherUser>
+    create(email, password, displayName): Promise<IUser>
 }
 
 class AuthorizedUsers {
@@ -37,7 +38,7 @@ class AuthorizedUsers {
             id,
             displayName,
             recordType: 'OtherUser'
-        }
+        };
 
         return otherUser;
     }
@@ -56,6 +57,14 @@ class AuthorizedUsers {
         }
 
         return this.findById(this._user.id);
+    }
+
+    create(email: string, password: string, displayName: string): Promise<IUser> {
+        if (this._user) {
+            return this.findById(this._user.id);
+        }
+
+        return this._users.create(email, password, displayName);
     }
 }
 

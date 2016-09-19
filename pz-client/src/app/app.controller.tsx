@@ -1,16 +1,30 @@
 import * as React from 'react';
 import NotFoundError from 'pz-client/src/app/not-found-error.component';
 
+import {
+    appStateLoadingStatusType,
+    TAppStateLoadingStatus
+} from 'pz-client/src/app/client-app-router-container';
+
+interface IContextTypes {
+    notFoundHandler: Function
+    appStateLoadingStatus: TAppStateLoadingStatus
+}
+
 export default class App extends React.Component<any, any> {
     //set context stuff here
 
-    static contextTypes: React.ValidationMap<any> = {
-        notFoundHandler: React.PropTypes.func
+    static contextTypes = {
+        notFoundHandler: React.PropTypes.func,
+        appStateLoadingStatus: appStateLoadingStatusType,
+        isLoadingSessionData: React.PropTypes.bool
     };
 
     static childContextTypes = {
         showNotFoundError: React.PropTypes.func
     };
+
+    context: IContextTypes;
 
     getChildContext() {
         return {
@@ -26,7 +40,10 @@ export default class App extends React.Component<any, any> {
     render() {
         let content = this.props.children;
 
-        if (this.state.showNotFoundError) {
+        const appStateLoadingStatus = this.context.appStateLoadingStatus;
+        const isReady = !appStateLoadingStatus || appStateLoadingStatus.ready;
+
+        if (isReady && this.state.showNotFoundError) {
             content = this.state.notFoundErrorMessage;
         }
 
@@ -37,23 +54,28 @@ export default class App extends React.Component<any, any> {
         );
     }
 
+    shouldComponentUpdate(nextProps, nextState, nextContext) {
+        return nextContext.isLoadingSessionData === false;
+    }
+
     componentWillReceiveProps(nextProps) {
         if (nextProps.children !== this.props.children) {
-            this.setState({showNotFoundError: false, notFoundErrorMessage: null});
+            this.setState({
+                showNotFoundError: false,
+                notFoundErrorMessage: null
+            });
         }
     }
 
     private _showNotFoundError(errorMessage?) {
-        const context: any = this.context;
-
         const notFoundErrorMessage = (
             <NotFoundError>
                 {errorMessage}
             </NotFoundError>
         );
 
-        if (context.notFoundHandler) {
-            context.notFoundHandler(notFoundErrorMessage);
+        if (this.context.notFoundHandler) {
+            this.context.notFoundHandler(notFoundErrorMessage);
 
         } else {
 

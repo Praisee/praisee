@@ -1,9 +1,11 @@
 import * as React from 'react';
 import * as Relay from 'react-relay';
+import UserAccountMenu from 'pz-client/src/app/layout/user-account-menu.component';
 import SiteSearch from 'pz-client/src/search/site-search.component';
 import {Link} from 'react-router';
 import routePaths from 'pz-client/src/router/route-paths';
 import {withRouter} from 'react-router';
+import SignInUpOverlay from 'pz-client/src/user/sign-in-up-overlay.component';
 
 export interface IAppLayoutProps {
     children?: any
@@ -13,7 +15,7 @@ export interface IAppLayoutProps {
     }
 
     currentUser: {
-        email
+        displayName
     }
 }
 
@@ -36,30 +38,57 @@ class Header extends React.Component<IAppLayoutProps, any> {
                         {this._renderUserControls()}
                     </div>
                 </div>
+
+                {this._renderSignInUp()}
             </div>
         );
+    }
+
+    state = {
+        isSignInUpVisible: false
+    };
+
+    componentWillReceiveProps(nextProps) {
+        if (nextProps.currentUser) {
+            this._hideSignInUp();
+        }
     }
 
     private _renderUserControls() {
         if (this.props.currentUser) {
             return (
-                <span className="current-user">
-                    Signed in as {this.props.currentUser.email}
-                </span>
-            )
+                <UserAccountMenu currentUser={this.props.currentUser} />
+            );
 
         } else {
 
             return (
-                <button className="sign-in" onClick={this._showSignIn.bind(this)}>
-                    Sign in or sign up
-                </button>
+                <a className="sign-in"
+                   href={routePaths.user.signIn()}
+                   onClick={this._showSignInUp.bind(this)}>
+
+                    Sign in or Sign up
+                </a>
             );
         }
     }
 
-    private _showSignIn() {
-        this.props.router.push(routePaths.user.signIn());
+    private _showSignInUp(event) {
+        event.preventDefault();
+        this.setState({isSignInUpVisible: true})
+    }
+
+    private _hideSignInUp() {
+        this.setState({isSignInUpVisible: false})
+    }
+
+    private _renderSignInUp() {
+        return (
+            <SignInUpOverlay
+                isVisible={this.state.isSignInUpVisible}
+                onHideRequested={this._hideSignInUp.bind(this)}
+            />
+        )
     }
 }
 
@@ -67,7 +96,8 @@ export default Relay.createContainer(withRouter(Header), {
     fragments: {
         currentUser: () => Relay.QL`
             fragment on User {
-                email
+                displayName,
+                ${UserAccountMenu.getFragment('currentUser')}
             }
         `
     }

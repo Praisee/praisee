@@ -1,19 +1,19 @@
 @import 'variables';
 @import 'bootstrap';
 @import 'font-awesome';
-@import 'layout/app-layout';
-@import '../search/site-search';
 
+@import '../user/sign-in-up';
+@import '../user/avatar';
+@import '../widgets/expand-button';
+@import 'layout/app-layout';
 @import '../home/home';
 @import '../topic/topic';
 @import '../community-item/community-item';
 @import '../community-item/community-item-editor';
-@import '../user/sign-in-up';
-@import '../user/avatar';
 @import '../comments/comment';
 @import '../comments/comment-editor';
 @import '../votes/votes';
-@import '../widgets/expand-button';
+@import '../search/site-search';
 
 @import '../editor/proofofconcept/editor'; // TODO: Remove this
 
@@ -26,7 +26,6 @@
     @include home-namespace();
     @include topic-namespace();
     @include topic-namespace();
-    @include sign-in-up-namespace();
 
     @include editor-proofofconcept-namespace(); // TODO: Remove this
 }

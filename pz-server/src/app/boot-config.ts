@@ -16,6 +16,7 @@ export default {
 
         pzPath('pz-server', 'src/app/dev-env-seeder'),
         pzPath('pz-server', 'src/authentication/authentication-initializer'),
+        pzPath('pz-server', 'src/users/sign-up-route'),
         pzPath('pz-server', 'src/graphql/graphql-initializer'),
         pzPath('pz-server', 'src/site/template-renderer'),
         pzPath('pz-server', 'src/search/site-search/search-route'),

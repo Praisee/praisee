@@ -1,6 +1,6 @@
 /**
  * Local (username/password) authentication provider for Passport.
- * 
+ *
  * This comes from loopback-component-passport. Unfortunately, due to bugs (no
  * ability to disable email verification) and limitations (cannot provide JSON as
  * a response), we're going to spin our own version of it.
@@ -36,9 +36,9 @@ export default function provideLocalAuth(app: IApp, userModel: IUser, options: a
             }
 
             var userJson = user.toJSON();
-            
+
             delete userJson.password;
-            
+
             var userProfile = {
                 provider: 'local',
                 id: userJson.id,
@@ -123,12 +123,12 @@ export default function provideLocalAuth(app: IApp, userModel: IUser, options: a
                     success: false
                 });
             }
-            
-            request.logIn(user, function(error) {
+
+            request.login(user, function(error) {
                 if (error) {
                     return next(error);
                 }
-                
+
                 return response.json({
                     success: true,
                     user: {
@@ -139,7 +139,7 @@ export default function provideLocalAuth(app: IApp, userModel: IUser, options: a
                 });
             });
         };
-        
+
         passport.authenticate('local', callback)(request, response, next);
     });
 

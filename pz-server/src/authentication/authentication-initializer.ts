@@ -1,5 +1,6 @@
 import authProvidersConfig from 'pz-server/src/authentication/authentication-providers';
 import provideLocalAuth from 'pz-server/src/authentication/local-provider';
+import appInfo from '../app/app-info';
 
 var loopback = require('loopback');
 var passport = require('passport');
@@ -53,6 +54,16 @@ export class AuthenticationInitializer {
 
         passport.deserializeUser(function(user, done) {
             done(null, user);
+        });
+
+        this._app.get(appInfo.addresses.getSignOutApi(), function(request, response) {
+            request.logout();
+            response.redirect('/');
+        });
+
+        this._app.post(appInfo.addresses.getSignOutApi(), function(request, response) {
+            request.logout();
+            response.json({success: true});
         });
     }
 

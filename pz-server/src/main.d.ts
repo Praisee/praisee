@@ -4,9 +4,10 @@
 /// <reference path="../../pz-support/definitions/dataloader.d.ts" />
 /// <reference path="../../pz-support/definitions/draft-js.d.ts" />
 
-declare module 'graphql' { var x: any; export = x; }
-declare module 'graphql-relay' { var x: any; export = x; }
-declare module 'isomorphic-relay' { var x: any; export default x; }
-declare module 'isomorphic-relay-router' { var x: any; export default x; }
+declare module 'graphql'
+declare module 'graphql-relay'
+declare module 'isomorphic-relay'
+declare module 'isomorphic-relay-router'
+declare module 'reactstrap'
 
-declare module 'proxyquire' { var x: any; export = x; }
+declare module 'proxyquire'

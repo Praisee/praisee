@@ -2,6 +2,10 @@
 @import '../../../node_modules/bootstrap/scss/mixins';
 @import '../../../node_modules/bootstrap/scss/bootstrap-reboot';
 
+// TODO: Let's not use modals eventually...
+@import '../../../node_modules/bootstrap/scss/animation';
+@import '../../../node_modules/bootstrap/scss/modal';
+
 %bootstrap {
     // Core CSS
     @import '../../../node_modules/bootstrap/scss/type';
@@ -34,7 +38,7 @@
     //@import '../../../node_modules/bootstrap/scss/close';
 
     // Components w/ JavaScript
-    //@import '../../../node_modules/bootstrap/scss/modal';
+    @import '../../../node_modules/bootstrap/scss/modal';
     //@import '../../../node_modules/bootstrap/scss/tooltip';
     //@import '../../../node_modules/bootstrap/scss/popover';
     //@import '../../../node_modules/bootstrap/scss/carousel';

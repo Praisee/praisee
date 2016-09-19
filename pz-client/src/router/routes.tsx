@@ -12,8 +12,7 @@ import {
 import AppController from 'pz-client/src/app/app.controller';
 import AppLayout from 'pz-client/src/app/layout/app-layout.controller';
 import HomeController from 'pz-client/src/home/home.controller';
-import SignInController from 'pz-client/src/user/sign-in.controller';
-import SignUpController from 'pz-client/src/user/sign-up.controller';
+import {SignInController, SignUpController} from 'pz-client/src/user/sign-in-up.controller';
 import ProfileController from 'pz-client/src/home/home.controller';
 import CommunityItemController from 'pz-client/src/community-item/community-item-page-component';
 import ReviewController from 'pz-client/src/home/home.controller';
@@ -47,7 +46,6 @@ export default (
                 <Route path="profile/:urlSlug" component={ProfileController} />
 
                 <Route path="on/:urlSlug" component={CommunityItemController} {...mixinRouteQuery(communityItemQuery)} />
-                
 
                 <Route path="(:urlSlug)-reviews" component={ReviewController} />
                 <Route path="(:urlSlug)-comparisons" component={ComparisonController} />

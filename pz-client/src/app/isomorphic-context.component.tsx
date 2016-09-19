@@ -2,7 +2,7 @@ import * as React from 'react';
 import ReactElement = __React.ReactElement;
 
 export interface IIsomorphicContextProps {
-    children: any,
+    children: any
     notFoundHandler?: (errorComponent) => any
 }
 

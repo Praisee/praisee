@@ -27,7 +27,7 @@ export function getPhotoVariationsUrls(photoServerPath): IPhotoVariations {
         const thumborUrlBuilder = new ThumborUrlBuilder(securityKey, appInfo.addresses.getPhotosApi());
         return thumborUrlBuilder.setImagePath(photoServerPath).filter('format(jpg)');
     };
-    
+
     return {
         defaultUrl: getPhotoBuilder().smartCrop(true).fitIn(1000, 1000).buildUrl(),
 
