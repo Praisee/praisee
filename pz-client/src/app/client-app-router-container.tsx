@@ -43,9 +43,16 @@ export default class ClientAppRouterContainer extends React.Component<IProps, an
     }
 
     render() {
+        // Due to a bug in Relay, mutation functions are still bound to the old
+        // Relay environment regardless of whether a new Relay Environment was
+        // given to the Relay Renderer. So we need to force a full remount of the
+        // React environment if the Relay Environment is replaced.
+        const forceRefresh = this.state.relayEnvironmentId;
+
         return (
             <ReactRouter.Router
                 {...this.props.routerProps}
+                key={forceRefresh}
                 render={applyRouterMiddleware(this._routerMiddleware())}
             />
         );
@@ -53,6 +60,7 @@ export default class ClientAppRouterContainer extends React.Component<IProps, an
 
     state = {
         replacedRelayEnvironment: null,
+        relayEnvironmentId: 1,
 
         appStateLoadingStatus: {
             aborted: false,
@@ -96,7 +104,15 @@ export default class ClientAppRouterContainer extends React.Component<IProps, an
         const isReady = readyState.ready;
         const isLoadingSessionData = this.state.isLoadingSessionData && !isReady;
 
+        let relayEnvironmentId = this.state.relayEnvironmentId;
+
+        if (isLoadingSessionData !== this.state.isLoadingSessionData) {
+            relayEnvironmentId = relayEnvironmentId + 1;
+        }
+
         this.setState({
+            relayEnvironmentId,
+
             appStateLoadingStatus: {
                 aborted: readyState.aborted,
                 done: readyState.done,
@@ -113,6 +129,6 @@ export default class ClientAppRouterContainer extends React.Component<IProps, an
         this.setState({
             replacedRelayEnvironment: this.props.createRelayEnvironment(),
             isLoadingSessionData: true
-        })
+        });
     }
 }
