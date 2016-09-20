@@ -4,6 +4,7 @@ import {
     IRouteQuery,
     homeQuery,
     appQuery,
+    appLayoutQuery,
     topicQuery,
     createItemQuery,
     communityItemQuery
@@ -24,14 +25,14 @@ import {CreateItemEditor} from 'pz-client/src/editor/proofofconcept/editor.contr
 
 export default (
     <Router>
-        <Route path="/" component={AppController as any}>
+        <Route path="/" component={AppController as any} {...mixinRouteQuery(appQuery)} >
 
             <IndexRoute
                 component={HomeController}
                 {...mixinRouteQuery(homeQuery)}
             />
 
-            <Route component={AppLayout} {...mixinRouteQuery(appQuery)}>
+            <Route component={AppLayout} {...mixinRouteQuery(appLayoutQuery)}>
 
                 {/* TODO: Remove this shit */}
                 <Route

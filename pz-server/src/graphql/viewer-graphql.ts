@@ -64,6 +64,13 @@ export default function CommentTypes(repositoryAuthorizers: IAppRepositoryAuthor
                             .findSomeByCurrentUser(cursor)
                     );
                 }
+            },
+
+            responseErrorsList: {
+                type: new GraphQLList(types.ResponseErrorInterfaceType),
+                resolve: (_, __, {responseErrors}) => {
+                    return responseErrors;
+                }
             }
         })
     });

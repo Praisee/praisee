@@ -18,6 +18,12 @@ import {CreateCommentEditor} from 'pz-client/src/comments/comment-editor-control
 var classnames = require('classnames');
 
 class CommunityItem extends Component<ICommunityItemProps, ICommuintyItemState> {
+    static contextTypes : any = {
+        appViewerId: React.PropTypes.string.isRequired
+    };
+
+    context: any;
+
     constructor(props, context) {
         super(props, context);
         this.state = { isEditingComment: false };
@@ -84,27 +90,31 @@ class CommunityItem extends Component<ICommunityItemProps, ICommuintyItemState> 
     private _onCommentSave(bodyData) {
         this.props.relay.commitUpdate(new CreateCommentForCommunityItemMutation({
             bodyData: bodyData,
-            communityItem: this.props.communityItem
+            communityItem: this.props.communityItem,
+            appViewerId: this.context.appViewerId
         }));
     }
 
     private _createVote(isUpVote: boolean) {
         this.props.relay.commitUpdate(new CreateCommunityItemVoteMutation({
             isUpVote: isUpVote,
-            communityItem: this.props.communityItem
+            communityItem: this.props.communityItem,
+            appViewerId: this.context.appViewerId
         }));
     }
 
     private _deleteCurrentVote() {
         this.props.relay.commitUpdate(new DeleteCommunityItemVoteMutation({
-            communityItem: this.props.communityItem
+            communityItem: this.props.communityItem,
+            appViewerId: this.context.appViewerId
         }));
     }
 
     private _updateCurrentVote(isUpVote: boolean) {
         this.props.relay.commitUpdate(new UpdateCommunityItemVoteMutation({
             communityItem: this.props.communityItem,
-            isUpVote: isUpVote
+            isUpVote: isUpVote,
+            appViewerId: this.context.appViewerId
         }));
     }
 

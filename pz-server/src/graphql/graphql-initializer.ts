@@ -18,7 +18,8 @@ module.exports = function startGraphQLServer(app: IApp) {
             hasSession: !!request.user,
             user: request.user,
             sessionAccessToken: request.user && request.user.accessToken ?
-                request.user.accessToken.id : null
+                request.user.accessToken.id : null,
+            responseErrors: []
         }
     })));
 };

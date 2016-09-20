@@ -1,4 +1,5 @@
 import * as React from 'react';
+import * as Relay from 'react-relay';
 import NotFoundError from 'pz-client/src/app/not-found-error.component';
 
 import {
@@ -11,24 +12,26 @@ interface IContextTypes {
     appStateLoadingStatus: TAppStateLoadingStatus
 }
 
-export default class App extends React.Component<any, any> {
+export class App extends React.Component<any, any> {
     //set context stuff here
 
-    static contextTypes = {
+    static contextTypes: any = {
         notFoundHandler: React.PropTypes.func,
         appStateLoadingStatus: appStateLoadingStatusType,
         isLoadingSessionData: React.PropTypes.bool
     };
 
-    static childContextTypes = {
-        showNotFoundError: React.PropTypes.func
+    static childContextTypes: any = {
+        showNotFoundError: React.PropTypes.func,
+        appViewerId: React.PropTypes.string
     };
 
     context: IContextTypes;
 
     getChildContext() {
         return {
-            showNotFoundError: this._showNotFoundError.bind(this)
+            showNotFoundError: this._showNotFoundError.bind(this),
+            appViewerId: this.props.viewer.id
         };
     }
 
@@ -88,3 +91,17 @@ export default class App extends React.Component<any, any> {
         }
     }
 }
+
+export default Relay.createContainer(App, {
+    fragments: {
+        viewer: () => Relay.QL`
+            fragment on Viewer {
+                id
+                responseErrorsList{
+                    id
+                    message
+                }
+            }
+        `
+    }
+});

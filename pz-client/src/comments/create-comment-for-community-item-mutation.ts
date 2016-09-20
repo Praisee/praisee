@@ -8,13 +8,16 @@ export default class CreateCommentFromCommunityItemMutation extends Relay.Mutati
     getVariables() {
         return {
             bodyData: this.props.bodyData,
-            communityItemId: this.props.communityItem.id,
+            communityItemId: this.props.communityItem.id
         };
     }
 
     getFatQuery() {
-        return Relay.QL `
+        return Relay.QL`
             fragment on CreateCommentPayload {
+                viewer {
+                    responseErrorsList
+                }
                 communityItem {
                     commentCount
                     comments
@@ -27,7 +30,8 @@ export default class CreateCommentFromCommunityItemMutation extends Relay.Mutati
         return [{
             type: 'FIELDS_CHANGE',
             fieldIDs: {
-                communityItem: this.props.communityItem.id
+                communityItem: this.props.communityItem.id,
+                viewer: this.props.appViewerId
             }
         }];
     }
@@ -37,6 +41,6 @@ export default class CreateCommentFromCommunityItemMutation extends Relay.Mutati
             fragment on CommunityItem {
                 id
             }
-        `,
+        `
     };
 }

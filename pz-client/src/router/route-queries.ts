@@ -10,6 +10,16 @@ export interface IRouteQuery {
 
 export var appQuery: IRouteQuery = {
     queries: {
+        viewer: () => Relay.QL`
+            query {
+                viewer
+            }
+        `
+    }
+};
+
+export var appLayoutQuery: IRouteQuery = {
+    queries: {
         currentUser: () => Relay.QL`
             query {
                 currentUser

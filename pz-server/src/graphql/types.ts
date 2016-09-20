@@ -6,6 +6,7 @@ import commentTypes from 'pz-server/src/comments/comments-graphql';
 import viewerTypes from 'pz-server/src/graphql/viewer-graphql';
 import topicTypes from 'pz-server/src/topics/topics-graphql';
 import {getTopicAttributeTypes} from 'pz-server/src/topics/topic-attributes/topic-attributes-graphql';
+import {getResponseErrorTypes} from 'pz-server/src/errors/errors-graphql';
 import inputDataTypes from 'pz-server/src/content/input-content-data';
 
 export function initializeTypes(repositoryAuthorizers: IAppRepositoryAuthorizers, nodeInterface): ITypes {
@@ -20,6 +21,7 @@ export function initializeTypes(repositoryAuthorizers: IAppRepositoryAuthorizers
         topicTypes(repositoryAuthorizers, nodeInterface, types),
         getTopicAttributeTypes(repositoryAuthorizers, nodeInterface, types),
         communityItemTypes(repositoryAuthorizers, nodeInterface, types),
+        getResponseErrorTypes(repositoryAuthorizers, nodeInterface, types),
         viewerTypes(repositoryAuthorizers, nodeInterface, types),
         inputDataTypes(repositoryAuthorizers, nodeInterface, types)
     );
@@ -52,6 +54,11 @@ export interface ITypes {
     TopicAttributeInterfaceType
     topicAttributes: {
         [topicAttributeType: string]: any
+    }
+
+    ResponseErrorInterfaceType
+    resoponseError: {
+        [resoponseErrorType: string]: any
     }
 
     ViewerType

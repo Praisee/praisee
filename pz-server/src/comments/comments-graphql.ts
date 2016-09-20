@@ -4,6 +4,7 @@ import {IVote} from 'pz-server/src/votes/votes';
 import {AuthorizationError} from 'pz-server/src/support/authorization';
 import convertTextToData from 'pz-server/src/content/text-to-data-converter';
 import {parseInputContentData} from 'pz-server/src/content/input-content-data';
+import {addErrorToResponse} from 'pz-server/src/errors/errors-graphql';
 import * as graphqlRelay from 'graphql-relay';
 import * as graphql from 'graphql';
 
@@ -167,38 +168,44 @@ export default function CommentTypes(repositoryAuthorizers: IAppRepositoryAuthor
             },
             comment: {
                 type: types.CommentType,
-                resolve: async ({commentId, user}) => {
+                resolve: async ({parentId, user}) => {
                     return await commentsAuthorizer
                         .as(user)
-                        .findById(commentId);
+                        .findById(parentId);
                 }
             },
             communityItem: {
                 type: types.CommunityItemType,
-                resolve: async ({communityItemId, user}) => {
+                resolve: async ({parentId, user}) => {
                     return await communityItemsAuthorizer
                         .as(user)
-                        .findById(communityItemId);
+                        .findById(parentId);
                 }
+            },
+
+            viewer: {
+                type: types.ViewerType,
+                resolve: () => ({ id: 'viewer' })
             }
         }),
 
         mutateAndGetPayload: async ({body, bodyData, communityItemId, commentId}, context) => {
             const parsedBodyData = parseInputContentData(body || bodyData);
-
+            
             const {type, id} = fromGlobalId(commentId || communityItemId);
-            const newComment = await commentsAuthorizer.as(context.user).create({
+            const response = await commentsAuthorizer.as(context.user).create({
                 recordType: 'Comment',
                 parentType: type,
                 parentId: id,
                 bodyData: parsedBodyData,
             });
 
-            if (newComment instanceof AuthorizationError) {
-                return { newComment: null, commentId: id, communityItemId: id };
+            if (response instanceof AuthorizationError) {
+                addErrorToResponse(context.responseErrors, 'NotAuthenticated', response);
+                return { parentId: id };
             }
 
-            return { newComment, commentId: id, communityItemId: id };
+            return { newComment: response, parentId: id };
         },
     });
 
