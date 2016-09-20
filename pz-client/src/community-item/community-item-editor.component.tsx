@@ -2,7 +2,7 @@ import * as React from 'react';
 import * as Relay from 'react-relay';
 
 import CreateCommunityItemForTopicMutation from 'pz-client/src/community-item/create-community-item-from-topic-mutation';
-import CommunityItemEditor from 'pz-client/src/editor/community-item-editor.component';
+import CommunityItemBodyEditor from 'pz-client/src/community-item/community-item-body-editor.component';
 import serializeEditorState from 'pz-client/src/editor/serialize-editor-state';
 var classnames = require('classnames');
 
@@ -23,9 +23,10 @@ interface IProps {
     }
 }
 
-class Editor extends React.Component<IProps, any> {
-    _timer: any;
-    _delayedState = {};
+class CommunityItemEditor extends React.Component<IProps, any> {
+    private _delayedStateTimer: any;
+    private _delayedState = {};
+
     state = {
         summaryContent: '',
         bodyState: void(0),
@@ -33,8 +34,9 @@ class Editor extends React.Component<IProps, any> {
         summaryHasFocus: false,
         bodyHasFocus: false
     };
-    saying = '';
-    sayings = [
+
+    private saying = '';
+    private sayings = [
         `Say something about`,
         `Tell us some tips and tricks for`,
         `Share some tips and tricks for`,
@@ -59,7 +61,7 @@ class Editor extends React.Component<IProps, any> {
 
                     {this._isEditing() &&
                         <div>
-                            <CommunityItemEditor
+                            <CommunityItemBodyEditor
                                 placeholder="Elaborate here if you wish..."
                                 onChange={this._onBodyChange.bind(this) }
                                 onFocus={this._onBodyFocus.bind(this) }
@@ -74,6 +76,12 @@ class Editor extends React.Component<IProps, any> {
                 </form>
             </div>
         );
+    }
+
+    componentWillUnmount() {
+        if (this._delayedStateTimer) {
+            clearTimeout(this._delayedStateTimer);
+        }
     }
 
     private _onSummaryFocus() {
@@ -96,7 +104,7 @@ class Editor extends React.Component<IProps, any> {
         if (this.saying !== '') return this.saying;
         var saying = this.sayings[Math.floor(Math.random() * (this.sayings.length - 1))];
 
-        this.saying = `${saying} ${this.props.topic.name}...`
+        this.saying = `${saying} ${this.props.topic.name}...`;
         return this.saying;
     }
 
@@ -121,13 +129,13 @@ class Editor extends React.Component<IProps, any> {
     }
 
     private _setStateDelayed(state) {
-        if (this._timer != null) {
-            clearTimeout(this._timer);
+        if (this._delayedStateTimer) {
+            clearTimeout(this._delayedStateTimer);
         }
 
-        this._delayedState = Object.assign(this._delayedState, state);
+        this._delayedState = Object.assign({}, this._delayedState, state);
 
-        this._timer = setTimeout(() => {
+        this._delayedStateTimer = setTimeout(() => {
             this.setState(this._delayedState);
         }, 50);
     }
@@ -141,7 +149,7 @@ class Editor extends React.Component<IProps, any> {
     }
 }
 
-export var CreateItemEditor = Relay.createContainer(Editor, {
+export var CreateItemEditor = Relay.createContainer(CommunityItemEditor, {
     fragments: {
         topic: () => Relay.QL`
             fragment on Topic {
@@ -153,7 +161,7 @@ export var CreateItemEditor = Relay.createContainer(Editor, {
     }
 });
 
-export var UpdateItemEditor = Relay.createContainer(Editor, {
+export var UpdateItemEditor = Relay.createContainer(CommunityItemEditor, {
     fragments: {
         review: () => Relay.QL`
             fragment on CommunityItem {

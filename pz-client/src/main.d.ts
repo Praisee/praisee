@@ -8,4 +8,5 @@ declare module 'react-router-relay'
 declare module 'isomorphic-relay'
 declare module 'isomorphic-relay-router'
 declare module 'reactstrap'
+declare module 'classnames'
 

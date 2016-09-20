@@ -6,7 +6,7 @@ import {ICommunityItem} from 'pz-server/src/community-items/community-items';
 import CommentList from 'pz-client/src/comments/comment-list-component'
 import Votes from 'pz-client/src/votes/votes-component';
 import Avatar from 'pz-client/src/user/avatar.component';
-import CommunityItemContent from 'pz-client/src/editor/community-item-content.component';
+import CommunityItemContent from 'pz-client/src/community-item/community-item-content.component';
 import Tags from 'pz-client/src/community-item/tags-component';
 import CreateCommunityItemVoteMutation from 'pz-client/src/votes/create-community-item-vote-mutation';
 import UpdateCommunityItemVoteMutation from 'pz-client/src/votes/update-community-item-vote-mutation';

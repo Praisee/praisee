@@ -2,7 +2,11 @@ import * as React from 'react';
 import Editor from 'pz-client/src/editor/editor.component';
 import appInfo from 'pz-client/src/app/app-info';
 import XhrSingleFileUploadRequester from 'pz-client/src/support/file-upload-requester';
-import {AddPhotoButton} from 'pz-client/src/editor/content-menu/content-menu-buttons.component';
+import {
+    AddPhotoButton,
+    AddHeading1Button,
+    AddHeading2Button
+} from 'pz-client/src/editor/content-menu/content-menu-buttons.component';
 
 import {
     createAttachmentPlugin,
@@ -16,8 +20,8 @@ export interface IProps {
     placeholder?: any
     initialRawContentState?: any
     onChange?: (editorState) => {}
-    onBlur?: (blurEvent) => {}
-    onFocus?: (focusEvent) => {}
+    onBlur?: () => {}
+    onFocus?: () => {}
 }
 
 export default class CommunityItemEditor extends React.Component<IProps, any> {
@@ -59,11 +63,21 @@ export default class CommunityItemEditor extends React.Component<IProps, any> {
 
     private _renderContentMenuButtons() {
         return (
-            <span>
+            <div className="community-item-editor-menu">
                 <AddPhotoButton
                     onPhotoUploadRequested={this._uploadPhoto.bind(this)}
                 />
-            </span>
+
+                <AddHeading1Button
+                    editorState={this.state.editorState}
+                    onChange={this._updateEditorState.bind(this)}
+                />
+
+                <AddHeading2Button
+                    editorState={this.state.editorState}
+                    onChange={this._updateEditorState.bind(this)}
+                />
+            </div>
         );
     }
 

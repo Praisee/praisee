@@ -33,22 +33,14 @@
     }
 
     .community-item-content {
-      @import '../../../node_modules/draft-js/dist/Draft';
-      @import '../../../node_modules/draft-js-mention-plugin/lib/plugin';
+      @include editor-content();
     }
 
+    @include editor(1rem);
+
     .editor-area {
-      @import '../../../node_modules/draft-js/dist/Draft';
-      @import '../../../node_modules/draft-js-mention-plugin/lib/plugin';
       flex: 1;
       margin-bottom: .5rem;
-      padding: 0;
-      font-size: 0.875rem;
-      border: none;
-
-      .public-DraftEditor-content {
-        min-height: 7rem;
-      }
     }
 
     .submit {

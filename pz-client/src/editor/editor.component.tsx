@@ -25,14 +25,11 @@ export interface IProps {
     plugins?: Array<any>
     contentMenuButtons?: any
     onChange?: (editorState) => {}
-    onBlur?: (blurEvent) => {}
-    onFocus?: (focusEvent) => {}
+    onBlur?: () => {}
+    onFocus?: () => {}
 }
 
 export default class Editor extends React.Component<IProps, any> {
-    private _editorPlugins;
-    private _MentionSuggestions;
-
     static propTypes = {
         editorState: React.PropTypes.object,
         placeholder: React.PropTypes.any,
@@ -49,8 +46,50 @@ export default class Editor extends React.Component<IProps, any> {
     };
 
     focus() {
-        (this.refs as any).editor.focus();
+        this.refs.editor.focus();
     }
+
+    render() {
+        const classes = classNames('editor', this.props.className);
+        const editorState = this.props.editorState || this.state.editorState;
+        const MentionSuggestions = this._MentionSuggestions;
+
+        return (
+            <div className={classes}>
+                {this._renderContentMenu()}
+
+                <div className="editor-area" onClick={this._closeContentMenu.bind(this)}>
+                    <DraftJsEditor
+                        ref="editor"
+                        editorState={editorState}
+                        handleKeyCommand={this._updateRichStylingFromCommand.bind(this) }
+                        onChange={this._updateEditor.bind(this) }
+                        onBlur={this._onBlur.bind(this)}
+                        onFocus={this.props.onFocus}
+                        placeholder={!this.state.isContentMenuOpen ? this.props.placeholder : ''}
+                        plugins={this._editorPlugins}
+                        readOnly={this.state.isReadOnly || this.state.isContentMenuOpen}
+                    />
+
+                    <MentionSuggestions />
+                </div>
+            </div>
+        );
+    }
+
+    private _willContentMenuBeRequested = false;
+    private _blurDebounce = null;
+
+    state = {
+        isContentMenuOpen: false,
+        isReadOnly: false,
+        editorState: null
+    };
+
+    refs: any;
+
+    private _editorPlugins;
+    private _MentionSuggestions;
 
     constructor(props, state) {
         super(props, state);
@@ -73,32 +112,24 @@ export default class Editor extends React.Component<IProps, any> {
         }
     }
 
-    render() {
-        const classes = classNames('editor', this.props.className);
-        const editorState = this.props.editorState || this.state.editorState;
-        const MentionSuggestions = this._MentionSuggestions;
+    componentWillUnmount() {
+        clearTimeout(this._blurDebounce);
+    }
 
+    private _renderContentMenu() {
+        if (!this.props.contentMenuButtons) {
+            return;
+        }
+        
         return (
-            <div className={classes}>
-                <ContentMenu>
-                    {this.props.contentMenuButtons}
-                </ContentMenu>
+            <ContentMenu
+                isOpen={this.state.isContentMenuOpen}
+                onOpenWillBeRequested={this._contentMenuWillBeRequested.bind(this)}
+                onOpenRequested={this._openContentMenu.bind(this)}
+                onCloseRequested={this._closeContentMenu.bind(this)}>
 
-                <div className="editor-area">
-                    <DraftJsEditor
-                        ref="editor"
-                        editorState={editorState}
-                        handleKeyCommand={this._updateRichStylingFromCommand.bind(this) }
-                        onChange={this._updateEditor.bind(this) }
-                        onBlur={this.props.onBlur}
-                        onFocus={this.props.onFocus}
-                        placeholder={this.props.placeholder}
-                        plugins={this._editorPlugins}
-                    />
-
-                    <MentionSuggestions />
-                </div>
-            </div>
+                {this.props.contentMenuButtons}
+            </ContentMenu>
         );
     }
 
@@ -117,7 +148,7 @@ export default class Editor extends React.Component<IProps, any> {
             editorState = DraftJsEditorState.createEmpty()
         }
 
-        this.state = Object.assign({}, initialState, {
+        this.state = Object.assign({}, initialState, this.state, {
             editorState
         });
     }
@@ -139,5 +170,38 @@ export default class Editor extends React.Component<IProps, any> {
         }
 
         return false;
+    }
+
+    private _contentMenuWillBeRequested() {
+        this._willContentMenuBeRequested = true;
+        this.props.onFocus();
+    }
+
+    private _openContentMenu() {
+        this.setState({isContentMenuOpen: true});
+        this._willContentMenuBeRequested = false;
+    }
+
+    private _closeContentMenu() {
+        this.setState({isContentMenuOpen: false});
+        this._willContentMenuBeRequested = false;
+
+        setTimeout(() => {
+            this.focus();
+        }, 0);
+    }
+
+    private _onBlur() {
+        if (this._blurDebounce) {
+            clearTimeout(this._blurDebounce);
+        }
+
+        setTimeout(() => {
+            if (this.state.isContentMenuOpen || this._willContentMenuBeRequested) {
+                return;
+            }
+
+            this.props.onBlur();
+        }, 50);
     }
 }

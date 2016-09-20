@@ -2,7 +2,6 @@ import * as React from 'react';
 import * as Relay from 'react-relay';
 
 import EditorComponent from 'pz-client/src/editor/editor.component';
-import CommunityItemContent from 'pz-client/src/editor/community-item-content.component';
 import serializeEditorState from 'pz-client/src/editor/serialize-editor-state';
 
 interface IProps {

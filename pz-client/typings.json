@@ -1,6 +1,5 @@
 {
     "ambientDependencies": {
-        "classnames": "registry:dt/classnames#0.0.0+20160316155526",
         "immutable": "registry:dt/immutable#3.8.1+20160608070634",
         "isomorphic-fetch": "registry:dt/isomorphic-fetch#0.0.0+20160524142046",
         "node": "registry:dt/node#6.0.0+20160915134512",

@@ -1,6 +1,5 @@
 import * as React from 'react';
-
-var classNames = require('classnames');
+import classNames from 'classnames';
 
 export interface IProps {
     children?: any
@@ -11,7 +10,6 @@ export interface IProps {
     acceptImages?: boolean
     multiple?: boolean
     onChange?: (files: Array<File>) => void
-    disableStyles?: boolean
 }
 
 export default class CustomizableFileInput extends React.Component<IProps, any> {
@@ -23,7 +21,6 @@ export default class CustomizableFileInput extends React.Component<IProps, any> 
         acceptImages: React.PropTypes.bool,
         multiple: React.PropTypes.bool,
         onChange: React.PropTypes.func,
-        disableStyles: React.PropTypes.bool
     };
 
     static defaultProps = {
@@ -33,15 +30,13 @@ export default class CustomizableFileInput extends React.Component<IProps, any> 
     render() {
         const classes = classNames(this.props.className, 'customizable-file-input');
 
-        const {containerStyles, hiddenInputStyles} = this._getStyles();
-
         const accept = this.props.acceptImages ?
             'images/*' : this.props.accept;
 
         const value = this.props.value || '';
 
         return (
-            <span className={classes} style={containerStyles}>
+            <span className={classes}>
                 {this.props.children}
 
                 <input
@@ -50,7 +45,6 @@ export default class CustomizableFileInput extends React.Component<IProps, any> 
                     value={value}
                     className="customizable-file-input-hidden-input"
                     onChange={this._onFilesSelected.bind(this)}
-                    style={hiddenInputStyles}
                     accept={accept}
                     multiple={this.props.multiple}
                 />
@@ -66,30 +60,5 @@ export default class CustomizableFileInput extends React.Component<IProps, any> 
         }
 
         return this.props.onChange(files);
-    }
-
-    private _getStyles() {
-        let containerStyles = void(0), hiddenInputStyles = void(0);
-
-        if (this.props.disableStyles) {
-            return {containerStyles, hiddenInputStyles};
-        }
-
-        containerStyles = {
-            overflow: 'hidden',
-            position: 'relative'
-        };
-
-        hiddenInputStyles = {
-            position: 'absolute',
-            left: 0,
-            right: 0,
-            top: 0,
-            bottom: 0,
-            zIndex: 10,
-            opacity: 0
-        };
-
-        return {containerStyles, hiddenInputStyles};
     }
 }

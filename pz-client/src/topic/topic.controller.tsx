@@ -2,7 +2,7 @@ import * as React from 'react';
 import {Component} from 'react';
 import * as Relay from 'react-relay';
 import * as util from 'util';
-import {CreateItemEditor} from 'pz-client/src/community-item/commuity-item-editor.controller';
+import {CreateItemEditor} from 'pz-client/src/community-item/community-item-editor.component';
 import SideSection from 'pz-client/src/topic/side-section/side-section.component';
 import {ITopic} from 'pz-server/src/topics/topics';
 import SchemaInjector, {ISchemaType} from 'pz-client/src/support/schema-injector';

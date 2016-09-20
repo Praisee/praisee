@@ -3,7 +3,7 @@ import * as Relay from 'react-relay';
 
 import CreateCommunityItemMutation from 'pz-client/src/editor/proofofconcept/create-community-item-mutation';
 import EditorComponent from 'pz-client/src/editor/editor.component';
-import CommunityItemContent from 'pz-client/src/editor/community-item-content.component';
+import CommunityItemContent from 'pz-client/src/community-item/community-item-content.component';
 import serializeEditorState from 'pz-client/src/editor/serialize-editor-state';
 
 interface IProps {

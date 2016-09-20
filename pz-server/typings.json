@@ -1,6 +1,5 @@
 {
   "ambientDependencies": {
-    "classnames": "registry:dt/classnames#0.0.0+20160316155526",
     "express": "registry:dt/express#4.0.0+20160317120654",
     "express-graphql": "registry:dt/express-graphql#0.0.0+20160316155526",
     "express-serve-static-core": "registry:dt/express-serve-static-core#0.0.0+20160617060422",

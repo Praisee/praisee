@@ -9,5 +9,6 @@ declare module 'graphql-relay'
 declare module 'isomorphic-relay'
 declare module 'isomorphic-relay-router'
 declare module 'reactstrap'
+declare module 'classnames'
 
 declare module 'proxyquire'

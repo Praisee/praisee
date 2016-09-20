@@ -1,0 +1,93 @@
+%draftjs-styles {
+  @import '../../../node_modules/draft-js/dist/Draft';
+  @import '../../../node_modules/draft-js-mention-plugin/lib/plugin';
+}
+
+@mixin editor($font-size: 1rem) {
+  .editor {
+    position: relative;
+
+    .editor-area {
+      @extend %draftjs-styles;
+
+      padding: 0;
+      font-size: $font-size;
+      border: none;
+
+      .public-DraftEditor-content {
+        min-height: 7rem;
+      }
+    }
+
+    .content-menu {
+      position: relative;
+    }
+
+    .content-menu-toggle {
+      @extend .fa;
+      @extend .fa-plus;
+      position: absolute;
+      left: -2.5rem;
+      top: 0.4rem;
+      border: none;
+      background: none;
+      padding: 0;
+      margin: 0;
+      font-size: 0.9rem;
+      outline: none;
+
+      &:active, &:focus, &:hover {
+        color: $btn-primary-bg;
+      }
+    }
+
+    .content-menu-items {
+      display: none;
+      position: relative;
+      z-index: 10;
+    }
+
+    .content-menu-open {
+      .content-menu-toggle {
+        @extend .fa;
+        @extend .fa-minus;
+      }
+
+      .content-menu-items {
+        display: block;
+        background: white;
+        border-radius: 10%;
+      }
+    }
+
+    .content-menu-button {
+      width: 1.5rem;
+      height: 1.5rem;
+      border: none;
+      background: none;
+      padding: 0;
+      margin: 0;
+      margin-right: 0.2rem;
+      font-size: 0.9rem;
+      vertical-align: middle;
+    }
+
+    .add-photo-button-container {
+      @include customizable-file-input(1.5rem, 1.5rem);
+
+      display: inline-block;
+      vertical-align: top;
+      margin-right: 0.3rem;
+
+      .add-photo-button {
+        @extend .fa;
+        @extend .fa-image;
+        vertical-align: middle;
+      }
+    }
+  }
+}
+
+@mixin editor-content {
+  @extend %draftjs-styles;
+}
