@@ -7,10 +7,7 @@ import {
     createRecord
 } from 'pz-server/src/support/repository';
 
-import {
-    IUrlSlug as ILoopbackUrlSlugModel,
-    IUrlSlugInstance as ILoopbackUrlSlugModelInstance
-} from 'pz-server/src/url-slugs/models/url-slug';
+import {IUrlSlugs, IUrlSlug} from 'pz-server/src/url-slugs/url-slugs';
 
 import {IUser} from 'pz-server/src/users/users';
 import {ITopic} from 'pz-server/src/topics/topics';
@@ -42,13 +39,13 @@ export interface IVanityRoutePath extends IRepositoryRecord {
 export type RecordVanityRoutePathTuple = [TVanityRoutePathSupportedRecord, IVanityRoutePath];
 export type RecordRoutePathTuples = Array<RecordVanityRoutePathTuple>;
 
-type TRecordUrlSlugTuple = [TVanityRoutePathSupportedRecord, ILoopbackUrlSlugModelInstance];
+type TRecordUrlSlugTuple = [TVanityRoutePathSupportedRecord, IUrlSlug];
 
 export default class VanityRoutePaths implements IVanityRoutePaths {
-    private _UrlSlug: ILoopbackUrlSlugModel;
+    private _urlSlugs: IUrlSlugs;
 
-    constructor(UrlSlug: ILoopbackUrlSlugModel) {
-        this._UrlSlug = UrlSlug;
+    constructor(urlSlugs: IUrlSlugs) {
+        this._urlSlugs = urlSlugs;
     }
 
     async findByRecord(record: TVanityRoutePathSupportedRecord): Promise<IVanityRoutePath> {
@@ -80,7 +77,7 @@ export default class VanityRoutePaths implements IVanityRoutePaths {
         });
     }
 
-    private _resolveRoutePath(record: TVanityRoutePathSupportedRecord, urlSlug?: ILoopbackUrlSlugModelInstance): string {
+    private _resolveRoutePath(record: TVanityRoutePathSupportedRecord, urlSlug?: IUrlSlug): string {
         const urlSlugOrId = urlSlug ? urlSlug.fullSlug : record.id;
         if (isTopicRecord(record)) {
             return routePaths.topic(urlSlugOrId);
@@ -114,61 +111,27 @@ export default class VanityRoutePaths implements IVanityRoutePaths {
 
     private async _getRecordToUrlSlugTuples(
         records: Array<TVanityRoutePathSupportedRecord>
-        ): Promise<Array<TRecordUrlSlugTuple>> {
+    ): Promise<Array<TRecordUrlSlugTuple>> {
 
         if (!records.length) {
             return [];
         }
 
-        let whereGroups = {};
+        const urlSlugsForEachRecord: Array<Array<IUrlSlug>> = await this._urlSlugs.findAllForEachSluggable(
+            records.map(record => ({
+                sluggableType: record.recordType,
+                sluggableId: record.id
+            }))
+        );
 
-        records.forEach(record => {
-            const sluggableType = record.recordType;
+        return urlSlugsForEachRecord.reduce<Array<TRecordUrlSlugTuple>>((recordUrlSlugTuples, urlSlugs, index) => {
+            const record = records[index];
+            const newRecordUrlSlugTuples = urlSlugs.map<TRecordUrlSlugTuple>(urlSlug => [record, urlSlug]);
 
-            if (whereGroups.hasOwnProperty(sluggableType)) {
-                whereGroups[sluggableType].push(record.id);
-            } else {
-                whereGroups[sluggableType] = [record.id];
-            }
-        });
-
-        let lastSluggableType;
-
-        const whereQuery = Object.keys(whereGroups).reduce((whereQuery: any, sluggableType) => {
-            const whereClause = {
-                sluggableType,
-                sluggableId: {inq: whereGroups[sluggableType]}
-            };
-
-            if (lastSluggableType) {
-                if (whereQuery.hasOwnProperty('or')) {
-                    whereQuery.or.push(whereClause);
-                    return whereQuery;
-                } else {
-                    return {
-                        or: [whereQuery, whereClause]
-                    };
-                }
-
-            } else {
-
-                return whereClause;
-            }
-        }, {});
-
-        const find = promisify(this._UrlSlug.find, this._UrlSlug);
-
-        const urlSlugs = await find({
-            where: whereQuery
-        });
-
-        return records.map<TRecordUrlSlugTuple>(record => {
-            const urlSlug = urlSlugs.find(urlSlug => (
-                urlSlug.sluggableType === record.recordType
-                && urlSlug.sluggableId === record.id
-            ));
-
-            return [record, urlSlug || null];
-        });
+            return [
+                ...recordUrlSlugTuples,
+                ...newRecordUrlSlugTuples
+            ];
+        }, []);
     }
 }

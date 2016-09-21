@@ -11,14 +11,14 @@ import {ITopicInstance, ITopicModel} from 'pz-server/src/models/topic';
 import SearchClient from 'pz-server/src/search/search-client';
 import searchSchema from 'pz-server/src/search/schema';
 import {IBulkUpsert, IDocumentPath, IBulkDelete} from './search';
-import {IUrlSlugInstance, IUrlSlug} from 'pz-server/src/url-slugs/models/url-slug';
+import {IUrlSlugInstance, IUrlSlugModel} from 'pz-server/src/url-slugs/models/url-slug';
 import routePaths from 'pz-server/src/vanity-route-paths/route-path-templates';
 
 export interface ISearchUpdaterModels {
     SearchUpdateJob: ISearchUpdateJob
     CommunityItem: ICommunityItemModel
     Topic: ITopicModel
-    UrlSlug: IUrlSlug
+    UrlSlug: IUrlSlugModel
     [modelName: string]: IPersistedModel
 }
 

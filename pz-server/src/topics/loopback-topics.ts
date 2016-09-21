@@ -18,7 +18,7 @@ import {
     createEmptyCursorResults
 } from 'pz-server/src/support/cursors/cursors';
 
-import {ITopics, ITopic} from 'pz-server/src/topics/topics';
+import {ITopics, ITopic, ITopicsBatchable} from 'pz-server/src/topics/topics';
 import {createRecordFromLoopback} from 'pz-server/src/support/repository';
 import {ICommunityItem} from 'pz-server/src/community-items/community-items';
 import {IRankings, RankingsUnavailableError} from 'pz-server/src/rankings/rankings';
@@ -26,7 +26,11 @@ import {TOptionalUser} from 'pz-server/src/users/users';
 import {findWithCursor} from '../support/cursors/loopback-helpers';
 import {mapCursorResultItems} from 'pz-server/src/support/cursors/map-cursor-results';
 
-export default class LoopbackTopics implements ITopics {
+export function createRecordFromLoopbackTopic(topic: ILookbackTopicInstance): ITopic {
+    return createRecordFromLoopback<ITopic>('Topic', topic);
+}
+
+export default class LoopbackTopics implements ITopics, ITopicsBatchable {
     private _TopicModel: ILoopbackTopic;
     private _CommunityItemModel: ILoopbackCommunityItem;
     private _UrlSlugsModel: IPersistedModel;
@@ -47,12 +51,12 @@ export default class LoopbackTopics implements ITopics {
 
     async findAll() {
         const results = await promisify(this._TopicModel.find, this._TopicModel)();
-        return results.map(result => createRecordFromLoopback('Topic', result));
+        return results.map(result => createRecordFromLoopbackTopic(result));
     }
 
     async findById(id: number) {
         const result = await promisify(this._TopicModel.findById, this._TopicModel)(id);
-        return createRecordFromLoopback<ITopic>('Topic', result);
+        return createRecordFromLoopbackTopic(result);
     }
 
     async findAllByIds(ids: Array<number>): Promise<Array<ITopic>> {
@@ -67,7 +71,7 @@ export default class LoopbackTopics implements ITopics {
         });
 
         return topicModels.map(topicModel => {
-            return createRecordFromLoopback<ITopic>('Topic', topicModel);
+            return createRecordFromLoopbackTopic(topicModel);
         });
     }
 
@@ -84,7 +88,7 @@ export default class LoopbackTopics implements ITopics {
         }
 
         const result = await promisify(this._TopicModel.findById, this._TopicModel)(urlSlug.sluggableId);
-        return createRecordFromLoopback<ITopic>('Topic', result);
+        return createRecordFromLoopbackTopic(result);
     }
 
     async findSomeCommunityItemsRanked(topicId: number, asUser: TOptionalUser, cursor: TBiCursor): Promise<ICursorResults<ICommunityItem>> {

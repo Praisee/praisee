@@ -6,7 +6,7 @@
 
 import promisify from 'pz-support/src/promisify';
 
-import {IUrlSlug, IUrlSlugInstance} from 'pz-server/src/url-slugs/models/url-slug';
+import {IUrlSlugModel, IUrlSlugInstance} from 'pz-server/src/url-slugs/models/url-slug';
 import {ISluggerOptions} from 'pz-server/src/url-slugs/slugger';
 
 export interface ISluggableOptions {
@@ -31,7 +31,7 @@ export interface ISluggableInstance extends IPersistedModelInstance {
     sluggableType: string
     sluggableId: number
 
-    UrlSlug: IUrlSlug
+    UrlSlug: IUrlSlugModel
 
     getCanonicalUrlSlug(): Promise<IUrlSlugInstance>
     getCanonicalUrlSlugValue(): Promise<string>
@@ -143,7 +143,7 @@ module.exports = function SluggableMixin(Model: ISluggable, options: ISluggableO
         context.hookState = context.hookState || {};
         context.hookState.__isSlugged = true;
 
-        const UrlSlug: IUrlSlug = Model.app.models.UrlSlug;
+        const UrlSlug: IUrlSlugModel = Model.app.models.UrlSlug;
 
         try {
             if (context.isNewInstance) {
@@ -175,14 +175,14 @@ module.exports = function SluggableMixin(Model: ISluggable, options: ISluggableO
 
     Model.getByUrlSlugName = async function (fullSlug) {
         const UrlSlug = Model.app.models.UrlSlug;
-        
+
         let urlSlug: IUrlSlugInstance = await promisify(UrlSlug.findOne, UrlSlug)({
             where: {
                 sluggableType: Model.sluggableType,
                 fullSlugLowercase: fullSlug.toLowerCase()
             }
         }) as IUrlSlugInstance;
-        
+
         return promisify(Model.findById, Model)(urlSlug.sluggableId);
     };
 };

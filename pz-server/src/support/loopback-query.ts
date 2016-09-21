@@ -1,4 +1,4 @@
-export default function query(Model: IModel, sql: string, ...params: Array<any>) {
+export default function loopbackQuery(Model: IPersistedModel, sql: string, ...params: Array<any>) {
     return new Promise<Array<any>>((resolve, reject) => {
         Model.dataSource.connector.execute(sql, params, (error, result) => {
             if (error) {

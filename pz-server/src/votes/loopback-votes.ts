@@ -2,13 +2,19 @@ import {createRecordFromLoopback} from 'pz-server/src/support/repository';
 
 import promisify from 'pz-support/src/promisify';
 import isOwnerOfModel from 'pz-server/src/support/is-owner-of-model';
-import {IVote, IVotes, IVoteAggregate} from 'pz-server/src/votes/votes';
+import {
+    IVote,
+    IVotes,
+    IVoteAggregate,
+    IVotesBatchable
+} from 'pz-server/src/votes/votes';
 import {IVoteInstance, IVoteModel} from 'pz-server/src/models/vote';
 
 import {ICursorResults, TBiCursor} from 'pz-server/src/support/cursors/cursors';
 
 import {findWithCursor} from 'pz-server/src/support/cursors/loopback-helpers';
 import {cursorLoopbackModelsToRecords} from 'pz-server/src/support/cursors/repository-helpers';
+import loopbackQuery from '../support/loopback-query';
 
 export function createRecordFromLoopbackVote(vote: IVoteInstance): IVote {
     return createRecordFromLoopback<IVote>('Vote', vote);
@@ -18,7 +24,7 @@ export function cursorVoteLoopbackModelsToRecords(votes: ICursorResults<IVoteIns
     return cursorLoopbackModelsToRecords<IVote>('Vote', votes);
 }
 
-export default class Votes implements IVotes {
+export default class LoopbackVotes implements IVotes, IVotesBatchable {
     private _VoteModel: IVoteModel;
 
     constructor(VoteModel: IVoteModel) {
@@ -85,11 +91,35 @@ export default class Votes implements IVotes {
     }
 
     async getAggregateForParent(parentType: string, parentId: number): Promise<IVoteAggregate> {
-        return await this._getAggregateForConditions({parentType, parentId});
+        const [voteAggregate] = await this._getAllAggregates(
+            ['parentType', 'parentId'],
+            [[parentType, parentId]]
+        );
+
+        return voteAggregate;
     }
 
     async getAggregateForAffectedUser(userId: number): Promise<IVoteAggregate> {
-        return await this._getAggregateForConditions({affectedUserId: userId});
+        const [voteAggregate] = await this._getAllAggregates(
+            ['affectedUserId'],
+            [userId]
+        );
+
+        return voteAggregate;
+    }
+
+    async getAllAggregatesForParents(parents: Array<[string, number]>): Promise<Array<IVoteAggregate>> {
+        return await this._getAllAggregates(
+            ['parentType', 'parentId'],
+            parents
+        );
+    }
+
+    async getAllAggregatesForAffectedUsers(userIds: Array<number>): Promise<Array<IVoteAggregate>> {
+        return await this._getAllAggregates(
+            ['affectedUserId'],
+            userIds
+        );
     }
 
     async findSomeByUserId(cursor: TBiCursor, userId: number): Promise<ICursorResults<IVote>> {
@@ -149,20 +179,90 @@ export default class Votes implements IVotes {
         return await destoryPromise;
     }
 
-    private async _getAggregateForConditions(conditions: {}): Promise<IVoteAggregate> {
-        const getCount = promisify(this._VoteModel.count, this._VoteModel);
+    private async _getAllAggregates(
+            unsafeFields: Array<string>, params: Array<any>
+        ): Promise<Array<IVoteAggregate>> {
 
-        const [total, upVotes] = await Promise.all([
-            getCount(conditions),
+        const fieldsSql = unsafeFields.join(', ');
 
-            getCount(Object.assign({}, conditions, {
-                isUpVote: true
-            }))
-        ]);
+        let whereConditions = [];
+        let whereValues = [];
 
-        const downVotes = total - upVotes;
+        if (unsafeFields.length > 1) {
+            let i = 0;
 
-        return { upVotes, downVotes, total };
+            params.forEach((param) => {
+                const whereAnd = [];
+
+                unsafeFields.forEach((field, index) => {
+                    whereAnd.push(`${field} = $${++i}`);
+                    whereValues.push(param[index]);
+                });
+
+                whereConditions.push(`(${whereAnd.join(' AND ')})`);
+            });
+
+        } else {
+
+            const field = unsafeFields[0];
+
+            const whereSql = params.length > 1 ?
+                `${field} IN (${params.map((_, index) => '$' + (index + 1)).join(',')})`
+                : `${field} = $1`;
+
+            whereConditions = [whereSql];
+            whereValues = params;
+        }
+
+        const query = `
+            SELECT
+                COUNT(*) AS total,
+                SUM(CASE WHEN isupvote THEN 1 ELSE 0 END) as upVotes,
+                ${fieldsSql}
+            FROM vote
+            WHERE
+                ${whereConditions.join(' OR ')}
+            GROUP BY ${fieldsSql}
+        `;
+
+        const results = await loopbackQuery(this._VoteModel, query, ...whereValues);
+
+        const resultsMap = new Map();
+
+        const resultToVoteAggregate = (result) => {
+            if (!result) {
+                return {
+                    upVotes: 0,
+                    downVotes: 0,
+                    total: 0
+                };
+            }
+
+            return {
+                upVotes: result.upVotes,
+                downVotes: result.total - result.upVotes,
+                total: result.total
+            };
+        };
+
+        if (unsafeFields.length > 1) {
+            results.forEach(result => {
+                const fieldValues = unsafeFields.map(field => result[field]);
+                resultsMap.set(fieldValues.join(':'), result);
+            });
+
+            return params.map(param => resultToVoteAggregate(resultsMap.get(param.join(':'))));
+
+        } else {
+
+            const field = unsafeFields[0];
+
+            results.forEach(result => {
+                resultsMap.set(result[field], result);
+            });
+
+            return params.map(param => resultToVoteAggregate(resultsMap.get(param)));
+        }
     }
 }
 

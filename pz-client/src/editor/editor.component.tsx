@@ -120,7 +120,7 @@ export default class Editor extends React.Component<IProps, any> {
         if (!this.props.contentMenuButtons) {
             return;
         }
-        
+
         return (
             <ContentMenu
                 isOpen={this.state.isContentMenuOpen}

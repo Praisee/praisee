@@ -36,3 +36,6 @@ export interface ITopics extends IRepository {
     getCommunityItemCount(topicId: number): Promise<number>
 }
 
+export interface ITopicsBatchable {
+    findAllByIds(ids: Array<number>): Promise<Array<ITopic>>
+}

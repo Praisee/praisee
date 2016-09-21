@@ -31,6 +31,12 @@ export interface IVotes extends IRepository {
     destroy(vote: IVote): Promise<boolean>
 }
 
+export interface IVotesBatchable {
+    findAllByIds(ids: Array<number>): Promise<Array<IVote>>
+    getAllAggregatesForParents(parents: Array<[string, number]>): Promise<Array<IVoteAggregate>>
+    getAllAggregatesForAffectedUsers(userIds: Array<number>): Promise<Array<IVoteAggregate>>
+}
+
 export interface IVoteAggregate {
     upVotes: number,
     downVotes: number,

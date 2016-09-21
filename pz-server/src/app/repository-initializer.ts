@@ -6,9 +6,11 @@ import {
 import {ITrackedEvents} from 'pz-server/src/tracked-events/tracked-events'; // TODO: Finish for rankings
 
 import Users from 'pz-server/src/users/loopback-users';
+import UsersLoader from '../users/users-loader';
 import UsersAuthorizer from 'pz-server/src/users/users-authorizer';
 
 import Topics from 'pz-server/src/topics/loopback-topics';
+import TopicsLoader from '../topics/topics-loader';
 import TopicsAuthorizer from 'pz-server/src/topics/topics-authorizer';
 
 import TopicAttributes from 'pz-server/src/topics/topic-attributes/loopback-topic-attributes';
@@ -23,11 +25,16 @@ import CommentsAuthorizer from 'pz-server/src/comments/comments-authorizer';
 import FilteredComments from 'pz-server/src/comments/filtered-comments';
 
 import Votes from 'pz-server/src/votes/loopback-votes';
+import VotesLoader from 'pz-server/src/votes/votes-loader';
 import VotesAuthorizer from 'pz-server/src/votes/votes-authorizer';
 
 import ContentFilterer from 'pz-server/src/content/content-filterer';
 import convertContentDataToText from 'pz-server/src/content/data-to-text-converter';
 import FilteredCommunityItems from 'pz-server/src/community-items/filtered-community-items';
+
+import UrlSlugs from 'pz-server/src/url-slugs/loopback-url-slugs';
+import UrlSlugsLoader from 'pz-server/src/url-slugs/url-slugs-loader';
+
 import VanityRoutePaths from 'pz-server/src/vanity-route-paths/vanity-route-paths';
 import VanityRoutePathsAuthorizer from 'pz-server/src/vanity-route-paths/vanity-route-paths-authorizer';
 
@@ -45,19 +52,21 @@ module.exports = function initializeRepositories(app: IApp) {
     const rankingsCache = new RankingsCache(cacheConnections.getConnection('rankings'));
     const rankings = new Rankings(rankingsCache, app.services.workerClient);
 
-    const vanityRoutePaths = new VanityRoutePaths(app.models.UrlSlug);
+    const urlSlugs = new UrlSlugsLoader(new UrlSlugs(app.models.UrlSlug));
+
+    const vanityRoutePaths = new VanityRoutePaths(urlSlugs);
     const vanityRoutePathsAuthorizer = new VanityRoutePathsAuthorizer(vanityRoutePaths);
 
-    const users = new Users(app.models.PraiseeUser);
+    const users = new UsersLoader(new Users(app.models.PraiseeUser));
     const usersAuthorizer = new UsersAuthorizer(users);
 
-    const topics = new Topics(app.models.Topic, app.models.CommunityItem, app.models.UrlSlug, rankings);
+    const topics = new TopicsLoader(new Topics(app.models.Topic, app.models.CommunityItem, app.models.UrlSlug, rankings));
     const topicsAuthorizer = new TopicsAuthorizer(topics);
 
     const topicAttributes = new TopicAttributes(app.models.TopicAttribute);
     const topicAttributesAuthorizer = new TopicAttributesAuthorizer(topicAttributes);
 
-    const votes = new Votes(app.models.Vote);
+    const votes = new VotesLoader(new Votes(app.models.Vote));
     const votesAuthorizer = new VotesAuthorizer(votes);
 
     const photos = new PhotosLoader(new Photos(app.models.Photo));
@@ -93,7 +102,8 @@ module.exports = function initializeRepositories(app: IApp) {
         communityItems: filteredCommunityItems,
         comments: filteredComments,
         votes,
-        vanityRoutePaths: vanityRoutePaths,
+        urlSlugs,
+        vanityRoutePaths,
         trackedEvents: {} as ITrackedEvents, // Finish for rankings
         rankingsCache,
         rankings,

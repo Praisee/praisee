@@ -23,6 +23,8 @@ import {ITrackedEvents} from 'pz-server/src/tracked-events/tracked-events';
 import {IRankingsCache} from 'pz-server/src/rankings/rankings-cache';
 import {IRankings} from 'pz-server/src/rankings/rankings';
 
+import {IUrlSlugs} from 'pz-server/src/url-slugs/url-slugs';
+
 import {IVanityRoutePaths} from 'pz-server/src/vanity-route-paths/vanity-route-paths';
 import {IAuthorizedVanityRoutePaths} from 'pz-server/src/vanity-route-paths/vanity-route-paths-authorizer';
 
@@ -39,7 +41,8 @@ export interface IAppRepositories {
     trackedEvents: ITrackedEvents
     rankingsCache: IRankingsCache
     rankings: IRankings
-    vanityRoutePaths: IVanityRoutePaths;
+    urlSlugs: IUrlSlugs
+    vanityRoutePaths: IVanityRoutePaths
     photos: IPhotos
 }
 
