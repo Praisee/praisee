@@ -16,6 +16,7 @@
 @import '../comments/comment-editor';
 @import '../votes/votes';
 @import '../search/site-search';
+@import './error.scss';
 
 @import '../editor/proofofconcept/editor'; // TODO: Remove this
 
@@ -27,7 +28,7 @@
 
     @include home-namespace();
     @include topic-namespace();
-    @include topic-namespace();
+    @include error();
 
     @include editor-proofofconcept-namespace(); // TODO: Remove this
 }

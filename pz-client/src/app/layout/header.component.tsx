@@ -5,10 +5,16 @@ import SiteSearch from 'pz-client/src/search/site-search.component';
 import {Link} from 'react-router';
 import routePaths from 'pz-client/src/router/route-paths';
 import {withRouter} from 'react-router';
-import SignInUpOverlay from 'pz-client/src/user/sign-in-up-overlay.component';
+import SignInUpOverlay, {ISignInUpContext, SignInUpContextType} from 'pz-client/src/user/sign-in-up-overlay-component';
+import ErrorList from 'pz-client/src/app/error-component';
+import appInfo from 'pz-client/src/app/app-info';
+
+const logoUrl = appInfo.addresses.getImage('praisee-logo.svg');
 
 export interface IAppLayoutProps {
     children?: any
+
+    viewer: any
 
     router: {
         push: Function
@@ -20,13 +26,21 @@ export interface IAppLayoutProps {
 }
 
 class Header extends React.Component<IAppLayoutProps, any> {
+    static contextTypes: any = {
+        signInUpContext: SignInUpContextType
+    }
+
+    context: {
+        signInUpContext: ISignInUpContext
+    }
+
     render() {
         return (
             <div className="app-header">
                 <div className="app-layout-container">
                     <div className="app-branding">
                         <Link to={routePaths.index()}>
-                            Praisee
+                            <img src={logoUrl} alt="Praisee" className="logo" />
                         </Link>
                     </div>
 
@@ -39,19 +53,9 @@ class Header extends React.Component<IAppLayoutProps, any> {
                     </div>
                 </div>
 
-                {this._renderSignInUp()}
+                <ErrorList viewer={this.props.viewer} />
             </div>
         );
-    }
-
-    state = {
-        isSignInUpVisible: false
-    };
-
-    componentWillReceiveProps(nextProps) {
-        if (nextProps.currentUser) {
-            this._hideSignInUp();
-        }
     }
 
     private _renderUserControls() {
@@ -64,40 +68,27 @@ class Header extends React.Component<IAppLayoutProps, any> {
 
             return (
                 <a className="sign-in"
-                   href={routePaths.user.signIn()}
-                   onClick={this._showSignInUp.bind(this)}>
+                    href={routePaths.user.signIn()}
+                    onClick={this.context.signInUpContext.showSignInUp.bind(this)}>
 
                     Sign in or Sign up
                 </a>
             );
         }
     }
-
-    private _showSignInUp(event) {
-        event.preventDefault();
-        this.setState({isSignInUpVisible: true})
-    }
-
-    private _hideSignInUp() {
-        this.setState({isSignInUpVisible: false})
-    }
-
-    private _renderSignInUp() {
-        return (
-            <SignInUpOverlay
-                isVisible={this.state.isSignInUpVisible}
-                onHideRequested={this._hideSignInUp.bind(this)}
-            />
-        )
-    }
 }
 
 export default Relay.createContainer(withRouter(Header), {
     fragments: {
         currentUser: () => Relay.QL`
-            fragment on User {
+            fragment on UserInterface {
                 displayName,
                 ${UserAccountMenu.getFragment('currentUser')}
+            }
+        `,
+        viewer: () => Relay.QL`
+            fragment on Viewer {
+                ${ErrorList.getFragment('viewer')}
             }
         `
     }

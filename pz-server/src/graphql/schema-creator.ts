@@ -4,7 +4,7 @@ import * as graphql from 'graphql';
 import {IAppRepositoryAuthorizers} from 'pz-server/src/app/repositories';
 import {IRepositoryRecord} from 'pz-server/src/support/repository';
 
-import {initializeTypes}  from 'pz-server/src/graphql/types';
+import {initializeTypes} from 'pz-server/src/graphql/types';
 
 import {
     ICursorResults,
@@ -58,8 +58,8 @@ export default function createSchema(repositoryAuthorizers: IAppRepositoryAuthor
             return { id: 'viewer' };
         }
 
-        if (type === 'OtherUser') {
-            return usersAuthorizer.as(user).findOtherUserById(id);
+        if (type === 'OtherUser' || type === 'CurrentUser') {
+            return usersAuthorizer.as(user).findUserById(id);
         }
 
         let repositoryAuthorizer;
@@ -99,8 +99,11 @@ export default function createSchema(repositoryAuthorizers: IAppRepositoryAuthor
             case 'Viewer':
                 return types.ViewerType;
 
-            case 'User':
-                return types.UserType;
+            case 'CurrentUser':
+                return types.CurrentUserType;
+
+            case 'OtherUser':
+                return types.OtherUserType;
 
             case 'Topic':
                 return types.TopicType;
@@ -142,7 +145,7 @@ export default function createSchema(repositoryAuthorizers: IAppRepositoryAuthor
                 },
 
                 currentUser: {
-                    type: types.UserType,
+                    type: types.CurrentUserType,
                     resolve: (_, __, {user}) => {
                         return usersAuthorizer.as(user).findCurrentUser();
                     }
@@ -172,7 +175,7 @@ export default function createSchema(repositoryAuthorizers: IAppRepositoryAuthor
                     },
                     resolve: async (_, {urlSlug}, {user}) => {
                         const communityItem = await communityItemsAuthorizer
-                            .as(user) 
+                            .as(user)
                             .findByUrlSlugName(urlSlug);
                         return communityItem;
                     }

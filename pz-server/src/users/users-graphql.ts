@@ -12,7 +12,9 @@ var {
     GraphQLObjectType,
     GraphQLInputObjectType,
     GraphQLSchema,
-    GraphQLString
+    GraphQLString,
+    GraphQLUnionType,
+    GraphQLInterfaceType
 } = graphql;
 
 var {
@@ -28,13 +30,52 @@ var {
 } = graphqlRelay;
 
 export default function UsersTypes(repositoryAuthorizers: IAppRepositoryAuthorizers, nodeInterface, types: ITypes) {
-     const UserType = new GraphQLObjectType({
-        name: 'User',
+    var resolveType = function (value) {
+        if (value.email) {
+            return CurrentUserType;
+        }
+        else {
+            return OtherUserType;
+        }
+    }
+
+    var UserInterfaceType = new GraphQLInterfaceType({
+        name: 'UserInterface',
 
         fields: () => ({
-            id: globalIdField(UserType.Name),
+            id: globalIdField('User'),
 
             displayName: {
+                type: GraphQLString
+            },
+
+            reputation: {
+                type: GraphQLInt
+            },
+
+            image: {
+                type: GraphQLString
+            }
+        }),
+
+        resolveType: resolveType
+    });
+
+    var CurrentUserType = new GraphQLObjectType({
+        name: 'CurrentUser',
+
+        fields: () => ({
+            id: globalIdField(CurrentUserType.Name),
+
+            displayName: {
+                type: GraphQLString
+            },
+
+            reputation: {
+                type: GraphQLInt
+            },
+
+            image: {
                 type: GraphQLString
             },
 
@@ -47,10 +88,10 @@ export default function UsersTypes(repositoryAuthorizers: IAppRepositoryAuthoriz
             }
         }),
 
-        interfaces: [nodeInterface]
+        interfaces: [nodeInterface, UserInterfaceType]
     });
 
-    const OtherUserType = new GraphQLObjectType({
+    var OtherUserType = new GraphQLObjectType({
         name: 'OtherUser',
 
         fields: () => ({
@@ -60,7 +101,7 @@ export default function UsersTypes(repositoryAuthorizers: IAppRepositoryAuthoriz
                 type: GraphQLString
             },
 
-            reputation:{
+            reputation: {
                 type: GraphQLInt
             },
 
@@ -69,11 +110,12 @@ export default function UsersTypes(repositoryAuthorizers: IAppRepositoryAuthoriz
             }
         }),
 
-        interfaces: [nodeInterface]
+        interfaces: [nodeInterface, UserInterfaceType]
     });
 
-     return Object.assign({}, types, {
-        UserType,
+    return Object.assign({}, types, {
+        UserInterfaceType,
+        CurrentUserType,
         OtherUserType
     });
 }

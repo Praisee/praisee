@@ -30,7 +30,8 @@ export function initializeTypes(repositoryAuthorizers: IAppRepositoryAuthorizers
 }
 
 export interface ITypes {
-    UserType
+    UserInterfaceType
+    CurrentUserType
     OtherUserType
 
     VoteType

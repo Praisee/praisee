@@ -5,26 +5,31 @@ import {Link} from 'react-router';
 import routePaths from 'pz-client/src/router/route-paths';
 import Header from 'pz-client/src/app/layout/header.component';
 import Footer from 'pz-client/src/app/layout/footer.component';
+import SignInUpOverlay from 'pz-client/src/user/sign-in-up-overlay-component';
 
 export interface IAppLayoutProps {
     children?: any,
 
-    currentUser: any
+    currentUser: any,
+
+    viewer: any
 }
 
 export class AppLayout extends React.Component<IAppLayoutProps, any> {
     render() {
         return (
             <div className="app-layout">
-                <Header currentUser={this.props.currentUser || null} />
+                <SignInUpOverlay>
+                    <Header currentUser={this.props.currentUser || null} viewer={this.props.viewer} />
 
-                <div className="app-content">
-                    <div className="app-layout-container">
-                        {this.props.children}
+                    <div className="app-content">
+                        <div className="app-layout-container">
+                            {this.props.children}
+                        </div>
                     </div>
-                </div>
 
-                <Footer />
+                    <Footer />
+                </SignInUpOverlay>
             </div>
         );
     }
@@ -33,8 +38,13 @@ export class AppLayout extends React.Component<IAppLayoutProps, any> {
 export default Relay.createContainer(AppLayout, {
     fragments: {
         currentUser: () => Relay.QL`
-            fragment on User {
+            fragment on UserInterface {
                 ${Header.getFragment('currentUser')}
+            }
+        `,
+        viewer: () => Relay.QL`
+            fragment on Viewer {
+                ${Header.getFragment('viewer')}
             }
         `
     }

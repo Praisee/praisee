@@ -8,14 +8,22 @@ import {IComment} from 'pz-server/src/comments/comments';
 import CommentContent from 'pz-client/src/comments/comment-content-component';
 import CommentList from 'pz-client/src/comments/comment-list-component';
 import Avatar from 'pz-client/src/user/avatar.component';
-import {CreateCommentEditor} from 'pz-client/src/comments/comment-editor-controller';
+import {CreateCommentEditor} from 'pz-client/src/comments/comment-editor-component';
 import Votes from 'pz-client/src/votes/votes-component';
 import CreateCommentVoteMutation from 'pz-client/src/votes/create-comment-vote-mutation';
 import UpdateCommentVoteMutation from 'pz-client/src/votes/update-comment-vote-mutation';
 import DeleteCommentVoteMutation from 'pz-client/src/votes/delete-comment-vote-mutation';
 import CreateCommentForCommentMutation from 'pz-client/src/comments/create-comment-for-comment-mutation';
+import CurrentUserType from 'pz-client/src/user/current-user-type';
 
 export class Comment extends Component<any, any>{
+    static contextTypes : any = {
+        appViewerId: React.PropTypes.string.isRequired,
+        currentUser: CurrentUserType
+    };
+    
+    context: any;
+    
     schemaInjector: SchemaInjector;
 
     constructor(props, context) {
@@ -28,6 +36,7 @@ export class Comment extends Component<any, any>{
         const {comment} = this.props;
         const {comments, upVotes, downVotes, createdAt, commentCount} = comment;
         const {currentDepth, expand} = this.props.relay.variables;
+        const {currentUser} = this.context;
 
         let commentList = null;
         if (expand) {
@@ -44,7 +53,7 @@ export class Comment extends Component<any, any>{
         let expandButton = null;
         if (!expand && commentCount > 0) {
             expandButton = (
-                <ExpandButton onExpand={this.expand.bind(this)} />
+                <ExpandButton onExpand={this._expand.bind(this)} />
             )
         }
 
@@ -66,7 +75,7 @@ export class Comment extends Component<any, any>{
                                 upVotes={comment.votes.upVotes}
                                 userVote={comment.currentUserVote}
                                 />
-                        ) }
+                        )}
                         <CreateCommentEditor
                             comment={comment}
                             communityItem={null}
@@ -80,7 +89,11 @@ export class Comment extends Component<any, any>{
         );
     }
 
-    expand() {
+    private _isCurrentUserOwner(){
+        return this.context.currentUser && this.context.currentUser.id === this.props.comment.user.id;
+    }
+
+    private _expand() {
         this.props.relay.setVariables({
             expand: !this.props.relay.variables.expand
         });
@@ -89,7 +102,8 @@ export class Comment extends Component<any, any>{
     private _onCommentSave(bodyData) {
         this.props.relay.commitUpdate(new CreateCommentForCommentMutation({
             bodyData: bodyData,
-            comment: this.props.comment
+            comment: this.props.comment,
+            appViewerId: this.context.appViewerId
         }));
     }
 
@@ -155,6 +169,9 @@ export default Relay.createContainer(Comment, {
                 }
                 currentUserVote
                 commentCount 
+                user {
+                    id
+                }
                 ${CommentContent.getFragment('comment')}
                 ${Avatar.getFragment('comment')}
                 ${CommentList.getFragment('comment', { currentDepth }).if(expand)}

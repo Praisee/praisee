@@ -66,11 +66,11 @@ export default function CommentTypes(repositoryAuthorizers: IAppRepositoryAuthor
             },
 
             user: {
-                type: types.OtherUserType,
+                type: types.UserInterfaceType,
                 resolve: async (comment, _, {user: currentUser}) => {
                     const user = await usersAuthorizer
                         .as(currentUser)
-                        .findOtherUserById(comment.userId);
+                        .findUserById(comment.userId);
 
                     return user;
                 }

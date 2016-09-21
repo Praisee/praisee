@@ -3,6 +3,8 @@ import * as Relay from 'react-relay';
 
 import EditorComponent from 'pz-client/src/editor/editor.component';
 import serializeEditorState from 'pz-client/src/editor/serialize-editor-state';
+import CurrentUserType from 'pz-client/src/user/current-user-type';
+import SignInUpOverlay, { ISignInUpContext, SignInUpContextType } from 'pz-client/src/user/sign-in-up-overlay-component';
 
 interface IProps {
     relay: any
@@ -11,6 +13,18 @@ interface IProps {
 }
 
 class Editor extends React.Component<IProps, any> {
+    static contextTypes: any = {
+        appViewerId: React.PropTypes.string.isRequired,
+        currentUser: CurrentUserType,
+        signInUpContext: SignInUpContextType
+    };
+
+    context: {
+        appViewerId: number,
+        currentUser: any,
+        signInUpContext: ISignInUpContext
+    }
+
     state = {
         editorContent: null,
         enableCommentEditor: false
@@ -27,34 +41,44 @@ class Editor extends React.Component<IProps, any> {
     render() {
         return (
             <div className="comment-editor">
-                { this.state.enableCommentEditor
-                    ? (<form className="editor-form" onSubmit={this._saveComment.bind(this) }>
+                {this.state.enableCommentEditor
+                    ? (<form className="editor-form" onSubmit={this._saveComment.bind(this)}>
                         <EditorComponent
                             placeholder="Share your thoughts..."
-                            onChange={this._updateEditor.bind(this) }
+                            onChange={this._updateEditor.bind(this)}
                             onBlur={this._onBlur.bind(this)}
                             ref={(editor) => this._inputs.editor = editor}
                             />
 
                         <button className="submit" type="submit">Reply</button>
                     </form>)
-                    : (<input type="text" className="reply-button" onClick={this._toggleEditor.bind(this, true) } placeholder="Reply..." />)
+                    : (<input type="text" className="reply-button" onClick={this._toggleEditor.bind(this)} placeholder="Reply..." />)
                 }
             </div>
         );
     }
 
-    private _toggleEditor(event, showEditor) {
-        this.setState({ enableCommentEditor: showEditor });
+    private _toggleEditor(event) {
+        if (!this.context.signInUpContext.isLoggedIn) {
+            this.context.signInUpContext.showSignInUp(event);
+            return;
+        }
+
+        this.setState({ enableCommentEditor: true });
 
         if (this.props.onEditing) {
-            this.props.onEditing(showEditor);
+            this.props.onEditing(true);
         }
     }
 
-    private _onBlur(event){
-        if(!this.state.editorContent.getCurrentContent().hasText())
-            this._toggleEditor(null, false);
+    private _onBlur(event) {
+        if (!this.state.editorContent.getCurrentContent().hasText()) {
+            this.setState({ enableCommentEditor: false });
+
+            if (this.props.onEditing) {
+                this.props.onEditing(false);
+            }
+        }
     }
 
     private _saveComment(event) {

@@ -1,6 +1,7 @@
 import * as React from 'react';
 import * as Relay from 'react-relay';
 import NotFoundError from 'pz-client/src/app/not-found-error.component';
+import CurrentUserType from 'pz-client/src/user/current-user-type';
 
 import {
     appStateLoadingStatusType,
@@ -23,7 +24,8 @@ export class App extends React.Component<any, any> {
 
     static childContextTypes: any = {
         showNotFoundError: React.PropTypes.func,
-        appViewerId: React.PropTypes.string
+        appViewerId: React.PropTypes.string,
+        currentUser: CurrentUserType
     };
 
     context: IContextTypes;
@@ -31,7 +33,8 @@ export class App extends React.Component<any, any> {
     getChildContext() {
         return {
             showNotFoundError: this._showNotFoundError.bind(this),
-            appViewerId: this.props.viewer.id
+            appViewerId: this.props.viewer.id,
+            currentUser: this.props.currentUser
         };
     }
 
@@ -81,7 +84,6 @@ export class App extends React.Component<any, any> {
             this.context.notFoundHandler(notFoundErrorMessage);
 
         } else {
-
             setTimeout(() => {
                 this.setState({
                     showNotFoundError: true,
@@ -97,10 +99,11 @@ export default Relay.createContainer(App, {
         viewer: () => Relay.QL`
             fragment on Viewer {
                 id
-                responseErrorsList{
-                    id
-                    message
-                }
+            }
+        `,
+        currentUser: () => Relay.QL`
+            fragment on UserInterface {
+                id
             }
         `
     }

@@ -49,6 +49,10 @@
       }
     }
   }
+
+  .logo{
+    height: 2rem;
+  }
 }
 
 @mixin app-layout {
@@ -70,7 +74,7 @@
 }
 
 // TODO: Remove this crap eventually plx
-.sign-in-up-overlay {
+.sign-in-up-overlay-modal {
   @extend %bootstrap;
   @extend %font-awesome;
   @include sign-in-up();

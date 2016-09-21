@@ -4,6 +4,10 @@ import {Component} from 'react';
 import SiteSearch from 'pz-client/src/search/site-search.component';
 import Header from 'pz-client/src/app/layout/header.component';
 import Footer from 'pz-client/src/app/layout/footer.component';
+import appInfo from 'pz-client/src/app/app-info';
+import SignInUpOverlay from 'pz-client/src/user/sign-in-up-overlay-component';
+
+const logoUrl = appInfo.addresses.getImage('praisee-logo.svg');
 
 export interface IHomeControllerProps {
     params: any,
@@ -23,24 +27,26 @@ export class Home extends Component<IHomeControllerProps, any> {
     render() {
         return (
             <div className="home-namespace">
-                <Header currentUser={this.props.currentUser} />
+                <SignInUpOverlay>
+                    <Header currentUser={this.props.currentUser} viewer={this.props.viewer} />
 
-                <div className="primary-content">
-                    <div className="primary-content-container">
-                        <h1 className="branding-large">
-                            Praisee
-                        </h1>
+                    <div className="primary-content">
+                        <div className="primary-content-container">
+                            <h1 className="branding-large">
+                                <img src={logoUrl} alt="Praisee" />
+                            </h1>
 
-                        <SiteSearch />
+                            <SiteSearch />
+                        </div>
                     </div>
-                </div>
 
-                <div className="temporary-content">
-                    <p>Topics loaded: {this.props.viewer.topics.length}</p>
-                    <p>Client loaded: {this.state.clientLoaded ? 'true' : 'false'}</p>
-                </div>
+                    <div className="temporary-content">
+                        <p>Topics loaded: {this.props.viewer.topics.length}</p>
+                        <p>Client loaded: {this.state.clientLoaded ? 'true' : 'false'}</p>
+                    </div>
 
-                <Footer />
+                    <Footer />
+                </SignInUpOverlay>
             </div>
         );
     }
@@ -55,14 +61,15 @@ export default Relay.createContainer(Home, {
         viewer: () => Relay.QL`
             fragment on Viewer {
                 topics {
-                    id,
+                    id
                     name
                 }
+                ${Header.getFragment('viewer')}
             }
         `,
 
         currentUser: () => Relay.QL`
-            fragment on User {
+            fragment on UserInterface {
                 ${Header.getFragment('currentUser')}
             }
         `

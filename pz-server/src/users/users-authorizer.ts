@@ -18,7 +18,7 @@ export interface IOtherUser extends IRepositoryRecord {
 export interface IAuthorizedUsers {
     findById(userId: number): Promise<IUser>
     findCurrentUser(): Promise<IUser>
-    findOtherUserById(userId: number): Promise<IOtherUser>
+    findUserById(userId: number): Promise<IOtherUser | IUser>
     create(email, password, displayName): Promise<IUser>
 }
 
@@ -31,16 +31,26 @@ class AuthorizedUsers {
         this._users = users;
     }
 
-    async findOtherUserById(userId) {
-        const {id, displayName} = await this._users.findById(userId);
+    /* TODO: Name this something clever to indicate that it returns OtherUser if
+             asking for a user other than the current user. This method is used by
+             Community Items and Comments to help determine if the person viewing the
+             content owns it or not. Should this logic just be in FindById? */
+    async findUserById(userId): Promise<IOtherUser | IUser> {
+        const user = await this._users.findById(userId);
 
-        const otherUser: IOtherUser = {
-            id,
-            displayName,
-            recordType: 'OtherUser'
-        };
+        if (this._user && this._user.id == user.id) {
+            return user;
+        }
 
-        return otherUser;
+        else {
+            const otherUser: IOtherUser = {
+                id: user.id,
+                displayName: user.displayName,
+                recordType: 'OtherUser'
+            };
+
+            return otherUser;
+        }
     }
 
     findById(userId) {

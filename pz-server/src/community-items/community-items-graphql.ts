@@ -70,11 +70,11 @@ export default function CommunityItemTypes(repositoryAuthorizers: IAppRepository
             },
 
             user: {
-                type: types.OtherUserType,
+                type: types.UserInterfaceType,
                 resolve: async (communityItem, _, {user: currentUser}) => {
                     const user = await usersAuthorizer
                         .as(currentUser)
-                        .findOtherUserById(communityItem.userId)
+                        .findUserById(communityItem.userId)
 
                     return user;
                 }

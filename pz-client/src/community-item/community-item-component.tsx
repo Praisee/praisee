@@ -14,7 +14,7 @@ import DeleteCommunityItemVoteMutation from 'pz-client/src/votes/delete-communit
 import CreateCommentForCommunityItemMutation from 'pz-client/src/comments/create-comment-for-community-item-mutation';
 import Error from 'pz-client/src/widgets/error-component';
 import {IContentData} from 'pz-server/src/content/content-data';
-import {CreateCommentEditor} from 'pz-client/src/comments/comment-editor-controller';
+import {CreateCommentEditor} from 'pz-client/src/comments/comment-editor-component';
 var classnames = require('classnames');
 
 class CommunityItem extends Component<ICommunityItemProps, ICommuintyItemState> {

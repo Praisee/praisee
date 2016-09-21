@@ -71,7 +71,7 @@ class UserAccountMenu extends React.Component<IProps, any> {
 export default Relay.createContainer(UserAccountMenu, {
     fragments: {
         currentUser: () => Relay.QL`
-            fragment on User {
+            fragment on UserInterface {
                 displayName
             }
         `

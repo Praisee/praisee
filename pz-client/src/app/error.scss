@@ -1,0 +1,24 @@
+@mixin error {
+  .error-namespace {
+    @include make-container();
+    @include make-container-max-widths();
+    margin-top: 1rem;
+
+    .error {
+      @extend .alert;
+      @extend .alert-warning;
+      @extend .fade;
+      @extend .in;
+    }
+
+    .close {
+      @extend .fa;
+      @extend .fa-times-circle;
+
+      cursor: pointer;
+      float: right;
+      font-size: 1.2rem;
+      line-height: 1.2;
+    }
+  }
+}
