@@ -29,6 +29,7 @@ class Editor extends React.Component<IProps, any> {
         editorContent: null,
         enableCommentEditor: false
     };
+    
     private _inputs: {
         editor?: any;
     } = {};

@@ -1,10 +1,12 @@
 import * as React from 'react';
 import * as Relay from 'react-relay';
 
+import CurrentUserType from 'pz-client/src/user/current-user-type';
+import SignInUpOverlay, { ISignInUpContext, SignInUpContextType } from 'pz-client/src/user/sign-in-up-overlay-component';
 import CreateCommunityItemForTopicMutation from 'pz-client/src/community-item/create-community-item-from-topic-mutation';
 import CommunityItemBodyEditor from 'pz-client/src/community-item/community-item-body-editor.component';
 import serializeEditorState from 'pz-client/src/editor/serialize-editor-state';
-var classnames = require('classnames');
+import classnames from 'classnames';
 
 interface IProps {
     relay: any
@@ -26,6 +28,14 @@ interface IProps {
 class CommunityItemEditor extends React.Component<IProps, any> {
     private _delayedStateTimer: any;
     private _delayedState = {};
+    
+    static contextTypes: any = {
+        signInUpContext: SignInUpContextType
+    };
+
+    context: {
+        signInUpContext: ISignInUpContext
+    }
 
     state = {
         summaryContent: '',
@@ -36,15 +46,6 @@ class CommunityItemEditor extends React.Component<IProps, any> {
     };
 
     private saying = '';
-    private sayings = [
-        `Say something about`,
-        `Tell us some tips and tricks for`,
-        `Share some tips and tricks for`,
-        `Share something about`,
-        `Review`,
-        `Ask a question about`,
-        `Ask your question about`,
-    ];
 
     render() {
         return (
@@ -85,10 +86,18 @@ class CommunityItemEditor extends React.Component<IProps, any> {
     }
 
     private _onSummaryFocus() {
+        if (!this.context.signInUpContext.isLoggedIn) {
+            this.context.signInUpContext.showSignInUp(event);
+            return;
+        }
         this._setStateDelayed({ summaryHasFocus: true });
     }
 
     private _onBodyFocus() {
+        if (!this.context.signInUpContext.isLoggedIn) {
+            this.context.signInUpContext.showSignInUp(event);
+            return;
+        }
         this._setStateDelayed({ bodyHasFocus: true });
     }
 
@@ -102,9 +111,20 @@ class CommunityItemEditor extends React.Component<IProps, any> {
 
     private _getRandomSaying() {
         if (this.saying !== '') return this.saying;
-        var saying = this.sayings[Math.floor(Math.random() * (this.sayings.length - 1))];
+        
+        const sayings = [
+            `Say something about`,
+            `Tell us some tips and tricks for`,
+            `Share some tips and tricks for`,
+            `Share something about`,
+            `Review`,
+            `Ask a question about`,
+            `Ask your question about`,
+        ];
+        
+        var randomSaying = sayings[Math.floor(Math.random() * (sayings.length - 1))];
 
-        this.saying = `${saying} ${this.props.topic.name}...`;
+        this.saying = `${randomSaying} ${this.props.topic.name}...`;
         return this.saying;
     }
 
