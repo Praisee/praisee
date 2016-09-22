@@ -12,18 +12,10 @@ export default class Votes extends React.Component<VotesProps, any> {
         this.schemaInjector = new SchemaInjector(aggregateRatingSchema);
     }
 
-    private _onUpVoteClicked = () => {
-        this.props.upVoteClicked();
-    }
-
-    private _onDownVoteClicked = () => {
-        this.props.downVoteClicked();
-    }
-
     render() {
-        const {upVotes, totalVotes, userVote} = this.props;
-        const upVoteClasses = classnames('up-vote', { 'current-vote': userVote === true })
-        const downVoteClasses = classnames('down-vote', { 'current-vote': userVote === false }) //userVote is true, false or null
+        const {userVote} = this.props;
+        const upVoteClasses = classnames('up-vote', { 'current-vote': userVote === true });
+        const downVoteClasses = classnames('down-vote', { 'current-vote': userVote === false }); //userVote is true, false or null
 
         return this.schemaInjector.inject(
             <span className="aggregate-rating votes">
@@ -45,6 +37,14 @@ export default class Votes extends React.Component<VotesProps, any> {
             </span>
         );
     }
+
+    private _onUpVoteClicked = () => {
+        this.props.upVoteClicked();
+    };
+
+    private _onDownVoteClicked = () => {
+        this.props.downVoteClicked();
+    };
 }
 
 interface VotesProps {
@@ -67,4 +67,4 @@ var aggregateRatingSchema: ISchemaType = {
     "review-count": {
         property: "ratingCount"
     }
-}
+};

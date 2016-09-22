@@ -15,14 +15,19 @@ import CreateCommentForCommunityItemMutation from 'pz-client/src/comments/create
 import Error from 'pz-client/src/widgets/error-component';
 import {IContentData} from 'pz-server/src/content/content-data';
 import {CreateCommentEditor} from 'pz-client/src/comments/comment-editor-component';
-var classnames = require('classnames');
+import {ISignInUpContext, SignInUpContextType} from 'pz-client/src/user/sign-in-up-overlay-component';
+import classNames from 'classnames';
 
 class CommunityItem extends Component<ICommunityItemProps, ICommuintyItemState> {
     static contextTypes : any = {
-        appViewerId: React.PropTypes.string.isRequired
+        appViewerId: React.PropTypes.string.isRequired,
+        signInUpContext: SignInUpContextType
     };
 
-    context: any;
+    context: {
+        appViewerId: number,
+        signInUpContext: ISignInUpContext
+    };
 
     constructor(props, context) {
         super(props, context);
@@ -38,10 +43,10 @@ class CommunityItem extends Component<ICommunityItemProps, ICommuintyItemState> 
             <Error message={this.props.createCommunityItemVoteMutation.error} /> :
             null;
 
-        const bubbleClass = classnames('bubble', {'hidden': communityItem.commentCount === 0});
+        const bubbleClass = classNames('bubble', {'hidden': communityItem.commentCount === 0});
 
         //TODO: Figure out how to truncate longer content
-        const communityItemClasses = classnames({'long-content': false})
+        const communityItemClasses = classNames({'long-content': false})
 
         return (
             <div className="community-item">
@@ -119,6 +124,11 @@ class CommunityItem extends Component<ICommunityItemProps, ICommuintyItemState> 
     }
 
     private _doVoteLogic(isUpVote: boolean) {
+        if (!this.context.signInUpContext.isLoggedIn) {
+            this.context.signInUpContext.showSignInUp(event);
+            return;
+        }
+
         const {currentUserVote} = this.props.communityItem;
 
         if (currentUserVote !== null) {

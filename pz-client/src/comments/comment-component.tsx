@@ -15,15 +15,21 @@ import UpdateCommentVoteMutation from 'pz-client/src/votes/update-comment-vote-m
 import DeleteCommentVoteMutation from 'pz-client/src/votes/delete-comment-vote-mutation';
 import CreateCommentForCommentMutation from 'pz-client/src/comments/create-comment-for-comment-mutation';
 import CurrentUserType from 'pz-client/src/user/current-user-type';
+import {SignInUpContextType, ISignInUpContext} from 'pz-client/src/user/sign-in-up-overlay-component';
 
 export class Comment extends Component<any, any>{
     static contextTypes : any = {
         appViewerId: React.PropTypes.string.isRequired,
-        currentUser: CurrentUserType
+        currentUser: CurrentUserType,
+        signInUpContext: SignInUpContextType
     };
-    
-    context: any;
-    
+
+    context: {
+        appViewerId: number,
+        currentUser: any,
+        signInUpContext: ISignInUpContext
+    };
+
     schemaInjector: SchemaInjector;
 
     constructor(props, context) {
@@ -132,6 +138,11 @@ export class Comment extends Component<any, any>{
     }
 
     private _doVoteLogic(isUpVote: boolean) {
+        if (!this.context.signInUpContext.isLoggedIn) {
+            this.context.signInUpContext.showSignInUp(event);
+            return;
+        }
+
         const {currentUserVote} = this.props.comment;
 
         if (currentUserVote !== null) {
