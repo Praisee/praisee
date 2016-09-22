@@ -23,9 +23,7 @@ export class AppLayout extends React.Component<IAppLayoutProps, any> {
                     <Header currentUser={this.props.currentUser || null} viewer={this.props.viewer} />
 
                     <div className="app-content">
-                        <div className="app-layout-container">
-                            {this.props.children}
-                        </div>
+                        {this.props.children}
                     </div>
 
                     <Footer />

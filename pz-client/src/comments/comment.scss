@@ -3,6 +3,7 @@
     @include expand-button();
     @include comment-editor();
     padding-left: 1rem;
+    margin: 1rem 0;
 
     .comment-bottom {
       display: flex;

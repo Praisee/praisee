@@ -3,6 +3,7 @@ import {Component} from 'react';
 import SuggestionsClient from 'pz-client/src/search/suggestions-client';
 import {Link, withRouter} from 'react-router';
 import {ISearchSuggestionResult} from 'pz-server/src/search/search-results';
+import classNames from 'classnames';
 
 var Autosuggest = require('react-autosuggest');
 
@@ -48,7 +49,8 @@ class SiteSearch extends Component<ISiteSearchProps, any> {
 
         this.state = {
             value: '',
-            suggestions: []
+            suggestions: [],
+            hasFocus: false
         };
     }
 
@@ -58,21 +60,32 @@ class SiteSearch extends Component<ISiteSearchProps, any> {
         const inputProps = {
             placeholder: 'What are you looking for?',
             value,
-            onChange: this._updateValue.bind(this)
+            onChange: this._updateValue.bind(this),
+            onFocus: this._onFocus.bind(this),
+            onBlur: this._offFocus.bind(this)
         };
 
+        const classes = classNames('site-search', {
+            'site-search-has-focus': this.state.hasFocus,
+            'site-search-has-input': value && value.length
+        });
+
         return (
-            <div className="site-search">
-                <Autosuggest
-                    suggestions={suggestions}
-                    inputProps={inputProps}
-                    onSuggestionsUpdateRequested={this._onSuggestionsUpdateRequested.bind(this)}
-                    getSuggestionValue={this._getSuggestionValue.bind(this)}
-                    renderSuggestion={this._renderSuggestion.bind(this)}
-                    onSuggestionSelected={this._goToSuggestion.bind(this)}
-                    focusInputOnSuggestionClick={false}
-                    theme={searchClasses}
-                />
+            <div className={classes}>
+                <div className="search-input-container">
+                    <i className="search-input-icon" />
+
+                    <Autosuggest
+                        suggestions={suggestions}
+                        inputProps={inputProps}
+                        onSuggestionsUpdateRequested={this._onSuggestionsUpdateRequested.bind(this)}
+                        getSuggestionValue={this._getSuggestionValue.bind(this)}
+                        renderSuggestion={this._renderSuggestion.bind(this)}
+                        onSuggestionSelected={this._goToSuggestion.bind(this)}
+                        focusInputOnSuggestionClick={false}
+                        theme={searchClasses}
+                    />
+                </div>
             </div>
         );
     }
@@ -130,6 +143,14 @@ class SiteSearch extends Component<ISiteSearchProps, any> {
             pathname: suggestion.routePath,
             state: {_appSiteSearchSuggestion: suggestion}
         });
+    }
+
+    _onFocus() {
+        this.setState({hasFocus: true});
+    }
+
+    _offFocus() {
+        this.setState({hasFocus: false});
     }
 }
 

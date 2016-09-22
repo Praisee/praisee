@@ -1,27 +1,62 @@
 @mixin site-search {
-    .site-search {
-        position: relative;
+  .site-search {
+    position: relative;
 
-        .search-input {
-            @extend .form-control;
-            width: 100%;
-        }
-
-        .suggestions-container {
-            @extend .dropdown-menu;
-            display: block;
-        }
-
-        .suggestion {
-            @extend .dropdown-item;
-            cursor: pointer;
-        }
-
-        .suggestion-focused,
-        .suggestion:hover,
-        .suggestion:active,
-        .suggestion:focus {
-            @extend .dropdown-item.active;
-        }
+    .search-input-container {
+      @extend .form-control;
     }
+
+    .search-input-icon {
+      @extend .fa;
+      @extend .fa-search;
+      position: absolute;
+      pointer-events: none;
+      top: 1rem;
+      color: $gray-lighter;
+
+      @include media-breakpoint-down(sm) {
+        top: 0.7rem;
+      }
+    }
+
+    &.site-search-has-input .search-input-icon {
+      color: $body-color;
+    }
+
+    .search-input {
+      width: 100%;
+      font-size: 1.4rem;
+      border: none;
+      padding-left: 1.5rem;
+
+      @include media-breakpoint-down(sm) {
+        font-size: 1rem;
+      }
+
+      &::placeholder {
+        color: $gray-lighter;
+      }
+
+      &:focus, &:active {
+        outline: none;
+      }
+    }
+
+    .suggestions-container {
+      @extend .dropdown-menu;
+      display: block;
+    }
+
+    .suggestion {
+      @extend .dropdown-item;
+      cursor: pointer;
+    }
+
+    .suggestion-focused,
+    .suggestion:hover,
+    .suggestion:active,
+    .suggestion:focus {
+      @extend .dropdown-item.active;
+    }
+  }
 }

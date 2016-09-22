@@ -15,8 +15,7 @@
       display: block;
       width: 100%;
       border: none;
-      font-size: 1.5rem;
-      margin-bottom: 0.5rem;
+      font-size: 1.2rem;
 
       &::placeholder {
         color: $editor-placeholder;
@@ -40,7 +39,8 @@
 
     .editor-area {
       flex: 1;
-      margin-bottom: .5rem;
+      margin-top: 0.5rem;
+      margin-bottom: 0.5rem;
     }
 
     .submit {

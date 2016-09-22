@@ -26,8 +26,8 @@
     @include comment-editor();
     @include comment();
     @include votes();
-    padding-bottom: 1rem;
-    padding-top: 1rem;
+    margin-top: 1rem;
+    margin-bottom: 3rem;
 
     .title {
       display: block;
