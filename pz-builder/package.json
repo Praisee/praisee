@@ -5,7 +5,7 @@
   "main": "gulpfile.js",
   "scripts": {
     "buildDev": "gulp buildDev",
-    "buildProd": "NODE_ENV=prod gulp buildProd",
+    "buildProd": "NODE_ENV=production gulp buildProd",
     "watch": "gulp watch"
   },
   "dependencies": {
