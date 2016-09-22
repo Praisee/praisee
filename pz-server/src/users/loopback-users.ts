@@ -2,6 +2,7 @@ import promisify from 'pz-support/src/promisify';
 import {IUsers, IUser, IUsersBatchable} from 'pz-server/src/users/users';
 import {IUserInstance, IUserModel} from 'pz-server/src/models/user';
 import {createRecordFromLoopback} from 'pz-server/src/support/repository';
+import {loopbackFindAllByIds} from 'pz-server/src/support/loopback-find-all-helpers';
 
 export function createRecordFromLoopbackUser(user: IUserInstance): IUser {
     return createRecordFromLoopback<IUser>('User', user);
@@ -25,15 +26,10 @@ export default class Users implements IUsers, IUsersBatchable {
     }
 
     async findAllByIds(userIds: Array<number>): Promise<Array<IUser>> {
-        if (!userIds.length) {
-            return [];
-        }
-
-        const find = promisify(this._UserModel.find, this._UserModel);
-
-        const userModels = await find({
-            where: { id: { inq: userIds } }
-        });
+        const userModels = await loopbackFindAllByIds<IUserModel, IUserInstance>(
+            this._UserModel,
+            userIds
+        );
 
         return userModels.map(userModel => {
             return createRecordFromLoopbackUser(userModel);

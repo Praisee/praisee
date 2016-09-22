@@ -6,7 +6,9 @@ import {
     cursorCommunityItemLoopbackModelsToRecords
 } from 'pz-server/src/community-items/loopback-community-items';
 
-import {ITopicModel as ILoopbackTopic, ITopicInstance as ILookbackTopicInstance} from 'pz-server/src/models/topic';
+import {
+    ITopicModel as ILoopbackTopic, ITopicInstance as ILookbackTopicInstance
+} from 'pz-server/src/models/topic';
 
 import {
     ICommunityItemModel as ILoopbackCommunityItem,
@@ -23,8 +25,9 @@ import {createRecordFromLoopback} from 'pz-server/src/support/repository';
 import {ICommunityItem} from 'pz-server/src/community-items/community-items';
 import {IRankings, RankingsUnavailableError} from 'pz-server/src/rankings/rankings';
 import {TOptionalUser} from 'pz-server/src/users/users';
-import {findWithCursor} from '../support/cursors/loopback-helpers';
+import {findWithCursor} from 'pz-server/src/support/cursors/loopback-helpers';
 import {mapCursorResultItems} from 'pz-server/src/support/cursors/map-cursor-results';
+import {loopbackFindAllByIds} from 'pz-server/src/support/loopback-find-all-helpers';
 
 export function createRecordFromLoopbackTopic(topic: ILookbackTopicInstance): ITopic {
     return createRecordFromLoopback<ITopic>('Topic', topic);
@@ -60,15 +63,10 @@ export default class LoopbackTopics implements ITopics, ITopicsBatchable {
     }
 
     async findAllByIds(ids: Array<number>): Promise<Array<ITopic>> {
-        if (!ids.length) {
-            return [];
-        }
-
-        const find = promisify(this._TopicModel.find, this._TopicModel);
-
-        const topicModels = await find({
-            where: { id: { inq: ids } }
-        });
+        const topicModels = await loopbackFindAllByIds<ILoopbackTopic, ILookbackTopicInstance>(
+            this._TopicModel,
+            ids
+        );
 
         return topicModels.map(topicModel => {
             return createRecordFromLoopbackTopic(topicModel);

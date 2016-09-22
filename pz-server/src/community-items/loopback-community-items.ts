@@ -15,6 +15,7 @@ import {ICursorResults, TBiCursor} from 'pz-server/src/support/cursors/cursors';
 
 import {findWithCursor} from 'pz-server/src/support/cursors/loopback-helpers';
 import {cursorLoopbackModelsToRecords} from 'pz-server/src/support/cursors/repository-helpers';
+import {loopbackFindAllByIds} from 'pz-server/src/support/loopback-find-all-helpers';
 
 export function createRecordFromLoopbackCommunityItem(communityItem: ICommunityItemInstance): ICommunityItem {
     return createRecordFromLoopback<ICommunityItem>('CommunityItem', communityItem);
@@ -45,11 +46,10 @@ export default class CommunityItems implements ICommunityItems {
     }
 
     async findAllByIds(ids: Array<number>): Promise<Array<ICommunityItem>> {
-        const find = promisify(this._CommunityItemModel.find, this._CommunityItemModel);
-
-        const communityItemModels = await find({
-            where: { id: { inq: ids } }
-        });
+        const communityItemModels = await loopbackFindAllByIds<ICommunityItemModel, ICommunityItemInstance>(
+            this._CommunityItemModel,
+            ids
+        );
 
         return communityItemModels.map(communityItemModel => {
             return createRecordFromLoopbackCommunityItem(communityItemModel);

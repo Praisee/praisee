@@ -2,6 +2,7 @@ import promisify from 'pz-support/src/promisify';
 import {createRecordFromLoopback} from 'pz-server/src/support/repository';
 import {IPhotoInstance, IPhotoModel} from 'pz-server/src/models/photo';
 import {IPhoto, IPhotos} from 'pz-server/src/photos/photos';
+import {loopbackFindAllByIds} from 'pz-server/src/support/loopback-find-all-helpers';
 
 export function createRecordFromLoopbackPhoto(photo: IPhotoInstance): IPhoto {
     return createRecordFromLoopback<IPhoto>('Photo', photo);
@@ -20,11 +21,10 @@ export default class LoopbackPhotos implements IPhotos {
     }
 
     async findAllByIds(ids: Array<number>): Promise<Array<IPhoto>> {
-        const find = promisify(this._PhotoModel.find, this._PhotoModel);
-
-        const photoModels = await find({
-            where: { id: {inq: ids} }
-        });
+        const photoModels = await loopbackFindAllByIds<IPhotoModel, IPhotoInstance>(
+            this._PhotoModel,
+            ids
+        );
 
         return photoModels.map(photoModel => {
             return createRecordFromLoopbackPhoto(photoModel);

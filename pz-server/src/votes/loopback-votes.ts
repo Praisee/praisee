@@ -15,6 +15,7 @@ import {ICursorResults, TBiCursor} from 'pz-server/src/support/cursors/cursors';
 import {findWithCursor} from 'pz-server/src/support/cursors/loopback-helpers';
 import {cursorLoopbackModelsToRecords} from 'pz-server/src/support/cursors/repository-helpers';
 import loopbackQuery from '../support/loopback-query';
+import {loopbackFindAllByIds} from 'pz-server/src/support/loopback-find-all-helpers';
 
 export function createRecordFromLoopbackVote(vote: IVoteInstance): IVote {
     return createRecordFromLoopback<IVote>('Vote', vote);
@@ -43,13 +44,12 @@ export default class LoopbackVotes implements IVotes, IVotesBatchable {
     }
 
     async findAllByIds(ids: Array<number>): Promise<Array<IVote>> {
-        const find = promisify(this._VoteModel.find, this._VoteModel);
+        const voteModels = await loopbackFindAllByIds<IVoteModel, IVoteInstance>(
+            this._VoteModel,
+            ids
+        );
 
-        const VoteModels = await find({
-            where: { id: { inq: ids } }
-        });
-
-        return VoteModels.map(VoteModel => {
+        return voteModels.map(VoteModel => {
             return createRecordFromLoopbackVote(VoteModel);
         });
     }

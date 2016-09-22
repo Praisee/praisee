@@ -21,8 +21,9 @@ export default class TopicsLoader implements ITopics {
         this._topics = topics;
 
         this._loaders = {
-            findAllByIds: createDataLoaderBatcher(
-                this._topics.findAllByIds.bind(this._topics)
+            findAllByIds: createDataLoaderBatcher<number, ITopic>(
+                this._topics.findAllByIds.bind(this._topics),
+                topic => topic.id
             )
         }
     }
