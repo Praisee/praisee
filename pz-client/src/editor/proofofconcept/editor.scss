@@ -1,5 +1,3 @@
-@import '../../../node_modules/draft-js-toolbar-plugin/lib/plugin';
-
 @mixin editor-proofofconcept-namespace {
     .editor-proofofconcept-namespace {
         @include make-container();
@@ -25,8 +23,8 @@
         }
 
         .editor-area {
-            @import '../../../node_modules/draft-js/dist/Draft';
-            @import '../../../node_modules/draft-js-mention-plugin/lib/plugin';
+            @import '../../../../node_modules/draft-js/dist/Draft';
+            @import '../../../../node_modules/draft-js-mention-plugin/lib/plugin';
 
             .public-DraftEditor-content {
                 min-height: 10rem;
@@ -34,8 +32,8 @@
         }
 
         .community-item-content {
-            @import '../../../node_modules/draft-js/dist/Draft';
-            @import '../../../node_modules/draft-js-mention-plugin/lib/plugin';
+            @import '../../../../node_modules/draft-js/dist/Draft';
+            @import '../../../../node_modules/draft-js-mention-plugin/lib/plugin';
         }
     }
 }

@@ -26,6 +26,8 @@
 //
 // Grayscale and brand colors for use across Bootstrap.
 
+$black: #111;
+
 $gray-dark:                 #373a3c !default;
 $gray:                      #55595c !default;
 $gray-light:                #818a91 !default;
@@ -33,7 +35,7 @@ $gray-lighter:              #cececf !default;
 $gray-lightest:             #f7f7f9 !default;
 $white: white;
 
-$brand-primary:             #0275d8 !default;
+$brand-primary: #5150cb !default;
 $brand-success:             #5cb85c !default;
 $brand-info:                #5bc0de !default;
 $brand-warning:             #f0ad4e !default;
@@ -96,8 +98,9 @@ $body-color:                 $gray-dark !default;
 
 $link-color:                 $brand-primary !default;
 $link-decoration:            none !default;
-$link-hover-color:           darken($link-color, 15%) !default;
-$link-hover-decoration:      underline !default;
+$link-hover-color-offset:    20%;
+$link-hover-color:           darken($link-color, $link-hover-color-offset) !default;
+$link-hover-decoration:      none !default;
 
 
 // Grid breakpoints
@@ -156,9 +159,9 @@ $font-size-lg:               1.25rem !default;
 $font-size-sm:               .875rem !default;
 $font-size-xs:               .75rem !default;
 
-$font-size-h1:               2.5rem !default;
-$font-size-h2:               2rem !default;
-$font-size-h3:               1.75rem !default;
+$font-size-h1:               2rem !default;
+$font-size-h2:               1.8rem !default;
+$font-size-h3:               1.6rem !default;
 $font-size-h4:               1.5rem !default;
 $font-size-h5:               1.25rem !default;
 $font-size-h6:               1rem !default;
@@ -179,7 +182,7 @@ $headings-margin-bottom:     ($spacer / 2) !default;
 $headings-font-family:       inherit !default;
 $headings-font-weight:       500 !default;
 $headings-line-height:       1.1 !default;
-$headings-color:             inherit !default;
+$headings-color:             $black !default;
 
 $lead-font-size:             1.25rem !default;
 $lead-font-weight:           300 !default;
@@ -253,7 +256,7 @@ $btn-primary-border:             $btn-primary-bg !default;
 
 $btn-secondary-color:            $gray-dark !default;
 $btn-secondary-bg:               #fff !default;
-$btn-secondary-border:           #ccc !default;
+$btn-secondary-border:           $gray-light !default;
 
 $btn-info-color:                 #fff !default;
 $btn-info-bg:                    $brand-info !default;
@@ -302,8 +305,8 @@ $input-border-radius:            $border-radius !default;
 $input-border-radius-lg:         $border-radius-lg !default;
 $input-border-radius-sm:         $border-radius-sm !default;
 
-$input-border-focus:             #66afe9 !default;
-$input-box-shadow-focus:         rgba(102,175,233,.6) !default;
+$input-border-focus:             $brand-primary !default;
+$input-box-shadow-focus:         darken($brand-primary, 50%) !default;
 
 $input-color-placeholder:        #999 !default;
 

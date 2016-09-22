@@ -32,7 +32,6 @@ export class TopicController extends Component<ITopicProps, ITopicState> {
 
         return (
             <div className="topic-namespace" >
-                <h2>{this.props.topic.name}</h2>
                 {this._renderPrimarySection() }
                 {this._renderSideSection() }
             </div>

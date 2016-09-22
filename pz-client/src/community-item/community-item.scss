@@ -30,8 +30,12 @@
     padding-top: 1rem;
 
     .title {
-      font-size: 1.8em;
-      color: $gray;
+      display: block;
+      color: $headings-color;
+      font-size: 1.5em;
+      font-family: $headings-font-family;
+      font-weight: $headings-font-weight;
+      margin-bottom: 1rem;
     }
 
     .community-item-bottom {

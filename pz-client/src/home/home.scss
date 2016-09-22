@@ -1,6 +1,6 @@
 @mixin home-namespace {
     .home-namespace {
-        & > .app-header {
+        .app-header {
             @include app-header();
 
             .app-branding, .app-search {
