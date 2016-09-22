@@ -1,5 +1,5 @@
 module.exports = function healthCheckRoute(app: IApp) {
-    app.get('/i/health-check', function(request, response) {
+    app.get('/i/web-health', function(request, response) {
         response.send('success');
     });
 };

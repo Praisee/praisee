@@ -22,7 +22,7 @@ export default {
         pzPath('pz-server', 'src/search/site-search/search-route'),
         pzPath('pz-server', 'src/search/mention-suggestions/mention-suggestions-route'),
         pzPath('pz-server', 'src/photos/upload-routes'),
-        pzPath('pz-server', 'src/site/health-check-route'),
+        pzPath('pz-server', 'src/site/health-check-routes'),
         pzPath('pz-server', 'src/site/site-route'),
         pzPath('pz-server', 'src/site/static-assets')
     ]
