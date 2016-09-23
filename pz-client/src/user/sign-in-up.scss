@@ -4,8 +4,8 @@
     @include make-container-max-widths();
 
     .sign-in-button, .sign-up-button {
-      @extend .btn;
-      @extend .btn-primary;
+      @include btn;
+      @include btn-primary;
     }
 
     p {

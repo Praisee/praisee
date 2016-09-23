@@ -2,6 +2,7 @@
 @import 'bootstrap';
 @import 'font-awesome';
 
+@import 'buttons';
 @import '../../user/sign-in-up';
 @import '../../user/avatar';
 @import '../../widgets/expand-button';
@@ -21,14 +22,14 @@
 @import '../../editor/proofofconcept/editor'; // TODO: Remove this
 
 .app-namespace {
-    @extend %bootstrap;
-    @extend %font-awesome;
+  @extend %bootstrap;
+  @extend %font-awesome;
 
-    & > { @include app-layout(); }
+  & > { @include app-layout(); }
 
-    @include home-namespace();
-    @include topic-namespace();
-    @include error();
+  @include home-namespace();
+  @include topic-namespace();
+  @include error();
 
-    @include editor-proofofconcept-namespace(); // TODO: Remove this
+  @include editor-proofofconcept-namespace(); // TODO: Remove this
 }

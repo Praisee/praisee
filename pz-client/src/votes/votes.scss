@@ -14,16 +14,16 @@
     }
 
     .up-vote, .down-vote {
-      @extend .btn;
-      @extend .btn-sm;
-      @extend .btn-primary;
+      @include btn;
+      @include btn-sm;
+      @include btn-primary;
       margin-right: .5rem;
       margin-top: .5rem;
       margin-bottom: .5rem;
     }
 
     .down-vote {
-      @extend .btn-secondary-outline;
+      @include btn-secondary-outline;
     }
 
     .current-vote {

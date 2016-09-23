@@ -1,4 +1,4 @@
-.btn {
+@mixin btn {
   display: inline-block;
   font-weight: $btn-font-weight;
   text-align: center;
@@ -47,27 +47,26 @@ fieldset[disabled] a.btn {
   pointer-events: none;
 }
 
-
 //
 // Alternate buttons
 //
 
-.btn-primary {
+@mixin btn-primary {
   @include button-variant($btn-primary-color, $btn-primary-bg, $btn-primary-border);
 }
-.btn-secondary {
+@mixin btn-secondary {
   @include button-variant($btn-secondary-color, $btn-secondary-bg, $btn-secondary-border);
 }
-.btn-info {
+@mixin btn-info {
   @include button-variant($btn-info-color, $btn-info-bg, $btn-info-border);
 }
-.btn-success {
+@mixin btn-success {
   @include button-variant($btn-success-color, $btn-success-bg, $btn-success-border);
 }
-.btn-warning {
+@mixin btn-warning {
   @include button-variant($btn-warning-color, $btn-warning-bg, $btn-warning-border);
 }
-.btn-danger {
+@mixin btn-danger {
   @include button-variant($btn-danger-color, $btn-danger-bg, $btn-danger-border);
 }
 
@@ -96,26 +95,26 @@ fieldset[disabled] a.btn {
 }
 
 // Remove all backgrounds
-.btn-primary-outline {
+@mixin btn-primary-outline {
   @include priasee-btn-outline($btn-primary-bg);
 }
-.btn-secondary-outline {
+@mixin btn-secondary-outline {
   @include priasee-btn-outline($btn-secondary-border);
   border: none;
 }
-.btn-info-outline {
+@mixin btn-info-outline {
   @include priasee-btn-outline($btn-info-bg);
   border: none;
 }
-.btn-success-outline {
+@mixin btn-success-outline {
   @include priasee-btn-outline($btn-success-bg);
   border: none;
 }
-.btn-warning-outline {
+@mixin btn-warning-outline {
   @include priasee-btn-outline($btn-warning-bg);
   border: none;
 }
-.btn-danger-outline {
+@mixin btn-danger-outline {
   @include priasee-btn-outline($btn-danger-bg);
   border: none;
 }
@@ -126,7 +125,7 @@ fieldset[disabled] a.btn {
 //
 
 // Make a button look and behave like a link
-.btn-link {
+@mixin btn-link {
   font-weight: normal;
   color: $link-color;
   border-radius: 0;
@@ -164,11 +163,11 @@ fieldset[disabled] a.btn {
 // Button Sizes
 //
 
-.btn-lg {
+@mixin btn-lg {
   // line-height: ensure even-numbered height of button next to large input
   @include button-size($btn-padding-y-lg, $btn-padding-x-lg, $font-size-lg, $line-height-lg, $btn-border-radius-lg);
 }
-.btn-sm {
+@mixin btn-sm {
   // line-height: ensure proper height of button next to small input
   @include button-size($btn-padding-y-sm, $btn-padding-x-sm, $font-size-sm, $line-height-sm, $btn-border-radius-sm);
 }
@@ -178,14 +177,14 @@ fieldset[disabled] a.btn {
 // Block button
 //
 
-.btn-block {
+@mixin btn-block {
   display: block;
   width: 100%;
-}
 
-// Vertically space out multiple block buttons
-.btn-block + .btn-block {
-  margin-top: 5px;
+  // Vertically space out multiple block buttons
+  & + & {
+    margin-top: 5px;
+  }
 }
 
 // Specificity overrides

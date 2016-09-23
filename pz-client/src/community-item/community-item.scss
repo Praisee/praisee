@@ -116,9 +116,9 @@
     }
 
     .topic-tag {
-      @extend .btn;
-      @extend .btn-primary-outline;
-      @extend .btn-sm;
+      @include btn;
+      @include btn-primary-outline;
+      @include btn-sm;
       margin-right: .5rem;
       margin-top: 1.2rem;
       margin-bottom: .5rem;

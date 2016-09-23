@@ -6,9 +6,9 @@
     }
 
     .submit {
-      @extend .btn;
-      @extend .btn-sm;
-      @extend .btn-primary;
+      @include btn;
+      @include btn-sm;
+      @include btn-primary;
       margin-top: .5em;
       margin-bottom: .5em;
       padding: 0.25rem 0.75rem;
