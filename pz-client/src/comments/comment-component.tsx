@@ -10,15 +10,12 @@ import CommentList from 'pz-client/src/comments/comment-list-component';
 import Avatar from 'pz-client/src/user/avatar.component';
 import {CreateCommentEditor} from 'pz-client/src/comments/comment-editor-component';
 import Votes from 'pz-client/src/votes/votes-component';
-import CreateCommentVoteMutation from 'pz-client/src/votes/create-comment-vote-mutation';
-import UpdateCommentVoteMutation from 'pz-client/src/votes/update-comment-vote-mutation';
-import DeleteCommentVoteMutation from 'pz-client/src/votes/delete-comment-vote-mutation';
 import CreateCommentForCommentMutation from 'pz-client/src/comments/create-comment-for-comment-mutation';
 import CurrentUserType from 'pz-client/src/user/current-user-type';
 import {SignInUpContextType, ISignInUpContext} from 'pz-client/src/user/sign-in-up-overlay-component';
 
 export class Comment extends Component<any, any>{
-    static contextTypes : any = {
+    static contextTypes: any = {
         appViewerId: React.PropTypes.string.isRequired,
         currentUser: CurrentUserType,
         signInUpContext: SignInUpContextType
@@ -75,12 +72,8 @@ export class Comment extends Component<any, any>{
                         {!this.state.isEditingComment && (
                             <Votes
                                 key={`comment-votes-${comment.id}`}
-                                upVoteClicked={this._onUpVoteClicked.bind(this) }
-                                downVoteClicked={this._onDownVoteClicked.bind(this) }
-                                totalVotes={comment.votes.total}
-                                upVotes={comment.votes.upVotes}
-                                userVote={comment.currentUserVote}
-                                />
+                                comment={this.props.comment}
+                                communityItem={null} />
                         )}
                         <CreateCommentEditor
                             comment={comment}
@@ -95,7 +88,7 @@ export class Comment extends Component<any, any>{
         );
     }
 
-    private _isCurrentUserOwner(){
+    private _isCurrentUserOwner() {
         return this.context.currentUser && this.context.currentUser.id === this.props.comment.user.id;
     }
 
@@ -116,53 +109,6 @@ export class Comment extends Component<any, any>{
     private _onEditing(isEditingComment) {
         this.setState({ isEditingComment });
     }
-
-    private _createVote(isUpVote: boolean) {
-        this.props.relay.commitUpdate(new CreateCommentVoteMutation({
-            isUpVote: isUpVote,
-            comment: this.props.comment
-        }));
-    }
-
-    private _deleteCurrentVote() {
-        this.props.relay.commitUpdate(new DeleteCommentVoteMutation({
-            comment: this.props.comment
-        }));
-    }
-
-    private _updateCurrentVote(isUpVote: boolean) {
-        this.props.relay.commitUpdate(new UpdateCommentVoteMutation({
-            comment: this.props.comment,
-            isUpVote: isUpVote
-        }));
-    }
-
-    private _doVoteLogic(isUpVote: boolean) {
-        if (!this.context.signInUpContext.isLoggedIn) {
-            this.context.signInUpContext.showSignInUp(event);
-            return;
-        }
-
-        const {currentUserVote} = this.props.comment;
-
-        if (currentUserVote !== null) {
-            if (currentUserVote === isUpVote)
-                this._deleteCurrentVote();
-            if (currentUserVote !== isUpVote)
-                this._updateCurrentVote(isUpVote);
-        }
-        else {
-            this._createVote(isUpVote);
-        }
-    }
-
-    private _onUpVoteClicked() {
-        this._doVoteLogic(true);
-    }
-
-    private _onDownVoteClicked() {
-        this._doVoteLogic(false);
-    }
 }
 
 export default Relay.createContainer(Comment, {
@@ -174,11 +120,6 @@ export default Relay.createContainer(Comment, {
         comment: ({expand, currentDepth}) => Relay.QL`
             fragment on Comment {
                 createdAt
-                votes {
-                    upVotes
-                    total
-                }
-                currentUserVote
                 commentCount 
                 user {
                     id
@@ -187,10 +128,8 @@ export default Relay.createContainer(Comment, {
                 ${Avatar.getFragment('comment')}
                 ${CommentList.getFragment('comment', { currentDepth }).if(expand)}
                 ${CreateCommentEditor.getFragment('comment')}
-                ${CreateCommentVoteMutation.getFragment('comment')}
-                ${DeleteCommentVoteMutation.getFragment('comment')}
-                ${UpdateCommentVoteMutation.getFragment('comment')}
                 ${CreateCommentForCommentMutation.getFragment('comment')}
+                ${Votes.getFragment('comment')}
             } 
         `
     }

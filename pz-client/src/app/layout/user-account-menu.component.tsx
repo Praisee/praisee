@@ -3,7 +3,7 @@ import * as Relay from 'react-relay';
 import { Dropdown, DropdownToggle, DropdownMenu, DropdownItem } from 'reactstrap';
 import appInfo from 'pz-client/src/app/app-info';
 
-var classNames = require('classnames');
+import classNames from 'classnames';
 
 export interface IProps {
     currentUser: {

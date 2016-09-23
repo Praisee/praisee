@@ -2,7 +2,7 @@ import * as React from 'react';
 import {Component} from 'react';
 import {Link} from 'react-router';
 import {ITopic} from 'pz-server/src/topics/topics';
-var classnames = require('classnames');
+import classNames from 'classnames';
 
 interface ITagsProps {
     topics: Array<{ id: string, name: string, routePath: string }>
@@ -19,7 +19,7 @@ export default class Tags extends Component<ITagsProps, any> {
             });
         }
         
-        let tagClass = classnames('tags', { 'hidden': this.props.topics.length < 2 });
+        let tagClass = classNames('tags', { 'hidden': this.props.topics.length < 2 });
         
         return (
             <div className={tagClass}>

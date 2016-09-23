@@ -11,7 +11,7 @@ import createDecoratorFromPlugins from 'pz-client/src/editor/create-decorator-fr
 
 import ContentMenu from 'pz-client/src/editor/content-menu/content-menu.component';
 
-var classNames = require('classnames');
+import classNames from 'classnames';
 
 var DraftJsEditor = require('draft-js-plugins-editor').default;
 var createToolbarPlugin = require('draft-js-toolbar-plugin').default;

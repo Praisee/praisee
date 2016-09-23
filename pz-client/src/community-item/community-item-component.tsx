@@ -7,9 +7,6 @@ import Votes from 'pz-client/src/votes/votes-component';
 import Avatar from 'pz-client/src/user/avatar.component';
 import CommunityItemContent from 'pz-client/src/community-item/community-item-content.component';
 import Tags from 'pz-client/src/community-item/tags-component';
-import CreateCommunityItemVoteMutation from 'pz-client/src/votes/create-community-item-vote-mutation';
-import UpdateCommunityItemVoteMutation from 'pz-client/src/votes/update-community-item-vote-mutation';
-import DeleteCommunityItemVoteMutation from 'pz-client/src/votes/delete-community-item-vote-mutation';
 import CreateCommentForCommunityItemMutation from 'pz-client/src/comments/create-comment-for-community-item-mutation';
 import {IContentData} from 'pz-server/src/content/content-data';
 import {CreateCommentEditor} from 'pz-client/src/comments/comment-editor-component';
@@ -29,8 +26,6 @@ interface ICommunityItemProps {
         createdAt: Date
         commentCount: number
         comments: any
-        votes: any
-        currentUserVote: any
         topics: Array<{ id: string, name: string, routePath: string }>
         routePath: string
     }
@@ -81,14 +76,10 @@ class CommunityItem extends Component<ICommunityItemProps, ICommuintyItemState> 
                 <div className="community-item-bottom">
                     {!this.state.isEditingComment && (
                         <div className="left">
-                            <Votes
-                                key={`communityItem-votes-${communityItem.id}`}
-                                upVoteClicked={this._onUpVoteClicked.bind(this) }
-                                downVoteClicked={this._onDownVoteClicked.bind(this) }
-                                totalVotes={communityItem.votes.total}
-                                upVotes={communityItem.votes.upVotes}
-                                userVote={communityItem.currentUserVote}
-                                />
+                            <Votes 
+                                key={`communityItem-votes-${communityItem.id}`} 
+                                comment={null}
+                                communityItem={this.props.communityItem} />
                             <span className={bubbleClass} onClick={this._toggleComments.bind(this)}>{communityItem.commentCount}</span>
                         </div>
                     )}
@@ -140,56 +131,6 @@ class CommunityItem extends Component<ICommunityItemProps, ICommuintyItemState> 
         }));
     }
 
-    private _createVote(isUpVote: boolean) {
-        this.props.relay.commitUpdate(new CreateCommunityItemVoteMutation({
-            isUpVote: isUpVote,
-            communityItem: this.props.communityItem,
-            appViewerId: this.context.appViewerId
-        }));
-    }
-
-    private _deleteCurrentVote() {
-        this.props.relay.commitUpdate(new DeleteCommunityItemVoteMutation({
-            communityItem: this.props.communityItem,
-            appViewerId: this.context.appViewerId
-        }));
-    }
-
-    private _updateCurrentVote(isUpVote: boolean) {
-        this.props.relay.commitUpdate(new UpdateCommunityItemVoteMutation({
-            communityItem: this.props.communityItem,
-            isUpVote: isUpVote,
-            appViewerId: this.context.appViewerId
-        }));
-    }
-
-    private _doVoteLogic(isUpVote: boolean) {
-        if (!this.context.signInUpContext.isLoggedIn) {
-            this.context.signInUpContext.showSignInUp(event);
-            return;
-        }
-
-        const {currentUserVote} = this.props.communityItem;
-
-        if (currentUserVote !== null) {
-            if (currentUserVote === isUpVote)
-                this._deleteCurrentVote();
-            if (currentUserVote !== isUpVote)
-                this._updateCurrentVote(isUpVote);
-        }
-        else {
-            this._createVote(isUpVote);
-        }
-    }
-
-    private _onUpVoteClicked() {
-        this._doVoteLogic(true);
-    }
-
-    private _onDownVoteClicked() {
-        this._doVoteLogic(false);
-    }
-
     private _onEditingComment(isEditingComment) {
         this.setState({ isEditingComment });
     }
@@ -208,11 +149,6 @@ export default Relay.createContainer(CommunityItem, {
                 user {
                     displayName
                 }
-                votes{
-                    upVotes
-                    total
-                }
-                currentUserVote
                 topics {
                     id
                     name
@@ -224,10 +160,8 @@ export default Relay.createContainer(CommunityItem, {
                 ${Avatar.getFragment('communityItem')}
                 ${CommunityItemContent.getFragment('communityItem')}
                 ${CreateCommentEditor.getFragment('communityItem')}
-                ${CreateCommunityItemVoteMutation.getFragment('communityItem')}
-                ${DeleteCommunityItemVoteMutation.getFragment('communityItem')}
-                ${UpdateCommunityItemVoteMutation.getFragment('communityItem')}
                 ${CreateCommentForCommunityItemMutation.getFragment('communityItem')}
+                ${Votes.getFragment('communityItem')}
             }
         `
     }

@@ -1,14 +1,20 @@
 import * as Relay from 'react-relay';
 
-export default class CreateCommunityItemVoteMutation extends Relay.Mutation {
+export default class CreateVoteMutation extends Relay.Mutation {
+    getParentType(){
+        return this.props.comment ? "comment" : "communityItem";
+    }
+
     getMutation() {
         return Relay.QL`mutation {createVote}`;
     }
 
     getVariables() {
+        const parentType = this.getParentType();
+
         return {
-            communityItemId: this.props.communityItem.id,
-            isUpVote: this.props.isUpVote
+            isUpVote: this.props.isUpVote,
+            [parentType + "Id"]: this.props.communityItem.id
         };
     }
 
@@ -18,7 +24,14 @@ export default class CreateCommunityItemVoteMutation extends Relay.Mutation {
                 communityItem { 
                     currentUserVote
                     votes {
-                        upVotes,
+                        upVotes
+                        total
+                    }
+                }
+                comment { 
+                    currentUserVote
+                    votes {
+                        upVotes
                         total
                     }
                 }
@@ -27,19 +40,24 @@ export default class CreateCommunityItemVoteMutation extends Relay.Mutation {
     }
 
     getConfigs() {
+        const parentType = this.getParentType();
+
         return [{
             type: 'FIELDS_CHANGE',
             fieldIDs: {
-                communityItem: this.props.communityItem.id
+                [parentType]: this.props[parentType].id
             }
         }];
     }
 
     getOptimisticResponse() {
-        const {currentUserVote, votes} = this.props.communityItem;
+        const parentType = this.getParentType();
+        const parent = this.props[parentType];
+        const {votes} = parent;
+
         return {
-            communityItem: {
-                id: this.props.communityItem.id,
+            [parentType]: {
+                id: parent.id,
                 currentUserVote: this.props.isUpVote,
                 votes: {
                     upVotes: this.props.isUpVote ? votes.upVotes + 1 : votes.upVotes,
@@ -52,6 +70,16 @@ export default class CreateCommunityItemVoteMutation extends Relay.Mutation {
     static fragments = {
         communityItem: () => Relay.QL`
             fragment on CommunityItem {
+                id
+                currentUserVote
+                votes {
+                    upVotes,
+                    total
+                }
+            }
+        `,
+        comment: () => Relay.QL`
+            fragment on Comment {
                 id
                 currentUserVote
                 votes {
