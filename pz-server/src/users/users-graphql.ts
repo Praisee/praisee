@@ -1,3 +1,13 @@
+import {
+    authorizer,
+    TOptionalUser,
+    NotOwnerError,
+    NotAuthenticatedError,
+    AuthorizationError,
+    IAuthorizer
+} from 'pz-server/src/support/authorization';
+
+import {addErrorToResponse} from 'pz-server/src/errors/errors-graphql';
 import {IAppRepositoryAuthorizers} from 'pz-server/src/app/repositories';
 import {ITypes} from 'pz-server/src/graphql/types';
 import * as graphqlRelay from 'graphql-relay';
@@ -30,6 +40,8 @@ var {
 } = graphqlRelay;
 
 export default function UsersTypes(repositoryAuthorizers: IAppRepositoryAuthorizers, nodeInterface, types: ITypes) {
+    let userAuthorizer = repositoryAuthorizers.users;
+
     var resolveType = function (value) {
         if (value.email) {
             return CurrentUserType;
@@ -55,6 +67,10 @@ export default function UsersTypes(repositoryAuthorizers: IAppRepositoryAuthoriz
 
             image: {
                 type: GraphQLString
+            },
+
+            trusterCount: {
+                type: GraphQLInt
             }
         }),
 
@@ -85,6 +101,13 @@ export default function UsersTypes(repositoryAuthorizers: IAppRepositoryAuthoriz
 
             email: {
                 type: GraphQLString
+            },
+
+            trusterCount: {
+                type: GraphQLInt,
+                resolve: async ({userId}, _, {user}) => {
+                    return userAuthorizer.as(user).getTotalTrusters(user.id);
+                }
             }
         }),
 
@@ -107,15 +130,67 @@ export default function UsersTypes(repositoryAuthorizers: IAppRepositoryAuthoriz
 
             image: {
                 type: GraphQLString
+            },
+
+            trusterCount: {
+                type: GraphQLInt,
+                resolve: async ({id}, _, {user}) => {
+                    return userAuthorizer.as(user).getTotalTrusters(id);
+                }
+            },
+            
+            isCurrentUserTrusting: {
+                type: GraphQLBoolean,
+                resolve: ({id}, _, {user}) => {
+                    return userAuthorizer.as(user).isUserTrusting(id);
+                }
             }
         }),
 
         interfaces: [nodeInterface, UserInterfaceType]
     });
 
+    const ToggleTrustMutation = mutationWithClientMutationId({
+        name: 'ToggleTrust',
+
+        inputFields: () => ({
+            trustedId: { type: new GraphQLNonNull(GraphQLString) }
+        }),
+
+        outputFields: () => ({
+            trustedUser: {
+                type: types.OtherUserType,
+                resolve: async ({trustedId, user}) => {
+                    return await userAuthorizer
+                        .as(user)
+                        .findUserById(trustedId);
+                }
+            },
+
+            viewer: {
+                type: types.ViewerType,
+                resolve: () => ({ id: 'viewer' })
+            }
+        }),
+
+        mutateAndGetPayload: async ({trustedId}, context) => {
+            const {id} = fromGlobalId(trustedId);
+            const trustedIdParsed = parseInt(id);
+
+            const response = await userAuthorizer.as(context.user).toggleTrust(trustedIdParsed);
+
+            if (response instanceof AuthorizationError) {
+                addErrorToResponse(context.responseErrors, 'NotAuthenticated', response);
+            }
+
+            return { trustedId: trustedIdParsed };
+        }
+    });
+
     return Object.assign({}, types, {
         UserInterfaceType,
         CurrentUserType,
-        OtherUserType
+        OtherUserType,
+        ToggleTrustMutation
     });
 }

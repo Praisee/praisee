@@ -15,19 +15,26 @@
       margin: .5em;
     }
 
-    .reputation {
+    .reputation, .trusters {
       margin-left: 1em;
       margin-top: .5em;
       margin-bottom: .5em;
       font-size: .75rem;
       color: $item-details;
     }
-
-    .reputation-icon {
+    
+    .reputation-icon, .trusters-icon {
       @extend .fa;
-      @extend .fa-star;
       padding-left: .25rem;
       color: $item-details;
+    }
+
+    .reputation-icon {
+      @extend .fa-star;
+    }
+
+    .trusters-icon {
+      @extend .fa-line-chart;
     }
   }
 }

@@ -4,7 +4,7 @@
     "emailVerificationRequired": false,
     "mixins": {
         "TimeStamp": true,
-
+        
         "Sluggable": {
             "property": "displayName"
         }
@@ -26,6 +26,20 @@
             "type": "hasMany",
             "model": "Comment",
             "foreignKey": "userId"
+        },
+        "trusters": {
+            "type": "hasMany",
+            "model": "PraiseeUser",
+            "through": "Trust",
+            "keyThrough": "trusterId",
+            "foreignKey": "trustedId"
+        },
+        "trusting": {
+            "type": "hasMany",
+            "model": "PraiseeUser",
+            "through": "Trust",
+            "keyThrough": "trustedId",
+            "foreignKey": "trusterId"
         }
     },
     "acls": [

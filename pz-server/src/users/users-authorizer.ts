@@ -1,6 +1,9 @@
 import {
     authorizer,
     TOptionalUser,
+    NotOwnerError,
+    NotAuthenticatedError,
+    AuthorizationError,
     IAuthorizer
 } from 'pz-server/src/support/authorization';
 
@@ -19,6 +22,9 @@ export interface IAuthorizedUsers {
     findById(userId: number): Promise<IUser>
     findCurrentUser(): Promise<IUser>
     findUserById(userId: number): Promise<IOtherUser | IUser>
+    getTotalTrusters(userId: number): Promise<number>
+    toggleTrust(trustedId: number): Promise<boolean | AuthorizationError>
+    isUserTrusting(queriedUserId: number): Promise<boolean>
     create(email, password, displayName): Promise<IUser>
 }
 
@@ -67,6 +73,32 @@ class AuthorizedUsers {
         }
 
         return this.findById(this._user.id);
+    }
+
+    getTotalTrusters(userId: number): Promise<number> {
+        return this._users.getTotalTrusters(userId);
+    }
+
+    async toggleTrust(trustedId: number): Promise<boolean | AuthorizationError> {
+        if (!this._user) {
+            return new NotAuthenticatedError();
+        }
+
+        let isUserTrusting = await this.isUserTrusting(trustedId);
+        if (isUserTrusting) {
+            return this._users.removeTrust(this._user.id, trustedId);
+        }
+        else {
+            return this._users.addTrust(this._user.id, trustedId);
+        }
+    }
+
+    async isUserTrusting(queriedUserId: number): Promise<boolean> {
+        if (!this._user) {
+            return Promise.resolve(false);
+        }
+
+        return await this._users.isUserTrusting(this._user.id, queriedUserId);
     }
 
     create(email: string, password: string, displayName: string): Promise<IUser> {

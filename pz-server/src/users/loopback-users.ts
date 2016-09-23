@@ -40,6 +40,38 @@ export default class Users implements IUsers, IUsersBatchable {
         return await this._UserModel.getTotalCommunityItems(userId);
     }
 
+    async getTotalTrusters(userId: number): Promise<number> {
+        return await this._UserModel.getTotalTrusters(userId);
+    }
+
+    async isUserTrusting(trusterId: number, trustedId: number): Promise<boolean> {
+        return await this._UserModel.isUserTrusting(trusterId, trustedId);
+    }
+
+    async addTrust(trusterId: number, trustedId: number): Promise<boolean> {
+        const find = promisify(this._UserModel.find, this._UserModel);
+
+        const userModels: Array<IUserInstance> = await find({
+            where: { id: { inq: [trusterId, trustedId] } }
+        });
+
+        let truster = userModels.find((user) => user.id === trusterId);
+        let trusted = userModels.find((user) => user.id === trustedId);
+        return trusted.trusters.add(truster);
+    }
+
+    async removeTrust(trusterId: number, trustedId: number): Promise<boolean> {
+        const find = promisify(this._UserModel.find, this._UserModel);
+
+        const userModels: Array<IUserInstance> = await find({
+            where: { id: { inq: [trusterId, trustedId] } }
+        });
+
+        let truster = userModels.find((user) => user.id === trusterId);
+        let trusted = userModels.find((user) => user.id === trustedId);
+        return trusted.trusters.remove(truster);
+    }
+
     async create(email: string, password: string, displayName: string): Promise<IUser> {
         const createUser = promisify(this._UserModel.create, this._UserModel);
         const user = await createUser({email, password, displayName});

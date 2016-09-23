@@ -3,6 +3,8 @@ import promisify from 'pz-support/src/promisify';
 
 export interface IUserModel extends IPersistedModel {
     getTotalCommunityItems(userId: number): Promise<number>
+    getTotalTrusters(userId: number): Promise<number>
+    isUserTrusting(trusterId: number, trustedId: number): Promise<boolean>
 }
 
 export interface IUserInstance extends IPersistedModelInstance {
@@ -10,6 +12,8 @@ export interface IUserInstance extends IPersistedModelInstance {
     displayName: string
     email: string
     created: Date
+    trusters?: IRelatedPersistedModel<IUserInstance[]>
+    trusting?: IRelatedPersistedModel<IUserInstance[]>
 }
 
 module.exports = function (User: IUserModel) {
@@ -21,4 +25,25 @@ module.exports = function (User: IUserModel) {
             userId: userId
         });
     }
+    
+    User.getTotalTrusters = async (userId: number) => {
+        const Trust = User.app.models.Trust;
+        const getCount = promisify(Trust.count, Trust);
+
+        return await getCount({
+            trustedId: userId
+        });
+    }
+    
+    User.isUserTrusting = async (trusterId: number, trustedId: number) => {
+        const Trust = User.app.models.Trust;
+        const find = promisify(Trust.find, Trust);
+
+        let result: any = await find({
+            trustedId,
+            trusterId
+        });
+        
+        return result.length > 0;
+     }
 };

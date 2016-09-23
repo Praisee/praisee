@@ -1,0 +1,31 @@
+{
+    "name": "Trust",
+    "base": "PersistedModel",
+    "strict": true,
+    "idInjection": false,
+    "options": {},
+    "mixins": {},
+    "properties": {
+         "trusterId": {
+            "type": "Number",
+            "required": true
+        },
+         "trustedId": {
+            "type": "Number",
+            "required": true
+        }
+    },
+    "validations": [],
+    "relations": {
+        "truster":{
+            "type": "belongsTo",
+            "model": "PraiseeUser"
+        },
+        "trusted":{
+            "type": "belongsTo",
+            "model": "PraiseeUser"
+        }
+    },
+    "acls": [],
+    "methods": {}
+}

@@ -194,7 +194,9 @@ export default function createSchema(repositoryAuthorizers: IAppRepositoryAuthor
 
                 createVote: types.CreateVoteMutation,
                 updateVote: types.UpdateVoteMutation,
-                deleteVote: types.DeleteVoteMutation
+                deleteVote: types.DeleteVoteMutation,
+
+                toggleTrust: types.ToggleTrustMutation
             }
         }),
 

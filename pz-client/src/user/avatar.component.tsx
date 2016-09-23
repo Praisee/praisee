@@ -4,6 +4,7 @@ import * as Relay from 'react-relay';
 import appInfo from 'pz-client/src/app/app-info';
 import SchemaInjector, {ISchemaType} from 'pz-client/src/support/schema-injector';
 import { DateDisplay } from 'pz-client/src/widgets/date-display.component'
+import ToggleTrustMutation from 'pz-client/src/user/toggle-trust-mutation';
 
 const unknownAvatarUrl = appInfo.addresses.getImage('unknown-avatar.png');
 
@@ -17,7 +18,7 @@ class Avatar extends Component<IAvatarProps, any>{
 
     render() {
         const parent = this.props.communityItem || this.props.comment;
-        const {image, displayName, reputation} = parent.user;
+        const {image, displayName, reputation, trusterCount} = parent.user;
 
         return this.schemaInjector.inject(
             <div className="avatar">
@@ -27,8 +28,20 @@ class Avatar extends Component<IAvatarProps, any>{
                     {reputation || 0}
                     <i className="reputation-icon"></i>
                 </span>
+                <span className="trusters" title={`${trusterCount} people trust ${displayName}`} onClick={this._toggleTrust.bind(this)}>
+                    {trusterCount || 0}
+                    <i className="trusters-icon"></i>
+                </span>
             </div>
         );
+    }
+
+    private _toggleTrust(){
+        const parent = this.props.communityItem || this.props.comment;
+
+        this.props.relay.commitUpdate(new ToggleTrustMutation({
+            user: parent.user
+        }));
     }
 }
 
@@ -37,18 +50,22 @@ export default Relay.createContainer(Avatar, {
         communityItem: () => Relay.QL`
             fragment on CommunityItem{
                 user {
-                    displayName,
-                    reputation,
+                    displayName
+                    reputation
+                    trusterCount
                     image
+                    ${ToggleTrustMutation.getFragment('user')}
                 }
             }
         `,
         comment: () => Relay.QL`
             fragment on Comment{
                 user {
-                    displayName,
-                    reputation,
+                    displayName
+                    reputation
+                    trusterCount
                     image
+                    ${ToggleTrustMutation.getFragment('user')}
                 }
             }
         `
@@ -61,6 +78,7 @@ export interface IAvatarProps {
     displayName: string;
     reputation: number;
     image: string;
+    relay: any;
 }
 
 var avatarSchema: ISchemaType = {
