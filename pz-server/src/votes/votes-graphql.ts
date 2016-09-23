@@ -1,8 +1,9 @@
-import {IVote, IVoteAggregate} from 'pz-server/src/votes/votes';
-import {IAppRepositoryAuthorizers} from 'pz-server/src/app/repositories';
-import {AuthorizationError} from 'pz-server/src/support/authorization';
+import { IVote, IVoteAggregate } from 'pz-server/src/votes/votes';
+import { IAppRepositoryAuthorizers } from 'pz-server/src/app/repositories';
+import { AuthorizationError } from 'pz-server/src/support/authorization';
 import CommunityItemTypes from 'pz-server/src/community-items/community-items-graphql';
-import {ITypes} from 'pz-server/src/graphql/types';
+import { ITypes } from 'pz-server/src/graphql/types';
+import { addErrorToResponse } from 'pz-server/src/errors/errors-graphql';
 import * as graphqlRelay from 'graphql-relay';
 import * as graphql from 'graphql';
 
@@ -137,26 +138,28 @@ export default function VoteTypes(repositoryAuthorizers: IAppRepositoryAuthorize
                         .as(user)
                         .findById(communityItemId);
                 }
+            },
+            viewer: {
+                type: types.ViewerType,
+                resolve: () => ({ id: 'viewer' })
             }
         }),
-        mutateAndGetPayload: async ({commentId, communityItemId, isUpVote}, {user}) => {
+        mutateAndGetPayload: async ({commentId, communityItemId, isUpVote}, context) => {
             let {id, type} = fromGlobalId(commentId || communityItemId);
+            let {user} = context;
 
-            const vote = await votesAuthorizer.as(user).create({
+            const result = await votesAuthorizer.as(user).create({
                 recordType: 'Vote',
                 parentId: id,
                 parentType: type,
                 isUpVote: isUpVote
             });
 
-            let error = null;
-            if (vote instanceof AuthorizationError) {
-                error = vote.message;
-                return { error, vote: null, commentId: id, communityItemId: id };
+            if (result instanceof AuthorizationError) {
+                addErrorToResponse(context.responseErrors, 'NotAuthenticated', result);
             }
-            else {
-                return { error, vote, commentId: id, communityItemId: id };
-            }
+
+            return { user, commentId: id, communityItemId: id };
         }
     });
 
@@ -189,21 +192,28 @@ export default function VoteTypes(repositoryAuthorizers: IAppRepositoryAuthorize
                         .as(user)
                         .findById(communityItemId);
                 }
+            },
+            viewer: {
+                type: types.ViewerType,
+                resolve: () => ({ id: 'viewer' })
             }
         }),
-        mutateAndGetPayload: async ({communityItemId, commentId}, {user}) => {
+        mutateAndGetPayload: async ({communityItemId, commentId}, context) => {
             let {type, id} = fromGlobalId(communityItemId || commentId);
+            let {user} = context;
 
-            const voteResult = await votesAuthorizer.as(user).findCurrentUserVoteForParent(type, id);
+            const result = await votesAuthorizer.as(user).findCurrentUserVoteForParent(type, id);
 
-            if (voteResult instanceof AuthorizationError) {
-                return { error: 'You are not authorized to do this', vote: null, communityItemId: id, commentId: id };
+            if (result instanceof AuthorizationError) {
+                addErrorToResponse(context.responseErrors, 'NotAuthenticated', result);
             }
             else {
-                let deleteResult = await votesAuthorizer.as(user).destroy(voteResult);
-
-                return { error: null, vote: null, communityItemId: id, commentId: id };
+                let deleteResult = await votesAuthorizer.as(user).destroy(result);
+                if (deleteResult instanceof AuthorizationError) {
+                    addErrorToResponse(context.responseErrors, 'NotOwner', deleteResult);
+                }
             }
+            return { user, communityItemId: id, commentId: id };
         }
     });
 
@@ -216,7 +226,7 @@ export default function VoteTypes(repositoryAuthorizers: IAppRepositoryAuthorize
             commentId: {
                 type: GraphQLString
             },
-            isUpVote:{
+            isUpVote: {
                 type: GraphQLBoolean
             }
         },
@@ -239,29 +249,32 @@ export default function VoteTypes(repositoryAuthorizers: IAppRepositoryAuthorize
                         .as(user)
                         .findById(communityItemId);
                 }
+            },
+            viewer: {
+                type: types.ViewerType,
+                resolve: () => ({ id: 'viewer' })
             }
         }),
-        mutateAndGetPayload: async ({commentId, communityItemId, isUpVote}, {user}) => {
+        mutateAndGetPayload: async ({commentId, communityItemId, isUpVote}, context) => {
             let {id, type} = fromGlobalId(commentId || communityItemId);
+            let {user} = context;
 
             const findVoteResult = await votesAuthorizer.as(user).findCurrentUserVoteForParent(
                 type,
                 id);
 
             if (findVoteResult instanceof AuthorizationError) {
-                return { error: findVoteResult.message, vote: null, communityItemId: id, commentId: id };
+                addErrorToResponse(context.responseErrors, 'NotAuthenticated', findVoteResult);
             }
             else {
                 findVoteResult.isUpVote = isUpVote;
                 const updateVoteResult = await votesAuthorizer.as(user).update(findVoteResult);
 
-                if (findVoteResult instanceof AuthorizationError) {
-                    return { error: '', vote: null, communityItemId: id, commentId: id };
-                }
-                else {
-                    return { error: '', vote: updateVoteResult, user, communityItemId: id, commentId: id };
+                if (updateVoteResult instanceof AuthorizationError) {
+                    addErrorToResponse(context.responseErrors, 'NotOwner', updateVoteResult);
                 }
             }
+            return { user, communityItemId: id, commentId: id };
         }
     });
 

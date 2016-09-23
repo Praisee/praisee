@@ -62,6 +62,10 @@
       &:hover, &:active, &:focus {
         color: $brand-primary;
       }
+
+      &.hidden{
+        cursor: default;
+      }
     }
 
     .bubble:after {

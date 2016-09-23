@@ -6,6 +6,7 @@ import classNames from 'classnames';
 
 interface ITagsProps {
     topics: Array<{ id: string, name: string, routePath: string }>
+    hideSingleTag: boolean
 }
 
 export default class Tags extends Component<ITagsProps, any> {
@@ -19,7 +20,7 @@ export default class Tags extends Component<ITagsProps, any> {
             });
         }
         
-        let tagClass = classNames('tags', { 'hidden': this.props.topics.length < 2 });
+        let tagClass = classNames('tags', { 'hidden': this.props.hideSingleTag && this.props.topics.length < 2 });
         
         return (
             <div className={tagClass}>

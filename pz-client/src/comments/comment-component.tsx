@@ -10,7 +10,6 @@ import CommentList from 'pz-client/src/comments/comment-list-component';
 import Avatar from 'pz-client/src/user/avatar.component';
 import {CreateCommentEditor} from 'pz-client/src/comments/comment-editor-component';
 import Votes from 'pz-client/src/votes/votes-component';
-import CreateCommentForCommentMutation from 'pz-client/src/comments/create-comment-for-comment-mutation';
 import CurrentUserType from 'pz-client/src/user/current-user-type';
 import {SignInUpContextType, ISignInUpContext} from 'pz-client/src/user/sign-in-up-overlay-component';
 
@@ -78,7 +77,6 @@ export class Comment extends Component<any, any>{
                         <CreateCommentEditor
                             comment={comment}
                             communityItem={null}
-                            onSave={this._onCommentSave.bind(this) }
                             onEditing={this._onEditing.bind(this) } />
                     </div>
                     {expandButton}
@@ -98,15 +96,7 @@ export class Comment extends Component<any, any>{
         });
     }
 
-    private _onCommentSave(bodyData) {
-        this.props.relay.commitUpdate(new CreateCommentForCommentMutation({
-            bodyData: bodyData,
-            comment: this.props.comment,
-            appViewerId: this.context.appViewerId
-        }));
-    }
-
-    private _onEditing(isEditingComment) {
+   private _onEditing(isEditingComment) {
         this.setState({ isEditingComment });
     }
 }
@@ -128,7 +118,6 @@ export default Relay.createContainer(Comment, {
                 ${Avatar.getFragment('comment')}
                 ${CommentList.getFragment('comment', { currentDepth }).if(expand)}
                 ${CreateCommentEditor.getFragment('comment')}
-                ${CreateCommentForCommentMutation.getFragment('comment')}
                 ${Votes.getFragment('comment')}
             } 
         `

@@ -14,7 +14,7 @@ export default class CreateVoteMutation extends Relay.Mutation {
 
         return {
             isUpVote: this.props.isUpVote,
-            [parentType + "Id"]: this.props.communityItem.id
+            [parentType + "Id"]: this.props[parentType].id
         };
     }
 
@@ -35,6 +35,9 @@ export default class CreateVoteMutation extends Relay.Mutation {
                         total
                     }
                 }
+                viewer {
+                    responseErrorsList
+                }
             }
         `;
     }
@@ -45,7 +48,8 @@ export default class CreateVoteMutation extends Relay.Mutation {
         return [{
             type: 'FIELDS_CHANGE',
             fieldIDs: {
-                [parentType]: this.props[parentType].id
+                [parentType]: this.props[parentType].id,
+                viewer: this.props.appViewerId
             }
         }];
     }

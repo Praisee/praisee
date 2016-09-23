@@ -13,7 +13,7 @@ export default class DeleteVoteMutation extends Relay.Mutation {
         const parentType = this.getParentType();
 
         return {
-            [parentType + "Id"]: this.props.communityItem.id
+            [parentType + "Id"]: this.props[parentType].id
         };
     }
 
@@ -34,6 +34,9 @@ export default class DeleteVoteMutation extends Relay.Mutation {
                         total
                     }
                 }
+                viewer {
+                    responseErrorsList
+                }
             }
         `;
     }
@@ -44,7 +47,8 @@ export default class DeleteVoteMutation extends Relay.Mutation {
         return [{
             type: 'FIELDS_CHANGE',
             fieldIDs: {
-                [parentType]: this.props[parentType].id
+                [parentType]: this.props[parentType].id,
+                viewer: this.props.appViewerId
             }
         }];
     }

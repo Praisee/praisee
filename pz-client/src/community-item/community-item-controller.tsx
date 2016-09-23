@@ -1,12 +1,15 @@
 import * as React from 'react';
-import {Component} from 'react';
+import { Component } from 'react';
 import * as Relay from 'react-relay';
-import * as util from 'util';
-import SideSection from 'pz-client/src/topic/side-section/side-section.component';
-import {ITopic} from 'pz-server/src/topics/topics';
-import SchemaInjector, {ISchemaType} from 'pz-client/src/support/schema-injector';
-import CommunityItem from 'pz-client/src/community-item/community-item-component';
 import CommentList from 'pz-client/src/comments/comment-list-component';
+import Votes from 'pz-client/src/votes/votes-component';
+import Avatar from 'pz-client/src/user/avatar.component';
+import CommunityItemContent from 'pz-client/src/community-item/community-item-content.component';
+import Tags from 'pz-client/src/community-item/tags-component';
+import { CreateCommentEditor } from 'pz-client/src/comments/comment-editor-component';
+import { ISignInUpContext, SignInUpContextType } from 'pz-client/src/user/sign-in-up-overlay-component';
+import CommentBubble from 'pz-client/src/community-item/widgets/community-item-comment-bubble-component';
+import classNames from 'classnames';
 
 interface IContext {
     showNotFoundError: any
@@ -14,14 +17,21 @@ interface IContext {
 
 export class CommunityItemController extends Component<ICommunityItemProps, ICommunityItemState> {
     static contextTypes: React.ValidationMap<any> = {
-        showNotFoundError: React.PropTypes.func.isRequired
+        showNotFoundError: React.PropTypes.func.isRequired,
+        appViewerId: React.PropTypes.string.isRequired,
+        signInUpContext: SignInUpContextType
     };
 
-    context: IContext;
+    context: {
+        showNotFoundError: Function,
+        appViewerId: number,
+        signInUpContext: ISignInUpContext
+    };
 
-    constructor() {
-        super();
-    }
+    constructor(props, context) {
+        super(props, context);
+        this.state = { isEditingComment: false };
+    };
 
     render() {
         if (!this.props.communityItem) {
@@ -33,20 +43,104 @@ export class CommunityItemController extends Component<ICommunityItemProps, ICom
 
         return (
             <div className="community-item-namespace" >
-                <CommunityItem key={communityItem.id} communityItem={communityItem} />
+                <div className="community-item">
+                    <Avatar communityItem={communityItem} comment={null} />
+
+                    <div className="title">
+                        {communityItem.summary}
+                    </div>
+
+                    {this._renderCommunityItemContent(communityItem)}
+
+                    {this._renderVoteAndTagSection(communityItem)}
+
+                    {this._renderCommentResponseSection(communityItem)}
+
+                    {this._renderCommentList(communityItem)}
+                </div>
             </div>
         )
     }
 
-    _renderCommunityItemContent() {
+    private _renderCommunityItemContent(communityItem) {
+        return (
+            <CommunityItemContent communityItem={communityItem} />
+        );
+    }
+
+    private _renderVoteAndTagSection(communityItem) {
+        return (
+            <div className="vote-and-tags">
+                <Votes
+                    key={`communityItem-votes-${communityItem.id}`}
+                    comment={null}
+                    communityItem={this.props.communityItem} />
+                <Tags topics={this.props.communityItem.topics} hideSingleTag={true} />
+            </div>
+        )
+    }
+
+    private _renderCommentResponseSection(communityItem) {
+        return (
+            <div className="comment-bubble-and-response">
+                <CommentBubble onClick={this._toggleComments.bind(this)} communityItem={this.props.communityItem} />
+                <CreateCommentEditor
+                    comment={null}
+                    communityItem={communityItem}
+                    onEditing={this._onEditingComment.bind(this)} />
+            </div>
+        )
+    }
+
+    private _renderCommentList(communityItem) {
+        if (this.props.relay.variables.expandComments) {
+            return (
+                <CommentList
+                    key={`communityItem-commentList-${communityItem.id}`}
+                    communityItem={communityItem}
+                    comment={null}
+                    expandCommentsTo={this.props.relay.variables.expandCommentsTo}
+                    currentLevel={0}
+                    />
+            )
+        }
+    }
+
+    private _onEditingComment(isEditingComment) {
+        this.setState({ isEditingComment });
+    }
+
+    private _toggleComments() {
+        this.props.relay.setVariables({
+            expandComments: !this.props.relay.variables.expandComments
+        })
     }
 }
 
 export default Relay.createContainer(CommunityItemController, {
+    initialVariables: {
+        expandCommentsTo: 10,
+        expandComments: false
+    },
     fragments: {
-        communityItem: () => Relay.QL`
+        communityItem: ({expandCommentsTo, expandComments}) => Relay.QL`
             fragment on CommunityItem {
-                ${CommunityItem.getFragment('communityItem')}
+                summary
+                body
+                user {
+                    displayName
+                }
+                topics {
+                    id
+                    name
+                    routePath
+                }
+                ${CommentList.getFragment('communityItem', { expandCommentsTo }).if(expandComments)}
+                ${Avatar.getFragment('communityItem')}
+                ${CommunityItemContent.getFragment('communityItem')}
+                ${CreateCommentEditor.getFragment('communityItem')}
+                ${Votes.getFragment('communityItem')}
+                ${CommentBubble.getFragment('communityItem')}
             }
         `
     }

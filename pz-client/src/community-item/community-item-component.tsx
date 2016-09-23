@@ -7,10 +7,9 @@ import Votes from 'pz-client/src/votes/votes-component';
 import Avatar from 'pz-client/src/user/avatar.component';
 import CommunityItemContent from 'pz-client/src/community-item/community-item-content.component';
 import Tags from 'pz-client/src/community-item/tags-component';
-import CreateCommentForCommunityItemMutation from 'pz-client/src/comments/create-comment-for-community-item-mutation';
-import {IContentData} from 'pz-server/src/content/content-data';
 import {CreateCommentEditor} from 'pz-client/src/comments/comment-editor-component';
 import {ISignInUpContext, SignInUpContextType} from 'pz-client/src/user/sign-in-up-overlay-component';
+import CommentBubble from 'pz-client/src/community-item/widgets/community-item-comment-bubble-component';
 import classNames from 'classnames';
 import ContentTruncator from 'pz-client/src/widgets/content-truncator-component';
 
@@ -22,7 +21,6 @@ interface ICommunityItemProps {
         user: { displayName: string }
         summary: string
         body: string
-        bodyData?: IContentData
         createdAt: Date
         commentCount: number
         comments: any
@@ -71,22 +69,21 @@ class CommunityItem extends Component<ICommunityItemProps, ICommuintyItemState> 
 
                 {this._renderContent(communityItem)}
 
-                <Tags topics={this.props.communityItem.topics} />
+                <Tags topics={this.props.communityItem.topics} hideSingleTag={true} />
 
                 <div className="community-item-bottom">
                     {!this.state.isEditingComment && (
                         <div className="left">
-                            <Votes 
-                                key={`communityItem-votes-${communityItem.id}`} 
+                            <Votes
+                                key={`communityItem-votes-${communityItem.id}`}
                                 comment={null}
                                 communityItem={this.props.communityItem} />
-                            <span className={bubbleClass} onClick={this._toggleComments.bind(this)}>{communityItem.commentCount}</span>
+                            <CommentBubble onClick={this._toggleComments.bind(this)} communityItem={this.props.communityItem} />
                         </div>
                     )}
                     <CreateCommentEditor
                         comment={null}
                         communityItem={communityItem}
-                        onSave={this._onCommentSave.bind(this) }
                         onEditing={this._onEditingComment.bind(this) } />
                 </div>
 
@@ -123,14 +120,6 @@ class CommunityItem extends Component<ICommunityItemProps, ICommuintyItemState> 
         })
     }
 
-    private _onCommentSave(bodyData) {
-        this.props.relay.commitUpdate(new CreateCommentForCommunityItemMutation({
-            bodyData: bodyData,
-            communityItem: this.props.communityItem,
-            appViewerId: this.context.appViewerId
-        }));
-    }
-
     private _onEditingComment(isEditingComment) {
         this.setState({ isEditingComment });
     }
@@ -154,14 +143,13 @@ export default Relay.createContainer(CommunityItem, {
                     name
                     routePath
                 }
-                commentCount
                 routePath
                 ${CommentList.getFragment('communityItem', { expandCommentsTo }).if(expandComments)}
                 ${Avatar.getFragment('communityItem')}
                 ${CommunityItemContent.getFragment('communityItem')}
                 ${CreateCommentEditor.getFragment('communityItem')}
-                ${CreateCommentForCommunityItemMutation.getFragment('communityItem')}
                 ${Votes.getFragment('communityItem')}
+                ${CommentBubble.getFragment('communityItem')}
             }
         `
     }
