@@ -1,4 +1,5 @@
 import {Form} from 'multiparty';
+import promisify from 'pz-support/src/promisify';
 
 import {
     IAuthorizer,
@@ -9,12 +10,14 @@ import {IAuthorizedPhotos} from 'pz-server/src/photos/photos-authorizer';
 import * as path from 'path';
 
 import appInfo from 'pz-server/src/app/app-info';
-import {getPhotoVariationsUrls} from 'pz-server/src/photos/photo-variations';
+import {getCommunityItemContentPhotoVariationsUrls as getPhotoVariationsUrls} from 'pz-server/src/photos/photo-variations';
+import {IPhoto, IPhotos} from 'pz-server/src/photos/photos';
+import ExtendableError from 'pz-server/src/support/extendable-error';
+import {ITopicInstance} from 'pz-server/src/models/topic';
 
 var requestJs = require('request');
 requestJs.debug = true;
 
-var photoServerUploadApi = 'http://localhost:8888/image';
 var photoUploadFormField = 'photoFile';
 
 var maxPhotoSizeInMb = 25;
@@ -41,14 +44,80 @@ function respondWithUnsupportedFileType(response, errorMessage) {
 }
 
 module.exports = function (app: IApp) {
+    createPhotoUploadRoute(
+        app,
+
+        appInfo.addresses.getCommunityItemPhotoUploadApi(),
+
+        async (): Promise<IPhoto> => ({
+            recordType: 'Photo',
+            purposeType: 'CommunityItemContent'
+        })
+    );
+
+    const TopicModel = app.models.Topic;
+    const Photos: IPhotos = app.services.repositories.photos;
+
+    createPhotoUploadRoute(
+        app,
+
+        appInfo.addresses.getTopicThumbnailPhotoUploadApi(),
+
+        async (request): Promise<IPhoto | BadRequestError> => {
+            if (!request.params || !request.params.topicId) {
+                return new BadRequestError('No topic ID provided');
+            }
+
+            const topicId = request.params.topicId;
+            const topic = await promisify(TopicModel.findById, app.models.Topic)(topicId) as ITopicInstance;
+            const topicPhotos = await promisify(topic.photos, topic)({where: {purposeType: 'TopicThumbnail'}});
+
+            if (topicPhotos.length) {
+                const existingThumbnail = topicPhotos[0];
+
+                if (existingThumbnail) {
+                    console.log(`Destroying existing photo`
+                        + ` (photoId: ${existingThumbnail.id}) for topic`
+                        + ` (topicId: ${topic.id})`);
+
+                    await Photos.destroy(existingThumbnail.id);
+                }
+            }
+
+            return {
+                recordType: 'Photo',
+                purposeType: 'TopicThumbnail',
+                parentType: 'Topic',
+                parentId: topic.id
+            };
+        }
+    );
+};
+
+export class BadRequestError extends ExtendableError {
+    constructor(message = 'Bad request') { super(message); }
+}
+
+export function createPhotoUploadRoute(
+        app: IApp,
+        routePath: string,
+        getDataForNewPhoto: (request) => Promise<IPhoto | BadRequestError>
+    ) {
+
     const photos: IAuthorizer<IAuthorizedPhotos> = app.services.repositoryAuthorizers.photos;
 
-    app.post(appInfo.addresses.getCommunityItemPhotoUploadApi(), async (request, response, next) => {
+    app.post(routePath, async (request, response, next) => {
         if (!request.user) {
             return respondWithNotAuthorized(response, 'User is not signed in.');
         }
 
-        const photo = await photos.as(request.user).createUploadingPhoto();
+        const photoData = await getDataForNewPhoto(request);
+
+        if (photoData instanceof BadRequestError) {
+            return respondWithBadRequest(response, photoData.message);
+        }
+
+        const photo = await photos.as(request.user).createUploadingPhoto(photoData);
 
         if (isAuthorizationError(photo)) {
             return respondWithNotAuthorized(response, 'User is not allowed to upload photos.');
@@ -62,7 +131,7 @@ module.exports = function (app: IApp) {
         form.on('part', (formPart) => {
             const contentType = formPart.headers['content-type'];
 
-            if (formPart.name !== photoUploadFormField) {
+            if (!contentType || formPart.name !== photoUploadFormField) {
                 formPart.resume();
                 return;
             }
@@ -97,7 +166,7 @@ module.exports = function (app: IApp) {
             };
 
             const uploadRequest = {
-                url: photoServerUploadApi,
+                url: appInfo.addresses.getPhotoServerUploadApi(),
                 formData,
                 preambleCRLF: true,
                 postambleCRLF: true
@@ -161,4 +230,4 @@ module.exports = function (app: IApp) {
 
         form.parse(request);
     });
-};
+}

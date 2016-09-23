@@ -117,6 +117,12 @@ export default {
         '$promise': {},
         '$resolved': true
     },
+    'DeletedPhoto': {
+        'dataSource': 'vagrant-postgres',
+        'public': false,
+        '$promise': {},
+        '$resolved': true
+    },
     'UrlSlug': {
         'dataSource': 'vagrant-postgres',
         'public': false

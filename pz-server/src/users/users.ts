@@ -2,7 +2,7 @@ import {
     IRepository, IRepositoryRecord
 } from 'pz-server/src/support/repository';
 
-export type TOptionalUser = {id: number}; // TODO: Add null as option for TypeScript 2
+export type TOptionalUser = {id: number} | null;
 
 export interface IUser extends IRepositoryRecord {
     recordType: 'User'

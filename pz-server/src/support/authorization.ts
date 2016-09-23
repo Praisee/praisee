@@ -42,3 +42,6 @@ export class NotOwnerError extends AuthorizationError {
     constructor(message = 'User does not own item') { super(message); }
 }
 
+export class NotAdminError extends AuthorizationError {
+    constructor(message = 'User is not authorized') { super(message); }
+}

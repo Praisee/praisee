@@ -7,11 +7,49 @@
     @include expand-button();
 
     .primary-section {
-      @include make-col-span(8);
+      @include make-col-span(7);
     }
 
     .side-section-container {
+      @include make-col-offset(1);
       @include make-col-span(4);
+
+      .topic-thumbnail-photo {
+        width: 5rem;
+        height: 5rem;
+        margin: 1rem 0;
+      }
+
+      .related-topics {
+        .related-topics-heading {
+          margin-bottom: 1.5rem;
+        }
+
+        .related-topics-list {
+          list-style: none;
+          padding: 0;
+          margin: 0.5rem;
+        }
+
+        .related-topic {
+          padding: 0;
+          margin: 1rem 0;
+        }
+
+        .related-topic-thumbnail-photo-container {
+          width: 2rem;
+          margin-right: 0.5rem;
+        }
+
+        .related-topic-thumbnail-photo {
+          width: 2rem;
+          height: 2rem;
+        }
+      }
+
+      .admin-controls {
+        margin-top: 5rem;
+      }
     }
 
     .primary-section,

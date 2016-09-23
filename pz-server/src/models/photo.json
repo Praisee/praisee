@@ -9,6 +9,13 @@
         "TimeStamp": true
     },
     "properties": {
+        "purposeType": {
+            "type": "string",
+            "required": true,
+            "description": "The purpose of the photo (what it is used for)",
+            "index": true
+        },
+
         "isUploaded": {
             "type": "boolean",
             "required": false,

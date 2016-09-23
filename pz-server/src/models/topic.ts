@@ -22,9 +22,9 @@ export interface ITopicInstance extends IPersistedModelInstance, ISluggableInsta
     id: number
     name: string
     description: string
-    thumbnailPath: string
     overviewContent: string
     isVerified: boolean
+    thumbnailPhotoPath: string
     communityItems: IRelatedPersistedModel<ICommunityItemInstance>
     photos: IRelatedPersistedModel<IPhotoInstance>
 }

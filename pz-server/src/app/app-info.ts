@@ -22,7 +22,12 @@ let appInfo = {
         getPhoto: (imagePath: string) =>
             url.resolve(appInfo.addresses.getPhotosApi(), imagePath),
 
-        getCommunityItemPhotoUploadApi: () => '/i/upload/community-item/photo'
+        getCommunityItemPhotoUploadApi: () => '/i/upload/community-item/photo',
+        getTopicThumbnailPhotoUploadApi: () => '/i/upload/topic/:topicId/thumbnail/photo',
+
+        // Non-public APIs
+
+        getPhotoServerUploadApi: () => 'http://localhost:8888/image',
     }
 };
 

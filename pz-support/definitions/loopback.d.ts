@@ -118,7 +118,9 @@ declare interface IPersistedModel extends IModel {
 }
 
 declare interface IRelatedPersistedModel<T extends IPersistedModelInstance | IPersistedModelInstance[]> extends IModel {
-    (filter: IFinderFilter, options: {}, callback: IResultCallback<Array<IPersistedModelInstance>>)
+    (filter?: IFinderFilter, options?: {}, callback?: IResultCallback<Array<IPersistedModelInstance>>)
+    (filter?: IFinderFilter, callback?: IResultCallback<Array<IPersistedModelInstance>>)
+    (callback?: IResultCallback<Array<IPersistedModelInstance>>)
 
     findById(id: any, callback: IResultCallback<T>)
 

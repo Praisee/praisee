@@ -47,7 +47,7 @@ export default class ContentTruncator extends React.Component<IProps, any> {
     }
 
     state = {
-        shouldTruncate: true,
+        shouldTruncate: false,
         allowTruncation: true
     };
 

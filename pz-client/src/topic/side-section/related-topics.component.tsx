@@ -6,6 +6,14 @@ export interface IProps {
     attribute: {
         topics: Array<{
             name
+
+            thumbnailPhoto: null | {
+                defaultUrl: string
+                variations: {
+                    initialLoad: string
+                    mobile: string
+                }
+            }
         }>
     }
 }
@@ -14,9 +22,9 @@ class RelatedTopics extends React.Component<IProps, any> {
     render() {
         return (
             <div className="related-topics">
-                <h3>Related Topics</h3>
+                <h3 className="related-topics-heading">Related Topics</h3>
 
-                <ul>
+                <ul className="related-topics-list">
                     {this.props.attribute.topics.map(
                         topic => this._renderRelatedTopic(topic)
                     )}
@@ -27,9 +35,31 @@ class RelatedTopics extends React.Component<IProps, any> {
 
     private _renderRelatedTopic(topic) {
         return (
-            <li key={topic.id}>
-                <Link to={topic.routePath}>{topic.name}</Link>
+            <li key={topic.id} className="related-topic">
+                <Link to={topic.routePath}>
+                    <span className="related-topic-thumbnail-photo-container">
+                        {this._renderTopicThumbnailPhoto(topic)}
+                    </span>
+
+                    <span className="related-topic-name">
+                        {topic.name}
+                    </span>
+                </Link>
             </li>
+        );
+    }
+
+    private _renderTopicThumbnailPhoto(topic) {
+        if (!topic.thumbnailPhoto) {
+            return;
+        }
+
+        return (
+            <img
+                className="related-topic-thumbnail-photo"
+                src={topic.thumbnailPhoto.defaultUrl}
+                alt={topic.name}
+            />
         );
     }
 }
@@ -41,7 +71,14 @@ export default Relay.createContainer(RelatedTopics, {
                 topics {
                     id,
                     name,
-                    routePath
+                    routePath,
+                    thumbnailPhoto {
+                        defaultUrl
+                        variations {
+                            initialLoad
+                            mobile
+                        }
+                    }
                 }
             }
         `

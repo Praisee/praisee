@@ -12,21 +12,25 @@ export class DevEnvSeeder {
     userSeeds() {
         return [
             {
+                id: 1,
                 email: 'test@praisee.com',
                 displayName: 'Andesl Adams',
                 password: 'test'
             },
             {
+                id: 2,
                 email: 'test2@praisee.com',
                 displayName: 'Johnny Bravo',
                 password: 'test'
             },
             {
+                id: 3,
                 email: 'test3@praisee.com',
                 displayName: 'Dexter L.',
                 password: 'test'
             },
             {
+                id: 4,
                 email: 'test4@praisee.com',
                 displayName: 'Jan Itor',
                 password: 'test'

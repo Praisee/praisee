@@ -1,0 +1,23 @@
+{
+    "name": "DeletedPhoto",
+    "base": "Photo",
+    "strict": true,
+    "options": {
+        "validateUpsert": true
+    },
+    "mixins": {
+    },
+    "properties": {
+        "isPurged": {
+            "type": "boolean",
+            "required": false,
+            "default": false,
+            "description": "Whether or not the photo been completely purged from storage"
+        }
+    },
+    "validations": [],
+    "relations": {
+    },
+    "acls": [],
+    "methods": {}
+}

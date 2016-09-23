@@ -1,4 +1,4 @@
-import {IPhoto, IPhotos} from 'pz-server/src/photos/photos';
+import {IPhoto, IPhotos, TPurposeType} from 'pz-server/src/photos/photos';
 import DataLoader from 'dataloader';
 
 export default class PhotosLoader implements IPhotos {
@@ -19,12 +19,16 @@ export default class PhotosLoader implements IPhotos {
         return this._loader.loadMany(ids);
     }
 
-    createUploadingPhoto(userId: number): Promise<IPhoto> {
-        return this._photos.createUploadingPhoto(userId);
+    createUploadingPhoto(photo: IPhoto): Promise<IPhoto> {
+        return this._photos.createUploadingPhoto(photo);
     }
 
     updateToUploadedPhoto(id: number, photoServerPath: string): Promise<IPhoto> {
         return this._photos.updateToUploadedPhoto(id, photoServerPath);
+    }
+
+    destroy(id: number): Promise<IPhoto> {
+        return this._photos.destroy(id);
     }
 
     private async _batcher(ids: Array<number>): Promise<Array<IPhoto>> {

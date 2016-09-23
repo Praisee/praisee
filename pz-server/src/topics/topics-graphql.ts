@@ -6,6 +6,7 @@ import {
     connectionFromCursorResults
 } from 'pz-server/src/graphql/cursor-helpers';
 import {ITypes} from 'pz-server/src/graphql/types';
+import {getTopicThumbnailPhotoVariationsUrls} from 'pz-server/src/photos/photo-variations';
 
 var {
     GraphQLBoolean,
@@ -36,12 +37,34 @@ export default function CommentTypes(repositoryAuthorizers: IAppRepositoryAuthor
     const topicAttributesAuthorizer = repositoryAuthorizers.topicAttributes;
     const vanityRoutePathAuthorizer = repositoryAuthorizers.vanityRoutePaths;
 
+    const TopicThumbnailPhotoType = new GraphQLObjectType({
+        name: 'TopicThumbnailPhoto',
+
+        fields: () => ({
+            defaultUrl: {type: new GraphQLNonNull(GraphQLString)},
+            variations: {
+                type: new GraphQLObjectType({
+                    name: 'TopicThumbnailPhotoVariations',
+                    fields: {
+                        initialLoad: {type: new GraphQLNonNull(GraphQLString)},
+                        mobile: {type: new GraphQLNonNull(GraphQLString)}
+                    }
+                })
+            }
+        })
+    });
+
     const TopicType = new GraphQLObjectType({
         name: 'Topic',
 
         fields: () => {
             return ({
                 id: globalIdField('Topic'),
+
+                serverId: {
+                    type: new GraphQLNonNull(GraphQLID),
+                    resolve: (topic) => topic.id
+                },
 
                 name: {
                     type: GraphQLString
@@ -51,8 +74,18 @@ export default function CommentTypes(repositoryAuthorizers: IAppRepositoryAuthor
                     type: GraphQLString
                 },
 
-                thumbnailPath: {
-                    type: GraphQLString
+                thumbnailPhoto: {
+                    type: TopicThumbnailPhotoType,
+
+                    resolve: (topic) => {
+                        if (!topic.thumbnailPhotoPath) {
+                            return null;
+                        }
+
+                        return getTopicThumbnailPhotoVariationsUrls(
+                            topic.thumbnailPhotoPath
+                        );
+                    }
                 },
 
                 overviewContent: {
@@ -98,7 +131,7 @@ export default function CommentTypes(repositoryAuthorizers: IAppRepositoryAuthor
                 },
 
 
-                
+
                 routePath: {
                     type: GraphQLString,
                     resolve: async (topic, _, {user}) => {
@@ -113,6 +146,7 @@ export default function CommentTypes(repositoryAuthorizers: IAppRepositoryAuthor
     });
 
     return {
-        TopicType
+        TopicType,
+        TopicThumbnailPhotoType
     };
 }

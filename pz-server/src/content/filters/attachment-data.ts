@@ -1,7 +1,7 @@
 import {IDraftjs08Data} from 'pz-support/definitions/draftjs-data.d';
 import {IPhotos} from 'pz-server/src/photos/photos';
 import appInfo from 'pz-server/src/app/app-info';
-import {getPhotoVariationsUrls} from 'pz-server/src/photos/photo-variations';
+import {getCommunityItemContentPhotoVariationsUrls as getPhotoVariationsUrls} from 'pz-server/src/photos/photo-variations';
 
 const attachmentNamespace = 'praiseeAttachment';
 

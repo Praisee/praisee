@@ -2,14 +2,15 @@ import {
     authorizer,
     TOptionalUser,
     NotAuthenticatedError,
-    AuthorizationError
+    AuthorizationError,
+    NotAdminError
 } from 'pz-server/src/support/authorization';
 
 import {IPhotos, IPhoto} from 'pz-server/src/photos/photos';
 
 export interface IAuthorizedPhotos {
     findById(id: number): Promise<IPhoto>
-    createUploadingPhoto(): Promise<IPhoto | AuthorizationError>
+    createUploadingPhoto(photo: IPhoto): Promise<IPhoto | AuthorizationError>
     updateToUploadedPhoto(id: number, photoServerPath: string): Promise<IPhoto | AuthorizationError>
 }
 
@@ -26,12 +27,22 @@ class AuthorizedPhotos implements IAuthorizedPhotos {
         return this._photos.findById(id);
     }
 
-    async createUploadingPhoto(): Promise<IPhoto | AuthorizationError> {
+    async createUploadingPhoto(photo: IPhoto): Promise<IPhoto | AuthorizationError> {
         if (!this._user) {
             return new NotAuthenticatedError();
         }
 
-        return this._photos.createUploadingPhoto(this._user.id);
+        // TODO: This is a hack to prevent any user from uploading topic photos for now
+        // TODO: We should be using user roles instead
+        if (photo.purposeType === 'TopicThumbnail' && this._user.id !== 1) {
+            return new NotAdminError();
+        }
+
+        const authorizedPhoto = Object.assign({}, photo, {
+            userId: this._user.id
+        });
+
+        return this._photos.createUploadingPhoto(authorizedPhoto);
     }
 
     async updateToUploadedPhoto(id: number, photoServerPath: string): Promise<IPhoto | AuthorizationError> {

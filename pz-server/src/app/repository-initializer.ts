@@ -43,6 +43,7 @@ import RankingsCache from 'pz-server/src/rankings/redis-rankings-cache';
 import Rankings from 'pz-server/src/rankings/rankings';
 
 import Photos from 'pz-server/src/photos/loopback-photos';
+import PhotosEvents from 'pz-server/src/photos/photos-events';
 import PhotosLoader from 'pz-server/src/photos/photos-loader';
 import PhotosAuthorizer from 'pz-server/src/photos/photos-authorizer';
 
@@ -60,7 +61,18 @@ module.exports = function initializeRepositories(app: IApp) {
     const users = new UsersLoader(new Users(app.models.PraiseeUser));
     const usersAuthorizer = new UsersAuthorizer(users);
 
-    const topics = new TopicsLoader(new Topics(app.models.Topic, app.models.CommunityItem, app.models.UrlSlug, rankings));
+    const photosEvents = new PhotosEvents(new Photos(app.models.Photo, app.models.DeletedPhoto));
+    const photos = new PhotosLoader(photosEvents);
+    const photosAuthorizer = new PhotosAuthorizer(photos);
+
+    const topics = new TopicsLoader(new Topics(
+        app.models.Topic,
+        app.models.CommunityItem,
+        app.models.UrlSlug,
+        rankings,
+        photosEvents
+    ));
+
     const topicsAuthorizer = new TopicsAuthorizer(topics);
 
     const topicAttributes = new TopicAttributes(app.models.TopicAttribute);
@@ -68,9 +80,6 @@ module.exports = function initializeRepositories(app: IApp) {
 
     const votes = new VotesLoader(new Votes(app.models.Vote));
     const votesAuthorizer = new VotesAuthorizer(votes);
-
-    const photos = new PhotosLoader(new Photos(app.models.Photo));
-    const photosAuthorizer = new PhotosAuthorizer(photos);
 
     const communityItems = new CommunityItemsLoader(new CommunityItems(app.models.CommunityItem, app.models.UrlSlug));
 

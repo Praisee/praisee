@@ -52,6 +52,7 @@ export interface ITypes {
     CreateCommentMutation
 
     TopicType
+    TopicThumbnailPhotoType
 
     TopicAttributeInterfaceType
     topicAttributes: {

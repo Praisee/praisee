@@ -28,6 +28,7 @@ import {TOptionalUser} from 'pz-server/src/users/users';
 import {findWithCursor} from 'pz-server/src/support/cursors/loopback-helpers';
 import {mapCursorResultItems} from 'pz-server/src/support/cursors/map-cursor-results';
 import {loopbackFindAllByIds} from 'pz-server/src/support/loopback-find-all-helpers';
+import {IPhotosEvents} from 'pz-server/src/photos/photos-events';
 
 export function createRecordFromLoopbackTopic(topic: ILookbackTopicInstance): ITopic {
     return createRecordFromLoopback<ITopic>('Topic', topic);
@@ -38,18 +39,23 @@ export default class LoopbackTopics implements ITopics, ITopicsBatchable {
     private _CommunityItemModel: ILoopbackCommunityItem;
     private _UrlSlugsModel: IPersistedModel;
     private _rankings: IRankings;
+    private _photosEvents: IPhotosEvents;
 
     constructor(
         Topic: ILoopbackTopic,
         CommunityItem: ILoopbackCommunityItem,
         UrlSlug: IPersistedModel,
-        rankings: IRankings
+        rankings: IRankings,
+        photosEvents: IPhotosEvents
     ) {
 
         this._TopicModel = Topic;
         this._CommunityItemModel = CommunityItem;
         this._UrlSlugsModel = UrlSlug;
         this._rankings = rankings;
+        this._photosEvents = photosEvents;
+
+        this._addPhotosListeners();
     }
 
     async findAll() {
@@ -159,5 +165,50 @@ export default class LoopbackTopics implements ITopics, ITopicsBatchable {
         );
 
         return cursorCommunityItemLoopbackModelsToRecords(communityItems);
+    }
+
+    private _addPhotosListeners() {
+        this._photosEvents.onPhotoAvailable(async (photo) => {
+            if (photo.purposeType !== 'TopicThumbnail') {
+                return;
+            }
+
+            if (photo.parentType !== 'Topic' || !photo.parentId) {
+                console.error('Topic thumbnail with invalid parent: ', JSON.stringify(photo));
+                throw new Error('Topic thumbnail does not have correct parent information');
+            }
+
+            const topicFinder = promisify(this._TopicModel.findById, this._TopicModel);
+            const topic: ILookbackTopicInstance = await topicFinder(photo.parentId);
+
+            if (!topic) {
+                throw new Error(`Could not find topic for photo (topicId: ${photo.parentId})`);
+            }
+
+            if (topic.thumbnailPhotoPath) {
+                throw new Error(`Topic already has a thumbnail (topicId: ${photo.parentId})`);
+            }
+
+            topic.thumbnailPhotoPath = photo.photoServerPath;
+
+            await promisify(topic.save, topic)();
+        });
+
+        this._photosEvents.onPhotoDestroyed(async (photo) => {
+            if (photo.purposeType !== 'TopicThumbnail') {
+                return;
+            }
+
+            const topicFinder = promisify(this._TopicModel.findById, this._TopicModel);
+            const topic: ILookbackTopicInstance = await topicFinder(photo.parentId);
+
+            if (!topic) {
+                throw new Error(`Could not find topic for photo (topicId: ${photo.parentId})`);
+            }
+
+            topic.thumbnailPhotoPath = null;
+
+            await promisify(topic.save, topic)();
+        });
     }
 }

@@ -45,6 +45,12 @@
             "description": "Whether or not the topic has been verified by a moderator yet"
         },
 
+        "thumbnailPhotoPath": {
+            "type": "string",
+            "required": false,
+            "description": "Photo server path to the topic's thumbnail (denormalized field)"
+        },
+
         "createdAt": { "type": "date" },
         "updatedAt": { "type": "date" }
     },
