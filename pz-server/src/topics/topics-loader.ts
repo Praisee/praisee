@@ -22,8 +22,7 @@ export default class TopicsLoader implements ITopics {
 
         this._loaders = {
             findAllByIds: createDataLoaderBatcher<number, ITopic>(
-                this._topics.findAllByIds.bind(this._topics),
-                topic => topic.id
+                this._topics.findAllByIds.bind(this._topics)
             )
         }
     }
