@@ -7,6 +7,7 @@ import DeleteVoteMutation from 'pz-client/src/votes/delete-vote-mutation';
 import { ISignInUpContext, SignInUpContextType } from 'pz-client/src/user/sign-in-up-overlay-component';
 import classNames from 'classnames';
 import SchemaInjector, { ISchemaType } from 'pz-client/src/support/schema-injector';
+import handleClick from 'pz-client/src/support/handle-click';
 
 class Votes extends React.Component<IVotesProps, any> {
     schemaInjector: SchemaInjector;
@@ -38,13 +39,13 @@ class Votes extends React.Component<IVotesProps, any> {
             <span className="aggregate-rating votes">
                 <button type="button"
                     className={upVoteClasses}
-                    onClick={this._doVoteLogic.bind(this, true)}>
+                    onClick={handleClick(this._doVoteLogic.bind(this, true))}>
                     <span className="up-vote-icon"></span>
                     {currentUserVote === true ? "Upvoted" : "Upvote"}
                 </button>
                 <button type="button"
                     className={downVoteClasses}
-                    onClick={this._doVoteLogic.bind(this, false)}>
+                    onClick={handleClick(this._doVoteLogic.bind(this, false))}>
                     <span className="down-vote-icon"></span>
                     {currentUserVote === false ? "Downvoted" : "Downvote"}
                 </button>
