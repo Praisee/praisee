@@ -6,7 +6,7 @@ import SignInUpOverlay, { ISignInUpContext, SignInUpContextType } from 'pz-clien
 import CreateCommunityItemForTopicMutation from 'pz-client/src/community-item/create-community-item-from-topic-mutation';
 import CommunityItemBodyEditor from 'pz-client/src/community-item/community-item-body-editor.component';
 import serializeEditorState from 'pz-client/src/editor/serialize-editor-state';
-import classnames from 'classnames';
+import classNames from 'classnames';
 
 interface IProps {
     relay: any
@@ -28,14 +28,14 @@ interface IProps {
 class CommunityItemEditor extends React.Component<IProps, any> {
     private _delayedStateTimer: any;
     private _delayedState = {};
-    
+
     static contextTypes: any = {
         signInUpContext: SignInUpContextType
     };
 
     context: {
         signInUpContext: ISignInUpContext
-    }
+    };
 
     state = {
         summaryContent: '',
@@ -51,29 +51,8 @@ class CommunityItemEditor extends React.Component<IProps, any> {
         return (
             <div className="community-item-editor">
                 <form className="editor-form" onSubmit={this._saveCommunityItem.bind(this) }>
-                    <input
-                        className="editor-summary"
-                        type="text"
-                        placeholder={this._getRandomSaying() }
-                        onChange={this._onSummaryChange.bind(this) }
-                        onFocus={this._onSummaryFocus.bind(this) }
-                        onBlur={this._onSummaryBlur.bind(this) }
-                    />
-
-                    {this._isEditing() &&
-                        <div>
-                            <CommunityItemBodyEditor
-                                placeholder="Elaborate here if you wish..."
-                                onChange={this._onBodyChange.bind(this) }
-                                onFocus={this._onBodyFocus.bind(this) }
-                                onBlur={this._onBodyBlur.bind(this) }
-                            />
-
-                            <button className="submit">
-                                <i className="save" />Post
-                            </button>
-                        </div>
-                    }
+                    {this._renderSummary()}
+                    {this._renderBody()}
                 </form>
             </div>
         );
@@ -83,6 +62,44 @@ class CommunityItemEditor extends React.Component<IProps, any> {
         if (this._delayedStateTimer) {
             clearTimeout(this._delayedStateTimer);
         }
+    }
+
+    private _renderSummary() {
+        const classes = classNames('editor-summary', {
+            'has-input': this.state.summaryContent && this.state.summaryContent.length
+        });
+
+        return (
+            <input
+                className={classes}
+                type="text"
+                placeholder={this._getRandomSaying() }
+                onChange={this._onSummaryChange.bind(this) }
+                onFocus={this._onSummaryFocus.bind(this) }
+                onBlur={this._onSummaryBlur.bind(this) }
+            />
+        );
+    }
+
+    private _renderBody() {
+        if (!this._isEditing()) {
+            return;
+        }
+
+        return (
+            <div>
+                <CommunityItemBodyEditor
+                    placeholder="Elaborate here if you wish..."
+                    onChange={this._onBodyChange.bind(this) }
+                    onFocus={this._onBodyFocus.bind(this) }
+                    onBlur={this._onBodyBlur.bind(this) }
+                />
+
+                <button className="submit">
+                    <i className="save" />Post
+                </button>
+            </div>
+        )
     }
 
     private _onSummaryFocus() {
@@ -111,7 +128,7 @@ class CommunityItemEditor extends React.Component<IProps, any> {
 
     private _getRandomSaying() {
         if (this.saying !== '') return this.saying;
-        
+
         const sayings = [
             `Say something about`,
             `Tell us some tips and tricks for`,
@@ -121,7 +138,7 @@ class CommunityItemEditor extends React.Component<IProps, any> {
             `Ask a question about`,
             `Ask your question about`,
         ];
-        
+
         var randomSaying = sayings[Math.floor(Math.random() * (sayings.length - 1))];
 
         this.saying = `${randomSaying} ${this.props.topic.name}...`;

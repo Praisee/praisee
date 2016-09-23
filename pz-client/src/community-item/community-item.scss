@@ -1,26 +1,4 @@
 @mixin community-item {
-  .community-item-page-namespace {
-    @include make-container();
-    @include make-container-max-widths();
-    @include expand-button();
-
-    .primary-section {
-      @include make-col-span(8);
-    }
-
-    .side-section-container {
-      @include make-col-span(4);
-    }
-
-    .primary-section,
-    .side-section-container {
-      @include make-col();
-      @include media-breakpoint-down(sm){
-        @include make-col-span(12);
-      }
-    }
-  }
-
   .community-item {
     @include avatar();
     @include comment-editor();
@@ -32,10 +10,18 @@
     .title {
       display: block;
       color: $headings-color;
-      font-size: 1.5em;
+      font-size: $font-size-h2;
       font-family: $headings-font-family;
       font-weight: $headings-font-weight;
       margin-bottom: 1rem;
+    }
+
+    .title-link {
+      color: $headings-color;
+
+      &:hover, &:active, &:focus {
+        color: $headings-link-hover-color;
+      }
     }
 
     .community-item-bottom {
@@ -59,7 +45,9 @@
     }
 
     .bubble {
-      background-color: $white;
+      font-size: 0.8rem;
+      color: $brand-primary-minor;
+      background-color: $body-bg;
       border: 1px solid $gray-lighter;
       border-radius: 5px;
       display: inline-block;
@@ -69,6 +57,10 @@
       margin-top: .5rem;
       margin-bottom: .5rem;
       cursor: pointer;
+
+      &:hover, &:active, &:focus {
+        color: $brand-primary;
+      }
     }
 
     .bubble:after {
@@ -124,6 +116,32 @@
       margin-bottom: .5rem;
       padding-top: .1rem;
       padding-bottom: .1rem;
+    }
+  }
+}
+
+@mixin community-item-namespace {
+  .community-item-namespace {
+    @include make-container();
+    @include make-container-max-widths();
+    @include community-item();
+    @include community-item-editor();
+    @include expand-button();
+
+    .primary-section {
+      @include make-col-span(8);
+    }
+
+    .side-section-container {
+      @include make-col-span(4);
+    }
+
+    .primary-section,
+    .side-section-container {
+      @include make-col();
+      @include media-breakpoint-down(sm){
+        @include make-col-span(12);
+      }
     }
   }
 }

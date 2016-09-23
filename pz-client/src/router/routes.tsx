@@ -15,7 +15,7 @@ import AppLayout from 'pz-client/src/app/layout/app-layout.controller';
 import HomeController from 'pz-client/src/home/home.controller';
 import {SignInController, SignUpController} from 'pz-client/src/user/sign-in-up.controller';
 import ProfileController from 'pz-client/src/home/home.controller';
-import CommunityItemController from 'pz-client/src/community-item/community-item-page-component';
+import CommunityItemController from 'pz-client/src/community-item/community-item-controller';
 import ReviewController from 'pz-client/src/home/home.controller';
 import ComparisonController from 'pz-client/src/home/home.controller';
 import TopicController from 'pz-client/src/topic/topic.controller';

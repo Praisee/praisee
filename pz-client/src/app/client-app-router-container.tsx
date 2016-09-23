@@ -1,6 +1,7 @@
 import * as React from 'react';
 import * as ReactRouter from 'react-router';
 import IsomorphicRouter from 'isomorphic-relay-router';
+import useScroll from 'react-router-scroll/lib/useScroll';
 
 var {applyRouterMiddleware} = ReactRouter;
 var {useIsoRelay} = IsomorphicRouter;
@@ -53,7 +54,10 @@ export default class ClientAppRouterContainer extends React.Component<IProps, an
             <ReactRouter.Router
                 {...this.props.routerProps}
                 key={forceRefresh}
-                render={applyRouterMiddleware(this._routerMiddleware())}
+                render={applyRouterMiddleware(
+                    this._routerMiddleware(),
+                    useScroll()
+                )}
             />
         );
     }

@@ -27,15 +27,17 @@
 // Grayscale and brand colors for use across Bootstrap.
 
 $black: #111;
+$white: white;
 
 $gray-dark:                 #373a3c !default;
 $gray:                      #55595c !default;
 $gray-light:                #818a91 !default;
 $gray-lighter:              #cececf !default;
 $gray-lightest:             #f7f7f9 !default;
-$white: white;
 
 $brand-primary: #5150cb !default;
+$brand-primary-minor: #938dd5;
+$brand-secondary: #2fa97e;
 $brand-success:             #5cb85c !default;
 $brand-info:                #5bc0de !default;
 $brand-warning:             #f0ad4e !default;
@@ -146,9 +148,9 @@ $grid-gutter-width:          1.875rem !default; // 30px
 //
 // Font, line-height, and color for body text, headings, and more.
 
-$font-family-sans-serif:     "Helvetica Neue", Helvetica, Arial, sans-serif !default;
-$font-family-serif:          Georgia, "Times New Roman", Times, serif !default;
-$font-family-monospace:      Menlo, Monaco, Consolas, "Courier New", monospace !default;
+$font-family-sans-serif:     'Roboto', 'Helvetica Neue', Helvetica, Arial, sans-serif !default;
+$font-family-serif:          Georgia, 'Times New Roman', Times, serif !default;
+$font-family-monospace:      Menlo, Monaco, Consolas, 'Courier New', monospace !default;
 $font-family-base:           $font-family-sans-serif !default;
 
 // Pixel value used to responsively scale all typography. Applied to the `<html>` element.
@@ -159,11 +161,11 @@ $font-size-lg:               1.25rem !default;
 $font-size-sm:               .875rem !default;
 $font-size-xs:               .75rem !default;
 
-$font-size-h1:               2rem !default;
-$font-size-h2:               1.8rem !default;
-$font-size-h3:               1.6rem !default;
-$font-size-h4:               1.5rem !default;
-$font-size-h5:               1.25rem !default;
+$font-size-h1:               1.9rem !default;
+$font-size-h2:               1.7rem !default;
+$font-size-h3:               1.5rem !default;
+$font-size-h4:               1.4rem !default;
+$font-size-h5:               1.2rem !default;
 $font-size-h6:               1rem !default;
 
 $display1-size:               6rem !default;
@@ -179,10 +181,11 @@ $display4-weight:             300 !default;
 $line-height:                1.5 !default;
 
 $headings-margin-bottom:     ($spacer / 2) !default;
-$headings-font-family:       inherit !default;
+$headings-font-family:       'Helvetica Neue', Helvetica, Arial, sans-serif !default;
 $headings-font-weight:       500 !default;
 $headings-line-height:       1.1 !default;
 $headings-color:             $black !default;
+$headings-link-hover-color:  lighten($black, $link-hover-color-offset) !default;
 
 $lead-font-size:             1.25rem !default;
 $lead-font-weight:           300 !default;
@@ -207,7 +210,7 @@ $list-inline-padding:         5px !default;
 $editor-placeholder: #9197a3;
 $editor-placeholder-focused: #bdc1c9;
 
-$item-details: #92b9a6;
+$item-details: $brand-secondary;
 
 // Components
 //

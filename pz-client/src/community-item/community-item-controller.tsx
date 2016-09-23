@@ -32,7 +32,7 @@ export class CommunityItemController extends Component<ICommunityItemProps, ICom
         let {communityItem} = this.props;
 
         return (
-            <div className="community-item-page-namespace" >
+            <div className="community-item-namespace" >
                 <CommunityItem key={communityItem.id} communityItem={communityItem} />
             </div>
         )

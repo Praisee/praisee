@@ -1,11 +1,10 @@
 @mixin topic-namespace {
-  @include community-item();
-  @include community-item-editor();
-  @include expand-button();
-
   .topic-namespace {
     @include make-container();
     @include make-container-max-widths();
+    @include community-item();
+    @include community-item-editor();
+    @include expand-button();
 
     .primary-section {
       @include make-col-span(8);
@@ -20,6 +19,12 @@
       @include make-col();
       @include media-breakpoint-down(sm){
         @include make-col-span(12);
+      }
+    }
+
+    .community-item {
+      .title {
+        font-size: $font-size-h4;
       }
     }
   }

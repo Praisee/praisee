@@ -1,3 +1,11 @@
 @mixin tab-focus() {
   outline: none;
 }
+
+%bootstrap {
+  h1, h2, h3, h4, h5, h6 {
+    a:hover, a:focus, a:active {
+      color: $headings-link-hover-color;
+    }
+  }
+}

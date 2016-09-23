@@ -40,6 +40,10 @@
   .app-controls {
     @include make-col();
     margin-left: 2rem;
+
+    .dropdown-menu {
+      @extend .dropdown-menu-right;
+    }
   }
 
   @include media-breakpoint-down(sm) {

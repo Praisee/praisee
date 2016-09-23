@@ -18,6 +18,31 @@ import {CreateCommentEditor} from 'pz-client/src/comments/comment-editor-compone
 import {ISignInUpContext, SignInUpContextType} from 'pz-client/src/user/sign-in-up-overlay-component';
 import classNames from 'classnames';
 
+interface ICommunityItemProps {
+    communityItem: {
+        id: number
+        user: { displayName: string }
+        summary: string
+        body: string
+        bodyData?: IContentData
+        createdAt: Date
+        commentCount: number
+        comments: any
+        votes: any
+        currentUserVote: any
+        topics: Array<{ id: string, name: string, routePath: string }>
+        routePath: string
+    }
+
+    body: string;
+    relay: any;
+    createCommunityItemVoteMutation: any;
+}
+
+interface ICommuintyItemState {
+    isEditingComment: boolean
+}
+
 class CommunityItem extends Component<ICommunityItemProps, ICommuintyItemState> {
     static contextTypes : any = {
         appViewerId: React.PropTypes.string.isRequired,
@@ -38,23 +63,20 @@ class CommunityItem extends Component<ICommunityItemProps, ICommuintyItemState> 
         const {communityItem} = this.props;
         const {user} = communityItem;
 
-        //TODO: Look into how to get the error from payloads
-        const error = this.props.createCommunityItemVoteMutation ?
-            <Error message={this.props.createCommunityItemVoteMutation.error} /> :
-            null;
-
         const bubbleClass = classNames('bubble', {'hidden': communityItem.commentCount === 0});
-
-        //TODO: Figure out how to truncate longer content
-        const communityItemClasses = classNames({'long-content': false})
 
         return (
             <div className="community-item">
                 <Avatar communityItem={communityItem} comment={null} />
-                <Link to={communityItem.routePath} className="title">{communityItem.summary}</Link>
-                <CommunityItemContent className={communityItemClasses} communityItem={communityItem} />
-                {error}
+
+                <div className="title">
+                    <Link to={communityItem.routePath} className="title-link">{communityItem.summary}</Link>
+                </div>
+
+                {this._renderContent(communityItem)}
+
                 <Tags topics={this.props.communityItem.topics} />
+
                 <div className="community-item-bottom">
                     {!this.state.isEditingComment && (
                         <div className="left">
@@ -75,6 +97,7 @@ class CommunityItem extends Component<ICommunityItemProps, ICommuintyItemState> 
                         onSave={this._onCommentSave.bind(this) }
                         onEditing={this._onEditingComment.bind(this) } />
                 </div>
+
                 {this.props.relay.variables.expandComments && <CommentList
                     key={`communityItem-commentList-${communityItem.id}`}
                     communityItem={communityItem}
@@ -84,6 +107,12 @@ class CommunityItem extends Component<ICommunityItemProps, ICommuintyItemState> 
                     />}
             </div>
         )
+    }
+
+    private _renderContent(communityItem) {
+        return (
+            <CommunityItemContent communityItem={communityItem} />
+        );
     }
 
     private _toggleComments() {
@@ -192,27 +221,3 @@ export default Relay.createContainer(CommunityItem, {
         `
     }
 });
-
-interface ICommuintyItemState {
-    isEditingComment: boolean
-}
-
-interface ICommunityItemProps {
-    communityItem: {
-        id: number
-        user: { displayName: string }
-        summary: string
-        body: string
-        bodyData?: IContentData
-        createdAt: Date
-        commentCount: number
-        comments: any
-        votes: any
-        currentUserVote: any
-        topics: Array<{ id: string, name: string, routePath: string }>
-        routePath: string
-    }
-    body: string;
-    relay: any;
-    createCommunityItemVoteMutation: any;
-}
