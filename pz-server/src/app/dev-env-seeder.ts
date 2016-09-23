@@ -22,12 +22,12 @@ export class DevEnvSeeder {
                 password: 'test'
             },
             {
-                email: 'test2@praisee.com',
+                email: 'test3@praisee.com',
                 displayName: 'Dexter L.',
                 password: 'test'
             },
             {
-                email: 'test2@praisee.com',
+                email: 'test4@praisee.com',
                 displayName: 'Jan Itor',
                 password: 'test'
             }
