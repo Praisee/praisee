@@ -2,7 +2,6 @@ import * as React from 'react';
 import {Component} from 'react';
 import {Link} from 'react-router';
 import * as Relay from 'react-relay';
-import {ICommunityItem} from 'pz-server/src/community-items/community-items';
 import CommentList from 'pz-client/src/comments/comment-list-component'
 import Votes from 'pz-client/src/votes/votes-component';
 import Avatar from 'pz-client/src/user/avatar.component';
@@ -12,13 +11,15 @@ import CreateCommunityItemVoteMutation from 'pz-client/src/votes/create-communit
 import UpdateCommunityItemVoteMutation from 'pz-client/src/votes/update-community-item-vote-mutation';
 import DeleteCommunityItemVoteMutation from 'pz-client/src/votes/delete-community-item-vote-mutation';
 import CreateCommentForCommunityItemMutation from 'pz-client/src/comments/create-comment-for-community-item-mutation';
-import Error from 'pz-client/src/widgets/error-component';
 import {IContentData} from 'pz-server/src/content/content-data';
 import {CreateCommentEditor} from 'pz-client/src/comments/comment-editor-component';
 import {ISignInUpContext, SignInUpContextType} from 'pz-client/src/user/sign-in-up-overlay-component';
 import classNames from 'classnames';
+import ContentTruncator from 'pz-client/src/widgets/content-truncator-component';
 
 interface ICommunityItemProps {
+    truncateLongContent: boolean
+
     communityItem: {
         id: number
         user: { displayName: string }
@@ -110,9 +111,19 @@ class CommunityItem extends Component<ICommunityItemProps, ICommuintyItemState> 
     }
 
     private _renderContent(communityItem) {
-        return (
-            <CommunityItemContent communityItem={communityItem} />
-        );
+        if (this.props.truncateLongContent) {
+            return (
+                <ContentTruncator truncateToHeight={175} heightMargin={50}>
+                    <CommunityItemContent communityItem={communityItem} />
+                </ContentTruncator>
+            );
+
+        } else {
+
+            return (
+                <CommunityItemContent communityItem={communityItem} />
+            );
+        }
     }
 
     private _toggleComments() {

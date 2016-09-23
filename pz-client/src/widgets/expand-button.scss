@@ -1,8 +1,15 @@
 @mixin expand-button {
   .expand-button {
     cursor: pointer;
+    border: 1px solid transparent;
     border-radius: 3px;
-    padding: 0 25px 5px 25px;
-    background-color: $gray-lighter;
+    padding: 0 1rem 0.4rem 1rem;
+    line-height: 1;
+    background-color: lighten($gray-lighter, 10%);
+    outline: none;
+
+    &:active, &:hover, &focus {
+      background-color: $gray-lighter;
+    }
   }
 }

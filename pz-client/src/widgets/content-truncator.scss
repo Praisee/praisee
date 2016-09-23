@@ -1,0 +1,35 @@
+@mixin content-truncator {
+  .content-truncator {
+    .content-truncator-content {
+      overflow: hidden;
+    }
+
+    &.content-truncator-is-truncated {
+      .content-truncator-content {
+        position: relative;
+
+        &::after {
+          display: block;
+          content: '';
+          background: transparent;
+          background: linear-gradient(to bottom, transparentize($body-bg, 1) 0%, $body-bg 100%);
+          position: absolute;
+          bottom: 0;
+          left: 0;
+          right: 0;
+          height: 5rem;
+        }
+      }
+    }
+
+    .content-truncator-toggle {
+      display: none;
+    }
+
+    &.content-truncator-is-truncatable {
+      .content-truncator-toggle {
+        display: inline-block;
+      }
+    }
+  }
+}

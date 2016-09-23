@@ -65,7 +65,7 @@ export class TopicController extends Component<ITopicProps, ITopicState> {
     _renderTopicContent() {
         const rows = this.props.topic.communityItems.edges
             .map(({node}) =>
-                <CommunityItem key={node.id} communityItem={node} />
+                <CommunityItem key={node.id} communityItem={node} truncateLongContent={true} />
             );
 
         let expandButton = null;

@@ -4,6 +4,7 @@
     @include comment-editor();
     @include comment();
     @include votes();
+    @include content-truncator();
     margin-top: 1rem;
     margin-bottom: 3rem;
 
