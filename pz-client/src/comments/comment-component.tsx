@@ -62,7 +62,10 @@ export class Comment extends Component<any, any>{
         return this.schemaInjector.inject(
             <div className="comment">
                 <header className="comment-header">
-                    <Avatar communityItem={null} comment={comment} />
+                    <Avatar communityItem={null} comment={comment}
+                        showReputation={true}
+                        showTrusts={true}
+                        showTrustButton={true} />
                     <DateDisplay date={createdAt} type="date-created" />
                 </header>
                 <div className="comment-inner">

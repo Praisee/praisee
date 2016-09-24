@@ -20,7 +20,9 @@
     .title-link {
       color: $headings-color;
 
-      &:hover, &:active, &:focus {
+      &:hover,
+      &:active,
+      &:focus {
         color: $headings-link-hover-color;
       }
     }
@@ -59,11 +61,13 @@
       margin-bottom: .5rem;
       cursor: pointer;
 
-      &:hover, &:active, &:focus {
+      &:hover,
+      &:active,
+      &:focus {
         color: $brand-primary;
       }
 
-      &.hidden{
+      &.hidden {
         cursor: default;
       }
     }
@@ -146,6 +150,57 @@
       @include make-col();
       @include media-breakpoint-down(sm){
         @include make-col-span(12);
+      }
+    }
+
+    .vote-and-tags {
+      display: flex;
+      margin-top: 2rem;
+    }
+
+    .comment-container {
+      @include make-container();
+      @include make-container-max-widths();
+      @include make-col();
+      @include make-col-span(8);
+      @include media-breakpoint-down(sm){
+        @include make-col-span(12);
+      }
+    }
+
+    .comment-bubble-and-response {
+      display: flex;
+      margin-top: 1rem;
+      margin-bottom: 1rem;
+      padding-bottom: 1rem;
+      border-bottom: 1px solid $gray-lighter;
+    }
+
+    .comment-list {
+      @include make-row();
+      @include make-container();
+      @include make-container-max-widths();
+    }
+
+    .related-community-item-container {
+      @include make-col();
+      @include make-col-span(4);
+      margin-top: 1rem;
+      text-align: center;
+      padding: 1rem;
+
+      .related-community-item {
+        background: $gray-lightest;
+        border-radius: 5px;
+        height: 10rem;
+
+        &:nth-child(2n) {
+          background: $gray-lighter;
+        }
+
+        .h4 {
+          padding-top: 1rem;
+        }
       }
     }
   }

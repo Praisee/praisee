@@ -15,8 +15,7 @@
       margin: .5em;
     }
 
-    .reputation,
-    .trusters {
+    .reputation, .trusters {
       margin-left: 1em;
       margin-top: .5em;
       margin-bottom: .5em;
@@ -37,6 +36,16 @@
 
     .trusters-icon {
       @extend .fa-check;
+    }
+
+    .trust-button{
+      @include btn();
+      @include btn-primary-outline();
+    }
+
+    .trust-button-icon{
+      @extend .fa-check;
+      @extend .fa;
     }
   }
 }

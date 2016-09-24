@@ -44,7 +44,10 @@ export class CommunityItemController extends Component<ICommunityItemProps, ICom
         return (
             <div className="community-item-namespace" >
                 <div className="community-item">
-                    <Avatar communityItem={communityItem} comment={null} />
+                    <Avatar communityItem={communityItem} comment={null}
+                        showReputation={true}
+                        showTrusts={true}
+                        showTrust-button={true} />
 
                     <div className="title">
                         {communityItem.summary}
@@ -54,9 +57,13 @@ export class CommunityItemController extends Component<ICommunityItemProps, ICom
 
                     {this._renderVoteAndTagSection(communityItem)}
 
-                    {this._renderCommentResponseSection(communityItem)}
+                    {this._renderRelatedCommunityItems(communityItem)}
 
-                    {this._renderCommentList(communityItem)}
+                    <div className="comment-container">
+                        {this._renderCommentResponseSection(communityItem)}
+
+                        {this._renderCommentList(communityItem)}
+                    </div>
                 </div>
             </div>
         )
@@ -75,7 +82,7 @@ export class CommunityItemController extends Component<ICommunityItemProps, ICom
                     key={`communityItem-votes-${communityItem.id}`}
                     comment={null}
                     communityItem={this.props.communityItem} />
-                <Tags topics={this.props.communityItem.topics} hideSingleTag={true} />
+                <Tags topics={this.props.communityItem.topics} hideSingleTag={false} />
             </div>
         )
     }
@@ -104,6 +111,43 @@ export class CommunityItemController extends Component<ICommunityItemProps, ICom
                     />
             )
         }
+    }
+
+    private _renderRelatedCommunityItems(communityItem) {
+        return (
+            <div className="related-community-items-container">
+                <div className="related-community-item-container">
+                    <div className="related-community-item">
+                        <h4>This is why I'm switching to canon</h4>
+                        <Avatar communityItem={communityItem} comment={null}
+                            showReputation={false}
+                            showTrusts={true}
+                            showTrust-button={false} />
+                        <CommentBubble onClick={this._toggleComments.bind(this)} communityItem={this.props.communityItem} />
+                    </div>
+                </div>
+                <div className="related-community-item-container">
+                    <div className="related-community-item">
+                        <h4>Test #2</h4>
+                        <Avatar communityItem={communityItem} comment={null}
+                            showReputation={false}
+                            showTrusts={true}
+                            showTrust-button={false} />
+                        <CommentBubble onClick={this._toggleComments.bind(this)} communityItem={this.props.communityItem} />
+                    </div>
+                </div>
+                <div className="related-community-item-container">
+                    <div className="related-community-item">
+                        <h4>Test #3</h4>
+                        <Avatar communityItem={communityItem} comment={null}
+                            showReputation={false}
+                            showTrusts={true}
+                            showTrust-button={false} />
+                        <CommentBubble onClick={this._toggleComments.bind(this)} communityItem={this.props.communityItem} />
+                    </div>
+                </div>
+            </div>
+        )
     }
 
     private _onEditingComment(isEditingComment) {
