@@ -51,7 +51,9 @@ class RelatedTopics extends React.Component<IProps, any> {
 
     private _renderTopicThumbnailPhoto(topic) {
         if (!topic.thumbnailPhoto) {
-            return;
+            return (
+                <span className="related-topic-thumbnail-photo-missing" />
+            );
         }
 
         return (

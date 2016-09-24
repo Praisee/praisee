@@ -38,12 +38,27 @@
 
         .related-topic-thumbnail-photo-container {
           width: 2rem;
+          height: 2rem;
+          display: inline-block;
           margin-right: 0.5rem;
+          vertical-align: middle;
         }
 
         .related-topic-thumbnail-photo {
           width: 2rem;
           height: 2rem;
+        }
+
+        .related-topic-thumbnail-photo-missing {
+          display: inline-block;
+          width: 2rem;
+          height: 2rem;
+          border: 1px solid $brand-secondary;
+        }
+
+        .related-topic-name {
+          display: inline-block;
+          vertical-align: middle;
         }
       }
 
