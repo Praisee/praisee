@@ -121,7 +121,7 @@ export default function CommunityItemTypes(repositoryAuthorizers: IAppRepository
                     return route.routePath;
                 }
             },
-            
+
             currentUserVote: {
                 type: GraphQLBoolean,
                 resolve: async ({id}, __, {user}) => {

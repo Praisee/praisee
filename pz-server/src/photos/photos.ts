@@ -27,7 +27,9 @@ export interface IPhoto extends IRepositoryRecord {
 export interface IPhotos extends IRepository {
     findById(id: number): Promise<IPhoto>
     findAllByIds(ids: Array<number>): Promise<Array<IPhoto>>
+    findAllByParentAndPurposeType(parentType: string, parentId: number, purposeType: string): Promise<Array<IPhoto>>;
     createUploadingPhoto(photo: IPhoto): Promise<IPhoto>
     updateToUploadedPhoto(id: number, photoServerPath: string): Promise<IPhoto>
+    update(photo: IPhoto): Promise<IPhoto>;
     destroy(id: number): Promise<IPhoto>
 }

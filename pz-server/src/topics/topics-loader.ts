@@ -9,6 +9,7 @@ import {TOptionalUser} from 'pz-server/src/users/users';
 import {ICommunityItem} from 'pz-server/src/community-items/community-items';
 import {ICursorResults, TBiCursor} from 'pz-server/src/support/cursors/cursors';
 import createDataLoaderBatcher from 'pz-server/src/support/create-dataloader-batcher';
+import {IPhoto} from 'pz-server/src/photos/photos';
 
 export default class TopicsLoader implements ITopics {
     private _topics: ITopics & ITopicsBatchable;
@@ -45,6 +46,10 @@ export default class TopicsLoader implements ITopics {
 
     findSomeCommunityItemsRanked(topicId: number, asUser: TOptionalUser, cursor: TBiCursor): Promise<ICursorResults<ICommunityItem>> {
         return this._topics.findSomeCommunityItemsRanked(topicId, asUser, cursor);
+    }
+
+    findSomePhotoGalleryPhotosRanked(topicId: number, asUser: TOptionalUser, cursor: TBiCursor): Promise<ICursorResults<IPhoto>> {
+        return this._topics.findSomePhotoGalleryPhotosRanked(topicId, asUser, cursor);
     }
 
     findAllCommunityItemIds(topicId: number): Promise<Array<number>> {

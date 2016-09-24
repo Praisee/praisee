@@ -20,7 +20,7 @@ function getPhotoBuilderFactory(photoServerPath) {
     };
 }
 
-export interface ITopicThumbnailPhotoVariations {
+export interface ICommonPhotoVarations {
     defaultUrl: string
 
     variations: {
@@ -28,6 +28,8 @@ export interface ITopicThumbnailPhotoVariations {
         mobile: string
     }
 }
+
+export interface ITopicThumbnailPhotoVariations extends ICommonPhotoVarations {}
 
 export function getTopicThumbnailPhotoVariationsUrls(photoServerPath): ITopicThumbnailPhotoVariations {
     const getPhotoBuilder = getPhotoBuilderFactory(photoServerPath);
@@ -42,14 +44,35 @@ export function getTopicThumbnailPhotoVariationsUrls(photoServerPath): ITopicThu
     };
 }
 
-export interface ICommunityItemContentPhotoVariations {
+export interface ITopicPhotoGalleryPhotoVariations extends ICommonPhotoVarations {
     defaultUrl: string
 
     variations: {
         initialLoad: string
         mobile: string
+
+        thumbnail: string
+        mobileThumbnail: string
     }
 }
+
+export function getTopicPhotoGalleryPhotoVariationsUrls(photoServerPath): ITopicPhotoGalleryPhotoVariations {
+    const getPhotoBuilder = getPhotoBuilderFactory(photoServerPath);
+
+    return {
+        defaultUrl: getPhotoBuilder().smartCrop(true).fitIn(1000, 1000).buildUrl(),
+
+        variations: {
+            initialLoad: getPhotoBuilder().resize(1, 1).filter('blur(1000)').buildUrl(),
+            mobile: getPhotoBuilder().smartCrop(true).fitIn(400, 400).buildUrl(),
+
+            thumbnail: getPhotoBuilder().smartCrop(true).fitIn(300, 300).buildUrl(),
+            mobileThumbnail: getPhotoBuilder().smartCrop(true).fitIn(75, 75).buildUrl()
+        }
+    };
+}
+
+export interface ICommunityItemContentPhotoVariations extends ICommonPhotoVarations {}
 
 export function getCommunityItemContentPhotoVariationsUrls(photoServerPath): ICommunityItemContentPhotoVariations {
     const getPhotoBuilder = getPhotoBuilderFactory(photoServerPath);

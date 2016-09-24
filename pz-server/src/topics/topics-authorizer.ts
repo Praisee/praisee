@@ -6,6 +6,7 @@ import {
 import {ITopics, ITopic} from 'pz-server/src/topics/topics';
 import {ICommunityItem} from 'pz-server/src/community-items/community-items';
 import {TBiCursor, ICursorResults} from 'pz-server/src/support/cursors/cursors';
+import {IPhoto} from 'pz-server/src/photos/photos';
 
 export interface IAuthorizedTopics {
     findAll(): Promise<Array<ITopic>>
@@ -13,6 +14,7 @@ export interface IAuthorizedTopics {
     findAllByIds(ids: Array<number>): Promise<Array<ITopic>>
     findByUrlSlugName(urlSlugName: string): Promise<ITopic>
     findSomeCommunityItemsRanked(topicId: number, cursor: TBiCursor): Promise<ICursorResults<ICommunityItem>>
+    findSomePhotoGalleryPhotosRanked(topicId: number, cursor: TBiCursor): Promise<ICursorResults<IPhoto>>
     getCommunityItemCount(topicId: number): Promise<number>
 }
 
@@ -41,10 +43,14 @@ class AuthorizedTopics implements IAuthorizedTopics {
         return this._topics.findByUrlSlugName(fullSlug);
     }
 
-    findSomeCommunityItemsRanked(topicId: number, cursor: TBiCursor){
+    findSomeCommunityItemsRanked(topicId: number, cursor: TBiCursor) {
         return this._topics.findSomeCommunityItemsRanked(topicId, this._user, cursor);
     }
-    
+
+    findSomePhotoGalleryPhotosRanked(topicId: number, cursor: TBiCursor): Promise<ICursorResults<IPhoto>> {
+        return this._topics.findSomePhotoGalleryPhotosRanked(topicId, this._user, cursor);
+    }
+
     getCommunityItemCount(topicId: number): Promise<number>{
         return this._topics.getCommunityItemCount(topicId);
     }

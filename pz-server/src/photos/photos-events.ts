@@ -29,6 +29,10 @@ export default class PhotosEvents implements IPhotos {
         return this._photos.findAllByIds(ids);
     }
 
+    findAllByParentAndPurposeType(parentType: string, parentId: number, purposeType: string): Promise<Array<IPhoto>> {
+        return this._photos.findAllByParentAndPurposeType(parentType, parentId, purposeType);
+    }
+
     createUploadingPhoto(photo: IPhoto): Promise<IPhoto> {
         return this._photos.createUploadingPhoto(photo);
     }
@@ -42,6 +46,10 @@ export default class PhotosEvents implements IPhotos {
 
         this._events.emit('photoAvailable', photo);
         return photo;
+    }
+
+    update(photo: IPhoto): Promise<IPhoto> {
+        return this._photos.update(photo);
     }
 
     async destroy(id: number): Promise<IPhoto> {

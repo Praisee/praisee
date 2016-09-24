@@ -69,6 +69,7 @@ module.exports = function initializeRepositories(app: IApp) {
         app.models.Topic,
         app.models.CommunityItem,
         app.models.UrlSlug,
+        app.models.Photo,
         rankings,
         photosEvents
     ));
@@ -89,6 +90,7 @@ module.exports = function initializeRepositories(app: IApp) {
 
     const filteredCommunityItems = new FilteredCommunityItems(
         communityItems,
+        photos,
         contentFilterer,
         convertContentDataToText
     );

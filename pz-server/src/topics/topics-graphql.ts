@@ -1,12 +1,20 @@
 import {IAppRepositoryAuthorizers} from 'pz-server/src/app/repositories';
 import * as graphqlRelay from 'graphql-relay';
 import * as graphql from 'graphql';
+
 import {
     biCursorFromGraphqlArgs,
     connectionFromCursorResults
 } from 'pz-server/src/graphql/cursor-helpers';
+
 import {ITypes} from 'pz-server/src/graphql/types';
-import {getTopicThumbnailPhotoVariationsUrls} from 'pz-server/src/photos/photo-variations';
+
+import {
+    getTopicThumbnailPhotoVariationsUrls,
+    getTopicPhotoGalleryPhotoVariationsUrls
+} from 'pz-server/src/photos/photo-variations';
+
+import {mapCursorResultItems} from 'pz-server/src/support/cursors/map-cursor-results';
 
 var {
     GraphQLBoolean,
@@ -36,23 +44,6 @@ export default function CommentTypes(repositoryAuthorizers: IAppRepositoryAuthor
     const topicsAuthorizer = repositoryAuthorizers.topics;
     const topicAttributesAuthorizer = repositoryAuthorizers.topicAttributes;
     const vanityRoutePathAuthorizer = repositoryAuthorizers.vanityRoutePaths;
-
-    const TopicThumbnailPhotoType = new GraphQLObjectType({
-        name: 'TopicThumbnailPhoto',
-
-        fields: () => ({
-            defaultUrl: {type: new GraphQLNonNull(GraphQLString)},
-            variations: {
-                type: new GraphQLObjectType({
-                    name: 'TopicThumbnailPhotoVariations',
-                    fields: {
-                        initialLoad: {type: new GraphQLNonNull(GraphQLString)},
-                        mobile: {type: new GraphQLNonNull(GraphQLString)}
-                    }
-                })
-            }
-        })
-    });
 
     const TopicType = new GraphQLObjectType({
         name: 'Topic',
@@ -130,13 +121,30 @@ export default function CommentTypes(repositoryAuthorizers: IAppRepositoryAuthor
                     }
                 },
 
-
-
                 routePath: {
                     type: GraphQLString,
                     resolve: async (topic, _, {user}) => {
                         let route = await vanityRoutePathAuthorizer.as(user).findByRecord(topic);
                         return route.routePath;
+                    }
+                },
+
+                photoGallery: {
+                    type: TopicPhotoGalleryPhotoConnection.connectionType,
+                    args: connectionArgs,
+
+                    resolve: async (topic, args, {user}) => {
+                        const cursor = biCursorFromGraphqlArgs(args);
+
+                        const photoGalleryPhotos = await topicsAuthorizer
+                            .as(user)
+                            .findSomePhotoGalleryPhotosRanked(topic.id, cursor);
+
+                        const photoGalleryPhotosUrls = mapCursorResultItems(photoGalleryPhotos, (photo) => {
+                            return getTopicPhotoGalleryPhotoVariationsUrls(photo.photoServerPath);
+                        });
+
+                        return connectionFromCursorResults(photoGalleryPhotosUrls);
                     }
                 }
             });
@@ -145,8 +153,51 @@ export default function CommentTypes(repositoryAuthorizers: IAppRepositoryAuthor
         interfaces: [nodeInterface]
     });
 
+    const TopicThumbnailPhotoType = new GraphQLObjectType({
+        name: 'TopicThumbnailPhoto',
+
+        fields: () => ({
+            defaultUrl: {type: new GraphQLNonNull(GraphQLString)},
+            variations: {
+                type: new GraphQLObjectType({
+                    name: 'TopicThumbnailPhotoVariations',
+                    fields: {
+                        initialLoad: {type: new GraphQLNonNull(GraphQLString)},
+                        mobile: {type: new GraphQLNonNull(GraphQLString)}
+                    }
+                })
+            }
+        })
+    });
+
+    const TopicPhotoGalleryPhotoType = new GraphQLObjectType({
+        name: 'TopicPhotoGalleryPhoto',
+
+        fields: () => ({
+            defaultUrl: {type: new GraphQLNonNull(GraphQLString)},
+            variations: {
+                type: new GraphQLObjectType({
+                    name: 'TopicPhotoGalleryPhotoVariations',
+                    fields: {
+                        initialLoad: {type: new GraphQLNonNull(GraphQLString)},
+                        mobile: {type: new GraphQLNonNull(GraphQLString)},
+
+                        thumbnail: {type: new GraphQLNonNull(GraphQLString)},
+                        mobileThumbnail: {type: new GraphQLNonNull(GraphQLString)}
+                    }
+                })
+            }
+        })
+    });
+
+    const TopicPhotoGalleryPhotoConnection = connectionDefinitions({
+        name: 'TopicPhotoGalleryPhoto',
+        nodeType: TopicPhotoGalleryPhotoType
+    });
+
     return {
         TopicType,
-        TopicThumbnailPhotoType
+        TopicThumbnailPhotoType,
+        TopicPhotoGalleryPhotoType
     };
 }

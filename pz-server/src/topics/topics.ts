@@ -6,6 +6,7 @@ import {
 import {ICommunityItem} from 'pz-server/src/community-items/community-items';
 import {TBiCursor, ICursorResults} from 'pz-server/src/support/cursors/cursors';
 import {TOptionalUser} from 'pz-server/src/users/users';
+import {IPhoto} from 'pz-server/src/photos/photos';
 
 export type TTopicType = (
     'topic'
@@ -32,6 +33,7 @@ export interface ITopics extends IRepository {
     findAllByIds(ids: Array<number>): Promise<Array<ITopic>>
     findByUrlSlugName(urlSlugName: string): Promise<ITopic>
     findSomeCommunityItemsRanked(topicId: number, asUser: TOptionalUser, cursor: TBiCursor): Promise<ICursorResults<ICommunityItem>>
+    findSomePhotoGalleryPhotosRanked(topicId: number, asUser: TOptionalUser, cursor: TBiCursor): Promise<ICursorResults<IPhoto>>
     findAllCommunityItemIds(topicId: number): Promise<Array<number>>
     getCommunityItemCount(topicId: number): Promise<number>
 }

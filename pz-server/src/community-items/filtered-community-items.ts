@@ -1,30 +1,46 @@
 import {ICommunityItems, ICommunityItem} from 'pz-server/src/community-items/community-items';
-import {IDataToTextConverter} from 'pz-server/src/content/content-data';
+import {
+    IDataToTextConverter,
+    IContentData,
+    isDraftJs08Content,
+    IDraftjs08Content
+} from 'pz-server/src/content/content-data';
 import {ITopic} from 'pz-server/src/topics/topics';
 import {TBiCursor, ICursorResults} from 'pz-server/src/support/cursors/cursors';
 import {IContentFilterer} from 'pz-server/src/content/content-filterer';
 import {promisedMapCursorResults} from 'pz-server/src/support/cursors/map-cursor-results';
 import {IComment} from 'pz-server/src/comments/comments';
 import {IVote} from 'pz-server/src/votes/votes';
+import {IPhotos, IPhoto} from 'pz-server/src/photos/photos';
+import {filterAttachments} from '../content/filters/attachment-data';
+import {IAttachment} from 'pz-client/src/editor/attachment-plugin/attachment';
 
 export default class FilteredCommunityItems implements ICommunityItems {
-    private _CommunityItems: ICommunityItems;
+    private _communityItems: ICommunityItems;
+    private _photos: IPhotos;
     private _contentFilterer: IContentFilterer;
     private _convertBodyDataToText: IDataToTextConverter;
 
-    constructor(CommunityItems: ICommunityItems, contentFilterer: IContentFilterer, convertBodyDataToText: IDataToTextConverter) {
-        this._CommunityItems = CommunityItems;
+    constructor(
+            CommunityItems: ICommunityItems,
+            photos: IPhotos,
+            contentFilterer: IContentFilterer,
+            convertBodyDataToText: IDataToTextConverter
+        ) {
+
+        this._communityItems = CommunityItems;
+        this._photos = photos;
         this._contentFilterer = contentFilterer;
         this._convertBodyDataToText = convertBodyDataToText;
     }
 
     async findById(id: number): Promise<ICommunityItem> {
-        const communityItem = await this._CommunityItems.findById(id);
+        const communityItem = await this._communityItems.findById(id);
         return await this._filterBeforeRead(communityItem);
     }
 
     async findAllByIds(ids: Array<number>): Promise<Array<ICommunityItem>> {
-        const communityItems = await this._CommunityItems.findAllByIds(ids);
+        const communityItems = await this._communityItems.findAllByIds(ids);
 
         return await Promise.all<ICommunityItem>(communityItems.map(async (communityItem) => {
             return await this._filterBeforeRead(communityItem);
@@ -33,7 +49,7 @@ export default class FilteredCommunityItems implements ICommunityItems {
 
     async findSomeByUserId(cursor: TBiCursor, userId: number): Promise<ICursorResults<ICommunityItem>> {
         const filteredCursorResults = await promisedMapCursorResults(
-            await this._CommunityItems.findSomeByUserId(cursor, userId),
+            await this._communityItems.findSomeByUserId(cursor, userId),
             async (cursorResult) => Object.assign({}, cursorResult, {
                 item: await this._filterBeforeRead(cursorResult.item)
             })
@@ -43,34 +59,95 @@ export default class FilteredCommunityItems implements ICommunityItems {
     }
 
     async isOwner(userId: number, communityItemId: number): Promise<boolean> {
-        return await this._CommunityItems.isOwner(userId, communityItemId);
+        return await this._communityItems.isOwner(userId, communityItemId);
     }
 
     async findAllTopics(communityItemId: number): Promise<Array<ITopic>> {
-        return await this._CommunityItems.findAllTopics(communityItemId);
+        return await this._communityItems.findAllTopics(communityItemId);
     }
 
     async findAllComments(communityItemId: number): Promise<Array<IComment>> {
-        return await this._CommunityItems.findAllComments(communityItemId);
+        return await this._communityItems.findAllComments(communityItemId);
     }
 
     async findVotesForCommunityItem(communityItemId: number): Promise<Array<IVote>> {
-        return await this._CommunityItems.findVotesForCommunityItem(communityItemId);
+        return await this._communityItems.findVotesForCommunityItem(communityItemId);
     }
 
     async findByUrlSlugName(fullSlug: string): Promise<ICommunityItem> {
-        return await this._CommunityItems.findByUrlSlugName(fullSlug);
+        return await this._communityItems.findByUrlSlugName(fullSlug);
     }
 
     async create(communityItem: ICommunityItem, ownerId: number): Promise<ICommunityItem> {
-        const filteredCommunityItem = await this._filterBeforeWrite(communityItem);
-        const newCommunityItem = await this._CommunityItems.create(filteredCommunityItem, ownerId);
+        let filteredBodyData = await this._contentFilterer.filterBeforeWrite(
+            communityItem.bodyData
+        );
+
+        let newCommunityItem;
+
+        if (isDraftJs08Content(filteredBodyData)) {
+            const {bodyData, contentPhotosMap} = await this._extractAndCleanPhotoData(
+                filteredBodyData, ownerId
+            );
+
+            filteredBodyData = bodyData;
+
+            newCommunityItem = await this._communityItems.create(
+                this._filterBeforeWrite(communityItem, filteredBodyData),
+                ownerId
+            );
+
+            await this._updateLinkedPhotos(newCommunityItem.id, [...contentPhotosMap.values()]);
+
+        } else {
+            newCommunityItem = await this._communityItems.create(
+                this._filterBeforeWrite(communityItem, filteredBodyData),
+                ownerId
+            );
+        }
+
         return await this._filterBeforeRead(newCommunityItem);
     }
 
     async update(communityItem: ICommunityItem): Promise<ICommunityItem> {
-        const filteredCommunityItem = await this._filterBeforeWrite(communityItem);
-        const updatedCommunityItem = await this._CommunityItems.update(filteredCommunityItem);
+        const existingCommunityItem = await this._communityItems.findById(communityItem.id);
+
+        if (!existingCommunityItem) {
+            throw new Error('Community item does not exist: ' + communityItem.id);
+        }
+
+        let filteredBodyData = await this._contentFilterer.filterBeforeWrite(
+            communityItem.bodyData
+        );
+
+        let updatedCommunityItem;
+
+        if (isDraftJs08Content(filteredBodyData)) {
+            const {bodyData, contentPhotosMap} = await this._extractAndCleanPhotoData(
+                filteredBodyData, existingCommunityItem.userId, existingCommunityItem.id
+            );
+
+            filteredBodyData = bodyData;
+
+            const {addedPhotos, removedPhotos} = await this._getAddedAndRemovedPhotos(
+                communityItem.id, contentPhotosMap
+            );
+
+            updatedCommunityItem = await this._communityItems.update(
+                this._filterBeforeWrite(communityItem, filteredBodyData)
+            );
+
+            await Promise.all([
+                this._updateLinkedPhotos(updatedCommunityItem.id, addedPhotos),
+                this._destroyUnlinkedPhotos(removedPhotos)
+            ]);
+
+        } else {
+            updatedCommunityItem = await this._communityItems.update(
+                this._filterBeforeWrite(communityItem, filteredBodyData)
+            );
+        }
+
         return await this._filterBeforeRead(updatedCommunityItem);
     }
 
@@ -84,14 +161,106 @@ export default class FilteredCommunityItems implements ICommunityItems {
         });
     }
 
-    async _filterBeforeWrite(communityItem: ICommunityItem): Promise<ICommunityItem> {
-        const filteredBodyData = await this._contentFilterer.filterBeforeWrite(
-            communityItem.bodyData
-        );
-
+    _filterBeforeWrite(communityItem: ICommunityItem, filteredBodyData: IContentData): ICommunityItem {
         return Object.assign({}, communityItem, {
             body: this._convertBodyDataToText(filteredBodyData),
             bodyData: filteredBodyData
         });
+    }
+
+    async _extractAndCleanPhotoData(bodyData: IDraftjs08Content, ownerId: number, communityItemId: number = null):
+        Promise<{bodyData: IDraftjs08Content, contentPhotosMap: Map<number, IPhoto>}> {
+
+        const contentPhotosMap = new Map<number, IPhoto>();
+
+        const filteredBodyData = Object.assign({}, bodyData, {
+            value: await filterAttachments(bodyData.value, async (attachment: IAttachment) => {
+                if (attachment.attachmentType !== 'Photo') {
+                    return attachment;
+                }
+
+                const addedPhoto = await this._photos.findById(attachment.id);
+
+                if (!addedPhoto || addedPhoto.userId !== ownerId) {
+                    return null;
+                }
+
+                if (addedPhoto.parentId) {
+                    if (!communityItemId) {
+                        return null;
+                    }
+
+                    const isForSameContent = (
+                        addedPhoto.parentType === 'CommunityItem'
+                        && addedPhoto.purposeType === 'CommunityItemContent'
+                        && communityItemId === addedPhoto.parentId
+                    );
+
+                    if (!isForSameContent) {
+                        return null;
+                    }
+                }
+
+                contentPhotosMap.set(attachment.id, addedPhoto);
+
+                return attachment;
+            })
+        });
+
+        return {bodyData: filteredBodyData, contentPhotosMap};
+    }
+
+    async _getAddedAndRemovedPhotos(communityItemId: number, contentPhotosMap: Map<number, IPhoto>):
+        Promise<{addedPhotos: Array<IPhoto>, removedPhotos: Array<IPhoto>}> {
+
+        const priorPhotos = await this._photos.findAllByParentAndPurposeType(
+            'CommunityItem',
+            communityItemId,
+            'CommunityItemContent'
+        );
+
+        const priorPhotosMap = priorPhotos.reduce((priorPhotosMap, priorPhoto) => {
+            priorPhotosMap.set(priorPhoto.id, priorPhoto);
+            return priorPhotosMap;
+        }, new Map<number, IPhoto>());
+
+        const allPhotosMap = new Map<number, IPhoto>([...priorPhotosMap, ...contentPhotosMap]);
+
+        let addedPhotos = [], removedPhotos = [];
+
+        allPhotosMap.forEach((photo) => {
+            const photoId = photo.id;
+            const priorHasPhoto = priorPhotosMap.has(photoId);
+            const currentHasPhoto = contentPhotosMap.has(photoId);
+
+            if (!priorHasPhoto && currentHasPhoto) {
+                addedPhotos.push(photo);
+            }
+
+            if (priorHasPhoto && !currentHasPhoto) {
+                removedPhotos.push(photo);
+            }
+        });
+
+        return {addedPhotos, removedPhotos};
+    }
+
+    async _updateLinkedPhotos(communityItemId: number, addedPhotos: Array<IPhoto>): Promise<void> {
+        const updatePhotoPromises = addedPhotos.map(addedPhoto =>
+            this._photos.update(Object.assign({}, addedPhoto, {
+                parentType: 'CommunityItem',
+                parentId: communityItemId
+            }))
+        );
+
+        await Promise.all(updatePhotoPromises);
+    }
+
+    async _destroyUnlinkedPhotos(removedPhotos: Array<IPhoto>): Promise<void> {
+        const destroyPhotoPromises = removedPhotos.map(removedPhoto =>
+            this._photos.destroy(removedPhoto.id)
+        );
+
+        await Promise.all(destroyPhotoPromises);
     }
 }
