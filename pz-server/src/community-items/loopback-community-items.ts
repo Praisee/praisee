@@ -114,11 +114,19 @@ export default class CommunityItems implements ICommunityItems {
             }
         });
 
-        if (!urlSlug) {
+        if (urlSlug) {
+            const result = await promisify(this._CommunityItemModel.findById, this._CommunityItemModel)(
+                urlSlug.sluggableId);
+
+            return createRecordFromLoopbackCommunityItem(result);
+        }
+
+        const result = await promisify(this._CommunityItemModel.findById, this._CommunityItemModel)(fullSlug);
+
+        if (!result) {
             return null;
         }
 
-        const result = await promisify(this._CommunityItemModel.findById, this._CommunityItemModel)(urlSlug.sluggableId);
         return createRecordFromLoopbackCommunityItem(result);
     }
 
@@ -149,13 +157,17 @@ export default class CommunityItems implements ICommunityItems {
             throw new Error('Cannot update record without an id');
         }
 
-        let communityItemModel = new this._CommunityItemModel({
-            id: communityItem.id,
-            type: communityItem.type,
-            summary: communityItem.summary,
-            body: communityItem.body,
-            bodyData: communityItem.bodyData
-        });
+        let communityItemModel: ICommunityItemInstance = await promisify(
+            this._CommunityItemModel.findById, this._CommunityItemModel)(communityItem.id);
+
+        if (!communityItemModel) {
+            throw new Error('Could not find community item: ' + communityItem.id);
+        }
+
+        communityItemModel.type = communityItem.type;
+        communityItemModel.summary = communityItem.summary;
+        communityItemModel.body = communityItem.body;
+        communityItemModel.bodyData = communityItem.bodyData;
 
         const result = await promisify(communityItemModel.save, communityItemModel)();
         return createRecordFromLoopbackCommunityItem(result);

@@ -29,6 +29,9 @@ import {findWithCursor} from 'pz-server/src/support/cursors/loopback-helpers';
 import {mapCursorResultItems} from 'pz-server/src/support/cursors/map-cursor-results';
 import {loopbackFindAllByIds} from 'pz-server/src/support/loopback-find-all-helpers';
 import {IPhotosEvents} from 'pz-server/src/photos/photos-events';
+import {IPhoto} from 'pz-server/src/photos/photos';
+import {IPhotoModel as ILoopbackPhoto, IPhotoInstance as ILoopbackPhotoInstance} from 'pz-server/src/models/photo';
+import {cursorPhotoLoopbackModelsToRecords} from 'pz-server/src/photos/loopback-photos';
 
 export function createRecordFromLoopbackTopic(topic: ILookbackTopicInstance): ITopic {
     return createRecordFromLoopback<ITopic>('Topic', topic);
@@ -38,6 +41,7 @@ export default class LoopbackTopics implements ITopics, ITopicsBatchable {
     private _TopicModel: ILoopbackTopic;
     private _CommunityItemModel: ILoopbackCommunityItem;
     private _UrlSlugsModel: IPersistedModel;
+    private _Photo: ILoopbackPhoto;
     private _rankings: IRankings;
     private _photosEvents: IPhotosEvents;
 
@@ -45,6 +49,7 @@ export default class LoopbackTopics implements ITopics, ITopicsBatchable {
         Topic: ILoopbackTopic,
         CommunityItem: ILoopbackCommunityItem,
         UrlSlug: IPersistedModel,
+        Photo: ILoopbackPhoto,
         rankings: IRankings,
         photosEvents: IPhotosEvents
     ) {
@@ -52,6 +57,7 @@ export default class LoopbackTopics implements ITopics, ITopicsBatchable {
         this._TopicModel = Topic;
         this._CommunityItemModel = CommunityItem;
         this._UrlSlugsModel = UrlSlug;
+        this._Photo = Photo;
         this._rankings = rankings;
         this._photosEvents = photosEvents;
 
@@ -87,11 +93,17 @@ export default class LoopbackTopics implements ITopics, ITopicsBatchable {
             }
         });
 
-        if (!urlSlug) {
+        if (urlSlug) {
+            const result = await promisify(this._TopicModel.findById, this._TopicModel)(urlSlug.sluggableId);
+            return createRecordFromLoopbackTopic(result);
+        }
+
+        const result = await promisify(this._TopicModel.findById, this._TopicModel)(fullSlug);
+
+        if (!result) {
             return null;
         }
 
-        const result = await promisify(this._TopicModel.findById, this._TopicModel)(urlSlug.sluggableId);
         return createRecordFromLoopbackTopic(result);
     }
 
@@ -135,6 +147,28 @@ export default class LoopbackTopics implements ITopics, ITopicsBatchable {
                 return createRecordFromLoopbackCommunityItem(communityItemMap[id]);
             });
         }
+    }
+
+    async findSomePhotoGalleryPhotosRanked(topicId: number, asUser: TOptionalUser, cursor: TBiCursor): Promise<ICursorResults<IPhoto>> {
+        // TODO: This should be done with a join instead
+        const allCommunityItemIds = await this.findAllCommunityItemIds(topicId);
+
+        if (!allCommunityItemIds.length) {
+            return createEmptyCursorResults<IPhoto>();
+        }
+
+        const photoGalleryPhotos = await findWithCursor<ILoopbackPhotoInstance>(
+            this._Photo,
+            cursor,
+            {
+                where: {
+                    parentType: 'CommunityItem',
+                    parentId: {inq: allCommunityItemIds}
+                }
+            }
+        );
+
+        return cursorPhotoLoopbackModelsToRecords(photoGalleryPhotos);
     }
 
     async findAllCommunityItemIds(topicId: number): Promise<Array<number>> {

@@ -126,6 +126,14 @@ export default class VanityRoutePaths implements IVanityRoutePaths {
 
         return urlSlugsForEachRecord.reduce<Array<TRecordUrlSlugTuple>>((recordUrlSlugTuples, urlSlugs, index) => {
             const record = records[index];
+
+            if (!urlSlugs.length) {
+                return [
+                    ...recordUrlSlugTuples,
+                    [record, null]
+                ]
+            }
+
             const newRecordUrlSlugTuples = urlSlugs.map<TRecordUrlSlugTuple>(urlSlug => [record, urlSlug]);
 
             return [

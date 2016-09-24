@@ -15,8 +15,10 @@ export default class UrlSlugsLoader implements IUrlSlugs {
 
         this._loaders = {
             findAllForEachSluggable: createDataLoaderBatcher<ISluggable, IUrlSlug>(
-                this._urlSlugs.findAllForEachSluggable.bind(this._urlSlugs),
-                {cacheKeyFn: ({sluggableType, sluggableId}) => `${sluggableType}:${sluggableId}`}
+                this._urlSlugs.findAllForEachSluggable.bind(this._urlSlugs)
+
+                // Maybe another day...
+                // {cacheKeyFn: ({sluggableType, sluggableId}) => `${sluggableType}:${sluggableId}`}
             )
         }
     }
