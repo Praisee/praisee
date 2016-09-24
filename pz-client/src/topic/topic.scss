@@ -14,10 +14,27 @@
       @include make-col-offset(1);
       @include make-col-span(4);
 
+      .side-section-block {
+        margin-bottom: 1.5rem;
+      }
+
       .topic-thumbnail-photo {
         width: 5rem;
         height: 5rem;
         margin: 1rem 0;
+      }
+
+      .photo-gallery {
+        transition: opacity 0.1s linear;
+
+        &.photo-gallery-loading {
+          opacity: 0;
+        }
+
+        .photo-gallery-photo {
+          max-width: 33%;
+          cursor: pointer;
+        }
       }
 
       .related-topics {

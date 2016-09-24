@@ -2,9 +2,9 @@ import * as React from 'react';
 import * as Relay from 'react-relay';
 import {Component} from 'react';
 import TopicWiki from 'pz-client/src/topic/side-section/topic-wiki.component';
-import {ITopic} from 'pz-server/src/topics/topics';
 import RelatedTopics from 'pz-client/src/topic/side-section/related-topics.component';
 import AdminControls from 'pz-client/src/topic/side-section/admin-controls.component';
+import PhotoGallery from 'pz-client/src/topic/side-section/photo-gallery-component';
 
 interface ISideSectionProps {
     topic: {
@@ -27,19 +27,41 @@ interface ISideSectionProps {
 
 class SideSection extends Component<ISideSectionProps, any> {
     render() {
+        const topic = this.props.topic;
+
         return (
             <div className="side-section">
-                <h2>{this.props.topic.name}</h2>
+                <h2>{topic.name}</h2>
 
-                {this._renderTopicPhoto(this.props.topic)}
+                <div className="side-section-block">
+                    {this._renderTopicPhoto(topic)}
+                </div>
 
-                <TopicWiki overviewContent={this.props.topic.overviewContent} />
+                <div className="side-section-block">
+                    <TopicWiki overviewContent={topic.overviewContent} />
+                </div>
 
-                {this._renderAttributes()}
+                <div className="side-section-block">
+                    {this._renderGallery(topic)}
+                </div>
 
-                <AdminControls topic={this.props.topic} />
+                <div className="side-section-block">
+                    {this._renderAttributes(topic.attributes)}
+                </div>
+
+                <div className="side-section-block">
+                    <AdminControls topic={topic} />
+                </div>
             </div>
         );
+    }
+
+    state = {
+        hasMounted: false
+    };
+
+    componentDidMount() {
+        this.setState({hasMounted: true});
     }
 
     private _renderTopicPhoto(topic) {
@@ -56,8 +78,18 @@ class SideSection extends Component<ISideSectionProps, any> {
         );
     }
 
-    private _renderAttributes() {
-        return this.props.topic.attributes.map(
+    private _renderGallery(topic) {
+        if (!this.state.hasMounted) {
+            return;
+        }
+
+        return (
+            <PhotoGallery topic={topic} />
+        );
+    }
+
+    private _renderAttributes(attributes) {
+        return attributes.map(
             attribute => this._renderAttribute(attribute)
         );
     }
@@ -85,6 +117,8 @@ export default Relay.createContainer(SideSection, {
                         mobile
                     }
                 }
+                
+                ${PhotoGallery.getFragment('topic')}
                 
                 ${AdminControls.getFragment('topic')}
                 

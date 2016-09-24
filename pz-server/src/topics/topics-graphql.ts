@@ -25,7 +25,8 @@ var {
     GraphQLObjectType,
     GraphQLInputObjectType,
     GraphQLSchema,
-    GraphQLString
+    GraphQLString,
+    GraphQLUnionType
 } = graphql;
 
 var {
@@ -40,8 +41,9 @@ var {
     mutationWithClientMutationId
 } = graphqlRelay;
 
-export default function CommentTypes(repositoryAuthorizers: IAppRepositoryAuthorizers, nodeInterface, types: ITypes) {
+export default function topicTypes(repositoryAuthorizers: IAppRepositoryAuthorizers, nodeInterface, types: ITypes) {
     const topicsAuthorizer = repositoryAuthorizers.topics;
+    const communityItemsAuthorizer = repositoryAuthorizers.communityItems;
     const topicAttributesAuthorizer = repositoryAuthorizers.topicAttributes;
     const vanityRoutePathAuthorizer = repositoryAuthorizers.vanityRoutePaths;
 
@@ -141,7 +143,9 @@ export default function CommentTypes(repositoryAuthorizers: IAppRepositoryAuthor
                             .findSomePhotoGalleryPhotosRanked(topic.id, cursor);
 
                         const photoGalleryPhotosUrls = mapCursorResultItems(photoGalleryPhotos, (photo) => {
-                            return getTopicPhotoGalleryPhotoVariationsUrls(photo.photoServerPath);
+                            return Object.assign({}, photo,
+                                getTopicPhotoGalleryPhotoVariationsUrls(photo.photoServerPath)
+                            );
                         });
 
                         return connectionFromCursorResults(photoGalleryPhotosUrls);
@@ -158,6 +162,7 @@ export default function CommentTypes(repositoryAuthorizers: IAppRepositoryAuthor
 
         fields: () => ({
             defaultUrl: {type: new GraphQLNonNull(GraphQLString)},
+
             variations: {
                 type: new GraphQLObjectType({
                     name: 'TopicThumbnailPhotoVariations',
@@ -174,7 +179,22 @@ export default function CommentTypes(repositoryAuthorizers: IAppRepositoryAuthor
         name: 'TopicPhotoGalleryPhoto',
 
         fields: () => ({
+            parent: {
+                type: new GraphQLNonNull(new GraphQLUnionType({
+                    name: 'TopicPhotoGalleryPhotoParent',
+                    types: [types.CommunityItemType],
+
+                    resolveType: (value) => {
+                        return types.CommunityItemType;
+                    }
+                })),
+
+                resolve: (value, _, {user}) => communityItemsAuthorizer
+                    .as(user).findById(value.parentId)
+            },
+
             defaultUrl: {type: new GraphQLNonNull(GraphQLString)},
+
             variations: {
                 type: new GraphQLObjectType({
                     name: 'TopicPhotoGalleryPhotoVariations',

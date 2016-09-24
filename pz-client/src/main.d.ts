@@ -10,4 +10,3 @@ declare module 'isomorphic-relay-router'
 declare module 'reactstrap'
 declare module 'classnames'
 declare module 'react-router-scroll/*'
-

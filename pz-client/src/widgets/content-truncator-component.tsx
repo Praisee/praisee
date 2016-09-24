@@ -53,15 +53,20 @@ export default class ContentTruncator extends React.Component<IProps, any> {
 
     refs: any;
 
+    private _updateContentDimensionsListener;
     private _cancelResizeEventHandler;
 
     componentDidMount () {
         this._updateContentDimensions();
-        this._cancelResizeEventHandler = onResize(this._updateContentDimensions.bind(this));
+
+        this._updateContentDimensionsListener = this._updateContentDimensions.bind(this);
+        this._cancelResizeEventHandler = onResize(this._updateContentDimensionsListener);
+        window.addEventListener('load', this._updateContentDimensionsListener);
     }
 
     componentWillUnmount () {
         this._cancelResizeEventHandler();
+        window.removeEventListener('load', this._updateContentDimensionsListener);
     }
 
     private _isTruncated() {

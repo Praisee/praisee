@@ -60,8 +60,8 @@ export interface ITypes {
     }
 
     ResponseErrorInterfaceType
-    resoponseError: {
-        [resoponseErrorType: string]: any
+    responseError: {
+        [responseErrorType: string]: any
     }
 
     ViewerType
