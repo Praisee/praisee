@@ -83,6 +83,11 @@ export default function UsersTypes(repositoryAuthorizers: IAppRepositoryAuthoriz
         fields: () => ({
             id: globalIdField(CurrentUserType.Name),
 
+            serverId: {
+                type: new GraphQLNonNull(GraphQLInt),
+                resolve: (user) => user.id
+            },
+
             displayName: {
                 type: GraphQLString
             },
@@ -138,7 +143,7 @@ export default function UsersTypes(repositoryAuthorizers: IAppRepositoryAuthoriz
                     return userAuthorizer.as(user).getTotalTrusters(id);
                 }
             },
-            
+
             isCurrentUserTrusting: {
                 type: GraphQLBoolean,
                 resolve: ({id}, _, {user}) => {

@@ -102,8 +102,9 @@ export default Relay.createContainer(App, {
             }
         `,
         currentUser: () => Relay.QL`
-            fragment on UserInterface {
-                id
+            fragment on CurrentUser {
+                id,
+                serverId
             }
         `
     }

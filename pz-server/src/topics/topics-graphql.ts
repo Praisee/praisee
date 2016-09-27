@@ -55,7 +55,7 @@ export default function topicTypes(repositoryAuthorizers: IAppRepositoryAuthoriz
                 id: globalIdField('Topic'),
 
                 serverId: {
-                    type: new GraphQLNonNull(GraphQLID),
+                    type: new GraphQLNonNull(GraphQLInt),
                     resolve: (topic) => topic.id
                 },
 

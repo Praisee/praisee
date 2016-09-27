@@ -11,6 +11,7 @@ import UsersAuthorizer from 'pz-server/src/users/users-authorizer';
 
 import Topics from 'pz-server/src/topics/loopback-topics';
 import TopicsLoader from '../topics/topics-loader';
+import FilteredTopics from 'pz-server/src/topics/filtered-topics';
 import TopicsAuthorizer from 'pz-server/src/topics/topics-authorizer';
 
 import TopicAttributes from 'pz-server/src/topics/topic-attributes/loopback-topic-attributes';
@@ -74,8 +75,6 @@ module.exports = function initializeRepositories(app: IApp) {
         photosEvents
     ));
 
-    const topicsAuthorizer = new TopicsAuthorizer(topics);
-
     const topicAttributes = new TopicAttributes(app.models.TopicAttribute);
     const topicAttributesAuthorizer = new TopicAttributesAuthorizer(topicAttributes);
 
@@ -87,6 +86,13 @@ module.exports = function initializeRepositories(app: IApp) {
     const contentFilterer = new ContentFilterer(
         vanityRoutePaths, topics, communityItems, photos
     );
+
+    const filteredTopics = new FilteredTopics(
+        topics,
+        contentFilterer
+    );
+
+    const topicsAuthorizer = new TopicsAuthorizer(filteredTopics);
 
     const filteredCommunityItems = new FilteredCommunityItems(
         communityItems,
