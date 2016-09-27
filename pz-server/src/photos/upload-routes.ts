@@ -72,6 +72,7 @@ module.exports = function (app: IApp) {
             const topic = await promisify(TopicModel.findById, app.models.Topic)(topicId) as ITopicInstance;
             const topicPhotos = await promisify(topic.photos, topic)({where: {purposeType: 'TopicThumbnail'}});
 
+            // TODO: THIS IS A SECURITY ISSUE AND NEEDS TO BE FIXED. ANYONE CAN ERASE TOPIC PHOTOS
             if (topicPhotos.length) {
                 const existingThumbnail = topicPhotos[0];
 
