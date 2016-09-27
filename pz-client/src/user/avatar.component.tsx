@@ -5,12 +5,21 @@ import appInfo from 'pz-client/src/app/app-info';
 import SchemaInjector, { ISchemaType } from 'pz-client/src/support/schema-injector';
 import { DateDisplay } from 'pz-client/src/widgets/date-display.component'
 import ToggleTrustMutation from 'pz-client/src/user/toggle-trust-mutation';
+import {ISignInUpContext, SignInUpContextType} from 'pz-client/src/user/sign-in-up-overlay-component';
 
 const unknownAvatarUrl = appInfo.addresses.getImage('unknown-avatar.png');
 
 class Avatar extends Component<IAvatarProps, any>{
     schemaInjector: SchemaInjector;
+    static contextTypes : any = {
+        appViewerId: React.PropTypes.string.isRequired,
+        signInUpContext: SignInUpContextType
+    };
 
+    context: {
+        appViewerId: number,
+        signInUpContext: ISignInUpContext
+    };
     constructor(props, context) {
         super(props, context);
         this.schemaInjector = new SchemaInjector(avatarSchema);
@@ -31,40 +40,45 @@ class Avatar extends Component<IAvatarProps, any>{
             </div>
         );
     }
-    
-    private _renderReputation(reputation: number){
-        if(this.props.showReputation)
-        return(
+
+    private _renderReputation(reputation: number) {
+        if (this.props.showReputation)
+            return (
                 <span className="reputation" title="This user is the highest rated in this topic.">
                     {reputation || 0}
                     <i className="reputation-icon"></i>
                 </span>
-        );
+            );
     }
 
-    private _renderTrust(trusterCount: number, displayName: string){
+    private _renderTrust(trusterCount: number, displayName: string) {
         var singular = trusterCount === 1;
-        if(this.props.showTrusts)
-        return(
+        if (this.props.showTrusts)
+            return (
                 <span className="trusters"
-title={`${trusterCount} ${singular ? "person" : "people"} trust${singular && "s"} ${displayName}`} >
+                    title={`${trusterCount} ${singular ? "person" : "people"} trust${singular ? "s" : ""} ${displayName}`} >
                     {trusterCount || 0}
                     <i className="trusters-icon"></i>
                 </span>
-        );
+            );
     }
-    
-    private _renderTrustButton(isCurrentUserTrusting: boolean){
-        if(this.props.showTrustButton)
-        return(
+
+    private _renderTrustButton(isCurrentUserTrusting: boolean) {
+        if (this.props.showTrustButton)
+            return (
                 <button className="trust-button" title="Trust this user" onClick={this._toggleTrust.bind(this)}>
                     <i className="trust-button-icon"></i>
                     {isCurrentUserTrusting ? "Trusted" : "Trust"}
                 </button>
-        );
+            );
     }
-    
+
     private _toggleTrust() {
+        if (!this.context.signInUpContext.isLoggedIn) {
+            this.context.signInUpContext.showSignInUp(event);
+            return;
+        }
+        
         const parent = this.props.communityItem || this.props.comment;
 
         this.props.relay.commitUpdate(new ToggleTrustMutation({

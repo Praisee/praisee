@@ -86,7 +86,7 @@ export class TopicController extends Component<ITopicProps, ITopicState> {
     _renderEmptyContent() {
         return (
             <div>
-                <span>feed us some content plz?...kthnxbai</span>
+                <span>Be the first to review, ask a question, or talk about {this.props.topic.name}</span>
             </div>
         ); //change to list of questions
     }

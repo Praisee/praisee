@@ -1,14 +1,14 @@
 import * as React from 'react';
-import {Component} from 'react';
-import {Link} from 'react-router';
+import { Component } from 'react';
+import { Link } from 'react-router';
 import * as Relay from 'react-relay';
 import CommentList from 'pz-client/src/comments/comment-list-component'
 import Votes from 'pz-client/src/votes/votes-component';
 import Avatar from 'pz-client/src/user/avatar.component';
 import CommunityItemContent from 'pz-client/src/community-item/community-item-content.component';
 import Tags from 'pz-client/src/community-item/tags-component';
-import {CreateCommentEditor} from 'pz-client/src/comments/comment-editor-component';
-import {ISignInUpContext, SignInUpContextType} from 'pz-client/src/user/sign-in-up-overlay-component';
+import { CreateCommentEditor } from 'pz-client/src/comments/comment-editor-component';
+import { ISignInUpContext, SignInUpContextType } from 'pz-client/src/user/sign-in-up-overlay-component';
 import CommentBubble from 'pz-client/src/community-item/widgets/community-item-comment-bubble-component';
 import classNames from 'classnames';
 import ContentTruncator from 'pz-client/src/widgets/content-truncator-component';
@@ -38,7 +38,7 @@ interface ICommuintyItemState {
 }
 
 class CommunityItem extends Component<ICommunityItemProps, ICommuintyItemState> {
-    static contextTypes : any = {
+    static contextTypes: any = {
         appViewerId: React.PropTypes.string.isRequired,
         signInUpContext: SignInUpContextType
     };
@@ -57,11 +57,14 @@ class CommunityItem extends Component<ICommunityItemProps, ICommuintyItemState> 
         const {communityItem} = this.props;
         const {user} = communityItem;
 
-        const bubbleClass = classNames('bubble', {'hidden': communityItem.commentCount === 0});
+        const bubbleClass = classNames('bubble', { 'hidden': communityItem.commentCount === 0 });
 
         return (
             <div className="community-item">
-                <Avatar communityItem={communityItem} comment={null} />
+                <Avatar communityItem={communityItem} comment={null}
+                    showReputation={true}
+                    showTrusts={true}
+                    showTrustButton={true} />
 
                 <div className="title">
                     <Link to={communityItem.routePath} className="title-link">{communityItem.summary}</Link>
@@ -84,7 +87,7 @@ class CommunityItem extends Component<ICommunityItemProps, ICommuintyItemState> 
                     <CreateCommentEditor
                         comment={null}
                         communityItem={communityItem}
-                        onEditing={this._onEditingComment.bind(this) } />
+                        onEditing={this._onEditingComment.bind(this)} />
                 </div>
 
                 {this.props.relay.variables.expandComments && <CommentList

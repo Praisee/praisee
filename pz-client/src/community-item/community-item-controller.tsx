@@ -47,7 +47,7 @@ export class CommunityItemController extends Component<ICommunityItemProps, ICom
                     <Avatar communityItem={communityItem} comment={null}
                         showReputation={true}
                         showTrusts={true}
-                        showTrust-button={true} />
+                        showTrustButton={true} />
 
                     <div className="title">
                         {communityItem.summary}
@@ -57,7 +57,7 @@ export class CommunityItemController extends Component<ICommunityItemProps, ICom
 
                     {this._renderVoteAndTagSection(communityItem)}
 
-                    {this._renderRelatedCommunityItems(communityItem)}
+                    {/*this._renderRelatedCommunityItems(communityItem)*/}
 
                     <div className="comment-container">
                         {this._renderCommentResponseSection(communityItem)}
@@ -119,31 +119,37 @@ export class CommunityItemController extends Component<ICommunityItemProps, ICom
                 <div className="related-community-item-container">
                     <div className="related-community-item">
                         <h4>This is why I'm switching to canon</h4>
+                         <div style={{display:"flex"}}>
                         <Avatar communityItem={communityItem} comment={null}
                             showReputation={false}
                             showTrusts={true}
                             showTrust-button={false} />
                         <CommentBubble onClick={this._toggleComments.bind(this)} communityItem={this.props.communityItem} />
+                    </div>
                     </div>
                 </div>
                 <div className="related-community-item-container">
                     <div className="related-community-item">
                         <h4>Test #2</h4>
+                         <div style={{display:"flex"}}>
                         <Avatar communityItem={communityItem} comment={null}
                             showReputation={false}
                             showTrusts={true}
                             showTrust-button={false} />
                         <CommentBubble onClick={this._toggleComments.bind(this)} communityItem={this.props.communityItem} />
                     </div>
+                    </div>
                 </div>
                 <div className="related-community-item-container">
                     <div className="related-community-item">
                         <h4>Test #3</h4>
-                        <Avatar communityItem={communityItem} comment={null}
-                            showReputation={false}
-                            showTrusts={true}
-                            showTrust-button={false} />
-                        <CommentBubble onClick={this._toggleComments.bind(this)} communityItem={this.props.communityItem} />
+                        <div style={{display:"flex"}}>
+                            <Avatar communityItem={communityItem} comment={null}
+                                showReputation={false}
+                                showTrusts={true}
+                                showTrust-button={false} />
+                            <CommentBubble onClick={this._toggleComments.bind(this)} communityItem={this.props.communityItem} />
+                        </div>
                     </div>
                 </div>
             </div>
@@ -164,7 +170,7 @@ export class CommunityItemController extends Component<ICommunityItemProps, ICom
 export default Relay.createContainer(CommunityItemController, {
     initialVariables: {
         expandCommentsTo: 10,
-        expandComments: false
+        expandComments: true
     },
     fragments: {
         communityItem: ({expandCommentsTo, expandComments}) => Relay.QL`
