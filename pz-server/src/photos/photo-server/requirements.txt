@@ -2,3 +2,4 @@ thumbor
 numpy
 matplotlib
 tc_redis
+cairosvg

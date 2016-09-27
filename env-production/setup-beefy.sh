@@ -25,6 +25,12 @@ source ~/.bashrc
 nvm install 6
 
 printf '-'
+printf 'Adding auto-mounting db disk'
+printf '-'
+
+echo UUID=`sudo blkid -s UUID -o value /dev/disk/by-id/google-db` /mnt/disks/db ext4 discard,defaults 1 1 | sudo tee -a /etc/fstab
+
+printf '-'
 printf 'Adding Postgres sources'
 printf '-'
 
@@ -37,7 +43,12 @@ printf 'Installing PostgreSQL 9.5'
 printf '-'
 
 sudo DEBIAN_FRONTEND=noninteractive apt-get install -y postgresql postgresql-contrib
-sudo sed -i -E "s/#?\s*?listen_addresses\s*?=\s*?'.*?'/listen_addresses = '*'/g" /etc/postgresql/9.5/main/postgresql.conf
+sudo mkdir -p /mnt/disks/db/postgresql/9.5/main
+sudo chown -R postgres:postgres /mnt/disks/db/postgresql
+sudo cp /var/praisee/env-production/configs/etc/postgresql/9.5/main/postgresql.conf /etc/postgresql/9.5/main/postgresql.conf
+#sudo sed -i -E "s/#?\s*?listen_addresses\s*?=\s*?'.*?'/listen_addresses = '*'/g" /etc/postgresql/9.5/main/postgresql.conf
+sudo pg_dropcluster 9.5 main --stop
+sudo pg_createcluster 9.5 main -d /mnt/disks/db/postgresql/9.5/main
 sudo sed -i -E '/local\s+all\s+postgres\s+/ahost    all             postgres        samenet                 trust' /etc/postgresql/9.5/main/pg_hba.conf
 sudo sed -i -E 's/(local\s+all\s+postgres\s+)peer/\1trust/g' /etc/postgresql/9.5/main/pg_hba.conf
 sudo service postgresql restart
@@ -64,8 +75,11 @@ printf '-'
 
 # wget -q https://download.elasticsearch.org/elasticsearch/release/org/elasticsearch/distribution/deb/elasticsearch/5.0.0-alpha2/elasticsearch-5.0.0-alpha2.deb -O ~/elasticsearch.deb && sudo dpkg -i ~/elasticsearch.deb && rm -f ~/elasticsearch.deb
 wget -q https://download.elasticsearch.org/elasticsearch/release/org/elasticsearch/distribution/deb/elasticsearch/2.3.2/elasticsearch-2.3.2.deb -O ~/elasticsearch.deb && sudo dpkg -i ~/elasticsearch.deb && rm -f ~/elasticsearch.deb
+sudo mkdir -p /mnt/disks/db/elasticsearch
+sudo chown -R elasticsearch:elasticsearch /mnt/disks/db/elasticsearch
+#sudo sed -i -E 's/#?\s+?network.host.+?/network.host: 0/g' /etc/elasticsearch/elasticsearch.yml
+sudo cp /var/praisee/env-production/configs/etc/elasticsearch/elasticsearch.yml /etc/elasticsearch/elasticsearch.yml
 sudo update-rc.d elasticsearch defaults
-sudo sed -i -E 's/#?\s+?network.host.+?/network.host: 0/g' /etc/elasticsearch/elasticsearch.yml
 sudo /usr/share/elasticsearch/bin/plugin install mobz/elasticsearch-head
 sudo service elasticsearch start
 
@@ -86,7 +100,10 @@ printf '-'
 sudo DEBIAN_FRONTEND=noninteractive add-apt-repository -y ppa:chris-lea/redis-server
 sudo DEBIAN_FRONTEND=noninteractive apt-get update
 sudo DEBIAN_FRONTEND=noninteractive apt-get install -y redis-server
-sudo sed -i -E "s/bind\s+[^\s]+/bind 0.0.0.0/g" /etc/redis/redis.conf
+sudo mkdir -p /mnt/disks/db/redis
+sudo chown -R redis:redis /mnt/disks/db/redis
+#sudo sed -i -E "s/bind\s+[^\s]+/bind 0.0.0.0/g" /etc/redis/redis.conf
+sudo cp /var/praisee/env-production/configs/etc/redis/redis.conf /etc/redis/redis.conf
 sudo update-rc.d redis-server defaults
 sudo /etc/init.d/redis-server restart
 
@@ -147,7 +164,7 @@ ln --symbolic /usr/lib/python2.7/dist-packages/cv.py
 ln --symbolic /usr/lib/python2.7/dist-packages/cv.pyc
 popd
 sudo ln /dev/null /dev/raw1394 # http://stackoverflow.com/a/34820475/786810
-pip install -r /var/praisee/pz-server/src/uploads/thumbor/requirements.txt
+pip install -r /var/praisee/pz-server/src/photos/photo-server/requirements.txt
 
 printf '-'
 printf 'Provisioning complete'

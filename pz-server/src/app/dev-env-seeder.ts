@@ -1,6 +1,7 @@
 import promisify from 'pz-support/src/promisify';
 
 import {createRelatedTopicsAttribute} from 'pz-server/src/topics/topic-attributes/topic-attribute-types';
+import serverInfo from 'pz-server/src/app/server-info';
 
 export class DevEnvSeeder {
     app: IApp;
@@ -259,7 +260,7 @@ So, if you are an enthusiast on a limited budget . . . how do you justify your p
     }
 
     async seed(): Promise<any> {
-        if (process.env === 'production') {
+        if (serverInfo.isProductionEnv()) {
             return;
         }
 

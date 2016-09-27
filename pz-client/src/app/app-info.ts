@@ -17,7 +17,8 @@ let appInfo = {
         getSearchSuggestionsApi: () => '/i/search/suggestions',
         getMentionSuggestionsApi: () => '/i/search/mention-suggestions',
 
-        getPhotosApi: () => 'http://localhost:8888',
+        // TODO: This should be a CDN path
+        getPhotosApi: () => process.env.NODE_ENV === 'production' ? '//photos.praisee.com' : 'http://localhost:8888',
 
         getPhoto: (imagePath: string) =>
             url.resolve(appInfo.addresses.getPhotosApi(), imagePath),

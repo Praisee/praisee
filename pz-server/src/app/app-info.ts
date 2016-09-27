@@ -1,5 +1,6 @@
 import * as url from 'url';
 import * as path from 'path';
+import serverInfo from 'pz-server/src/app/server-info';
 
 let appInfo = {
     addresses: {
@@ -17,7 +18,8 @@ let appInfo = {
         getSearchSuggestionsApi: () => '/i/search/suggestions',
         getMentionSuggestionsApi: () => '/i/search/mention-suggestions',
 
-        getPhotosApi: () => 'http://localhost:8888',
+        // TODO: This should be a CDN path
+        getPhotosApi: () => serverInfo.isProductionEnv() ? '//photos.praisee.com' : 'http://localhost:8888',
 
         getPhoto: (imagePath: string) =>
             url.resolve(appInfo.addresses.getPhotosApi(), imagePath),
