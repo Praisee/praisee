@@ -85,6 +85,11 @@ export class DevEnvSeeder {
             {
                 name: 'Cosmetics',
                 isVerified: true
+            },
+
+            {
+                name: 'Praisee',
+                isVerified: true
             }
         ];
     }

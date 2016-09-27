@@ -93,3 +93,13 @@ export var createItemQuery: IRouteQuery = {
         `
     }
 };
+
+export var topicHomeQuery: IRouteQuery = {
+    queries: {
+        topic: () => Relay.QL`
+            query {
+                topic(urlSlug: "Praisee")
+            }
+        `
+    }
+};
