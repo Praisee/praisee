@@ -6,19 +6,24 @@ import classNames from 'classnames';
 
 interface ITagsProps {
     topics: Array<{ id: string, name: string, routePath: string }>
-    hideSingleTag: boolean
+    shouldRenderSingleTag: boolean
 }
 
 export default class Tags extends Component<ITagsProps, any> {
     render() {
-        let tags;
-        tags = this.props.topics.map((topic) => {
-            return (
-                <Link key={topic.id} className="topic-tag" to={topic.routePath}>{topic.name}</Link>
-            );
-        });
+        let shouldRenderTags = this.props.topics.length > 1 || (
+            this.props.topics.length === 1 && this.props.shouldRenderSingleTag);
 
-        let tagClass = classNames('tags', { 'hidden': this.props.hideSingleTag && this.props.topics.length < 2 });
+        let tags = null;
+        if (shouldRenderTags) {
+            tags = this.props.topics.map((topic) => {
+                return (
+                    <Link key={topic.id} className="topic-tag" to={topic.routePath}>{topic.name}</Link>
+                );
+            });
+        }
+
+        let tagClass = classNames('tags', { 'gone': !shouldRenderTags });
 
         return (
             <div className={tagClass}>

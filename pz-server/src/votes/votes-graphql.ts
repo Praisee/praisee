@@ -35,6 +35,7 @@ export default function VoteTypes(repositoryAuthorizers: IAppRepositoryAuthorize
     const votesAuthorizer = repositoryAuthorizers.votes;
     const commentsAuthorizer = repositoryAuthorizers.comments;
     const communityItemAuthorizer = repositoryAuthorizers.communityItems;
+    const userAuthorizer = repositoryAuthorizers.users;
 
     const VoteType = new GraphQLObjectType({
         name: 'Vote',
@@ -111,6 +112,9 @@ export default function VoteTypes(repositoryAuthorizers: IAppRepositoryAuthorize
             },
             isUpVote: {
                 type: new GraphQLNonNull(GraphQLBoolean)
+            },
+            affectedUserId: {
+                type: GraphQLString
             }
         }),
         outputFields: () => ({
@@ -139,12 +143,21 @@ export default function VoteTypes(repositoryAuthorizers: IAppRepositoryAuthorize
                         .findById(communityItemId);
                 }
             },
+            affectedUser: {
+                type: types.UserInterfaceType,
+                resolve: async ({affectedUserId, user}) => {
+                    return await userAuthorizer
+                        .as(user)
+                        .findUserById(affectedUserId);
+                }
+            },
             viewer: {
                 type: types.ViewerType,
                 resolve: () => ({ id: 'viewer' })
             }
         }),
-        mutateAndGetPayload: async ({commentId, communityItemId, isUpVote}, context) => {
+        mutateAndGetPayload: async ({affectedUserId, commentId, communityItemId, isUpVote}, context) => {
+            let {id: affectedUserIdParsed} = fromGlobalId(affectedUserId);
             let {id, type} = fromGlobalId(commentId || communityItemId);
             let {user} = context;
 
@@ -159,7 +172,7 @@ export default function VoteTypes(repositoryAuthorizers: IAppRepositoryAuthorize
                 addErrorToResponse(context.responseErrors, 'NotAuthenticated', result);
             }
 
-            return { user, commentId: id, communityItemId: id };
+            return { affectedUserId: affectedUserIdParsed, user, commentId: id, communityItemId: id };
         }
     });
 
@@ -170,6 +183,9 @@ export default function VoteTypes(repositoryAuthorizers: IAppRepositoryAuthorize
                 type: GraphQLString
             },
             commentId: {
+                type: GraphQLString
+            },
+            affectedUserId: {
                 type: GraphQLString
             }
         },
@@ -193,12 +209,21 @@ export default function VoteTypes(repositoryAuthorizers: IAppRepositoryAuthorize
                         .findById(communityItemId);
                 }
             },
+            affectedUser: {
+                type: types.UserInterfaceType,
+                resolve: async ({affectedUserId, user}) => {
+                    return await userAuthorizer
+                        .as(user)
+                        .findUserById(affectedUserId);
+                }
+            },
             viewer: {
                 type: types.ViewerType,
                 resolve: () => ({ id: 'viewer' })
             }
         }),
-        mutateAndGetPayload: async ({communityItemId, commentId}, context) => {
+        mutateAndGetPayload: async ({affectedUserId, communityItemId, commentId}, context) => {
+            let {id: affectedUserIdParsed} = fromGlobalId(affectedUserId);
             let {type, id} = fromGlobalId(communityItemId || commentId);
             let {user} = context;
 
@@ -213,7 +238,7 @@ export default function VoteTypes(repositoryAuthorizers: IAppRepositoryAuthorize
                     addErrorToResponse(context.responseErrors, 'NotOwner', deleteResult);
                 }
             }
-            return { user, communityItemId: id, commentId: id };
+            return { affectedUserId: affectedUserIdParsed, user, communityItemId: id, commentId: id };
         }
     });
 
@@ -228,6 +253,9 @@ export default function VoteTypes(repositoryAuthorizers: IAppRepositoryAuthorize
             },
             isUpVote: {
                 type: GraphQLBoolean
+            },
+            affectedUserId: {
+                type: GraphQLString
             }
         },
         outputFields: () => ({
@@ -250,12 +278,21 @@ export default function VoteTypes(repositoryAuthorizers: IAppRepositoryAuthorize
                         .findById(communityItemId);
                 }
             },
+            affectedUser: {
+                type: types.UserInterfaceType,
+                resolve: async ({affectedUserId, user}) => {
+                    return await userAuthorizer
+                        .as(user)
+                        .findUserById(affectedUserId);
+                }
+            },
             viewer: {
                 type: types.ViewerType,
                 resolve: () => ({ id: 'viewer' })
             }
         }),
-        mutateAndGetPayload: async ({commentId, communityItemId, isUpVote}, context) => {
+        mutateAndGetPayload: async ({affectedUserId, commentId, communityItemId, isUpVote}, context) => {
+            let {id: affectedUserIdParsed} = fromGlobalId(affectedUserId);
             let {id, type} = fromGlobalId(commentId || communityItemId);
             let {user} = context;
 
@@ -274,7 +311,7 @@ export default function VoteTypes(repositoryAuthorizers: IAppRepositoryAuthorize
                     addErrorToResponse(context.responseErrors, 'NotOwner', updateVoteResult);
                 }
             }
-            return { user, communityItemId: id, commentId: id };
+            return { affectedUserId: affectedUserIdParsed, user, communityItemId: id, commentId: id };
         }
     });
 

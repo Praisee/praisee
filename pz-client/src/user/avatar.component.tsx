@@ -5,13 +5,14 @@ import appInfo from 'pz-client/src/app/app-info';
 import SchemaInjector, { ISchemaType } from 'pz-client/src/support/schema-injector';
 import { DateDisplay } from 'pz-client/src/widgets/date-display.component'
 import ToggleTrustMutation from 'pz-client/src/user/toggle-trust-mutation';
-import {ISignInUpContext, SignInUpContextType} from 'pz-client/src/user/sign-in-up-overlay-component';
+import { ISignInUpContext, SignInUpContextType } from 'pz-client/src/user/sign-in-up-overlay-component';
+import handleClick from 'pz-client/src/support/handle-click';
 
 const unknownAvatarUrl = appInfo.addresses.getImage('unknown-avatar.png');
 
 class Avatar extends Component<IAvatarProps, any>{
     schemaInjector: SchemaInjector;
-    static contextTypes : any = {
+    static contextTypes: any = {
         appViewerId: React.PropTypes.string.isRequired,
         signInUpContext: SignInUpContextType
     };
@@ -66,7 +67,8 @@ class Avatar extends Component<IAvatarProps, any>{
     private _renderTrustButton(isCurrentUserTrusting: boolean) {
         if (this.props.showTrustButton)
             return (
-                <button className="trust-button" title="Trust this user" onClick={this._toggleTrust.bind(this)}>
+                <button className="trust-button" title="Trust this user"
+                    onClick={handleClick(this._toggleTrust.bind(this))}>
                     <i className="trust-button-icon"></i>
                     {isCurrentUserTrusting ? "Trusted" : "Trust"}
                 </button>
@@ -78,7 +80,7 @@ class Avatar extends Component<IAvatarProps, any>{
             this.context.signInUpContext.showSignInUp(event);
             return;
         }
-        
+
         const parent = this.props.communityItem || this.props.comment;
 
         this.props.relay.commitUpdate(new ToggleTrustMutation({

@@ -23,6 +23,7 @@ export interface IAuthorizedUsers {
     findCurrentUser(): Promise<IUser>
     findUserById(userId: number): Promise<IOtherUser | IUser>
     getTotalTrusters(userId: number): Promise<number>
+    getReputation(userId: number): Promise<number>
     toggleTrust(trustedId: number): Promise<boolean | AuthorizationError>
     isUserTrusting(queriedUserId: number): Promise<boolean>
     create(email, password, displayName): Promise<IUser>
@@ -77,6 +78,10 @@ class AuthorizedUsers {
 
     getTotalTrusters(userId: number): Promise<number> {
         return this._users.getTotalTrusters(userId);
+    }
+    
+    getReputation(userId: number): Promise<number> {
+        return this._users.getReputation(userId);
     }
 
     async toggleTrust(trustedId: number): Promise<boolean | AuthorizationError> {

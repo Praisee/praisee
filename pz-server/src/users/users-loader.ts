@@ -31,22 +31,26 @@ export default class UsersLoader implements IUsers {
     getTotalCommunityItems(userId: number): Promise<number> {
         return this._users.getTotalCommunityItems(userId);
     }
-    
+
     getTotalTrusters(userId: number): Promise<number> {
         return this._users.getTotalTrusters(userId);
     }
-    
-    addTrust(trusterId: number, trustedId: number): Promise<boolean>{
+
+    addTrust(trusterId: number, trustedId: number): Promise<boolean> {
         return this._users.addTrust(trusterId, trustedId);
     }
-    
-    removeTrust(trusterId: number, trustedId: number): Promise<boolean>{
+
+    getReputation(userId: number): Promise<number> {
+        return this._users.getReputation(userId);
+    }
+
+    removeTrust(trusterId: number, trustedId: number): Promise<boolean> {
         return this._users.removeTrust(trusterId, trustedId);
     }
 
     isUserTrusting(trusterUserId: number, queriedUserId: number): Promise<boolean> {
         return this._users.isUserTrusting(trusterUserId, queriedUserId);
-     }
+    }
 
     create(email: string, password: string, displayName: string): Promise<IUser> {
         return this._users.create(email, password, displayName);

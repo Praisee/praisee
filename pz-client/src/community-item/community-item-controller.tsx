@@ -82,7 +82,7 @@ export class CommunityItemController extends Component<ICommunityItemProps, ICom
                     key={`communityItem-votes-${communityItem.id}`}
                     comment={null}
                     communityItem={this.props.communityItem} />
-                <Tags topics={this.props.communityItem.topics} hideSingleTag={false} />
+                <Tags topics={this.props.communityItem.topics} shouldRenderSingleTag={true} />
             </div>
         )
     }

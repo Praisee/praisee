@@ -1,9 +1,11 @@
-import {ICommunityItemModel} from 'pz-server/src/models/community-item';
+import { ICommunityItemModel } from 'pz-server/src/models/community-item';
+import { IVoteModel, IVoteInstance } from 'pz-server/src/models/vote';
 import promisify from 'pz-support/src/promisify';
 
 export interface IUserModel extends IPersistedModel {
     getTotalCommunityItems(userId: number): Promise<number>
     getTotalTrusters(userId: number): Promise<number>
+    getReputation(userId: number): Promise<number>
     isUserTrusting(trusterId: number, trustedId: number): Promise<boolean>
 }
 
@@ -25,7 +27,7 @@ module.exports = function (User: IUserModel) {
             userId: userId
         });
     }
-    
+
     User.getTotalTrusters = async (userId: number) => {
         const Trust = User.app.models.Trust;
         const getCount = promisify(Trust.count, Trust);
@@ -34,16 +36,33 @@ module.exports = function (User: IUserModel) {
             trustedId: userId
         });
     }
-    
+
     User.isUserTrusting = async (trusterId: number, trustedId: number) => {
         const Trust = User.app.models.Trust;
         const find = promisify(Trust.find, Trust);
 
         let result: any = await find({
-            trustedId,
-            trusterId
+            where: {
+                trustedId,
+                trusterId
+            }
         });
-        
+
         return result.length > 0;
-     }
+    }
+
+    User.getReputation = async (userId: number) => {
+        const Vote: IVoteModel = User.app.models.Vote;
+        const votesOnUser: Array<IVoteInstance> = await promisify(Vote.find, Vote)({
+            where: {
+                affectedUserId: userId
+            }
+        });
+
+        let upVotesCount = votesOnUser.filter(vote => vote.isUpVote).length;
+        let downVoteCount = votesOnUser.length - upVotesCount;
+        let reputation = (upVotesCount - downVoteCount) * 5;
+
+        return Math.max(0, reputation);
+    }
 };

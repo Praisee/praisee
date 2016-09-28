@@ -14,7 +14,8 @@ export default class CreateVoteMutation extends Relay.Mutation {
 
         return {
             isUpVote: this.props.isUpVote,
-            [parentType + "Id"]: this.props[parentType].id
+            [parentType + "Id"]: this.props[parentType].id,
+            affectedUserId: this.props[parentType].user.id
         };
     }
 
@@ -38,17 +39,21 @@ export default class CreateVoteMutation extends Relay.Mutation {
                 viewer {
                     responseErrorsList
                 }
+                affectedUser {
+                    reputation
+                }
             }
         `;
     }
 
     getConfigs() {
         const parentType = this.getParentType();
-
+        
         return [{
             type: 'FIELDS_CHANGE',
             fieldIDs: {
                 [parentType]: this.props[parentType].id,
+                affectedUser: this.props[parentType].user.id,
                 viewer: this.props.appViewerId
             }
         }];
@@ -58,7 +63,8 @@ export default class CreateVoteMutation extends Relay.Mutation {
         const parentType = this.getParentType();
         const parent = this.props[parentType];
         const {votes} = parent;
-
+        const {reputation} = this.props[parentType].user
+        
         return {
             [parentType]: {
                 id: parent.id,
@@ -66,6 +72,9 @@ export default class CreateVoteMutation extends Relay.Mutation {
                 votes: {
                     upVotes: this.props.isUpVote ? votes.upVotes + 1 : votes.upVotes,
                     total: votes.total + 1,
+                },
+                affectedUser: {
+                    reputation: this.props.isUpVote ? reputation + 5 : Math.max(0, reputation - 5)
                 }
             }
         };
@@ -75,6 +84,9 @@ export default class CreateVoteMutation extends Relay.Mutation {
         communityItem: () => Relay.QL`
             fragment on CommunityItem {
                 id
+                user {
+                    id
+                }
                 currentUserVote
                 votes {
                     upVotes,
@@ -86,6 +98,9 @@ export default class CreateVoteMutation extends Relay.Mutation {
             fragment on Comment {
                 id
                 currentUserVote
+                user {
+                    id
+                }
                 votes {
                     upVotes,
                     total

@@ -72,7 +72,7 @@ class CommunityItem extends Component<ICommunityItemProps, ICommuintyItemState> 
 
                 {this._renderContent(communityItem)}
 
-                <Tags topics={this.props.communityItem.topics} hideSingleTag={true} />
+                <Tags topics={this.props.communityItem.topics} shouldRenderSingleTag={false} />
 
                 <div className="community-item-bottom">
                     {!this.state.isEditingComment && (

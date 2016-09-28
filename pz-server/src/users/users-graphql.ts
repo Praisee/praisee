@@ -93,7 +93,10 @@ export default function UsersTypes(repositoryAuthorizers: IAppRepositoryAuthoriz
             },
 
             reputation: {
-                type: GraphQLInt
+                type: GraphQLInt,
+                resolve: async ({id}, _, {user}) => {
+                    return userAuthorizer.as(user).getReputation(id);
+                }
             },
 
             image: {
@@ -110,8 +113,8 @@ export default function UsersTypes(repositoryAuthorizers: IAppRepositoryAuthoriz
 
             trusterCount: {
                 type: GraphQLInt,
-                resolve: async ({userId}, _, {user}) => {
-                    return userAuthorizer.as(user).getTotalTrusters(user.id);
+                resolve: async ({id}, _, {user}) => {
+                    return userAuthorizer.as(user).getTotalTrusters(id);
                 }
             }
         }),
@@ -130,7 +133,10 @@ export default function UsersTypes(repositoryAuthorizers: IAppRepositoryAuthoriz
             },
 
             reputation: {
-                type: GraphQLInt
+                type: GraphQLInt,
+                resolve: async ({id}, _, {user}) => {
+                    return userAuthorizer.as(user).getReputation(id);
+                }
             },
 
             image: {

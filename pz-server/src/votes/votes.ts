@@ -12,6 +12,7 @@ export interface IVote extends IRepositoryRecord {
     isUpVote?: boolean
     parentType?: string
     parentId?: number
+    affectedUserId?: number
     createdAt?: Date
     updatedAt?: Date
 }

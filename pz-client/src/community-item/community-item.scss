@@ -42,6 +42,10 @@
       overflow: hidden;
     }
 
+    .gone {
+      display: none;
+    }
+
     .hidden {
       opacity: 0;
       margin-bottom: 1.5rem;
@@ -156,6 +160,14 @@
     .vote-and-tags {
       display: flex;
       margin-top: 2rem;
+      
+      .tags{
+        margin-left: 1rem;
+      }
+      
+      .topic-tag {
+        margin-top: 0.7rem;
+      }
     }
 
     .comment-container {

@@ -41,10 +41,8 @@
 
     .trust-button {
       @include btn();
-      @include btn-primary-outline();
-      color: $brand-primary-minor;
+      @include priasee-btn-outline($brand-primary-minor);
       font-size: 0.7rem;
-      border: 1px solid $brand-primary-minor;
       padding: 0.3rem 0.5rem;
       margin-left: 1rem;
     }

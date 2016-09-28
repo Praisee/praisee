@@ -20,6 +20,7 @@ export interface IUsers extends IRepository {
     addTrust(trusterId: number, trustedId: number): Promise<boolean>
     removeTrust(trusterId: number, trustedId: number): Promise<boolean>
     isUserTrusting(trusterId: number, trustedId: number): Promise<boolean>
+    getReputation(userId: number): Promise<number>
     create(email: string, password: string, displayName: string): Promise<IUser>
 }
 

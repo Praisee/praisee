@@ -44,6 +44,10 @@ export default class Users implements IUsers, IUsersBatchable {
         return await this._UserModel.getTotalTrusters(userId);
     }
 
+    async getReputation(userId: number): Promise<number> {
+        return this._UserModel.getReputation(userId);
+    }
+
     async isUserTrusting(trusterId: number, trustedId: number): Promise<boolean> {
         return await this._UserModel.isUserTrusting(trusterId, trustedId);
     }
