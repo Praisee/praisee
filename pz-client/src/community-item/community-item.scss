@@ -122,7 +122,7 @@
 
     .topic-tag {
       @include btn;
-      @include btn-primary-outline;
+      @include btn-primary-borderless;
       @include btn-sm;
       margin-right: .5rem;
       margin-top: 1.2rem;
@@ -160,11 +160,11 @@
     .vote-and-tags {
       display: flex;
       margin-top: 2rem;
-      
+
       .tags{
         margin-left: 1rem;
       }
-      
+
       .topic-tag {
         margin-top: 0.7rem;
       }

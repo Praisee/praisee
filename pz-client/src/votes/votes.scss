@@ -23,7 +23,7 @@
     }
 
     .down-vote {
-      @include btn-secondary-outline;
+      @include btn-secondary-borderless;
     }
 
     .current-vote {
