@@ -86,22 +86,7 @@ export default class VanityRoutePaths implements IVanityRoutePaths {
             return routePaths.user.profile(urlSlugOrId);
 
         } else if (isCommunityItemRecord(record)) {
-            switch (record.type) {
-                case 'Review':
-                    return routePaths.communityItem.review(urlSlugOrId);
-
-                case 'Question':
-                    return routePaths.communityItem.question(urlSlugOrId);
-
-                case 'Howto':
-                    return routePaths.communityItem.howto(urlSlugOrId);
-
-                case 'Comparison':
-                    return routePaths.communityItem.comparison(urlSlugOrId);
-
-                default:
-                    throw new Error('Unsupported community item type ' + record.type);
-            }
+            return routePaths.communityItem(urlSlugOrId);
 
         } else {
 

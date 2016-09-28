@@ -149,7 +149,7 @@ class CommunityItemEditor extends React.Component<IProps, any> {
         event.preventDefault();
 
         this.props.relay.commitUpdate(new CreateCommunityItemForTopicMutation({
-            type: 'Question',
+            type: 'General',
             topic: this.props.topic,
 
             summary: this.state.summaryContent,

@@ -37,7 +37,7 @@ export default {
         '$promise': {},
         '$resolved': true
     },
-    'Howto': {
+    'Guide': {
         'dataSource': 'pz-remote',
         'public': true,
         '$promise': {},

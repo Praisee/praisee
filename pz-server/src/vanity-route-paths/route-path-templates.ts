@@ -9,23 +9,9 @@ const routePaths = {
         routePaths.index(), urlSlug.toString()
     ),
 
-    communityItem: {
-        review: (urlSlug: TRoutePathUrlSlug) => path.join(
-            routePaths.index(), 'on', urlSlug.toString()
-        ),
-
-        question: (urlSlug: TRoutePathUrlSlug) => path.join(
-            routePaths.index(), 'on', urlSlug.toString()
-        ),
-
-        howto: (urlSlug: TRoutePathUrlSlug) => path.join(
-            routePaths.index(), 'on', urlSlug.toString()
-        ),
-
-        comparison: (urlSlug: TRoutePathUrlSlug) => path.join(
-            routePaths.index(), 'on', urlSlug.toString()
-        )
-    },
+    communityItem: (urlSlug: TRoutePathUrlSlug) => path.join(
+        routePaths.index(), 'on', urlSlug.toString()
+    ),
 
     user: {
         profile: (urlSlug: TRoutePathUrlSlug) => path.join(

@@ -7,17 +7,19 @@ import {IVoteInstance} from 'pz-server/src/models/vote';
 import {IPhotoInstance} from 'pz-server/src/models/photo';
 
 export type TCommunityItemType = (
-    'Comment'
-        | 'Comparison'
-        | 'Howto'
-        | 'Question'
-        | 'Review'
-    );
+    'General'
+    | 'Comment'
+    | 'Comparison'
+    | 'Guide'
+    | 'Question'
+    | 'Review'
+);
 
 export type TLegacyCommunityItemType = (
-    'comment'
+    'general'
+    | 'comment'
     | 'comparison'
-    | 'howto'
+    | 'guide'
     | 'question'
     | 'review'
 );

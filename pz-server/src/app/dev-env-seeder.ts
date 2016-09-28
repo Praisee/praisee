@@ -113,7 +113,7 @@ export class DevEnvSeeder {
             {
                 topicId: 4,
                 userId: 3,
-                type: 'Howto',
+                type: 'Guide',
                 summary: 'Tribute to D300/D300s',
                 body: `There is really nothing left to discuss about technical aspects of D300/D300s on this forum, thanks to such a painfully long birth of its successor, which was so long that Nikon even had to fast forward its name by one generation Yet it feels a bit sad to let these legendarty veterans vanish in the history pages of this forum without saying proper goodbye. So please, post some of your best images taken with these cameras to remind how great they were, and still are, despite more than 10 year of camera evolution. For me, I am just re-posting my photos from another recent thread, as I think they represent some of my best efforts with my beloved D300 outside of family portraiture. Look forward to many great examples of D300 legacy. Best shots with D200 are also welcome `
             },

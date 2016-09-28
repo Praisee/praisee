@@ -69,30 +69,6 @@ export default {
         'dataSource': 'vagrant-postgres',
         'public': true,
     },
-    'Review': {
-        'dataSource': 'vagrant-postgres',
-        'public': true,
-        '$promise': {},
-        '$resolved': true
-    },
-    'Comparison': {
-        'dataSource': 'vagrant-postgres',
-        'public': true,
-        '$promise': {},
-        '$resolved': true
-    },
-    'Howto': {
-        'dataSource': 'vagrant-postgres',
-        'public': true,
-        '$promise': {},
-        '$resolved': true
-    },
-    'Question': {
-        'dataSource': 'vagrant-postgres',
-        'public': true,
-        '$promise': {},
-        '$resolved': true
-    },
     'Topic': {
         'dataSource': 'vagrant-postgres',
         'public': true,

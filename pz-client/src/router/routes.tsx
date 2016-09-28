@@ -34,7 +34,7 @@ export default (
             <Route component={AppLayout} {...mixinRouteQuery(appLayoutQuery) }>
                 {/* TODO: Remove this shit */}
                 <IndexRoute component={TopicController} {...mixinRouteQuery(topicHomeQuery)} />
-            
+
                 {/* TODO: Remove this shit */}
                 <Route
                     path="editor-poc"
@@ -52,7 +52,7 @@ export default (
                 <Route path="(:urlSlug)-reviews" component={ReviewController} />
                 <Route path="(:urlSlug)-comparisons" component={ComparisonController} />
                 <Route path="(:urlSlug)-questions" component={ComparisonController} />
-                <Route path="(:urlSlug)-how-tos" component={ComparisonController} />
+                <Route path="(:urlSlug)-guides" component={ComparisonController} />
 
                 <Route
                     path="(:urlSlug)"

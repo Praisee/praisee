@@ -10,9 +10,10 @@ import {
 import {IContentData} from 'pz-server/src/content/content-data';
 
 export type TCommunityItemType = (
-    'Review'
+    'General'
+    | 'Review'
     | 'Question'
-    | 'Howto'
+    | 'Guide'
     | 'Comparison'
 );
 

@@ -256,24 +256,9 @@ export default class SearchUpdater {
                 routePath = routePaths.topic(urlSlug.fullSlug);
                 break;
 
-            case 'Review':
+            case 'CommunityItem':
                 path = pathFromType('communityItem');
-                routePath = routePaths.communityItem.review(urlSlug.fullSlug);
-                break;
-
-            case 'Question':
-                path = pathFromType('communityItem');
-                routePath = routePaths.communityItem.question(urlSlug.fullSlug);
-                break;
-
-            case 'Howto':
-                path = pathFromType('communityItem');
-                routePath = routePaths.communityItem.howto(urlSlug.fullSlug);
-                break;
-
-            case 'Comparison':
-                path = pathFromType('communityItem');
-                routePath = routePaths.communityItem.comparison(urlSlug.fullSlug);
+                routePath = routePaths.communityItem(urlSlug.fullSlug);
                 break;
 
             default:
