@@ -1,11 +1,13 @@
 import ContentBlock = Draft.Model.ImmutableData.ContentBlock;
 import createMentionSuggestions from 'pz-client/src/editor/mention-plugin/mention-suggestions';
+import {ClickableMentionLink, EditableMentionLink} from 'pz-client/src/editor/mention-plugin/mention-link-component';
 
 var createMentionsPlugin = require('draft-js-mention-plugin').default as Function;
 
-export default function createMentionPlugin() {
+export default function createMentionPlugin({isEditable}: {isEditable: boolean}) {
     const mentionsPlugin = createMentionsPlugin({
-        entityMutability: 'IMMUTABLE'
+        entityMutability: 'IMMUTABLE',
+        mentionComponent: isEditable ? EditableMentionLink : ClickableMentionLink
     });
 
     const {MentionSuggestions: PluginMentionSuggestions} = mentionsPlugin;

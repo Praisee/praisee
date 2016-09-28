@@ -21,7 +21,7 @@ export interface IProps {
     }
 }
 
-const mentionPlugin = createMentionPlugin();
+const mentionPlugin = createMentionPlugin({isEditable: false});
 
 export class CommentContent extends React.Component<IProps, any> {
     private _editorPlugins = [

@@ -94,7 +94,7 @@ export default class Editor extends React.Component<IProps, any> {
     constructor(props, state) {
         super(props, state);
 
-        const mentionPlugin = createMentionPlugin();
+        const mentionPlugin = createMentionPlugin({isEditable: true});
 
         this._MentionSuggestions = mentionPlugin.MentionSuggestions;
 
