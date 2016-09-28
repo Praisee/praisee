@@ -9,13 +9,15 @@ module.exports = function(app: IApp, next: ICallback) {
     app.services.searchUpdater = new SearchUpdater(app.models, app.services.searchClient);
     app.services.searchUpdater.start();
 
-    if (!serverInfo.isProductionEnv()) {
-        // TODO: This is a temporary hack to drop all indexes (ala auto-migrate)
-        // TODO: A future solution should use actual migrations or re-index the entire DB
-        (Promise.resolve()
-                .then(() => app.services.searchClient.resetIndexFromSchema(searchSchema))
-                .then(() => next(null))
-                .catch((error) => next(error))
-        );
+    if (serverInfo.isProductionEnv()) {
+        next(null);
     }
+
+    // TODO: This is a temporary hack to drop all indexes (ala auto-migrate)
+    // TODO: A future solution should use actual migrations or re-index the entire DB
+    (Promise.resolve()
+            .then(() => app.services.searchClient.resetIndexFromSchema(searchSchema))
+            .then(() => next(null))
+            .catch((error) => next(error))
+    );
 };
