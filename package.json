@@ -4,13 +4,11 @@
   "private": true,
   "scripts": {
     "start": "npm run foremanStartDev",
-    "startProd": "npm run foremanStartProd",
+    "startProd": "circus --daemon circus.ini",
     "startServer": "cd ./pz-server && npm start",
-    "startServerProd": "cd ./pz-server && npm run startProd",
     "startServerNoIso": "cd ./pz-server && export NO_ISOMORPHIC=true && npm start",
     "startServerVerbose": "cd ./pz-server && export DEBUG=* && npm start",
     "startRankingsWorker": "cd ./pz-server && npm run startRankingsWorker",
-    "startRankingsWorkerProd": "cd ./pz-server && npm run startRankingsWorkerProd",
     "startRankingsWorkerVerbose": "cd ./pz-server && export DEBUG=* && npm run startRankingsWorker",
     "debugRankingsWorker": "cd ./pz-server && npm run debugRankingsWorker",
     "typingsInstall": "cd ./pz-client && typings install && cd ../pz-server && typings install && cd ../pz-support && typings install",
@@ -31,7 +29,6 @@
     "redisCommander": "redis-commander",
     "foreman": "nf",
     "foremanStartDev": "npm run foreman -- start --procfile Procfile.dev --port 3000",
-    "foremanStartProd": "NODE_ENV=production npm run foreman -- start --procfile Procfile --port 8080 server=1,rankingsWorker=7,photoServer=1"
   },
   "dependencies": {
     "amqplib": "^0.4.2",

@@ -17,6 +17,12 @@ printf '-'
 #cd /home/praisee
 
 printf '-'
+printf 'Setting up system'
+printf '-'
+
+sudo apt-get install -y python-dev
+
+printf '-'
 printf 'Installing Node 6'
 printf '-'
 

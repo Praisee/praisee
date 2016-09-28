@@ -9,9 +9,7 @@
   },
   "scripts": {
     "start": "nodemon -w build -x \"node --debug  build/src/index\"",
-    "startProd": "node build/src/index",
     "startRankingsWorker": "nodemon -w build -x \"node  build/src/rankings/worker-app/start-worker-app\"",
-    "startRankingsWorkerProd": "NODE_ENV=production node build/src/rankings/worker-app/start-worker-app",
     "debugRankingsWorker": "nodemon -w build -x \"node --debug  build/src/rankings/worker-app/start-worker-app\"",
     "smokeTests": "mocha  --recursive build/test/smoke",
     "integrationTests": "mocha  --recursive build/test/integration",
