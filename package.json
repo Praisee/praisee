@@ -28,7 +28,7 @@
     "test": "npm run testsIn pz-server/build/test/unit pz-server/build/test/smoke pz-server/build/test/integration pz-client/build/test/acceptance pz-client/build/test/integration pz-client/build/test/unit",
     "redisCommander": "redis-commander",
     "foreman": "nf",
-    "foremanStartDev": "npm run foreman -- start --procfile Procfile.dev --port 3000",
+    "foremanStartDev": "npm run foreman -- start --procfile Procfile.dev --port 3000"
   },
   "dependencies": {
     "amqplib": "^0.4.2",
@@ -102,6 +102,7 @@
     "postcss-url": "^5.1.2",
     "proxyquire": "^1.7.9",
     "react": "^15.1.0",
+    "react-addons-css-transition-group": "^15.3.2",
     "react-addons-transition-group": "^15.3.1",
     "react-autosuggest": "^3.7.4",
     "react-dom": "^15.1.0",

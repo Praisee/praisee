@@ -48,15 +48,15 @@ export default class SignInUp extends React.Component<IProps, any> {
                         <legend>Sign Up</legend>
 
                         <div className="form-group">
-                            <input className="form-control" type="text" name="displayName" placeholder="Your name"/>
+                            <input className="form-control" type="text" name="displayName" placeholder="Your name" key="displayName"/>
                         </div>
 
                         <div className="form-group">
-                            <input className="form-control" type="text" name="email" placeholder="Your email"/>
+                            <input className="form-control" type="text" name="email" placeholder="Your email" key="email" />
                         </div>
 
                         <div className="form-group">
-                            <input className="form-control" type="password" name="password" placeholder="Password"/>
+                            <input className="form-control" type="password" name="password" placeholder="Password" key="password" />
                         </div>
 
                         <div>
@@ -82,11 +82,11 @@ export default class SignInUp extends React.Component<IProps, any> {
                         <legend>Sign In</legend>
 
                         <div className="form-group">
-                            <input className="form-control" type="text" name="email" placeholder="Your email"/>
+                            <input className="form-control" type="text" name="email" placeholder="Your email" key="email" />
                         </div>
 
                         <div className="form-group">
-                            <input className="form-control" type="password" name="password" placeholder="Password"/>
+                            <input className="form-control" type="password" name="password" placeholder="Password" key="password" />
                         </div>
 
                         <div>

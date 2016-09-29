@@ -6,26 +6,9 @@
     @include votes();
     @include content-truncator();
     margin-top: 1rem;
-    margin-bottom: 3rem;
-
-    .title {
-      display: block;
-      color: $headings-color;
-      font-size: $font-size-h2;
-      font-family: $headings-font-family;
-      font-weight: $headings-font-weight;
-      margin-bottom: 1rem;
-    }
-
-    .title-link {
-      color: $headings-color;
-
-      &:hover,
-      &:active,
-      &:focus {
-        color: $headings-link-hover-color;
-      }
-    }
+    margin-bottom: 1rem;
+    border-bottom: 1px solid $gray-lighter;
+    padding-bottom: 1rem;
 
     .community-item-bottom {
       display: flex;
@@ -33,8 +16,6 @@
       @include media-breakpoint-down(sm) {
         display: block;
       }
-      border-bottom: 1px solid $gray-lighter;
-      padding-bottom: 1rem;
     }
 
     .long-content {
@@ -130,6 +111,163 @@
       padding-top: .1rem;
       padding-bottom: .1rem;
     }
+
+    &.minimized {
+      margin-top: .5rem;
+      margin-bottom: .5rem;
+
+      .title-link {
+        color: $gray-lighter;
+        font-size: 1.3rem;
+      }
+
+      .minimize-button {
+        @extend %community-item-checkbox;
+      }
+    }
+
+    .community-item-header {
+      @include make-container-max-widths();
+      @include make-row();
+    }
+
+    .title {
+      @include make-col();
+      @include make-col-span(11);
+      display: block;
+    }
+
+    .title-link {
+      color: $headings-color;
+      font-size: $font-size-h2;
+      font-family: $headings-font-family;
+      font-weight: $headings-font-weight;
+
+      &:hover,
+      &:active,
+      &:focus {
+        color: $headings-link-hover-color;
+      }
+    }
+
+    .minimize-button-container {
+      @include make-col();
+      @include make-col-span(1);
+
+      .minimize-button {
+        margin-top: .5rem;
+        border-radius: 2px;
+        height: 1rem;
+        width: 1rem;
+        outline: none;
+        background: $body-bg;
+        border: 1px solid $gray-lighter;
+
+        &:hover,
+        &:active,
+        &:focus {
+          border: 1px solid $gray-light;
+          background: $gray-lightest;
+          @extend %community-item-checkbox;
+
+          &::before {
+            color: $brand-primary-minor;
+          }
+        }
+      }
+    }
+
+    .slide-enter,
+    .slide-leave {
+      overflow: hidden;
+      position: relative;
+
+      &::before {
+        display: block;
+        content: '';
+        background: transparent;
+        background: linear-gradient(to bottom, transparentize($body-bg, 1) 0%, $body-bg 100%);
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        height: 5rem;
+        z-index: 10;
+      }
+
+      &::after {
+        display: block;
+        content: '';
+        background: transparent;
+        background: linear-gradient(to right, transparentize($body-bg, 1) 0%, $body-bg 100%);
+        position: absolute;
+        top: 0;
+        bottom: 0;
+        right: 0;
+        width: 5rem;
+        z-index: 10;
+      }
+    }
+
+    .slide-enter {
+      .community-item-maximized-inner {
+        display: none;
+      }
+    }
+
+    .slide-enter.slide-enter-active {
+      .community-item-maximized-inner {
+        display: block;
+        animation-name: slide;
+        animation-duration: 300ms;
+        animation-fill-mode: forwards;
+      }
+    }
+
+    .slide-leave.slide-leave-active {
+      .community-item-maximized-inner {
+        display: block;
+        animation-name: slide;
+        animation-duration: 300ms;
+        animation-direction: reverse;
+      }
+    }
+
+    @keyframes slide {
+      0% {
+        transform: translateX(100%);
+        opacity: 0;
+        max-height: 0px;
+      }
+
+      30% {
+        opacity: 0;
+      }
+
+      100% {
+        transform: translateX(0%);
+        opacity: 1;
+        max-height: 300px;
+      }
+    }
+  }
+}
+
+%community-item-checkbox {
+  @extend .fa;
+  @extend .fa-check;
+  border: 1px solid $gray-lighter;
+  border-radius: 2px;
+  background: $body-bg;
+  position: relative;
+
+  &::before {
+    color: $gray-lighter;
+    font-size: 1.1rem;
+    left: 0.1rem;
+    position: absolute;
+    text-shadow: 2px 2px 0px $body-bg, -2px -2px 0px $body-bg;
+    top: -0.2rem;
   }
 }
 
@@ -161,7 +299,7 @@
       display: flex;
       margin-top: 2rem;
 
-      .tags{
+      .tags {
         margin-left: 1rem;
       }
 
