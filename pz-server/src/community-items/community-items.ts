@@ -45,3 +45,7 @@ export interface ICommunityItems extends IRepository {
     create(communityItem: ICommunityItem, ownerId: number): Promise<ICommunityItem>
     update(communityItem: ICommunityItem): Promise<ICommunityItem>
 }
+
+export interface ICommunityItemsBatchable {
+    findAllByIds(ids: Array<number>): Promise<Array<ICommunityItem>>
+}

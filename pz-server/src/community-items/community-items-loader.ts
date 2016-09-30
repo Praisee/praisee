@@ -1,6 +1,7 @@
 import {
     ICommunityItems,
-    ICommunityItem
+    ICommunityItem,
+    ICommunityItemsBatchable
 } from 'pz-server/src/community-items/community-items';
 
 import {TBiCursor, ICursorResults} from 'pz-server/src/support/cursors/cursors';
@@ -9,27 +10,31 @@ import {IComment} from 'pz-server/src/comments/comments';
 import {IVote} from 'pz-server/src/votes/votes';
 
 import DataLoader from 'dataloader';
+import createDataLoaderBatcher from 'pz-server/src/support/create-dataloader-batcher';
 
 export default class CommunityItemsLoader implements ICommunityItems {
-    private _communityItems: ICommunityItems;
+    private _communityItems: ICommunityItems & ICommunityItemsBatchable;
+
     private _loaders: {
-        communityItems: DataLoader<number, ICommunityItem>
+        findAllByIds: DataLoader<number, ICommunityItem>
     };
 
     constructor(communityItems: ICommunityItems) {
         this._communityItems = communityItems;
 
         this._loaders = {
-            communityItems: new DataLoader(this._communityItemBatcher.bind(this))
+            findAllByIds: createDataLoaderBatcher<number, ICommunityItem>(
+                this._communityItems.findAllByIds.bind(this._communityItems)
+            )
         }
     }
 
     findById(id: number): Promise<ICommunityItem> {
-        return this._loaders.communityItems.load(id);
+        return this._loaders.findAllByIds.load(id);
     }
 
     findAllByIds(ids: Array<number>): Promise<Array<ICommunityItem>> {
-        return this._loaders.communityItems.loadMany(ids);
+        return this._loaders.findAllByIds.loadMany(ids);
     }
 
     findSomeByUserId(cursor: TBiCursor, userId: number): Promise<ICursorResults<ICommunityItem>> {
@@ -61,15 +66,6 @@ export default class CommunityItemsLoader implements ICommunityItems {
     }
 
     update(communityItem: ICommunityItem): Promise<ICommunityItem> {
-        this._loaders.communityItems.clear(communityItem.id);
         return this._communityItems.update(communityItem);
-    }
-
-    private async _communityItemBatcher(ids: Array<number>): Promise<Array<ICommunityItem>> {
-        if (ids.length > 1) {
-            return this._communityItems.findAllByIds(ids);
-        } else {
-            return [await this._communityItems.findById(ids[0])];
-        }
     }
 }
