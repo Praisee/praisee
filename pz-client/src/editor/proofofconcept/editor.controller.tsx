@@ -120,7 +120,7 @@ export let CreateItemEditor = Relay.createContainer(Editor, {
 export var UpdateItemEditor = Relay.createContainer(Editor, {
     fragments: {
         review: () => Relay.QL`
-            fragment on CommunityItem {
+            fragment on CommunityItemInterface {
                 id,
                 type,
                 summary,

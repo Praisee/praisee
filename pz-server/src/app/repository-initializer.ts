@@ -21,6 +21,10 @@ import CommunityItems from 'pz-server/src/community-items/loopback-community-ite
 import CommunityItemsLoader from 'pz-server/src/community-items/community-items-loader';
 import CommunityItemsAuthorizer from 'pz-server/src/community-items/community-items-authorizer';
 
+import Reviews from 'pz-server/src/community-items/reviews/loopback-reviews';
+import ReviewsAuthorizer from 'pz-server/src/community-items/reviews/reviews-authorizer';
+import FilteredReviews from 'pz-server/src/community-items/reviews/filtered-reviews';
+
 import Comments from 'pz-server/src/comments/loopback-comments';
 import CommentsAuthorizer from 'pz-server/src/comments/comments-authorizer';
 import FilteredComments from 'pz-server/src/comments/filtered-comments';
@@ -81,7 +85,9 @@ module.exports = function initializeRepositories(app: IApp) {
     const votes = new VotesLoader(new Votes(app.models.Vote));
     const votesAuthorizer = new VotesAuthorizer(votes);
 
-    const communityItems = new CommunityItemsLoader(new CommunityItems(app.models.CommunityItem, app.models.UrlSlug));
+    const communityItems = new CommunityItemsLoader(new CommunityItems(
+        app.models.CommunityItem, app.models.UrlSlug
+    ));
 
     const contentFilterer = new ContentFilterer(
         vanityRoutePaths, topics, communityItems, photos
@@ -103,6 +109,9 @@ module.exports = function initializeRepositories(app: IApp) {
 
     const communityItemsAuthorizer = new CommunityItemsAuthorizer(filteredCommunityItems);
 
+    const reviews = new FilteredReviews(new Reviews(app.models.CommunityItem, topics));
+    const reviewsAuthorizer = new ReviewsAuthorizer(reviews, filteredCommunityItems);
+
     const comments = new Comments(app.models.Comment);
     const filteredComments = new FilteredComments(
         comments,
@@ -117,6 +126,7 @@ module.exports = function initializeRepositories(app: IApp) {
         topics,
         topicAttributes,
         communityItems: filteredCommunityItems,
+        reviews,
         comments: filteredComments,
         votes,
         urlSlugs,
@@ -131,6 +141,7 @@ module.exports = function initializeRepositories(app: IApp) {
         users: usersAuthorizer,
         topics: topicsAuthorizer,
         communityItems: communityItemsAuthorizer,
+        reviews: reviewsAuthorizer,
         comments: commentsAuthorizer,
         votes: votesAuthorizer,
         vanityRoutePaths: vanityRoutePathsAuthorizer,

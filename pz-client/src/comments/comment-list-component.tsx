@@ -47,7 +47,7 @@ export default Relay.createContainer(CommentList, {
     },
     fragments: {
         communityItem: ({expand, currentDepth}) => Relay.QL`
-            fragment on CommunityItem {
+            fragment on CommunityItemInterface {
                 comments {
                     id,
                     ${Comment.getFragment('comment', { expand, currentDepth })}

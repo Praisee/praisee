@@ -135,7 +135,7 @@ export let CreateCommentEditor = Relay.createContainer(Editor, {
             }
         `,
         communityItem: () => Relay.QL`
-            fragment on CommunityItem {
+            fragment on CommunityItemInterface {
                 id
                 ${CreateCommentMutation.getFragment('communityItem')}
             }

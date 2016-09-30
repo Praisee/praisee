@@ -27,6 +27,7 @@ export interface ITopicInstance extends IPersistedModelInstance, ISluggableInsta
     thumbnailPhotoPath: string
     communityItems: IRelatedPersistedModel<ICommunityItemInstance>
     photos: IRelatedPersistedModel<IPhotoInstance>
+    reviews: IRelatedPersistedModel<ICommunityItemInstance>
 }
 
 module.exports = function (Topic: ITopicModel) {

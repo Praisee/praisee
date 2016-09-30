@@ -218,7 +218,7 @@ export default Relay.createContainer(CommunityItem, {
     },
     fragments: {
         communityItem: ({expandCommentsTo, expandComments}) => Relay.QL`
-            fragment on CommunityItem {
+            fragment on CommunityItemInterface {
                 summary
                 body
                 user {

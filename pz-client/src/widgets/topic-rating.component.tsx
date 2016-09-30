@@ -28,7 +28,7 @@ class CommunityItemRating extends Component<ICommunityItemRatingProps, any>{
 export default Relay.createContainer(CommunityItemRating, {
     fragments: {
         communityItem: () => Relay.QL`
-            fragment on CommunityItem {
+            fragment on CommunityItemInterface {
                 votes {
                     upVotes,
                     total

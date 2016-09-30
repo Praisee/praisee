@@ -108,7 +108,7 @@ var userFragment = Relay.QL`
 export default Relay.createContainer(Avatar, {
     fragments: {
         communityItem: () => Relay.QL`
-            fragment on CommunityItem {
+            fragment on CommunityItemInterface {
                 user{
                     ${ToggleTrustMutation.getFragment('user')}
                     ${userFragment}

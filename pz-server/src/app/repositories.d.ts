@@ -12,6 +12,9 @@ import {IAuthorizedTopicAttributes} from 'pz-server/src/topics/topic-attributes/
 import {ICommunityItems} from 'pz-server/src/community-items/community-items';
 import {IAuthorizedCommunityItems} from 'pz-server/src/community-items/community-items-authorizer';
 
+import {IReviews} from 'pz-server/src/community-items/reviews/reviews';
+import {IAuthorizedReviews} from 'pz-server/src/community-items/reviews/reviews-authorizer';
+
 import {IComments} from 'pz-server/src/comments/comments';
 import {IAuthorizedComments} from 'pz-server/src/comments/comments-authorizer';
 
@@ -36,6 +39,7 @@ export interface IAppRepositories {
     topics: ITopics
     topicAttributes: ITopicAttributes
     communityItems: ICommunityItems
+    reviews: IReviews
     comments: IComments
     votes: IVotes
     trackedEvents: ITrackedEvents
@@ -56,6 +60,7 @@ export interface IAppRepositoryAuthorizers {
     users: TAppAuthorizer<IAuthorizedUsers>
     topics: TAppAuthorizer<IAuthorizedTopics>
     communityItems: TAppAuthorizer<IAuthorizedCommunityItems>
+    reviews: IAuthorizer<IAuthorizedReviews>
     comments: TAppAuthorizer<IAuthorizedComments>
     votes: TAppAuthorizer<IAuthorizedVotes>
     vanityRoutePaths: IAuthorizer<IAuthorizedVanityRoutePaths>

@@ -81,7 +81,7 @@ export default class DeleteVoteMutation extends Relay.Mutation {
 
     static fragments = {
         communityItem: () => Relay.QL`
-            fragment on CommunityItem {
+            fragment on CommunityItemInterface {
                 id
                 currentUserVote
                 user {

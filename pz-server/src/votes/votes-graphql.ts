@@ -136,7 +136,7 @@ export default function VoteTypes(repositoryAuthorizers: IAppRepositoryAuthorize
                 }
             },
             communityItem: {
-                type: types.CommunityItemType,
+                type: types.CommunityItemInterfaceType,
                 resolve: async ({communityItemId, user}) => {
                     return await communityItemAuthorizer
                         .as(user)
@@ -202,7 +202,7 @@ export default function VoteTypes(repositoryAuthorizers: IAppRepositoryAuthorize
                 }
             },
             communityItem: {
-                type: types.CommunityItemType,
+                type: types.CommunityItemInterfaceType,
                 resolve: async ({communityItemId, user}) => {
                     return await communityItemAuthorizer
                         .as(user)
@@ -271,7 +271,7 @@ export default function VoteTypes(repositoryAuthorizers: IAppRepositoryAuthorize
                 }
             },
             communityItem: {
-                type: types.CommunityItemType,
+                type: types.CommunityItemInterfaceType,
                 resolve: async ({communityItemId, user}) => {
                     return await communityItemAuthorizer
                         .as(user)

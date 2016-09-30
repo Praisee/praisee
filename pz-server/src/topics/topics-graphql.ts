@@ -182,10 +182,10 @@ export default function topicTypes(repositoryAuthorizers: IAppRepositoryAuthoriz
             parent: {
                 type: new GraphQLNonNull(new GraphQLUnionType({
                     name: 'TopicPhotoGalleryPhotoParent',
-                    types: [types.CommunityItemType],
+                    types: [types.communityItemTypes.general],
 
                     resolveType: (value) => {
-                        return types.CommunityItemType;
+                        return types.communityItemTypes.general;
                     }
                 })),
 

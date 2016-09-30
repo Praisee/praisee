@@ -48,7 +48,7 @@ export default class CreateVoteMutation extends Relay.Mutation {
 
     getConfigs() {
         const parentType = this.getParentType();
-        
+
         return [{
             type: 'FIELDS_CHANGE',
             fieldIDs: {
@@ -64,7 +64,7 @@ export default class CreateVoteMutation extends Relay.Mutation {
         const parent = this.props[parentType];
         const {votes} = parent;
         const {reputation} = this.props[parentType].user
-        
+
         return {
             [parentType]: {
                 id: parent.id,
@@ -82,7 +82,7 @@ export default class CreateVoteMutation extends Relay.Mutation {
 
     static fragments = {
         communityItem: () => Relay.QL`
-            fragment on CommunityItem {
+            fragment on CommunityItemInterface {
                 id
                 user {
                     id

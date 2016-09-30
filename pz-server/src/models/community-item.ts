@@ -40,7 +40,14 @@ export interface ICommunityItemInstance extends IPersistedModelInstance, ISlugga
     topics: IRelatedPersistedModel<ITopicInstance[]>
     comments?: IRelatedPersistedModel<ICommentInstance[]>
     votes?: IRelatedPersistedModel<IVoteInstance[]>
-    photos: IRelatedPersistedModel<IPhotoInstance>
+    photos?: IRelatedPersistedModel<IPhotoInstance>
+
+    // Review-specific
+    reviewedTopic?: IRelatedPersistedModel<ITopicInstance>
+    reviewedTopicId?: number,
+    reviewRating?: number,
+    reviewPricePaid?: string,
+    reviewPricePaidCurrency?: 'usd'
 }
 
 module.exports = function (CommunityItem: ICommunityItemModel) {

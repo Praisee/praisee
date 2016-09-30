@@ -114,7 +114,7 @@ export function getTopicAttributeTypes(repositoryAuthorizers: IAppRepositoryAuth
 
     return {
         TopicAttributeInterfaceType,
-        topicAttributes: topicAttributeTypeMap
+        topicAttributeTypes: topicAttributeTypeMap
     };
 }
 
@@ -126,6 +126,6 @@ export function topicAttributeIdResolver(repositoryAuthorizers: IAppRepositoryAu
 
 export function topicAttributeTypeResolver(types: ITypes, source) {
     if (isTopicAttribute(source)) {
-        return types.topicAttributes[source.attributeType];
+        return types.topicAttributeTypes[source.attributeType];
     }
 }

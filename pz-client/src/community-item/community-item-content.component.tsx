@@ -74,7 +74,7 @@ export class CommunityItemContent extends React.Component<IProps, any> {
 export default Relay.createContainer(CommunityItemContent, {
     fragments: {
         communityItem: () => Relay.QL`
-            fragment on CommunityItem {
+            fragment on CommunityItemInterface {
                 bodyData
             }
         `

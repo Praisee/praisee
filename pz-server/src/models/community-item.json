@@ -42,11 +42,32 @@
                 "dataType": "json"
             }
         },
+
         "createdAt": {
             "type": "date"
         },
+
         "updatedAt": {
             "type": "date"
+        },
+
+        "reviewRating": {
+            "type": "number",
+            "description": "The review rating (1-5)"
+        },
+
+        "reviewPricePaid": {
+            "type": "string",
+            "description": "The price paid for the reviewed topic",
+            "postgresql": {
+                "dataType": "numeric"
+            }
+        },
+
+        "reviewPricePaidCurrency": {
+            "type": "string",
+            "description": "The currency of the reviewed topic's paid price",
+            "default": "usd"
         }
     },
     "validations": [],
@@ -56,6 +77,7 @@
             "model": "PraiseeUser",
             "foreignKey": "userId"
         },
+
         "votes": {
             "type": "hasMany",
             "model": "Vote",
@@ -64,10 +86,12 @@
                 "discriminator": "parentType"
             }
         },
+
         "topics": {
             "type": "hasAndBelongsToMany",
             "model": "Topic"
         },
+
         "comments": {
             "type": "hasMany",
             "model": "Comment",
@@ -76,6 +100,7 @@
                 "discriminator": "parentType"
             }
         },
+
         "photos": {
             "type": "hasMany",
             "model": "Photo",
@@ -83,6 +108,11 @@
                 "foreignKey": "parentId",
                 "discriminator": "parentType"
             }
+        },
+
+        "reviewedTopic": {
+            "type": "belongsTo",
+            "model": "Topic"
         }
     },
     "acls": [],

@@ -7,13 +7,14 @@ import {IRepositoryRecord} from 'pz-server/src/support/repository';
 import {initializeTypes} from 'pz-server/src/graphql/types';
 
 import {
-    ICursorResults,
-    TBiCursor, IBackwardCursor, IForwardCursor
-} from 'pz-server/src/support/cursors/cursors';
-import {
     topicAttributeTypeResolver,
     topicAttributeIdResolver
-} from '../topics/topic-attributes/topic-attributes-graphql';
+} from 'pz-server/src/topics/topic-attributes/topic-attributes-graphql';
+
+import {
+    communityItemIdResolver,
+    communityItemTypeResolver
+} from 'pz-server/src/community-items/community-items-graphql';
 
 var {
     connectionDefinitions,
@@ -73,10 +74,6 @@ export default function createSchema(repositoryAuthorizers: IAppRepositoryAuthor
                 repositoryAuthorizer = topicsAuthorizer;
                 break;
 
-            case 'CommunityItem':
-                repositoryAuthorizer = communityItemsAuthorizer;
-                break;
-
             case 'Comment':
                 repositoryAuthorizer = commentsAuthorizer;
                 break;
@@ -89,6 +86,11 @@ export default function createSchema(repositoryAuthorizers: IAppRepositoryAuthor
         const topicAttribute = topicAttributeIdResolver(repositoryAuthorizers, type, id, user);
         if (topicAttribute) {
             return topicAttribute;
+        }
+
+        const communityItem = communityItemIdResolver(repositoryAuthorizers, type, id, user);
+        if (communityItem) {
+            return communityItem;
         }
 
         return null;
@@ -108,9 +110,6 @@ export default function createSchema(repositoryAuthorizers: IAppRepositoryAuthor
             case 'Topic':
                 return types.TopicType;
 
-            case 'CommunityItem':
-                return types.CommunityItemType;
-
             case 'Comment':
                 return types.CommentType;
         }
@@ -118,6 +117,11 @@ export default function createSchema(repositoryAuthorizers: IAppRepositoryAuthor
         const topicAttributeType = topicAttributeTypeResolver(types, repositoryRecord);
         if (topicAttributeType) {
             return topicAttributeType;
+        }
+
+        const communityItemType = communityItemTypeResolver(types, repositoryRecord);
+        if (communityItemType) {
+            return communityItemType;
         }
 
         return null;
@@ -167,7 +171,7 @@ export default function createSchema(repositoryAuthorizers: IAppRepositoryAuthor
                 },
 
                 communityItem: {
-                    type: types.CommunityItemType,
+                    type: types.CommunityItemInterfaceType,
                     args: {
                         urlSlug: {
                             type: GraphQLString
@@ -189,6 +193,8 @@ export default function createSchema(repositoryAuthorizers: IAppRepositoryAuthor
             fields: {
                 createCommunityItem: types.CreateCommunityItemMutation,
                 createCommunityItemFromTopic: types.CreateCommunityItemFromTopicMutation,
+
+                updateReviewDetails: types.UpdateReviewDetailsMutation,
 
                 createComment: types.CreateCommentMutation,
 

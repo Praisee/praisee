@@ -70,16 +70,14 @@ class AuthorizedCommunityItems implements IAuthorizedCommunityItems {
     }
 
     async update(communityItem): Promise<ICommunityItem | AuthorizationError> {
-        if (!this._user) {
-            return new NotAuthenticatedError();
-        }
-
-        const isOwner = await this._communityItems.isOwner(
-            this._user.id, communityItem.id
+        const authorizationError = await getUpdateError(
+            communityItem.id,
+            this._user,
+            this._communityItems
         );
 
-        if (!isOwner) {
-            return new NotOwnerError();
+        if (authorizationError) {
+            return authorizationError;
         }
 
         return await this._communityItems.update(communityItem);
@@ -87,3 +85,19 @@ class AuthorizedCommunityItems implements IAuthorizedCommunityItems {
 }
 
 export default authorizer<IAuthorizedCommunityItems>(AuthorizedCommunityItems);
+
+export async function getUpdateError(communityItemId: number, asUser: TOptionalUser, communityItems: ICommunityItems): Promise<AuthorizationError | null> {
+    if (!asUser) {
+        return new NotAuthenticatedError();
+    }
+
+    const isOwner = await communityItems.isOwner(
+        asUser.id, communityItemId
+    );
+
+    if (!isOwner) {
+        return new NotOwnerError();
+    }
+
+    return null;
+}

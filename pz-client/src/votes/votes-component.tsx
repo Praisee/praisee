@@ -103,7 +103,7 @@ class Votes extends React.Component<IVotesProps, any> {
 export default Relay.createContainer(Votes, {
     fragments: {
         communityItem: () => Relay.QL`
-            fragment on CommunityItem {
+            fragment on CommunityItemInterface {
                 currentUserVote
                 votes{
                     upVotes

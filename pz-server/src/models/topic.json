@@ -73,6 +73,11 @@
                 "foreignKey": "parentId",
                 "discriminator": "parentType"
             }
+        },
+
+        "reviews": {
+            "type": "hasMany",
+            "model": "CommunityItem"
         }
     },
     "acls": [],

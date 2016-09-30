@@ -73,7 +73,7 @@ export default class CreateCommentMutation extends Relay.Mutation {
             }
         `,
         communityItem: () => Relay.QL`
-            fragment on CommunityItem {
+            fragment on CommunityItemInterface {
                 id
                 comments
             }

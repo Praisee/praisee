@@ -175,7 +175,7 @@ export default function CommentTypes(repositoryAuthorizers: IAppRepositoryAuthor
                 }
             },
             communityItem: {
-                type: types.CommunityItemType,
+                type: types.CommunityItemInterfaceType,
                 resolve: async ({parentId, user}) => {
                     return await communityItemsAuthorizer
                         .as(user)
@@ -191,7 +191,7 @@ export default function CommentTypes(repositoryAuthorizers: IAppRepositoryAuthor
 
         mutateAndGetPayload: async ({body, bodyData, communityItemId, commentId}, context) => {
             const parsedBodyData = parseInputContentData(body || bodyData);
-            
+
             const {type, id} = fromGlobalId(commentId || communityItemId);
             const response = await commentsAuthorizer.as(context.user).create({
                 recordType: 'Comment',

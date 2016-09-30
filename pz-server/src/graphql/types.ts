@@ -38,10 +38,17 @@ export interface ITypes {
     VoteType
     VoteAggregateType
 
-    CommunityItemType
+    CommunityItemInterfaceType
+
+    communityItemTypes: {
+        general
+        review
+    }
+
     CommunityItemConnection
     CreateCommunityItemMutation
     CreateCommunityItemFromTopicMutation
+    UpdateReviewDetailsMutation
 
     CreateVoteMutation
     UpdateVoteMutation
@@ -55,12 +62,12 @@ export interface ITypes {
     TopicThumbnailPhotoType
 
     TopicAttributeInterfaceType
-    topicAttributes: {
+    topicAttributeTypes: {
         [topicAttributeType: string]: any
     }
 
     ResponseErrorInterfaceType
-    responseError: {
+    responseErrorTypes: {
         [responseErrorType: string]: any
     }
 

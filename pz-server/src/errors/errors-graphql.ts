@@ -120,7 +120,7 @@ export function getResponseErrorTypes(repositoryAuthorizers: IAppRepositoryAutho
 
     return {
         ResponseErrorInterfaceType,
-        responseErrors: responseErrorTypeMap
+        responseErrorTypes: responseErrorTypeMap
     };
 }
 
@@ -148,7 +148,7 @@ export function addErrorToResponse(responseErrors, errorType: string, errorData:
             type: 'ValidationError',
             message: 'You need to provide a body',
             elementName: 'summary'
-        },    
+        },
     ]
 }
 */

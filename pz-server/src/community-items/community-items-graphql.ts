@@ -1,13 +1,4 @@
-import {IAppRepositoryAuthorizers} from 'pz-server/src/app/repositories';
-import {AuthorizationError} from 'pz-server/src/support/authorization';
-import {ITypes} from 'pz-server/src/graphql/types';
-import * as graphqlRelay from 'graphql-relay';
-import * as graphql from 'graphql';
-import {IVote} from 'pz-server/src/votes/votes';
-import convertTextToData from 'pz-server/src/content/text-to-data-converter';
-import {parseInputContentData} from 'pz-server/src/content/input-content-data';
-
-var {
+import {
     GraphQLBoolean,
     GraphQLID,
     GraphQLInt,
@@ -16,10 +7,11 @@ var {
     GraphQLObjectType,
     GraphQLInputObjectType,
     GraphQLSchema,
-    GraphQLString
-} = graphql;
+    GraphQLString,
+    GraphQLInterfaceType
+} from 'graphql';
 
-var {
+import {
     connectionDefinitions,
     fromGlobalId,
     nodeDefinitions,
@@ -29,140 +21,195 @@ var {
     connectionFromPromisedArray,
     globalIdField,
     mutationWithClientMutationId
-} = graphqlRelay;
+} from 'graphql-relay';
 
-export default function CommunityItemTypes(repositoryAuthorizers: IAppRepositoryAuthorizers, nodeInterface, types: ITypes) {
+import {IAppRepositoryAuthorizers} from 'pz-server/src/app/repositories';
+import {AuthorizationError} from 'pz-server/src/support/authorization';
+import {ITypes} from 'pz-server/src/graphql/types';
+import {IVote} from 'pz-server/src/votes/votes';
+import {parseInputContentData} from 'pz-server/src/content/input-content-data';
+import {getReviewFields, getReviewMutationTypes} from './reviews/reviews-graphql';
+import {TCommunityItemType, ICommunityItem} from './community-items';
+
+export default function getCommunityItemTypes(repositoryAuthorizers: IAppRepositoryAuthorizers, nodeInterface, types: ITypes) {
     const communityItemsAuthorizer = repositoryAuthorizers.communityItems;
     const commentsAuthorizer = repositoryAuthorizers.comments;
     const usersAuthorizer = repositoryAuthorizers.users;
     const votesAuthorizer = repositoryAuthorizers.votes;
     const vanityRoutePathAuthorizer = repositoryAuthorizers.vanityRoutePaths;
 
-    const CommunityItemType = new GraphQLObjectType({
+    var communityItemFields = () => ({
+        id: globalIdField('CommunityItem'),
+
+        type: {
+            type: new GraphQLNonNull(GraphQLString)
+        },
+
+        summary: {
+            type: new GraphQLNonNull(GraphQLString)
+        },
+
+        body: {
+            type: GraphQLString
+        },
+
+        bodyData: {
+            type: GraphQLString,
+            resolve: (source) => JSON.stringify(source.bodyData)
+        },
+
+        createdAt: {
+            type: new GraphQLNonNull(GraphQLString)
+        },
+
+        udpdatedAt: {
+            type: new GraphQLNonNull(GraphQLString)
+        },
+
+        user: {
+            type: types.UserInterfaceType,
+            resolve: async (communityItem, _, {user: currentUser}) => {
+                const user = await usersAuthorizer
+                    .as(currentUser)
+                    .findUserById(communityItem.userId)
+
+                return user;
+            }
+        },
+
+        commentCount: {
+            type: GraphQLInt,
+            resolve: async (communityItem, _, {user}) => {
+                const count = await commentsAuthorizer
+                    .as(user)
+                    .getCountForRootParent("CommunityItem", communityItem.id);
+
+                return count;
+            }
+        },
+
+        comments: {
+            type: new GraphQLList(types.CommentType),
+            resolve: async (communityItem, _, {user}) => {
+
+                const comments = await communityItemsAuthorizer
+                    .as(user)
+                    .findAllComments(communityItem.id);
+
+                return comments;
+            }
+        },
+
+        topics: {
+            type: new GraphQLList(types.TopicType),
+            resolve: async (communityItem, _, {user}) => {
+                const topics = await communityItemsAuthorizer
+                    .as(user)
+                    .findAllTopics(communityItem.id);
+
+                return topics;
+            }
+        },
+
+        routePath: {
+            type: GraphQLString,
+            resolve: async (communityItem, _, {user}) => {
+                let route = await vanityRoutePathAuthorizer.as(user).findByRecord(communityItem);
+                return route.routePath;
+            }
+        },
+
+        currentUserVote: {
+            type: GraphQLBoolean,
+            resolve: async ({id}, __, {user}) => {
+                if (!user) return null;
+
+                let data = await votesAuthorizer
+                    .as(user)
+                    .findCurrentUserVoteForParent("CommunityItem", id);
+
+                if (!data || data instanceof (AuthorizationError))
+                    return null;
+
+                let vote = data as IVote;
+                return vote.isUpVote;
+            }
+        },
+
+        votes: {
+            type: types.VoteAggregateType,
+            resolve: async ({id}, _, {user}) => {
+                let aggregate = await votesAuthorizer
+                    .as(user)
+                    .getAggregateForParent("CommunityItem", id);
+
+                if (!aggregate || aggregate instanceof (AuthorizationError))
+                    return null;
+
+                return aggregate;
+            }
+        },
+    });
+
+    var CommunityItemInterfaceType = new GraphQLInterfaceType({
+        name: 'CommunityItemInterface',
+
+        fields: communityItemFields,
+
+        resolveType: (communityItem: ICommunityItem) => {
+            switch (communityItem.type) {
+                case 'Review':
+                    return ReviewCommunityItemType;
+
+                case 'General':
+                default:
+                    return GeneralCommunityItemType;
+            }
+        }
+    });
+
+    function  createCommunityItemType(communityItemType: TCommunityItemType, additionalFields: any = null) {
+        return new GraphQLObjectType({
+            name: communityItemType + 'CommunityItem',
+
+            fields: () => {
+                let resolvedAdditionalFields = {};
+
+                if (additionalFields) {
+                    if (typeof additionalFields === 'function'
+                        || additionalFields instanceof Function) {
+
+                        // additionalFields is a thunk
+                        resolvedAdditionalFields = additionalFields();
+
+                    } else {
+
+                        resolvedAdditionalFields = additionalFields;
+                    }
+                }
+
+                return Object.assign(
+                    communityItemFields(),
+                    resolvedAdditionalFields
+                );
+            },
+
+            interfaces: [nodeInterface, CommunityItemInterfaceType]
+        });
+    }
+
+    var GeneralCommunityItemType = createCommunityItemType('General');
+
+    var ReviewCommunityItemType = createCommunityItemType(
+        'Review', getReviewFields(repositoryAuthorizers, types)
+    );
+
+    var CommunityItemConnection = connectionDefinitions({
         name: 'CommunityItem',
-
-        fields: () => ({
-            id: globalIdField('CommunityItem'),
-
-            type: {
-                type: new GraphQLNonNull(GraphQLString)
-            },
-
-            summary: {
-                type: GraphQLString
-            },
-
-            body: {
-                type: GraphQLString
-            },
-
-            bodyData: {
-                type: GraphQLString,
-                resolve: (source) => JSON.stringify(source.bodyData)
-            },
-
-            createdAt: {
-                type: GraphQLString
-            },
-
-            udpdatedAt: {
-                type: GraphQLString
-            },
-
-            user: {
-                type: types.UserInterfaceType,
-                resolve: async (communityItem, _, {user: currentUser}) => {
-                    const user = await usersAuthorizer
-                        .as(currentUser)
-                        .findUserById(communityItem.userId)
-
-                    return user;
-                }
-            },
-
-            commentCount: {
-                type: GraphQLInt,
-                resolve: async (communityItem, _, {user}) => {
-                    const count = await commentsAuthorizer
-                        .as(user)
-                        .getCountForRootParent("CommunityItem", communityItem.id);
-
-                    return count;
-                }
-            },
-
-            comments: {
-                type: new GraphQLList(types.CommentType),
-                resolve: async (communityItem, _, {user}) => {
-
-                    const comments = await communityItemsAuthorizer
-                        .as(user)
-                        .findAllComments(communityItem.id);
-
-                    return comments;
-                }
-            },
-
-            topics: {
-                type: new GraphQLList(types.TopicType),
-                resolve: async (communityItem, _, {user}) => {
-                    const topics = await communityItemsAuthorizer
-                        .as(user)
-                        .findAllTopics(communityItem.id);
-
-                    return topics;
-                }
-            },
-
-            routePath: {
-                type: GraphQLString,
-                resolve: async (communityItem, _, {user}) => {
-                    let route = await vanityRoutePathAuthorizer.as(user).findByRecord(communityItem);
-                    return route.routePath;
-                }
-            },
-
-            currentUserVote: {
-                type: GraphQLBoolean,
-                resolve: async ({id}, __, {user}) => {
-                    if (!user) return null;
-
-                    let data = await votesAuthorizer
-                        .as(user)
-                        .findCurrentUserVoteForParent("CommunityItem", id);
-
-                    if (!data || data instanceof (AuthorizationError))
-                        return null;
-
-                    let vote = data as IVote;
-                    return vote.isUpVote;
-                }
-            },
-
-            votes: {
-                type: types.VoteAggregateType,
-                resolve: async ({id}, _, {user}) => {
-                    let aggregate = await votesAuthorizer
-                        .as(user)
-                        .getAggregateForParent("CommunityItem", id);
-
-                    if (!aggregate || aggregate instanceof (AuthorizationError))
-                        return null;
-
-                    return aggregate;
-                }
-            },
-        }),
-
-        interfaces: [nodeInterface]
+        nodeType: CommunityItemInterfaceType
     });
 
-    const CommunityItemConnection = connectionDefinitions({
-        name: "CommunityItem",
-        nodeType: CommunityItemType
-    });
-
-    const CreateCommunityItemMutation = mutationWithClientMutationId({
+    var CreateCommunityItemMutation = mutationWithClientMutationId({
         name: 'CreateCommunityItem',
 
         inputFields: () => ({
@@ -198,7 +245,7 @@ export default function CommunityItemTypes(repositoryAuthorizers: IAppRepository
         },
     });
 
-    const CreateCommunityItemFromTopicMutation = mutationWithClientMutationId({
+    var CreateCommunityItemFromTopicMutation = mutationWithClientMutationId({
         name: 'CreateCommunityItemFromTopic',
 
         inputFields: () => ({
@@ -211,7 +258,7 @@ export default function CommunityItemTypes(repositoryAuthorizers: IAppRepository
 
         outputFields: () => ({
             communityItem: {
-                type: types.CommunityItemType,
+                type: types.CommunityItemInterfaceType,
                 resolve: ({communityItem}) => {
                     return communityItem;
                 }
@@ -246,11 +293,42 @@ export default function CommunityItemTypes(repositoryAuthorizers: IAppRepository
         },
     });
 
+    return Object.assign({},
+        getReviewMutationTypes(repositoryAuthorizers, types),
 
-    return {
-        CommunityItemType,
-        CommunityItemConnection,
-        CreateCommunityItemMutation,
-        CreateCommunityItemFromTopicMutation
-    };
+        {
+            CommunityItemInterfaceType,
+
+            communityItemTypes: {
+                general: GeneralCommunityItemType,
+                review: ReviewCommunityItemType,
+            },
+
+            CommunityItemConnection,
+
+            CreateCommunityItemMutation,
+            CreateCommunityItemFromTopicMutation,
+        }
+    );
+}
+
+export function communityItemIdResolver(repositoryAuthorizers: IAppRepositoryAuthorizers, type, id, user) {
+    if (type.endsWith('CommunityItem')) {
+        return repositoryAuthorizers.communityItems.as(user).findById(id);
+    }
+}
+
+export function communityItemTypeResolver(types: ITypes, source) {
+    if (!source || source.recordType !== 'CommunityItem') {
+        return null;
+    }
+
+    switch (source.type) {
+        case 'Review':
+            return types.communityItemTypes.review;
+
+        case 'General':
+        default:
+            return types.communityItemTypes.general;
+    }
 }

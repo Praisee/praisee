@@ -21,7 +21,7 @@ class CommunityItem extends Component<any, any> {
 export default Relay.createContainer(CommunityItem, {
     fragments: {
         communityItem: () => Relay.QL`
-            fragment on CommunityItem {
+            fragment on CommunityItemInterface {
                 commentCount
             }
         `
