@@ -6,11 +6,15 @@ import {
 import {
     IVanityRoutePath,
     IVanityRoutePaths,
-    TVanityRoutePathSupportedRecord
+    TVanityRoutePathSupportedRecord,
+    ITopicVanityRoutePath
 } from 'pz-server/src/vanity-route-paths/vanity-route-paths';
+
+import {ITopic} from 'pz-server/src/topics/topics';
 
 export interface IAuthorizedVanityRoutePaths {
     findByRecord(record: TVanityRoutePathSupportedRecord): Promise<IVanityRoutePath>;
+    findByTopic(record: ITopic): Promise<ITopicVanityRoutePath>
 }
 
 class AuthorizedVanityRoutePaths implements IAuthorizedVanityRoutePaths {
@@ -24,6 +28,10 @@ class AuthorizedVanityRoutePaths implements IAuthorizedVanityRoutePaths {
 
     findByRecord(record: TVanityRoutePathSupportedRecord): Promise<IVanityRoutePath> {
         return this._vanityRoutePaths.findByRecord(record);
+    }
+
+    findByTopic(record: ITopic): Promise<ITopicVanityRoutePath> {
+        return this._vanityRoutePaths.findByTopic(record);
     }
 }
 

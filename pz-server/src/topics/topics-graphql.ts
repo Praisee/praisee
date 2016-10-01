@@ -1,6 +1,29 @@
 import {IAppRepositoryAuthorizers} from 'pz-server/src/app/repositories';
-import * as graphqlRelay from 'graphql-relay';
-import * as graphql from 'graphql';
+
+import {
+    GraphQLBoolean,
+    GraphQLID,
+    GraphQLInt,
+    GraphQLList,
+    GraphQLNonNull,
+    GraphQLObjectType,
+    GraphQLInputObjectType,
+    GraphQLSchema,
+    GraphQLString,
+    GraphQLUnionType
+} from 'graphql';
+
+import {
+    connectionDefinitions,
+    fromGlobalId,
+    nodeDefinitions,
+    connectionArgs,
+    globalId,
+    connectionFromArray,
+    connectionFromPromisedArray,
+    globalIdField,
+    mutationWithClientMutationId
+} from 'graphql-relay';
 
 import {
     biCursorFromGraphqlArgs,
@@ -16,30 +39,8 @@ import {
 
 import {mapCursorResultItems} from 'pz-server/src/support/cursors/map-cursor-results';
 
-var {
-    GraphQLBoolean,
-    GraphQLID,
-    GraphQLInt,
-    GraphQLList,
-    GraphQLNonNull,
-    GraphQLObjectType,
-    GraphQLInputObjectType,
-    GraphQLSchema,
-    GraphQLString,
-    GraphQLUnionType
-} = graphql;
-
-var {
-    connectionDefinitions,
-    fromGlobalId,
-    nodeDefinitions,
-    connectionArgs,
-    globalId,
-    connectionFromArray,
-    connectionFromPromisedArray,
-    globalIdField,
-    mutationWithClientMutationId
-} = graphqlRelay;
+import {IAuthorizedVanityRoutePaths} from '../vanity-route-paths/vanity-route-paths-authorizer';
+import {IAuthorizer} from 'pz-server/src/support/authorization';
 
 export default function topicTypes(repositoryAuthorizers: IAppRepositoryAuthorizers, nodeInterface, types: ITypes) {
     const topicsAuthorizer = repositoryAuthorizers.topics;
@@ -60,7 +61,7 @@ export default function topicTypes(repositoryAuthorizers: IAppRepositoryAuthoriz
                 },
 
                 name: {
-                    type: GraphQLString
+                    type: new GraphQLNonNull(GraphQLString)
                 },
 
                 description: {
@@ -86,7 +87,7 @@ export default function topicTypes(repositoryAuthorizers: IAppRepositoryAuthoriz
                 },
 
                 isVerified: {
-                    type: GraphQLBoolean
+                    type: new GraphQLNonNull(GraphQLBoolean)
                 },
 
                 attributes: {
@@ -113,7 +114,7 @@ export default function topicTypes(repositoryAuthorizers: IAppRepositoryAuthoriz
                 },
 
                 communityItemCount: {
-                    type: GraphQLInt,
+                    type: new GraphQLNonNull(GraphQLInt),
                     resolve: async (topic, args, {user}) => {
                         const count = await topicsAuthorizer
                             .as(user)
@@ -123,13 +124,11 @@ export default function topicTypes(repositoryAuthorizers: IAppRepositoryAuthoriz
                     }
                 },
 
-                routePath: {
-                    type: GraphQLString,
-                    resolve: async (topic, _, {user}) => {
-                        let route = await vanityRoutePathAuthorizer.as(user).findByRecord(topic);
-                        return route.routePath;
-                    }
-                },
+                routePath: createRoutePathType(vanityRoutePathAuthorizer),
+                reviewsRoutePath: createRoutePathType(vanityRoutePathAuthorizer, 'reviewsRoutePath'),
+                questionsRoutePath: createRoutePathType(vanityRoutePathAuthorizer, 'questionsRoutePath'),
+                guidesRoutePath: createRoutePathType(vanityRoutePathAuthorizer, 'guidesRoutePath'),
+                comparisonsRoutePath: createRoutePathType(vanityRoutePathAuthorizer, 'comparisonsRoutePath'),
 
                 photoGallery: {
                     type: TopicPhotoGalleryPhotoConnection.connectionType,
@@ -220,4 +219,18 @@ export default function topicTypes(repositoryAuthorizers: IAppRepositoryAuthoriz
         TopicThumbnailPhotoType,
         TopicPhotoGalleryPhotoType
     };
+}
+
+function createRoutePathType(
+        vanityRoutePathAuthorizer: IAuthorizer<IAuthorizedVanityRoutePaths>,
+        routePathType: string = 'routePath'
+    ) {
+
+    return {
+        type: new GraphQLNonNull(GraphQLString),
+        resolve: async (topic, _, {user}) => {
+            const route = await vanityRoutePathAuthorizer.as(user).findByTopic(topic);
+            return route[routePathType];
+        }
+    }
 }

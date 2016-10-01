@@ -253,7 +253,7 @@ export default class SearchUpdater {
         switch (urlSlug.sluggableType) {
             case 'Topic':
                 path = pathFromType('topic');
-                routePath = routePaths.topic(urlSlug.fullSlug);
+                routePath = routePaths.topic.index(urlSlug.fullSlug);
                 break;
 
             case 'CommunityItem':

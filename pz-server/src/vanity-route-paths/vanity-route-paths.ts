@@ -30,10 +30,20 @@ export var isCommunityItemRecord = (record: TVanityRoutePathSupportedRecord): re
 export interface IVanityRoutePaths extends IRepository {
     findAllTuplesByRecords(records: Array<TVanityRoutePathSupportedRecord>): Promise<RecordRoutePathTuples>
     findByRecord(record: TVanityRoutePathSupportedRecord): Promise<IVanityRoutePath>
+    findByTopic(record: ITopic): Promise<ITopicVanityRoutePath>
 }
 
 export interface IVanityRoutePath extends IRepositoryRecord {
+    recordType: 'VanityRoutePath'
     routePath: string
+}
+
+export interface ITopicVanityRoutePath extends IVanityRoutePath {
+    routePath: string
+    reviewsRoutePath: string
+    questionsRoutePath: string
+    guidesRoutePath: string
+    comparisonsRoutePath: string
 }
 
 export type RecordVanityRoutePathTuple = [TVanityRoutePathSupportedRecord, IVanityRoutePath];
@@ -55,38 +65,53 @@ export default class VanityRoutePaths implements IVanityRoutePaths {
             return null;
         }
 
-        const tuple = recordToUrlSlugTuples[0];
+        const [, urlSlug] = recordToUrlSlugTuples[0];
 
-        const routePath = createRecord<IVanityRoutePath>('RoutePath', {
-            //TODO: Maybe move from tuple to interface to avoid [0]/[1] code
-            routePath: this._resolveRoutePath(tuple[0], tuple[1])
-        });
+        return this._resolveRoutePath(record, urlSlug);
+    }
 
-        return routePath;
+    async findByTopic(topic: ITopic): Promise<ITopicVanityRoutePath> {
+        return await this.findByRecord(topic) as ITopicVanityRoutePath;
     }
 
     async findAllTuplesByRecords(records: Array<TVanityRoutePathSupportedRecord>): Promise<RecordRoutePathTuples> {
         const recordToUrlSlugTuples = await this._getRecordToUrlSlugTuples(records);
 
         return recordToUrlSlugTuples.map<RecordVanityRoutePathTuple>(([record, urlSlug]) => {
-            const routePath = createRecord<IVanityRoutePath>('RoutePath', {
-                routePath: this._resolveRoutePath(record, urlSlug)
-            });
-
-            return [record, routePath];
+            return [record, this._resolveRoutePath(record, urlSlug)];
         });
     }
 
-    private _resolveRoutePath(record: TVanityRoutePathSupportedRecord, urlSlug?: IUrlSlug): string {
+    private _resolveRoutePath(record: TVanityRoutePathSupportedRecord, urlSlug?: IUrlSlug): IVanityRoutePath {
         const urlSlugOrId = urlSlug ? urlSlug.fullSlug : record.id;
+
         if (isTopicRecord(record)) {
-            return routePaths.topic(urlSlugOrId);
+            const vanityRoutePath: ITopicVanityRoutePath = {
+                recordType: 'VanityRoutePath',
+                routePath: routePaths.topic.index(urlSlugOrId),
+                reviewsRoutePath: routePaths.topic.reviews(urlSlugOrId),
+                questionsRoutePath: routePaths.topic.questions(urlSlugOrId),
+                guidesRoutePath: routePaths.topic.guides(urlSlugOrId),
+                comparisonsRoutePath: routePaths.topic.comparisons(urlSlugOrId),
+            };
+
+            return vanityRoutePath;
 
         } else if (isUserRecord(record)) {
-            return routePaths.user.profile(urlSlugOrId);
+            const vanityRoutePath: IVanityRoutePath = {
+                recordType: 'VanityRoutePath',
+                routePath: routePaths.user.profile(urlSlugOrId)
+            };
+
+            return vanityRoutePath;
 
         } else if (isCommunityItemRecord(record)) {
-            return routePaths.communityItem(urlSlugOrId);
+            const vanityRoutePath: IVanityRoutePath = {
+                recordType: 'VanityRoutePath',
+                routePath: routePaths.communityItem(urlSlugOrId)
+            };
+
+            return vanityRoutePath;
 
         } else {
 
