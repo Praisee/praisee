@@ -24,12 +24,23 @@ import {
 } from 'graphql-relay';
 
 import {IAppRepositoryAuthorizers} from 'pz-server/src/app/repositories';
-import {AuthorizationError} from 'pz-server/src/support/authorization';
+import {
+    AuthorizationError,
+    NotAuthenticatedError
+} from 'pz-server/src/support/authorization';
 import {ITypes} from 'pz-server/src/graphql/types';
 import {IVote} from 'pz-server/src/votes/votes';
 import {parseInputContentData} from 'pz-server/src/content/input-content-data';
-import {getReviewFields, getReviewMutationTypes} from './reviews/reviews-graphql';
-import {TCommunityItemType, ICommunityItem} from './community-items';
+import {getReviewFields, getReviewMutationTypes} from 'pz-server/src/community-items/reviews/reviews-graphql';
+
+import {
+    TCommunityItemType,
+    ICommunityItem,
+    ICommunityItemInteraction
+} from 'pz-server/src/community-items/community-items';
+
+import {getViewerField} from 'pz-server/src/graphql/viewer-graphql';
+import {addErrorToResponse} from 'pz-server/src/errors/errors-graphql';
 
 export default function getCommunityItemTypes(repositoryAuthorizers: IAppRepositoryAuthorizers, nodeInterface, types: ITypes) {
     const communityItemsAuthorizer = repositoryAuthorizers.communityItems;
@@ -71,7 +82,7 @@ export default function getCommunityItemTypes(repositoryAuthorizers: IAppReposit
             resolve: async (communityItem, _, {user: currentUser}) => {
                 const user = await usersAuthorizer
                     .as(currentUser)
-                    .findUserById(communityItem.userId)
+                    .findUserById(communityItem.userId);
 
                 return user;
             }
@@ -122,14 +133,17 @@ export default function getCommunityItemTypes(repositoryAuthorizers: IAppReposit
         currentUserVote: {
             type: GraphQLBoolean,
             resolve: async ({id}, __, {user}) => {
-                if (!user) return null;
+                if (!user) {
+                    return null;
+                }
 
                 let data = await votesAuthorizer
                     .as(user)
                     .findCurrentUserVoteForParent("CommunityItem", id);
 
-                if (!data || data instanceof (AuthorizationError))
+                if (!data || data instanceof (AuthorizationError)) {
                     return null;
+                }
 
                 let vote = data as IVote;
                 return vote.isUpVote;
@@ -147,6 +161,26 @@ export default function getCommunityItemTypes(repositoryAuthorizers: IAppReposit
                     return null;
 
                 return aggregate;
+            }
+        },
+
+        currentUserHasMarkedRead: {
+            type: new GraphQLNonNull(GraphQLBoolean),
+
+            resolve: async ({id}, __, {user}) => {
+                if (!user) {
+                    return false;
+                }
+
+                let result = await communityItemsAuthorizer
+                    .as(user)
+                    .findInteraction(id);
+
+                if (!result) {
+                    return false;
+                }
+
+                return result.hasMarkedRead;
             }
         },
     });
@@ -220,11 +254,7 @@ export default function getCommunityItemTypes(repositoryAuthorizers: IAppReposit
         }),
 
         outputFields: () => ({
-
-            viewer: {
-                type: types.ViewerType,
-                resolve: () => ({ id: 'viewer' })
-            }
+            viewer: getViewerField(types)
         }),
 
         mutateAndGetPayload: async ({type, summary, body, bodyData}, context) => {
@@ -267,10 +297,7 @@ export default function getCommunityItemTypes(repositoryAuthorizers: IAppReposit
                 type: types.TopicType,
                 resolve: () => ({ id: 'topic' })
             },
-            viewer: {
-                type: types.ViewerType,
-                resolve: () => ({ id: 'viewer' })
-            }
+            viewer: getViewerField(types)
         }),
 
         mutateAndGetPayload: async ({type, summary, body, bodyData, topicId}, context) => {
@@ -293,6 +320,47 @@ export default function getCommunityItemTypes(repositoryAuthorizers: IAppReposit
         },
     });
 
+    var UpdateCommunityItemInteractionMutation = mutationWithClientMutationId({
+        name: 'UpdateCommunityItemInteraction',
+
+        inputFields: () => ({
+            communityItemId: { type: new GraphQLNonNull(GraphQLID) },
+            hasMarkedRead: { type: GraphQLBoolean }
+        }),
+
+        outputFields: () => ({
+            viewer: getViewerField(types)
+        }),
+
+        mutateAndGetPayload: async (input, {user, responseErrors}) => {
+            // For now, this is only marking things as read
+
+            const {hasMarkedRead} = input;
+
+            if (hasMarkedRead !== true && hasMarkedRead !== false) {
+                return {};
+            }
+
+            const {id: communityItemId} = fromGlobalId(input.communityItemId);
+
+            const interaction: ICommunityItemInteraction = {
+                recordType: 'CommunityItemInteraction',
+                communityItemId,
+                hasMarkedRead
+            };
+
+            const result = await communityItemsAuthorizer
+                .as(user)
+                .updateInteraction(interaction);
+
+            if (result instanceof NotAuthenticatedError) {
+                addErrorToResponse(responseErrors, 'NotAuthenticated', result);
+            }
+
+            return {communityItemInteraction: result};
+        }
+    });
+
     return Object.assign({},
         getReviewMutationTypes(repositoryAuthorizers, types),
 
@@ -308,6 +376,7 @@ export default function getCommunityItemTypes(repositoryAuthorizers: IAppReposit
 
             CreateCommunityItemMutation,
             CreateCommunityItemFromTopicMutation,
+            UpdateCommunityItemInteractionMutation
         }
     );
 }

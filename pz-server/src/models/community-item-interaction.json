@@ -1,0 +1,55 @@
+{
+    "name": "CommunityItemInteraction",
+    "base": "PersistedModel",
+    "strict": true,
+    "idInjection": true,
+    "options": {
+        "validateUpsert": true
+    },
+    "mixins": {
+        "TimeStamp": true
+    },
+    "properties": {
+        "hasMarkedRead": {
+            "type": "boolean",
+            "required": false,
+            "default": false,
+            "description": "Whether or not user has marked the community item as read",
+            "index": true
+        },
+
+        "createdAt": {
+            "type": "date"
+        },
+
+        "updatedAt": {
+            "type": "date"
+        }
+    },
+    "validations": [],
+    "relations": {
+        "communityItem": {
+            "type": "belongsTo",
+            "model": "CommunityItem"
+        },
+
+        "user": {
+            "type": "belongsTo",
+            "model": "PraiseeUser",
+            "foreignKey": "userId"
+        }
+    },
+    "indexes": {
+        "communityItemInteraction_unique_pair": {
+            "keys": {
+                "communityItemId": 1,
+                "userId": 1
+            },
+            "options": {
+                "unique": true
+            }
+        }
+    },
+    "acls": [],
+    "methods": {}
+}

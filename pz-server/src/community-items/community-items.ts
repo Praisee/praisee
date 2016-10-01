@@ -33,6 +33,16 @@ export interface ICommunityItem extends IRepositoryRecord {
     topics?: ITopic[]
 }
 
+export interface ICommunityItemInteraction extends IRepositoryRecord {
+    recordType: 'CommunityItemInteraction'
+
+    communityItemId?: number
+    userId?: number
+    hasMarkedRead?: boolean
+    createdAt?: Date
+    updatedAt?: Date
+}
+
 export interface ICommunityItems extends IRepository {
     findById(id: number): Promise<ICommunityItem>
     findAllByIds(ids: Array<number>): Promise<Array<ICommunityItem>>
@@ -41,11 +51,14 @@ export interface ICommunityItems extends IRepository {
     findAllComments(communityItemId: number): Promise<Array<IComment>>
     findVotesForCommunityItem(communityItemId: number): Promise<Array<IVote>>
     findByUrlSlugName(fullSlug: string): Promise<ICommunityItem>
+    findInteraction(communityItemId: number, userId: number): Promise<ICommunityItemInteraction>
     isOwner(userId: number, communityItemId: number): Promise<boolean>
     create(communityItem: ICommunityItem, ownerId: number): Promise<ICommunityItem>
     update(communityItem: ICommunityItem): Promise<ICommunityItem>
+    updateInteraction(interaction: ICommunityItemInteraction): Promise<ICommunityItemInteraction>
 }
 
 export interface ICommunityItemsBatchable {
     findAllByIds(ids: Array<number>): Promise<Array<ICommunityItem>>
+    findAllInteractionsForEach(communityItemUserIds: Array<[number, number]>): Promise<Array<ICommunityItemInteraction>>
 }

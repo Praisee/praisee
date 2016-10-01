@@ -9,7 +9,11 @@ import {
 import {ITopic} from 'pz-server/src/topics/topics';
 import {IVote} from 'pz-server/src/votes/votes';
 
-import {ICommunityItems, ICommunityItem} from 'pz-server/src/community-items/community-items';
+import {
+    ICommunityItems,
+    ICommunityItem,
+    ICommunityItemInteraction
+} from 'pz-server/src/community-items/community-items';
 import {TBiCursor, ICursorResults} from 'pz-server/src/support/cursors/cursors';
 import {IComment} from 'pz-server/src/comments/comments';
 
@@ -20,8 +24,10 @@ export interface IAuthorizedCommunityItems {
     findAllTopics(communityItemId: number): Promise<Array<ITopic>>
     findVotesForCommunityItem(communityItemId: number): Promise<Array<IVote>>
     findByUrlSlugName(fullSlug: string): Promise<ICommunityItem>
+    findInteraction(communityItemId: number): Promise<ICommunityItemInteraction>
     create(communityItem: ICommunityItem): Promise<ICommunityItem | AuthorizationError>
     update(communityItem: ICommunityItem): Promise<ICommunityItem | AuthorizationError>
+    updateInteraction(interaction: ICommunityItemInteraction): Promise<ICommunityItemInteraction | NotAuthenticatedError>
 }
 
 class AuthorizedCommunityItems implements IAuthorizedCommunityItems {
@@ -61,6 +67,14 @@ class AuthorizedCommunityItems implements IAuthorizedCommunityItems {
         return await this._communityItems.findByUrlSlugName(fullSlug);
     }
 
+    async findInteraction(communityItemId: number): Promise<ICommunityItemInteraction> {
+        if (!this._user) {
+            return null;
+        }
+
+        return this._communityItems.findInteraction(communityItemId, this._user.id);
+    }
+
     async create(communityItem): Promise<ICommunityItem | AuthorizationError> {
         if (!this._user) {
             return new NotAuthenticatedError();
@@ -81,6 +95,16 @@ class AuthorizedCommunityItems implements IAuthorizedCommunityItems {
         }
 
         return await this._communityItems.update(communityItem);
+    }
+
+    async updateInteraction(interaction: ICommunityItemInteraction): Promise<ICommunityItemInteraction | NotAuthenticatedError> {
+        if (!this._user) {
+            return new NotAuthenticatedError();
+        }
+
+        return this._communityItems.updateInteraction(Object.assign({}, interaction, {
+            userId: this._user.id,
+        }));
     }
 }
 

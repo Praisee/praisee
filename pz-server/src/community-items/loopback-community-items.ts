@@ -3,7 +3,10 @@ import {IUrlSlugInstance} from 'pz-server/src/url-slugs/models/url-slug';
 
 import promisify from 'pz-support/src/promisify';
 import isOwnerOfModel from 'pz-server/src/support/is-owner-of-model';
-import {ICommunityItem, ICommunityItems} from 'pz-server/src/community-items/community-items';
+import {
+    ICommunityItem, ICommunityItems,
+    ICommunityItemInteraction, ICommunityItemsBatchable
+} from 'pz-server/src/community-items/community-items';
 import {ITopicInstance} from 'pz-server/src/models/topic';
 import {ITopic} from 'pz-server/src/topics/topics';
 import {IComment} from 'pz-server/src/comments/comments';
@@ -15,7 +18,14 @@ import {ICursorResults, TBiCursor} from 'pz-server/src/support/cursors/cursors';
 
 import {findWithCursor} from 'pz-server/src/support/cursors/loopback-helpers';
 import {cursorLoopbackModelsToRecords} from 'pz-server/src/support/cursors/repository-helpers';
-import {loopbackFindAllByIds} from 'pz-server/src/support/loopback-find-all-helpers';
+import {
+    loopbackFindAllByIds,
+    loopbackFindAllForEach
+} from 'pz-server/src/support/loopback-find-all-helpers';
+import {
+    ICommunityItemInteractionModel,
+    ICommunityItemInteractionInstance
+} from 'pz-server/src/models/community-item-interaction';
 
 export function createRecordFromLoopbackCommunityItem(communityItem: ICommunityItemInstance): ICommunityItem {
     return createRecordFromLoopback<ICommunityItem>('CommunityItem', communityItem);
@@ -25,12 +35,23 @@ export function cursorCommunityItemLoopbackModelsToRecords(communityItems: ICurs
     return cursorLoopbackModelsToRecords<ICommunityItem>('CommunityItem', communityItems);
 }
 
-export default class CommunityItems implements ICommunityItems {
+export function createRecordFromLoopbackCommunityItemInteraction(communityItemInteraction: ICommunityItemInteractionInstance): ICommunityItemInteraction {
+    return createRecordFromLoopback<ICommunityItemInteraction>('CommunityItemInteraction', communityItemInteraction);
+}
+
+export default class CommunityItems implements ICommunityItems, ICommunityItemsBatchable {
     private _CommunityItemModel: ICommunityItemModel;
+    private _CommunityItemInteractionModel: ICommunityItemInteractionModel;
     private _UrlSlugsModel: IPersistedModel;
 
-    constructor(CommunityItemModel: ICommunityItemModel, UrlSlug: IPersistedModel) {
+    constructor(
+            CommunityItemModel: ICommunityItemModel,
+            CommunityItemInteractionModel: ICommunityItemInteractionModel,
+            UrlSlug: IPersistedModel
+        ) {
+
         this._CommunityItemModel = CommunityItemModel;
+        this._CommunityItemInteractionModel = CommunityItemInteractionModel;
         this._UrlSlugsModel = UrlSlug;
     }
 
@@ -130,6 +151,39 @@ export default class CommunityItems implements ICommunityItems {
         return createRecordFromLoopbackCommunityItem(result);
     }
 
+    async findInteraction(communityItemId: number, userId: number): Promise<ICommunityItemInteraction> {
+        const interactionFinder = await promisify<ICommunityItemInteractionInstance>(
+            this._CommunityItemInteractionModel.findOne, this._CommunityItemInteractionModel);
+
+        let interactionModel = await interactionFinder({where: {
+            communityItemId: communityItemId,
+            userId: userId
+        }});
+
+        if (!interactionModel) {
+            return null;
+        }
+
+        return createRecordFromLoopbackCommunityItemInteraction(interactionModel);
+    }
+
+    async findAllInteractionsForEach(communityItemUserIds: Array<[number, number]>): Promise<Array<ICommunityItemInteraction>> {
+        const interactionModels = await loopbackFindAllForEach<ICommunityItemInteractionModel, ICommunityItemInteractionInstance>
+        (
+            this._CommunityItemInteractionModel,
+            ['communityItemId', 'userId'],
+            communityItemUserIds
+        );
+
+        return interactionModels.map(interactionModel => {
+            if (!interactionModel) {
+                return null;
+            }
+
+            return createRecordFromLoopbackCommunityItemInteraction(interactionModel);
+        });
+    }
+
     async create(communityItem: ICommunityItem, ownerId: number): Promise<ICommunityItem> {
         let communityItemModel = new this._CommunityItemModel({
             type: communityItem.type,
@@ -171,6 +225,34 @@ export default class CommunityItems implements ICommunityItems {
 
         const result = await promisify(communityItemModel.save, communityItemModel)();
         return createRecordFromLoopbackCommunityItem(result);
+    }
+
+    async updateInteraction(interaction: ICommunityItemInteraction): Promise<ICommunityItemInteraction> {
+        if (!interaction.communityItemId || !interaction.userId) {
+            throw new Error('Cannot update interaction without a community item and user id');
+        }
+
+        const interactionFinder = await promisify<ICommunityItemInteractionInstance>(
+            this._CommunityItemInteractionModel.findOne, this._CommunityItemInteractionModel);
+
+        let interactionModel = await interactionFinder({where: {
+            communityItemId: interaction.communityItemId,
+            userId: interaction.userId
+        }});
+
+        if (!interactionModel) {
+            interactionModel = new this._CommunityItemInteractionModel({
+                communityItemId: interaction.communityItemId,
+                userId: interaction.userId
+            }) as ICommunityItemInteractionInstance;
+        }
+
+        if (interaction.hasOwnProperty('hasMarkedRead')) {
+            interactionModel.hasMarkedRead = interaction.hasMarkedRead;
+        }
+
+        const result = await promisify(interactionModel.save, interactionModel)();
+        return createRecordFromLoopbackCommunityItemInteraction(result);
     }
 }
 

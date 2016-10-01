@@ -1,7 +1,7 @@
 import {
     ICommunityItems,
     ICommunityItem,
-    ICommunityItemsBatchable
+    ICommunityItemsBatchable, ICommunityItemInteraction
 } from 'pz-server/src/community-items/community-items';
 
 import {TBiCursor, ICursorResults} from 'pz-server/src/support/cursors/cursors';
@@ -17,14 +17,19 @@ export default class CommunityItemsLoader implements ICommunityItems {
 
     private _loaders: {
         findAllByIds: DataLoader<number, ICommunityItem>
+        findAllInteractionsForEach: DataLoader<[number, number], ICommunityItemInteraction>
     };
 
-    constructor(communityItems: ICommunityItems) {
+    constructor(communityItems: ICommunityItems & ICommunityItemsBatchable) {
         this._communityItems = communityItems;
 
         this._loaders = {
             findAllByIds: createDataLoaderBatcher<number, ICommunityItem>(
                 this._communityItems.findAllByIds.bind(this._communityItems)
+            ),
+
+            findAllInteractionsForEach: createDataLoaderBatcher<[number, number], ICommunityItemInteraction>(
+                this._communityItems.findAllInteractionsForEach.bind(this._communityItems)
             )
         }
     }
@@ -57,6 +62,10 @@ export default class CommunityItemsLoader implements ICommunityItems {
         return this._communityItems.findByUrlSlugName(fullSlug);
     }
 
+    findInteraction(communityItemId: number, userId: number): Promise<ICommunityItemInteraction> {
+        return this._loaders.findAllInteractionsForEach.load([communityItemId, userId]);
+    }
+
     isOwner(userId: number, communityItemId: number): Promise<boolean> {
         return this._communityItems.isOwner(userId, communityItemId);
     }
@@ -67,5 +76,9 @@ export default class CommunityItemsLoader implements ICommunityItems {
 
     update(communityItem: ICommunityItem): Promise<ICommunityItem> {
         return this._communityItems.update(communityItem);
+    }
+
+    updateInteraction(interaction: ICommunityItemInteraction): Promise<ICommunityItemInteraction> {
+        return this._communityItems.updateInteraction(interaction);
     }
 }

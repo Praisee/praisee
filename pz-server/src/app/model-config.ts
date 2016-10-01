@@ -65,6 +65,10 @@ export default {
         'dataSource': 'vagrant-postgres',
         'public': true,
     },
+    'CommunityItemInteraction': {
+        'dataSource': 'vagrant-postgres',
+        'public': true,
+    },
     'Comment': {
         'dataSource': 'vagrant-postgres',
         'public': true,

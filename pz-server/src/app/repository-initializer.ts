@@ -86,7 +86,9 @@ module.exports = function initializeRepositories(app: IApp) {
     const votesAuthorizer = new VotesAuthorizer(votes);
 
     const communityItems = new CommunityItemsLoader(new CommunityItems(
-        app.models.CommunityItem, app.models.UrlSlug
+        app.models.CommunityItem,
+        app.models.CommunityItemInteraction,
+        app.models.UrlSlug
     ));
 
     const contentFilterer = new ContentFilterer(

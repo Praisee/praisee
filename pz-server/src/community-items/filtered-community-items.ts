@@ -1,4 +1,7 @@
-import {ICommunityItems, ICommunityItem} from 'pz-server/src/community-items/community-items';
+import {
+    ICommunityItems, ICommunityItem,
+    ICommunityItemInteraction
+} from 'pz-server/src/community-items/community-items';
 import {
     IDataToTextConverter,
     IContentData,
@@ -78,6 +81,10 @@ export default class FilteredCommunityItems implements ICommunityItems {
         return await this._communityItems.findByUrlSlugName(fullSlug);
     }
 
+    findInteraction(communityItemId: number, userId: number): Promise<ICommunityItemInteraction> {
+        return this._communityItems.findInteraction(communityItemId, userId);
+    }
+
     async create(communityItem: ICommunityItem, ownerId: number): Promise<ICommunityItem> {
         let filteredBodyData = await this._contentFilterer.filterBeforeWrite(
             communityItem.bodyData
@@ -151,7 +158,11 @@ export default class FilteredCommunityItems implements ICommunityItems {
         return await this._filterBeforeRead(updatedCommunityItem);
     }
 
-    async _filterBeforeRead(communityItem: ICommunityItem): Promise<ICommunityItem> {
+    updateInteraction(interaction: ICommunityItemInteraction): Promise<ICommunityItemInteraction> {
+        return this._communityItems.updateInteraction(interaction);
+    }
+
+    private async _filterBeforeRead(communityItem: ICommunityItem): Promise<ICommunityItem> {
         const filteredBodyData = await this._contentFilterer.filterBeforeRead(
             communityItem.bodyData
         );
@@ -161,14 +172,14 @@ export default class FilteredCommunityItems implements ICommunityItems {
         });
     }
 
-    _filterBeforeWrite(communityItem: ICommunityItem, filteredBodyData: IContentData): ICommunityItem {
+    private _filterBeforeWrite(communityItem: ICommunityItem, filteredBodyData: IContentData): ICommunityItem {
         return Object.assign({}, communityItem, {
             body: this._convertBodyDataToText(filteredBodyData),
             bodyData: filteredBodyData
         });
     }
 
-    async _extractAndCleanPhotoData(bodyData: IDraftjs08Content, ownerId: number, communityItemId: number = null):
+    private async _extractAndCleanPhotoData(bodyData: IDraftjs08Content, ownerId: number, communityItemId: number = null):
         Promise<{bodyData: IDraftjs08Content, contentPhotosMap: Map<number, IPhoto>}> {
 
         const contentPhotosMap = new Map<number, IPhoto>();
@@ -210,7 +221,7 @@ export default class FilteredCommunityItems implements ICommunityItems {
         return {bodyData: filteredBodyData, contentPhotosMap};
     }
 
-    async _getAddedAndRemovedPhotos(communityItemId: number, contentPhotosMap: Map<number, IPhoto>):
+    private async _getAddedAndRemovedPhotos(communityItemId: number, contentPhotosMap: Map<number, IPhoto>):
         Promise<{addedPhotos: Array<IPhoto>, removedPhotos: Array<IPhoto>}> {
 
         const priorPhotos = await this._photos.findAllByParentAndPurposeType(
@@ -245,7 +256,7 @@ export default class FilteredCommunityItems implements ICommunityItems {
         return {addedPhotos, removedPhotos};
     }
 
-    async _updateLinkedPhotos(communityItemId: number, addedPhotos: Array<IPhoto>): Promise<void> {
+    private async _updateLinkedPhotos(communityItemId: number, addedPhotos: Array<IPhoto>): Promise<void> {
         const updatePhotoPromises = addedPhotos.map(addedPhoto =>
             this._photos.update(Object.assign({}, addedPhoto, {
                 parentType: 'CommunityItem',
@@ -256,7 +267,7 @@ export default class FilteredCommunityItems implements ICommunityItems {
         await Promise.all(updatePhotoPromises);
     }
 
-    async _destroyUnlinkedPhotos(removedPhotos: Array<IPhoto>): Promise<void> {
+    private async _destroyUnlinkedPhotos(removedPhotos: Array<IPhoto>): Promise<void> {
         const destroyPhotoPromises = removedPhotos.map(removedPhoto =>
             this._photos.destroy(removedPhoto.id)
         );

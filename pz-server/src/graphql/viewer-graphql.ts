@@ -10,6 +10,8 @@ import {
     biCursorFromGraphqlArgs
 } from 'pz-server/src/graphql/cursor-helpers';
 
+import {ITypes} from 'pz-server/src/graphql/types';
+
 var {
     GraphQLBoolean,
     GraphQLID,
@@ -34,7 +36,7 @@ var {
     mutationWithClientMutationId
 } = graphqlRelay;
 
-export default function CommentTypes(repositoryAuthorizers: IAppRepositoryAuthorizers, nodeInterface, types) {
+export default function getViewerType(repositoryAuthorizers: IAppRepositoryAuthorizers, nodeInterface, types) {
     const commentsAuthorizer = repositoryAuthorizers.comments;
     const topicsAuthorizer = repositoryAuthorizers.topics;
     const communityItemsAuthorizer = repositoryAuthorizers.communityItems;
@@ -78,4 +80,11 @@ export default function CommentTypes(repositoryAuthorizers: IAppRepositoryAuthor
     return {
         ViewerType
     };
+}
+
+export function getViewerField(types: ITypes) {
+    return {
+        type: new GraphQLNonNull(types.ViewerType),
+        resolve: () => ({ id: 'viewer' })
+    }
 }

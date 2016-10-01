@@ -16,6 +16,8 @@ import classNames from 'classnames';
 import ContentTruncator from 'pz-client/src/widgets/content-truncator-component';
 import handleClick from 'pz-client/src/support/handle-click';
 import CommunityItemSchema from 'pz-client/src/community-item/widgets/community-item-schema-component';
+import UpdateCommunityItemInteractionMutation from 'pz-client/src/community-item/update-community-item-interaction-mutation';
+import CurrentUserType from 'pz-client/src/user/current-user-type';
 
 interface ICommunityItemProps {
     isMinimized: boolean;
@@ -31,6 +33,7 @@ interface ICommunityItemProps {
         comments: any
         topics: Array<{ id: string, name: string, routePath: string }>
         routePath: string
+        currentUserHasMarkedRead
     }
 
     body: string;
@@ -46,17 +49,19 @@ interface ICommuintyItemState {
 class CommunityItem extends Component<ICommunityItemProps, ICommuintyItemState> {
     static contextTypes: any = {
         appViewerId: React.PropTypes.string.isRequired,
-        signInUpContext: SignInUpContextType
+        signInUpContext: SignInUpContextType,
+        currentUser: CurrentUserType
     };
 
     context: {
-        appViewerId: number,
+        appViewerId: number
         signInUpContext: ISignInUpContext
+        currentUser: any
     };
 
     state = {
         isEditingComment: false,
-        isMinimized: this.props.isMinimized
+        isMinimized: this.props.communityItem.currentUserHasMarkedRead
     };
 
     render() {
@@ -206,9 +211,18 @@ class CommunityItem extends Component<ICommunityItemProps, ICommuintyItemState> 
             )
     }
 
-    private _toggleMinimized(e) {
-        e.preventDefault();
-        this.setState({ isMinimized: !this.state.isMinimized });
+    private _toggleMinimized() {
+        const isMinimized = !this.state.isMinimized;
+
+        if (this.context.currentUser) {
+            this.props.relay.commitUpdate(new UpdateCommunityItemInteractionMutation({
+                appViewerId: this.context.appViewerId,
+                communityItem: this.props.communityItem,
+                hasMarkedRead: isMinimized
+            }));
+        }
+
+        this.setState({ isMinimized });
     }
 
     private _toggleComments() {
@@ -243,6 +257,7 @@ export default Relay.createContainer(CommunityItem, {
                     routePath
                 }
                 routePath
+                currentUserHasMarkedRead
                 
                 ... on ReviewCommunityItem {
                     reviewedTopic {
@@ -260,6 +275,7 @@ export default Relay.createContainer(CommunityItem, {
                 ${CommentBubble.getFragment('communityItem')}
                 ${CommunityItemTypeHeader.getFragment('communityItem')}
                 ${CommunityItemSchema.getFragment('communityItem')}
+                ${UpdateCommunityItemInteractionMutation.getFragment('communityItem')}
             }
         `
     }
