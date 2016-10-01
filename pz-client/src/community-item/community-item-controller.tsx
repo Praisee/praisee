@@ -9,7 +9,7 @@ import Tags from 'pz-client/src/community-item/tags-component';
 import { CreateCommentEditor } from 'pz-client/src/comments/comment-editor-component';
 import { ISignInUpContext, SignInUpContextType } from 'pz-client/src/user/sign-in-up-overlay-component';
 import CommentBubble from 'pz-client/src/community-item/widgets/community-item-comment-bubble-component';
-import classNames from 'classnames';
+import CommunityItemSchema from 'pz-client/src/community-item/widgets/community-item-schema-component';
 
 interface IContext {
     showNotFoundError: any
@@ -64,6 +64,8 @@ export class CommunityItemController extends Component<ICommunityItemProps, ICom
 
                         {this._renderCommentList(communityItem)}
                     </div>
+
+                    <CommunityItemSchema communityItem={communityItem} />
                 </div>
             </div>
         )
@@ -191,6 +193,7 @@ export default Relay.createContainer(CommunityItemController, {
                 ${CreateCommentEditor.getFragment('communityItem')}
                 ${Votes.getFragment('communityItem')}
                 ${CommentBubble.getFragment('communityItem')}
+                ${CommunityItemSchema.getFragment('communityItem')}
             }
         `
     }
