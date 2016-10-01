@@ -8,7 +8,7 @@ class CommunityItem extends React.Component<any, any> {
         const {communityItem} = this.props;
 
         let content = null;
-        if (communityItem.type === 'Review') {
+        if (communityItem.__typename === 'ReviewCommunityItem') {
             content = this._renderReviewHeader(communityItem);
         }
 
@@ -58,7 +58,7 @@ export default Relay.createContainer(CommunityItem, {
     fragments: {
         communityItem: () => Relay.QL`
             fragment on CommunityItemInterface {
-                type
+                __typename
                 routePath
                 
                 ... on ReviewCommunityItem {

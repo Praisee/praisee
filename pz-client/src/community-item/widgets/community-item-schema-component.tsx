@@ -5,7 +5,7 @@ import renderJsonLdSchema from 'pz-client/src/support/render-json-ld-schema';
 export interface IProps {
     communityItem: {
         id: number
-        type: string
+        __typename: string
         user: { displayName: string }
         summary: string
         body: string
@@ -23,11 +23,11 @@ export interface IProps {
     }
 }
 
-export class CommunityItemSchema extends React.Component<IProps, any> {
+class CommunityItemSchema extends React.Component<IProps, any> {
     render() {
         const communityItem = this.props.communityItem;
 
-        if (communityItem.type === 'Review') {
+        if (communityItem.__typename === 'ReviewCommunityItem') {
             return renderJsonLdSchema({
                 '@context': 'http://schema.org',
                 '@type': 'Review',
@@ -51,9 +51,9 @@ export class CommunityItemSchema extends React.Component<IProps, any> {
 
 export default Relay.createContainer(CommunityItemSchema, {
     fragments: {
-        communityItem: ({expandCommentsTo, expandComments}) => Relay.QL`
+        communityItem: () => Relay.QL`
             fragment on CommunityItemInterface {
-                type
+                __typename
                 createdAt
                 summary
                 body
