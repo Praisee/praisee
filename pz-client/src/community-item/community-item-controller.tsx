@@ -10,6 +10,8 @@ import { CreateCommentEditor } from 'pz-client/src/comments/comment-editor-compo
 import { ISignInUpContext, SignInUpContextType } from 'pz-client/src/user/sign-in-up-overlay-component';
 import CommentBubble from 'pz-client/src/community-item/widgets/community-item-comment-bubble-component';
 import CommunityItemSchema from 'pz-client/src/community-item/widgets/community-item-schema-component';
+import CommunityItemTypeHeader from 'pz-client/src/community-item/widgets/community-item-type-header-component';
+import classNames from 'classnames';
 
 interface IContext {
     showNotFoundError: any
@@ -39,19 +41,25 @@ export class CommunityItemController extends Component<ICommunityItemProps, ICom
             return <span />;
         }
 
-        let {communityItem} = this.props;
+        const {communityItem} = this.props;
+
+        const communityItemClasses = classNames('community-item', {
+            'community-item-has-comments': this.props.communityItem.commentCount > 0
+        });
 
         return (
             <div className="community-item-namespace" >
-                <div className="community-item">
-                    <Avatar communityItem={communityItem} comment={null}
-                        showReputation={true}
-                        showTrusts={true}
-                        showTrustButton={true} />
+                <div className={communityItemClasses}>
+                    <CommunityItemTypeHeader communityItem={communityItem} />
 
                     <div className="title">
                         {communityItem.summary}
                     </div>
+
+                    <Avatar communityItem={communityItem} comment={null}
+                        showReputation={true}
+                        showTrusts={true}
+                        showTrustButton={true} />
 
                     {this._renderCommunityItemContent(communityItem)}
 
@@ -92,7 +100,13 @@ export class CommunityItemController extends Component<ICommunityItemProps, ICom
     private _renderCommentResponseSection(communityItem) {
         return (
             <div className="comment-bubble-and-response">
-                <CommentBubble onClick={this._toggleComments.bind(this)} communityItem={this.props.communityItem} />
+                {!this.state.isEditingComment &&
+                    <CommentBubble
+                        onClick={this._toggleComments.bind(this)}
+                        communityItem={this.props.communityItem}
+                    />
+                }
+
                 <CreateCommentEditor
                     comment={null}
                     communityItem={communityItem}
@@ -187,12 +201,15 @@ export default Relay.createContainer(CommunityItemController, {
                     name
                     routePath
                 }
+                commentCount
+                
                 ${CommentList.getFragment('communityItem', { expandCommentsTo }).if(expandComments)}
                 ${Avatar.getFragment('communityItem')}
                 ${CommunityItemContent.getFragment('communityItem')}
                 ${CreateCommentEditor.getFragment('communityItem')}
                 ${Votes.getFragment('communityItem')}
                 ${CommentBubble.getFragment('communityItem')}
+                ${CommunityItemTypeHeader.getFragment('communityItem')}
                 ${CommunityItemSchema.getFragment('communityItem')}
             }
         `
@@ -200,6 +217,7 @@ export default Relay.createContainer(CommunityItemController, {
 });
 
 interface ICommunityItemState {
+    isEditingComment?: boolean
 }
 
 interface ICommunityItemProps {

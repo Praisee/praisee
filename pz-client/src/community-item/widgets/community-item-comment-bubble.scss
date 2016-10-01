@@ -1,0 +1,52 @@
+@mixin community-item-comment-bubble {
+  .bubble {
+    font-size: 0.8rem;
+    color: $brand-primary-minor;
+    background-color: $body-bg;
+    border: 1px solid $gray-lighter;
+    border-radius: 5px;
+    display: inline-block;
+    padding: 2px 8px 2px 8px;
+    position: relative;
+    vertical-align: top;
+    margin-top: .5rem;
+    margin-bottom: .5rem;
+    cursor: pointer;
+
+    &:hover,
+    &:active,
+    &:focus {
+      color: $brand-primary;
+    }
+
+    &.hidden {
+      cursor: default;
+    }
+  }
+
+  .bubble:after {
+    content: '';
+    position: absolute;
+    border-style: solid;
+    border-width: 7px 5px 0;
+    border-color: $white transparent;
+    display: block;
+    width: 0;
+    z-index: 1;
+    bottom: -7px;
+    left: 9px;
+  }
+
+  .bubble:before {
+    content: '';
+    position: absolute;
+    border-style: solid;
+    border-width: 7px 5px 0;
+    border-color: $gray-lighter transparent;
+    display: block;
+    width: 0;
+    z-index: 0;
+    bottom: -8px;
+    left: 9px;
+  }
+}

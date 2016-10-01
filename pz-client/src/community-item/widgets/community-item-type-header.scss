@@ -1,0 +1,47 @@
+@mixin community-item-type-header {
+  .community-item-type-header {
+    font-size: 0.9rem;
+    margin-bottom: 0.5rem;
+
+    .review-community-item-header {
+      .reviewed-topic, .review-rating {
+        vertical-align: middle;
+      }
+
+      .reviewed-topic {
+        margin-right: 1rem;
+      }
+
+      .review-rating {
+        .star {
+          @extend .fa;
+          @extend .fa-star;
+          color: $gray-lighter;
+          margin-right: 0.1rem;
+          font-size: 0.7rem;
+        }
+
+        &.review-rating-1-stars {
+          .star-1 { color: $star-color; }
+        }
+
+        &.review-rating-2-stars {
+          .star-1, .star-2 { color: $star-color; }
+        }
+
+        &.review-rating-3-stars {
+          .star-1, .star-2, .star-3 { color: $star-color; }
+        }
+
+        &.review-rating-4-stars {
+          .star-1, .star-2, .star-3, .star-4 { color: $star-color; }
+        }
+
+        &.review-rating-5-stars {
+          .star-1, .star-2, .star-3, .star-4, .star-5 { color: $star-color; }
+        }
+      }
+    }
+
+  }
+}

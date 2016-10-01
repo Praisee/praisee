@@ -11,9 +11,11 @@ import Tags from 'pz-client/src/community-item/tags-component';
 import { CreateCommentEditor } from 'pz-client/src/comments/comment-editor-component';
 import { ISignInUpContext, SignInUpContextType } from 'pz-client/src/user/sign-in-up-overlay-component';
 import CommentBubble from 'pz-client/src/community-item/widgets/community-item-comment-bubble-component';
+import CommunityItemTypeHeader from 'pz-client/src/community-item/widgets/community-item-type-header-component';
 import classNames from 'classnames';
 import ContentTruncator from 'pz-client/src/widgets/content-truncator-component';
 import handleClick from 'pz-client/src/support/handle-click';
+import CommunityItemSchema from 'pz-client/src/community-item/widgets/community-item-schema-component';
 
 interface ICommunityItemProps {
     isMinimized: boolean;
@@ -52,19 +54,19 @@ class CommunityItem extends Component<ICommunityItemProps, ICommuintyItemState> 
         signInUpContext: ISignInUpContext
     };
 
-    constructor(props, context) {
-        super(props, context);
-        this.state = {
-            isEditingComment: false,
-            isMinimized: this.props.isMinimized
-        };
+    state = {
+        isEditingComment: false,
+        isMinimized: this.props.isMinimized
     };
 
     render() {
+        const communityItem = this.props.communityItem;
         const communityItemClass = classNames('community-item', { 'minimized': this.state.isMinimized });
 
         return (
             <div className={communityItemClass}>
+                <CommunityItemTypeHeader communityItem={communityItem} />
+
                 {this._renderHeader()}
 
                 <ReactCSSTransitionGroup
@@ -75,8 +77,10 @@ class CommunityItem extends Component<ICommunityItemProps, ICommuintyItemState> 
                     {!this.state.isMinimized && this._renderMaximizedLayout()}
 
                 </ReactCSSTransitionGroup>
+
+                <CommunityItemSchema communityItem={communityItem} />
             </div>
-        )
+        );
     }
 
     private _renderHeader() {
@@ -147,14 +151,20 @@ class CommunityItem extends Component<ICommunityItemProps, ICommuintyItemState> 
         if (this.props.truncateLongContent) {
             return (
                 <ContentTruncator truncateToHeight={175} heightMargin={50}>
-                    <CommunityItemContent communityItem={communityItem} />
+                    <CommunityItemContent
+                        className="community-item-body"
+                        communityItem={communityItem}
+                    />
                 </ContentTruncator>
             );
 
         } else {
 
             return (
-                <CommunityItemContent communityItem={communityItem} />
+                <CommunityItemContent
+                    className="community-item-body"
+                    communityItem={communityItem}
+                />
             );
         }
     }
@@ -176,7 +186,8 @@ class CommunityItem extends Component<ICommunityItemProps, ICommuintyItemState> 
                 <CreateCommentEditor
                     comment={null}
                     communityItem={communityItem}
-                    onEditing={this._onEditingComment.bind(this)} />
+                    onEditing={this._onEditingComment.bind(this)}
+                />
             </div>
         );
     }
@@ -219,6 +230,8 @@ export default Relay.createContainer(CommunityItem, {
     fragments: {
         communityItem: ({expandCommentsTo, expandComments}) => Relay.QL`
             fragment on CommunityItemInterface {
+                type
+                createdAt
                 summary
                 body
                 user {
@@ -230,12 +243,23 @@ export default Relay.createContainer(CommunityItem, {
                     routePath
                 }
                 routePath
+                
+                ... on ReviewCommunityItem {
+                    reviewedTopic {
+                        name
+                    }
+                    
+                    reviewRating
+                }
+                
                 ${CommentList.getFragment('communityItem', { expandCommentsTo }).if(expandComments)}
                 ${Avatar.getFragment('communityItem')}
                 ${CommunityItemContent.getFragment('communityItem')}
                 ${CreateCommentEditor.getFragment('communityItem')}
                 ${Votes.getFragment('communityItem')}
                 ${CommentBubble.getFragment('communityItem')}
+                ${CommunityItemTypeHeader.getFragment('communityItem')}
+                ${CommunityItemSchema.getFragment('communityItem')}
             }
         `
     }

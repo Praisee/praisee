@@ -4,14 +4,16 @@ import * as Relay from 'react-relay';
 import EditorComponent from 'pz-client/src/editor/editor.component';
 import serializeEditorState from 'pz-client/src/editor/serialize-editor-state';
 import CurrentUserType from 'pz-client/src/user/current-user-type';
-import SignInUpOverlay, { ISignInUpContext, SignInUpContextType } from 'pz-client/src/user/sign-in-up-overlay-component';
+import { ISignInUpContext, SignInUpContextType } from 'pz-client/src/user/sign-in-up-overlay-component';
 import CreateCommentMutation from 'pz-client/src/comments/create-comment-mutation';
+import classNames from 'classnames';
 
 interface IProps {
     relay: any
     onEditing: Function
     communityItem?: any
     comment?: any
+    className?: string
 }
 
 class Editor extends React.Component<IProps, any> {
@@ -42,8 +44,13 @@ class Editor extends React.Component<IProps, any> {
     }
 
     render() {
+        const classes = classNames('comment-editor', this.props.className, {
+            'comment-editor-open': this.state.enableCommentEditor,
+            'comment-editor-closed': !this.state.enableCommentEditor
+        });
+
         return (
-            <div className="comment-editor">
+            <div className={classes}>
                 {this._renderEditorOrReply()}
             </div>
         );

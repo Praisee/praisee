@@ -7,7 +7,9 @@ class CommunityItem extends Component<any, any> {
     render() {
         const {communityItem} = this.props;
 
-        const bubbleClass = classNames('bubble', { 'hidden': communityItem.commentCount === 0 });
+        const bubbleClass = classNames('bubble', {
+            'bubble-hidden': communityItem.commentCount === 0
+        });
 
         return (
             <span className={bubbleClass}

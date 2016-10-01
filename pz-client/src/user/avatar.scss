@@ -1,6 +1,8 @@
 @mixin avatar {
   .avatar {
+    font-size: 0.9rem;
     color: $item-details;
+    margin: 0.5rem 0;
 
     .avatar-image {
       width: 1.5em;
@@ -43,7 +45,7 @@
       @include btn();
       @include priasee-btn-outline($brand-primary-minor);
       font-size: 0.7rem;
-      padding: 0.3rem 0.5rem;
+      padding: 0.2rem 0.5rem;
       margin-left: 1rem;
     }
 

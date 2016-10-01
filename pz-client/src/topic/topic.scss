@@ -2,7 +2,7 @@
   .topic-namespace {
     @include make-container();
     @include make-container-max-widths();
-    @include community-item();
+    @include community-item-list();
     @include community-item-editor();
     @include expand-button();
 
@@ -92,10 +92,8 @@
       }
     }
 
-    .community-item {
-      .title {
-        font-size: $font-size-h4;
-      }
+    .show-more-community-items {
+      margin: 2rem 0;
     }
   }
 }

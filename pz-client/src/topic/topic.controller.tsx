@@ -71,7 +71,10 @@ export class TopicController extends Component<ITopicProps, ITopicState> {
         let expandButton = null;
         if (this.props.topic.communityItemCount > this.props.relay.variables.limit) {
             expandButton = (
-                <ExpandButton onExpand={this._showMoreCommunityItems.bind(this) } />
+                <ExpandButton
+                    className="show-more-community-items"
+                    onExpand={this._showMoreCommunityItems.bind(this)}
+                />
             )
         }
 

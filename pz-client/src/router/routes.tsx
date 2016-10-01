@@ -49,16 +49,21 @@ export default (
 
                 <Route path="on/:urlSlug" component={CommunityItemController} {...mixinRouteQuery(communityItemQuery) } />
 
-                <Route path="(:urlSlug)-reviews" component={ReviewController} />
-                <Route path="(:urlSlug)-comparisons" component={ComparisonController} />
-                <Route path="(:urlSlug)-questions" component={ComparisonController} />
-                <Route path="(:urlSlug)-guides" component={ComparisonController} />
+                {/*<Route path="(:urlSlug)-reviews" component={ReviewController} />*/}
+                {/*<Route path="(:urlSlug)-comparisons" component={ComparisonController} />*/}
+                {/*<Route path="(:urlSlug)-questions" component={ComparisonController} />*/}
+                {/*<Route path="(:urlSlug)-guides" component={ComparisonController} />*/}
+
+                <Route path="(:urlSlug)-reviews" component={TopicController} {...mixinRouteQuery(topicQuery)} />
+                <Route path="(:urlSlug)-questions" component={TopicController} {...mixinRouteQuery(topicQuery)} />
+                <Route path="(:urlSlug)-guides" component={TopicController} {...mixinRouteQuery(topicQuery)} />
+                <Route path="(:urlSlug)-comparisons" component={TopicController} {...mixinRouteQuery(topicQuery)} />
 
                 <Route
                     path="(:urlSlug)"
                     component={TopicController}
                     {...mixinRouteQuery(topicQuery) }
-                    />
+                />
 
             </Route>
 

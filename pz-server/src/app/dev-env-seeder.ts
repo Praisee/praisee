@@ -136,8 +136,8 @@ My wife is happy I enjoy shooting as I do, but she worries that any 'extra' mone
 I earned several hundred dollars this year selling my youth theater shots to parents, and I'm thinking about getting into the senior portrait business, but I don't think it realistic that I'll ever actually pay for my gear.
 
 So, if you are an enthusiast on a limited budget . . . how do you justify your purchases?` },
-            { topicId: 4, userId: 3, type: 'Review', summary: 'Setting new standards: Nikon D5 Review', body: `Lots more formatted content here` },
-            { topicId: 4, userId: 4, type: 'Review', summary: 'The little camera that could: Nikon D1 Review', body: `Mas stuff ici` }
+            { topicId: 4, userId: 3, type: 'Review', summary: 'Setting new standards: Nikon D5 Review', body: `Lots more formatted content here`, reviewedTopicId: 4, reviewRating: 3, reviewPricePaid: '2345.53'},
+            { topicId: 4, userId: 4, type: 'Review', summary: 'The little camera that could: Nikon D1 Review', body: `Mas stuff ici`, reviewedTopicId: 4, reviewRating: 5, reviewPricePaid: '7543.49' }
         ];
     }
 
