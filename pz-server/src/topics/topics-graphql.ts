@@ -39,8 +39,9 @@ import {
 
 import {mapCursorResultItems} from 'pz-server/src/support/cursors/map-cursor-results';
 
-import {IAuthorizedVanityRoutePaths} from '../vanity-route-paths/vanity-route-paths-authorizer';
+import {IAuthorizedVanityRoutePaths} from 'pz-server/src/vanity-route-paths/vanity-route-paths-authorizer';
 import {IAuthorizer} from 'pz-server/src/support/authorization';
+import {communityItemTypeResolver} from 'pz-server/src/community-items/community-items-graphql';
 
 export default function topicTypes(repositoryAuthorizers: IAppRepositoryAuthorizers, nodeInterface, types: ITypes) {
     const topicsAuthorizer = repositoryAuthorizers.topics;
@@ -181,10 +182,14 @@ export default function topicTypes(repositoryAuthorizers: IAppRepositoryAuthoriz
             parent: {
                 type: new GraphQLNonNull(new GraphQLUnionType({
                     name: 'TopicPhotoGalleryPhotoParent',
-                    types: [types.communityItemTypes.general],
+                    types: [
+                        ...Object.keys(types.communityItemTypes).map(
+                            type => types.communityItemTypes[type]
+                        )
+                    ],
 
                     resolveType: (value) => {
-                        return types.communityItemTypes.general;
+                        return communityItemTypeResolver(types, value);
                     }
                 })),
 

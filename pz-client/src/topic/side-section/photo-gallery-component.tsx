@@ -117,7 +117,7 @@ export default Relay.createContainer(withRouter(PhotoGallery), {
                     edges {
                         node {
                             parent {
-                                ... on GeneralCommunityItem {
+                                ... on CommunityItemInterface {
                                     routePath
                                 }
                             }

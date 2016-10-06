@@ -77,6 +77,10 @@ export default class ClientAppRouterContainer extends React.Component<IProps, an
         isLoadingSessionData: false
     };
 
+    componentDidMount() {
+        console.log('App Relay Environment: window.appRelayEnv');
+    }
+
     private _routerMiddleware() {
         return {
             renderRouterContext: (child, props) => {
@@ -91,8 +95,12 @@ export default class ClientAppRouterContainer extends React.Component<IProps, an
     }
 
     private _getRelayProps(props) {
+        const relayEnvironment = this.state.replacedRelayEnvironment || props.environment;
+
+        window['appRelayEnv'] = relayEnvironment;
+
         return {
-            environment: this.state.replacedRelayEnvironment || props.environment,
+            environment: relayEnvironment,
 
             onReadyStateChange: (readyState) => {
                 this._provideAppStateLoadingStatus(readyState);
