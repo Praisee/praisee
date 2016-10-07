@@ -25,9 +25,12 @@ export default class ContentMenu extends React.Component<IProps, any> {
                 <div className="content-menu-positioner"
                      style={{top: `${this.state.top}px`, position: 'absolute'}}>
 
-                    <button className="content-menu-toggle"
-                            onMouseDown={this.props.onOpenWillBeRequested}
-                            onClick={handleClick(this._toggle.bind(this))} />
+                    <button
+                        className="content-menu-toggle"
+                        onMouseDown={this.props.onOpenWillBeRequested}
+                        onClick={handleClick(this._toggle.bind(this))}
+                        tabIndex={-1}
+                    />
 
                     <div className="content-menu-items">
                         {this.props.children}
@@ -91,10 +94,13 @@ export default class ContentMenu extends React.Component<IProps, any> {
             return;
         }
 
-        const top = Math.floor(
-            element.getBoundingClientRect().top - 4 -
-            (container.getBoundingClientRect().top -
-            document.documentElement.clientTop));
+        const top = Math.max(
+            0,
+            Math.floor(
+                element.getBoundingClientRect().top - 4 -
+                (container.getBoundingClientRect().top - document.documentElement.clientTop)
+            )
+        );
 
         if (this.state.top !== top) {
             this.setState({
