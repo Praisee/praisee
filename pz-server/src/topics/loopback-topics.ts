@@ -98,7 +98,12 @@ export default class LoopbackTopics implements ITopics, ITopicsBatchable {
             return createRecordFromLoopbackTopic(result);
         }
 
-        const result = await promisify(this._TopicModel.findById, this._TopicModel)(fullSlug);
+        const topicId = Number(fullSlug);
+        if (!Number.isInteger(topicId) || topicId < 1) {
+            return null;
+        }
+
+        const result = await promisify(this._TopicModel.findById, this._TopicModel)(topicId);
 
         if (!result) {
             return null;
