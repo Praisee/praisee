@@ -7,6 +7,7 @@ import CurrentUserType from 'pz-client/src/user/current-user-type';
 import { ISignInUpContext, SignInUpContextType } from 'pz-client/src/user/sign-in-up-overlay-component';
 import CreateCommentMutation from 'pz-client/src/comments/create-comment-mutation';
 import classNames from 'classnames';
+import SignInUp from 'pz-client/src/user/sign-in-up-embedded-component';
 
 interface IProps {
     relay: any
@@ -38,17 +39,12 @@ class Editor extends React.Component<IProps, any> {
         editor?: any;
     } = {};
 
-    componentDidUpdate() {
-        if (this.state.enableCommentEditor)
-            this._inputs.editor.focus();
-    }
-
     render() {
         const classes = classNames('comment-editor', this.props.className, {
             'comment-editor-open': this.state.enableCommentEditor,
             'comment-editor-closed': !this.state.enableCommentEditor
         });
-
+        
         return (
             <div className={classes}>
                 {this._renderEditorOrReply()}
@@ -59,16 +55,22 @@ class Editor extends React.Component<IProps, any> {
     private _renderEditorOrReply() {
         if (this.state.enableCommentEditor) {
             return (
-                <form className="editor-form" onSubmit={this._saveComment.bind(this)}>
-                    <EditorComponent
-                        placeholder="Share your thoughts..."
-                        onChange={this._updateEditor.bind(this)}
-                        onBlur={this._onBlur.bind(this)}
-                        ref={(editor) => this._inputs.editor = editor}
-                        />
-
-                    <button className="submit" type="submit">Reply</button>
-                </form>
+                <div>
+                    <form className="editor-form">
+                        <EditorComponent
+                            placeholder="Share your thoughts..."
+                            onChange={this._updateEditor.bind(this)}
+                            onBlur={this._onBlur.bind(this)}
+                            ref={(editor) => this._inputs.editor = editor}
+                            autoFocus={true}
+                            />
+                    </form>
+                    {this.context.signInUpContext.isLoggedIn 
+                        ? <button onClick={this._replyClicked.bind(this)}>Reply</button> 
+                        : this._renderSignInUp()
+                    }
+                    
+                </div>
             )
         }
         else {
@@ -81,12 +83,14 @@ class Editor extends React.Component<IProps, any> {
         }
     }
 
-    private _toggleEditor(event) {
-        if (!this.context.signInUpContext.isLoggedIn) {
-            this.context.signInUpContext.showSignInUp(event);
-            return;
-        }
+    private _renderSignInUp() {
+        return (
+            <SignInUp onSuccess={this._saveComment.bind(this)} 
+                submitText="Reply" />
+        );
+    }
 
+    private _toggleEditor(event) {
         this.setState({ enableCommentEditor: true });
 
         if (this.props.onEditing) {
@@ -103,10 +107,13 @@ class Editor extends React.Component<IProps, any> {
             }
         }
     }
-
-    private _saveComment(event) {
+    
+    private _replyClicked(event){
         event.preventDefault();
+        this._saveComment();
+    }
 
+    private _saveComment() {
         this.props.relay.commitUpdate(
             new CreateCommentMutation({
                 bodyData: serializeEditorState(this.state.editorContent),

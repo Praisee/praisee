@@ -16,6 +16,9 @@
             "description": "The displayed name of the user"
         }
     },
+    "options": {
+        "caseSensitiveEmail": false
+    },
     "relations": {
         "communityItems": {
             "type": "hasMany",

@@ -18,6 +18,7 @@ var createToolbarPlugin = require('draft-js-toolbar-plugin').default;
 var createLinkifyPlugin = require('draft-js-linkify-plugin').default;
 
 export interface IProps {
+    autoFocus?: boolean
     className?: string
     editorState?: any
     placeholder?: any
@@ -25,7 +26,7 @@ export interface IProps {
     plugins?: Array<any>
     contentMenuButtons?: any
     onChange?: (editorState) => {}
-    onBlur?: () => {}
+    onBlur?: (event) => {}
     onFocus?: () => {}
 }
 
@@ -44,6 +45,11 @@ export default class Editor extends React.Component<IProps, any> {
         onChange: () => {},
         onBlur: () => {}
     };
+    
+    componentDidMount(){
+        if(this.props.autoFocus)
+            this.focus();
+    }
 
     focus() {
         this.refs.editor.focus();
@@ -64,7 +70,7 @@ export default class Editor extends React.Component<IProps, any> {
                         editorState={editorState}
                         handleKeyCommand={this._updateRichStylingFromCommand.bind(this) }
                         onChange={this._updateEditor.bind(this) }
-                        onBlur={this._onBlur.bind(this)}
+                        onBlur={this._onBlur.bind(this, event)}
                         onFocus={this.props.onFocus}
                         placeholder={!this.state.isContentMenuOpen ? this.props.placeholder : ''}
                         plugins={this._editorPlugins}
@@ -191,7 +197,7 @@ export default class Editor extends React.Component<IProps, any> {
         }, 0);
     }
 
-    private _onBlur() {
+    private _onBlur(event) {
         if (this._blurDebounce) {
             clearTimeout(this._blurDebounce);
         }
@@ -201,7 +207,7 @@ export default class Editor extends React.Component<IProps, any> {
                 return;
             }
 
-            this.props.onBlur();
+            this.props.onBlur(event);
         }, 50);
     }
 }
