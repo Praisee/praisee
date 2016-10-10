@@ -52,12 +52,13 @@ export default class CreateCommunityItemFromTopicMutation extends Relay.Mutation
         return Relay.QL `
             fragment on CreateCommunityItemFromTopicPayload {
                 topic {
-                    id
-                }
-                communityItem{
                     id,
-                    summary,
-                    bodyData
+                    communityItems
+                }
+                viewer {
+                    lastCreatedCommunityItem {
+                        routePath
+                    }
                 }
             }
         `;
@@ -80,7 +81,8 @@ export default class CreateCommunityItemFromTopicMutation extends Relay.Mutation
         return [{
             type: 'FIELDS_CHANGE',
             fieldIDs: {
-                topic: this.props.topic.id
+                topic: this.props.topic.id,
+                viewer: this.props.viewer.id
             }
         }];
     }
@@ -99,6 +101,11 @@ export default class CreateCommunityItemFromTopicMutation extends Relay.Mutation
     static fragments = {
         topic: () => Relay.QL`
             fragment on Topic {
+                id
+            }
+        `,
+        viewer: () => Relay.QL`
+            fragment on Viewer {
                 id
             }
         `,

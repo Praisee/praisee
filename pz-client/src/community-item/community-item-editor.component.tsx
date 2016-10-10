@@ -7,6 +7,7 @@ import CreateCommunityItemForTopicMutation from 'pz-client/src/community-item/cr
 import CommunityItemBodyEditor from 'pz-client/src/community-item/community-item-body-editor.component';
 import serializeEditorState from 'pz-client/src/editor/serialize-editor-state';
 import classNames from 'classnames';
+import {withRouter} from 'react-router';
 
 export interface IEditorData {
     summary: string
@@ -14,7 +15,11 @@ export interface IEditorData {
 }
 
 export interface IProps {
-    relay: any
+    viewer: {
+        lastCreatedCommunityItem: {
+            routePath
+        }
+    }
 
     communityItem?: {
         id: number
@@ -34,8 +39,15 @@ export interface IProps {
     showFullEditor?: boolean
 
     onSave?: (editorData: IEditorData) => any
+    getMutationForSave?: (editorData: IEditorData) => any
 
     className?: string
+
+    relay: any
+
+    router: {
+        push: Function
+    }
 }
 
 class CommunityItemEditor extends React.Component<IProps, any> {
@@ -175,8 +187,20 @@ class CommunityItemEditor extends React.Component<IProps, any> {
 
         if (this.props.onSave) {
             this.props.onSave(editorData);
+
         } else {
-            this._defaultCommunityItemCreator(editorData)
+
+            const getMutationForSave = (
+                this.props.getMutationForSave
+                || this._getDefaultMutationForSave.bind(this)
+            );
+
+            this.props.relay.commitUpdate(
+                getMutationForSave(editorData),
+                {
+                    onSuccess: this._redirectOnSuccess.bind(this)
+                }
+            );
         }
     }
 
@@ -209,20 +233,45 @@ class CommunityItemEditor extends React.Component<IProps, any> {
         );
     }
 
-    private _defaultCommunityItemCreator(editorData: IEditorData) {
+    private _getDefaultMutationForSave(editorData: IEditorData) {
         const {summary, bodyData} = editorData;
 
-        this.props.relay.commitUpdate(new CreateCommunityItemForTopicMutation({
+        return new CreateCommunityItemForTopicMutation({
             type: 'General',
             topic: this.props.topic,
+            viewer: this.props.viewer,
             summary,
             bodyData
-        }));
+        });
+    }
+
+    private _redirectOnSuccess(response) {
+        const redirectPath = (
+            response
+            && response.createCommunityItemFromTopic
+            && response.createCommunityItemFromTopic.viewer
+            && response.createCommunityItemFromTopic.viewer.lastCreatedCommunityItem
+            && response.createCommunityItemFromTopic.viewer.lastCreatedCommunityItem.routePath
+        );
+
+        if (redirectPath) {
+            this.props.router.push(redirectPath);
+        }
     }
 }
 
-export var CreateItemEditor = Relay.createContainer(CommunityItemEditor, {
+export var CreateItemEditor = Relay.createContainer(withRouter(CommunityItemEditor), {
     fragments: {
+        viewer: () => Relay.QL`
+            fragment on Viewer {
+                ${CreateCommunityItemForTopicMutation.getFragment('viewer')}
+                
+                lastCreatedCommunityItem {
+                    routePath
+                }
+            }
+        `,
+
         topic: () => Relay.QL`
             fragment on Topic {
                 id
@@ -233,7 +282,7 @@ export var CreateItemEditor = Relay.createContainer(CommunityItemEditor, {
     }
 });
 
-export var UpdateItemEditor = Relay.createContainer(CommunityItemEditor, {
+export var UpdateItemEditor = Relay.createContainer(withRouter(CommunityItemEditor), {
     fragments: {
         review: () => Relay.QL`
             fragment on CommunityItemInterface {

@@ -49,6 +49,7 @@ import {addErrorToResponse} from 'pz-server/src/errors/errors-graphql';
 export default function getCommunityItemTypes(repositoryAuthorizers: IAppRepositoryAuthorizers, nodeInterface, types: ITypes) {
     const communityItemsAuthorizer = repositoryAuthorizers.communityItems;
     const reviewsAuthorizer = repositoryAuthorizers.reviews;
+    const topicsAuthorizer = repositoryAuthorizers.topics;
     const commentsAuthorizer = repositoryAuthorizers.comments;
     const usersAuthorizer = repositoryAuthorizers.users;
     const votesAuthorizer = repositoryAuthorizers.votes;
@@ -316,17 +317,20 @@ export default function getCommunityItemTypes(repositoryAuthorizers: IAppReposit
         }),
 
         outputFields: () => ({
-            communityItem: {
-                type: types.CommunityItemInterfaceType,
-                resolve: ({communityItem}) => {
-                    return communityItem;
-                }
-            },
             topic: {
                 type: types.TopicType,
-                resolve: () => ({ id: 'topic' })
+                resolve: ({topicId}, {user}) => {
+                    if (!topicId) {
+                        return null;
+                    }
+
+                    return topicsAuthorizer.as(user).findById(topicId);
+                }
             },
-            viewer: getViewerField(types)
+
+            viewer: getViewerField(types, ({communityItem}) => ({
+                lastCreatedCommunityItem: communityItem
+            }))
         }),
 
         mutateAndGetPayload: async ({type, summary, body, bodyData, topicId: rawTopicId, reviewDetails}, context) => {
@@ -347,7 +351,7 @@ export default function getCommunityItemTypes(repositoryAuthorizers: IAppReposit
                     addErrorToResponse(context.responseErrors, 'NotAuthenticated', communityItem);
                 }
 
-                return { communityItem: null };
+                return {};
             }
 
             // TODO: This is a hack, community item types should have their own dedicated mutations
@@ -369,10 +373,10 @@ export default function getCommunityItemTypes(repositoryAuthorizers: IAppReposit
             }
 
             if (communityItem instanceof AuthorizationError) {
-                return { communityItem: null };
+                return {};
             }
 
-            return { communityItem };
+            return { communityItem, topicId };
         },
     });
 

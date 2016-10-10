@@ -11,8 +11,12 @@ import CreateCommunityItemForTopicMutation from 'pz-client/src/community-item/cr
 export interface IProps {
     relay: any
 
+    viewer: {
+        id: any
+    }
+
     topic: {
-        id: number
+        id: any
         name: string
     }
 }
@@ -22,28 +26,41 @@ class QuestionEditor extends React.Component<IProps, any> {
         return (
             <CreateItemEditor
                 className="question-editor"
+                viewer={this.props.viewer}
                 topic={this.props.topic}
                 summaryPlaceholder={`Ask a question about ${this.props.topic.name}...`}
                 showFullEditor={true}
-                onSave={this._createQuestion.bind(this)}
+                getMutationForSave={this._createQuestionMutation.bind(this)}
             />
         );
     }
 
-    private _createQuestion(editorData: IEditorData) {
+    private _createQuestionMutation(editorData: IEditorData) {
         const {summary, bodyData} = editorData;
 
-        this.props.relay.commitUpdate(new CreateCommunityItemForTopicMutation({
+        return new CreateCommunityItemForTopicMutation({
             type: 'Question',
+            viewer: this.props.viewer,
             topic: this.props.topic,
             summary,
             bodyData
-        }));
+        });
     }
 }
 
 export default Relay.createContainer(QuestionEditor, {
     fragments: {
+        viewer: () => Relay.QL`
+            fragment on Viewer {
+                ${CreateItemEditor.getFragment('viewer')}
+                ${CreateCommunityItemForTopicMutation.getFragment('viewer')}
+                
+                lastCreatedCommunityItem {
+                    routePath
+                }
+            }
+        `,
+
         topic: () => Relay.QL`
             fragment on Topic {
                 id

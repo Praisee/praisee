@@ -68,6 +68,10 @@ export default function getViewerType(repositoryAuthorizers: IAppRepositoryAutho
                 }
             },
 
+            lastCreatedCommunityItem: {
+                type: types.CommunityItemInterfaceType
+            },
+
             responseErrorsList: {
                 type: new GraphQLList(types.ResponseErrorInterfaceType),
                 resolve: (_, __, {responseErrors}) => {
@@ -82,9 +86,17 @@ export default function getViewerType(repositoryAuthorizers: IAppRepositoryAutho
     };
 }
 
-export function getViewerField(types: ITypes) {
+export function getViewerField(types: ITypes, viewerResolver?: Function) {
     return {
         type: new GraphQLNonNull(types.ViewerType),
-        resolve: () => ({ id: 'viewer' })
-    }
+        resolve: (...args) => {
+            const viewer = { id: 'viewer' };
+
+            if (viewerResolver) {
+                return Object.assign(viewer, viewerResolver(...args));
+            } else {
+                return viewer;
+            }
+        }
+    };
 }

@@ -5,6 +5,7 @@ import CreateCommunityItemForTopicMutation from 'pz-client/src/community-item/cr
 import CommunityItemBodyEditor from 'pz-client/src/community-item/community-item-body-editor.component';
 import serializeEditorState from 'pz-client/src/editor/serialize-editor-state';
 import classNames from 'classnames';
+import {withRouter} from 'react-router';
 
 import {
     SignInUpContextType,
@@ -16,17 +17,17 @@ import EditRating from 'pz-client/src/community-item/widgets/edit-rating-compone
 interface IProps {
     relay: any
 
-    communityItem?: {
-        id: number
-        type: string,
-        summary: string,
-        body: string,
-        topic: any
+    viewer: {
+        id: any
     }
 
-    topic?: {
-        id: number,
+    topic: {
+        id: any
         name: string
+    }
+
+    router: {
+        push: Function
     }
 }
 
@@ -177,8 +178,9 @@ class ReviewCommunityItemEditor extends React.Component<IProps, any> {
     private _saveCommunityItem(event) {
         event.preventDefault();
 
-        this.props.relay.commitUpdate(new CreateCommunityItemForTopicMutation({
+        const mutation = new CreateCommunityItemForTopicMutation({
             type: 'Review',
+            viewer: this.props.viewer,
             topic: this.props.topic,
             summary: this.state.summaryContent,
             bodyData: serializeEditorState(this.state.bodyState),
@@ -186,7 +188,13 @@ class ReviewCommunityItemEditor extends React.Component<IProps, any> {
                 reviewedTopicId: this.props.topic.id,
                 reviewRating: this.state.rating
             }
-        }));
+        });
+
+        this.props.relay.commitUpdate(mutation,
+            {
+                onSuccess: this._redirectOnSuccess.bind(this)
+            }
+        );
     }
 
     private _onSummaryChange(event) {
@@ -216,10 +224,34 @@ class ReviewCommunityItemEditor extends React.Component<IProps, any> {
         this.state.summaryContent.length > 0 ||
         (this.state.bodyState && this.state.bodyState.getCurrentContent().hasText()));
     }
+
+    private _redirectOnSuccess(response) {
+        const redirectPath = (
+            response
+            && response.createCommunityItemFromTopic
+            && response.createCommunityItemFromTopic.viewer
+            && response.createCommunityItemFromTopic.viewer.lastCreatedCommunityItem
+            && response.createCommunityItemFromTopic.viewer.lastCreatedCommunityItem.routePath
+        );
+
+        if (redirectPath) {
+            this.props.router.push(redirectPath);
+        }
+    }
 }
 
-export default Relay.createContainer(ReviewCommunityItemEditor, {
+export default Relay.createContainer(withRouter(ReviewCommunityItemEditor), {
     fragments: {
+        viewer: () => Relay.QL`
+            fragment on Viewer {
+                ${CreateCommunityItemForTopicMutation.getFragment('viewer')}
+                
+                lastCreatedCommunityItem {
+                    routePath
+                }
+            }
+        `,
+
         topic: () => Relay.QL`
             fragment on Topic {
                 id

@@ -56,6 +56,12 @@ export var homeQuery: IRouteQuery = {
 
 export var topicQuery: IRouteQuery = {
     queries: {
+        viewer: () => Relay.QL`
+            query {
+                viewer
+            }
+        `,
+
         topic: () => Relay.QL`
             query {
                 topic(urlSlug: $urlSlug)
@@ -96,6 +102,12 @@ export var createItemQuery: IRouteQuery = {
 
 export var topicHomeQuery: IRouteQuery = {
     queries: {
+        viewer: () => Relay.QL`
+            query {
+                viewer
+            }
+        `,
+
         topic: () => Relay.QL`
             query {
                 topic(urlSlug: "Praisee")
