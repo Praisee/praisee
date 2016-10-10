@@ -130,7 +130,7 @@ class CommunityItemEditor extends React.Component<IProps, any> {
 
     private _onSummaryFocus() {
         if (!this.context.signInUpContext.isLoggedIn) {
-            this.context.signInUpContext.showSignInUp(event);
+            this.context.signInUpContext.showSignInUp();
             return;
         }
         this._setStateDelayed({ summaryHasFocus: true });
@@ -138,7 +138,7 @@ class CommunityItemEditor extends React.Component<IProps, any> {
 
     private _onBodyFocus() {
         if (!this.context.signInUpContext.isLoggedIn) {
-            this.context.signInUpContext.showSignInUp(event);
+            this.context.signInUpContext.showSignInUp();
             return;
         }
         this._setStateDelayed({ bodyHasFocus: true });
