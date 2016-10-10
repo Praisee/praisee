@@ -1,0 +1,35 @@
+@mixin apply-to-filled-rating-stars($class-prefix: rating) {
+  &.#{$class-prefix}-1-stars {
+    .rating-star-1 { @content; }
+  }
+
+  &.#{$class-prefix}-2-stars {
+    .rating-star-1, .rating-star-2 { @content; }
+  }
+
+  &.#{$class-prefix}-3-stars {
+    .rating-star-1, .rating-star-2, .rating-star-3 { @content; }
+  }
+
+  &.#{$class-prefix}-4-stars {
+    .rating-star-1, .rating-star-2, .rating-star-3, .rating-star-4 { @content; }
+  }
+
+  &.#{$class-prefix}-5-stars {
+    .rating-star-1, .rating-star-2, .rating-star-3, .rating-star-4, .rating-star-5 { @content; }
+  }
+}
+
+@mixin rating-stars($star-size: 0.7rem) {
+  @include apply-to-filled-rating-stars() {
+    color: $star-color;
+  };
+
+  .rating-star {
+    @extend .fa;
+    @extend .fa-star;
+    color: $gray-lighter;
+    margin-right: 0.1rem;
+    font-size: $star-size;
+  }
+}

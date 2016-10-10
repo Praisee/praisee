@@ -1,0 +1,28 @@
+@mixin review-editor {
+  .review-editor {
+    @include community-item-editor-mixin();
+    @include edit-rating();
+    margin-top: 1rem;
+    border-bottom: 1px solid $hr-border-color;
+    padding-bottom: 2.5rem;
+    margin-bottom: 2.5rem;
+
+    .editor-container {
+      margin-top: 1rem;
+      margin-bottom: 0;
+      box-shadow: none;
+      border: 1px solid $input-border-color;
+    }
+
+    .submit {
+      margin-top: 1.5rem;
+      font-size: 1rem;
+    }
+
+    .editor-rating-label {
+      font-size: 0.9rem;
+      margin-top: 0.5rem;
+      margin-left: 0.5rem;
+    }
+  }
+}

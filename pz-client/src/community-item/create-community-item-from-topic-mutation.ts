@@ -12,12 +12,20 @@ export default class CreateCommunityItemFromTopicMutation extends Relay.Mutation
     // input to the mutation. Our ‘likeStory’ mutation takes exactly
     // one variable as input – the ID of the story to like.
     getVariables() {
-        return {
+        let vars = {
             type: this.props.type,
             summary: this.props.summary,
             bodyData: this.props.bodyData,
-            topicId: this.props.topic.id
+            topicId: this.props.topic.id,
+            reviewDetails: null
         };
+
+        if (this.props.type === 'Review') {
+            // TODO: This is a hack, community item types should have their own dedicated mutations
+            vars.reviewDetails = this.props.reviewDetails
+        }
+
+        return vars;
     }
 
     // Use this method to design a ‘fat query’ – one that represents every

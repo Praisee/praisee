@@ -1,10 +1,12 @@
 import * as React from 'react';
 import * as Relay from 'react-relay';
 import {Component} from 'react';
+import TopicActions from 'pz-client/src/topic/side-section/topic-actions.component';
 import TopicWiki from 'pz-client/src/topic/side-section/topic-wiki.component';
 import RelatedTopics from 'pz-client/src/topic/side-section/related-topics.component';
 import AdminControls from 'pz-client/src/topic/side-section/admin-controls.component';
 import PhotoGallery from 'pz-client/src/topic/side-section/photo-gallery-component';
+import {ITopicActions} from 'pz-client/src/topic/topic.controller';
 
 interface ISideSectionProps {
     topic: {
@@ -23,6 +25,10 @@ interface ISideSectionProps {
             attributeType: string
         }>
     };
+
+    topicActions: ITopicActions
+    topicReviewActionActive?: boolean
+    topicQuestionActionActive?: boolean
 }
 
 class SideSection extends Component<ISideSectionProps, any> {
@@ -31,7 +37,16 @@ class SideSection extends Component<ISideSectionProps, any> {
 
         return (
             <div className="side-section">
-                <h2>{topic.name}</h2>
+                <h2 className="side-section-title">{topic.name}</h2>
+
+                <div className="side-section-block">
+                    <TopicActions
+                        topicName={this.props.topic.name}
+                        topicActions={this.props.topicActions}
+                        topicReviewActionActive={this.props.topicReviewActionActive}
+                        topicQuestionActionActive={this.props.topicQuestionActionActive}
+                    />
+                </div>
 
                 <div className="side-section-block">
                     {this._renderTopicPhoto(topic)}

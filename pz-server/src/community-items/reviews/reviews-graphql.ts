@@ -33,7 +33,7 @@ import {
 import {addErrorToResponse} from 'pz-server/src/errors/errors-graphql';
 import {IReview} from 'pz-server/src/community-items/reviews/reviews';
 
-const ReviewPricePaidCurrencyType = new GraphQLEnumType({
+export const ReviewPricePaidCurrencyType = new GraphQLEnumType({
     name: 'ReviewPricePaidCurrencyType',
 
     values: {

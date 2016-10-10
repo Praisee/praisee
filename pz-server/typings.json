@@ -4,6 +4,7 @@
     "express-graphql": "registry:dt/express-graphql#0.0.0+20160316155526",
     "express-serve-static-core": "registry:dt/express-serve-static-core#0.0.0+20160617060422",
     "form-data": "registry:dt/form-data#0.0.0+20160724024111",
+    "graphql": "registry:dt/graphql#0.7.0+20160930121740",
     "immutable": "registry:dt/immutable#3.8.1+20160608070634",
     "ioredis": "registry:dt/ioredis#0.0.0+20160724055938",
     "isomorphic-fetch": "registry:dt/isomorphic-fetch#0.0.0+20160524142046",

@@ -9,7 +9,7 @@ interface IProps {
 }
 
 export interface ISignInUpContext {
-    showSignInUp: Function;
+    showSignInUp: (event?) => any;
     isLoggedIn: boolean
 }
 
@@ -59,8 +59,11 @@ export default class SignInUpOverlay extends React.Component<IProps, any> {
         )
     }
 
-    private _showSignInUp(event) {
-        event.preventDefault();
+    private _showSignInUp(event?) {
+        if (event) {
+            event.preventDefault();
+        }
+
         this.setState({ isSignInUpVisible: true })
     }
 

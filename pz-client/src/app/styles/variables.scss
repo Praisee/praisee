@@ -38,6 +38,7 @@ $gray-lightest:             #f7f7f9 !default;
 $brand-primary: #5150cb !default;
 $brand-primary-minor: #938dd5;
 $brand-secondary: #2fa97e;
+$brand-secondary-active: #009961;
 $brand-success:             #5cb85c !default;
 $brand-info:                #5bc0de !default;
 $brand-warning:             #f0ad4e !default;
@@ -52,10 +53,11 @@ $enable-flex:               false !default;
 $enable-rounded:            true !default;
 $enable-shadows:            false !default;
 $enable-gradients:          false !default;
-$enable-transitions:        false !default;
+$enable-transitions:        true !default;
 $enable-hover-media-query:  false !default;
 $enable-grid-classes:       true !default;
 
+$transition-time: 0.1s;
 
 // Spacing
 //
@@ -212,7 +214,7 @@ $editor-placeholder-focused: #bdc1c9;
 
 $item-details: $brand-secondary;
 
-$star-color: $brand-warning;
+$star-color: #f0ad4e;
 
 // Components
 //
@@ -260,9 +262,9 @@ $btn-primary-color:              #fff !default;
 $btn-primary-bg:                 $brand-primary !default;
 $btn-primary-border:             $btn-primary-bg !default;
 
-$btn-secondary-color:            $gray-dark !default;
+$btn-secondary-color:            $brand-secondary !default;
 $btn-secondary-bg:               #fff !default;
-$btn-secondary-border:           $gray-light !default;
+$btn-secondary-border:           $brand-secondary !default;
 
 $btn-info-color:                 #fff !default;
 $btn-info-bg:                    $brand-info !default;
@@ -293,6 +295,7 @@ $btn-border-radius:              $border-radius !default;
 $btn-border-radius-lg:           $border-radius-lg !default;
 $btn-border-radius-sm:           $border-radius-sm !default;
 
+$btn-transition-time: 0.1s;
 
 // Forms
 
@@ -303,7 +306,7 @@ $input-bg:                       #fff !default;
 $input-bg-disabled:              $gray-lighter !default;
 
 $input-color:                    $gray !default;
-$input-border-color:             #ccc !default;
+$input-border-color:             rgba(0, 0, 0, 0.15) !default;
 $input-btn-border-width:         $border-width !default; // For form controls and buttons
 $input-box-shadow:               inset 0 1px 1px rgba(0,0,0,.075) !default;
 

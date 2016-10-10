@@ -31,7 +31,11 @@ import {
 import {ITypes} from 'pz-server/src/graphql/types';
 import {IVote} from 'pz-server/src/votes/votes';
 import {parseInputContentData} from 'pz-server/src/content/input-content-data';
-import {getReviewFields, getReviewMutationTypes} from 'pz-server/src/community-items/reviews/reviews-graphql';
+import {
+    getReviewFields,
+    getReviewMutationTypes,
+    ReviewPricePaidCurrencyType
+} from 'pz-server/src/community-items/reviews/reviews-graphql';
 
 import {
     TCommunityItemType,
@@ -44,6 +48,7 @@ import {addErrorToResponse} from 'pz-server/src/errors/errors-graphql';
 
 export default function getCommunityItemTypes(repositoryAuthorizers: IAppRepositoryAuthorizers, nodeInterface, types: ITypes) {
     const communityItemsAuthorizer = repositoryAuthorizers.communityItems;
+    const reviewsAuthorizer = repositoryAuthorizers.reviews;
     const commentsAuthorizer = repositoryAuthorizers.comments;
     const usersAuthorizer = repositoryAuthorizers.users;
     const votesAuthorizer = repositoryAuthorizers.votes;
@@ -250,7 +255,7 @@ export default function getCommunityItemTypes(repositoryAuthorizers: IAppReposit
             type: { type: new GraphQLNonNull(GraphQLString) },
             summary: { type: new GraphQLNonNull(GraphQLString) },
             body: { type: GraphQLString },
-            bodyData: { type: types.InputContentDataType }
+            bodyData: { type: new GraphQLNonNull(types.InputContentDataType) }
         }),
 
         outputFields: () => ({
@@ -282,8 +287,32 @@ export default function getCommunityItemTypes(repositoryAuthorizers: IAppReposit
             type: { type: new GraphQLNonNull(GraphQLString) },
             summary: { type: new GraphQLNonNull(GraphQLString) },
             body: { type: GraphQLString },
-            bodyData: { type: types.InputContentDataType },
-            topicId: { type: GraphQLString }
+            bodyData: { type: new GraphQLNonNull(types.InputContentDataType) },
+            topicId: { type: new GraphQLNonNull(GraphQLString) },
+
+            // TODO: This is a hack, community item types should have their own dedicated mutations
+            reviewDetails: {
+                type: new GraphQLInputObjectType({
+                    name: 'CreateCommunityItemFromTopicReviewDetails',
+                    fields: {
+                        reviewedTopicId: {
+                            type: new GraphQLNonNull(GraphQLID)
+                        },
+
+                        reviewRating: {
+                            type: new GraphQLNonNull(GraphQLInt)
+                        },
+
+                        reviewPricePaid: {
+                            type: GraphQLString
+                        },
+
+                        reviewPricePaidCurrency: {
+                            type: ReviewPricePaidCurrencyType
+                        }
+                    }
+                })
+            }
         }),
 
         outputFields: () => ({
@@ -300,17 +329,44 @@ export default function getCommunityItemTypes(repositoryAuthorizers: IAppReposit
             viewer: getViewerField(types)
         }),
 
-        mutateAndGetPayload: async ({type, summary, body, bodyData, topicId}, context) => {
+        mutateAndGetPayload: async ({type, summary, body, bodyData, topicId: rawTopicId, reviewDetails}, context) => {
             const parsedBodyData = parseInputContentData(body || bodyData);
+            const {id: topicId} = fromGlobalId(rawTopicId);
+            const authorizedCommunityItems = communityItemsAuthorizer.as(context.user);
 
-            const {id} = fromGlobalId(topicId);
-            const communityItem = await communityItemsAuthorizer.as(context.user).create({
+            let communityItem = await authorizedCommunityItems.create({
                 recordType: 'CommunityItem',
-                type,
+                type: 'General', // This is updated later when all the details have been verified
                 summary,
                 bodyData: parsedBodyData,
-                topics: [id]
+                topics: [topicId]
             });
+
+            if (communityItem instanceof AuthorizationError) {
+                if (communityItem instanceof NotAuthenticatedError) {
+                    addErrorToResponse(context.responseErrors, 'NotAuthenticated', communityItem);
+                }
+
+                return { communityItem: null };
+            }
+
+            // TODO: This is a hack, community item types should have their own dedicated mutations
+            if (type === 'Review' && reviewDetails) {
+                const {id: reviewedTopicId} = fromGlobalId(reviewDetails.reviewedTopicId);
+
+                communityItem = await reviewsAuthorizer
+                    .as(context.user)
+                    .updateReviewDetails(
+                        communityItem.id,
+                        Object.assign({}, reviewDetails, {reviewedTopicId})
+                    );
+
+            } else if (type === 'Question') {
+                communityItem = await authorizedCommunityItems
+                    .update(Object.assign({}, communityItem, {
+                        type: 'Question'
+                    }));
+            }
 
             if (communityItem instanceof AuthorizationError) {
                 return { communityItem: null };

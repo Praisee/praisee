@@ -33,7 +33,7 @@ class CommunityItem extends React.Component<any, any> {
 
         const reviewRatingClasses = classNames(
             'review-rating',
-            'review-rating-' + reviewRating + '-stars'
+            'rating-' + reviewRating + '-stars'
         );
 
         return (
@@ -43,11 +43,11 @@ class CommunityItem extends React.Component<any, any> {
                 </Link>
 
                 <Link className={reviewRatingClasses} to={communityItem.routePath}>
-                    <span className="star star-1" />
-                    <span className="star star-2" />
-                    <span className="star star-3" />
-                    <span className="star star-4" />
-                    <span className="star star-5" />
+                    <span className="rating-star rating-star-1" />
+                    <span className="rating-star rating-star-2" />
+                    <span className="rating-star rating-star-3" />
+                    <span className="rating-star rating-star-4" />
+                    <span className="rating-star rating-star-5" />
                 </Link>
             </div>
         );

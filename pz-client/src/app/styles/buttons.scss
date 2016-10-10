@@ -8,7 +8,7 @@
   user-select: none;
   border: $input-btn-border-width solid transparent;
   @include button-size($btn-padding-y, $btn-padding-x, $font-size-base, $line-height, $btn-border-radius);
-  @include transition(all .2s ease-in-out);
+  @include transition(all $btn-transition-time ease-in-out);
 
   &,
   &:active,
@@ -56,6 +56,50 @@ fieldset[disabled] a.btn {
 }
 @mixin btn-secondary {
   @include button-variant($btn-secondary-color, $btn-secondary-bg, $btn-secondary-border);
+
+  @include hover {
+    color: $btn-secondary-bg;
+    background: $btn-secondary-color;
+    border: 1px solid $btn-secondary-color;
+  }
+
+  &:focus,
+  &.focus {
+    color: $btn-secondary-bg;
+    background: $btn-secondary-color;
+    border: 1px solid $btn-secondary-color;
+  }
+
+  &:active,
+  &.active,
+  .open > &.dropdown-toggle {
+    color: $btn-secondary-bg;
+    background: $btn-secondary-color;
+    border: 1px solid $btn-secondary-color;
+
+    &:hover,
+    &:focus,
+    &.focus {
+      color: $btn-secondary-bg;
+      background: $btn-secondary-color;
+      border: 1px solid $btn-secondary-color;
+    }
+  }
+
+  &.disabled,
+  &:disabled {
+    &:focus,
+    &.focus {
+      color: $btn-secondary-bg;
+      background: $btn-secondary-color;
+      border: 1px solid $btn-secondary-color;
+    }
+    @include hover {
+      color: $btn-secondary-bg;
+      background: $btn-secondary-color;
+      border: 1px solid $btn-secondary-color;
+    }
+  }
 }
 @mixin btn-info {
   @include button-variant($btn-info-color, $btn-info-bg, $btn-info-border);
@@ -70,7 +114,7 @@ fieldset[disabled] a.btn {
   @include button-variant($btn-danger-color, $btn-danger-bg, $btn-danger-border);
 }
 
-@mixin priasee-btn-outline($color) {
+@mixin praisee-btn-outline($color) {
   @include button-outline-variant($color);
 
   border: 1px solid $color;
@@ -92,7 +136,7 @@ fieldset[disabled] a.btn {
   }
 }
 
-@mixin priasee-btn-borderless($color) {
+@mixin praisee-btn-borderless($color) {
   @include button-outline-variant($color);
 
   border: none;
@@ -118,45 +162,45 @@ fieldset[disabled] a.btn {
 
 // Remove all backgrounds
 @mixin btn-primary-outline {
-  @include priasee-btn-outline($btn-primary-bg);
+  @include praisee-btn-outline($btn-primary-bg);
 }
 @mixin btn-secondary-outline {
-  @include priasee-btn-outline($btn-secondary-border);
+  @include praisee-btn-outline($btn-secondary-border);
 }
 @mixin btn-info-outline {
-  @include priasee-btn-outline($btn-info-bg);
+  @include praisee-btn-outline($btn-info-bg);
 }
 @mixin btn-success-outline {
-  @include priasee-btn-outline($btn-success-bg);
+  @include praisee-btn-outline($btn-success-bg);
 }
 @mixin btn-warning-outline {
-  @include priasee-btn-outline($btn-warning-bg);
+  @include praisee-btn-outline($btn-warning-bg);
 }
 @mixin btn-danger-outline {
-  @include priasee-btn-outline($btn-danger-bg);
+  @include praisee-btn-outline($btn-danger-bg);
 }
 
 @mixin btn-primary-borderless {
-  @include priasee-btn-borderless($btn-primary-bg);
+  @include praisee-btn-borderless($btn-primary-bg);
 }
 @mixin btn-secondary-borderless {
-  @include priasee-btn-borderless($btn-secondary-border);
+  @include praisee-btn-borderless($btn-secondary-border);
   border: none;
 }
 @mixin btn-info-borderless {
-  @include priasee-btn-borderless($btn-info-bg);
+  @include praisee-btn-borderless($btn-info-bg);
   border: none;
 }
 @mixin btn-success-borderless {
-  @include priasee-btn-borderless($btn-success-bg);
+  @include praisee-btn-borderless($btn-success-bg);
   border: none;
 }
 @mixin btn-warning-borderless {
-  @include priasee-btn-borderless($btn-warning-bg);
+  @include praisee-btn-borderless($btn-warning-bg);
   border: none;
 }
 @mixin btn-danger-borderless {
-  @include priasee-btn-borderless($btn-danger-bg);
+  @include praisee-btn-borderless($btn-danger-bg);
   border: none;
 }
 //

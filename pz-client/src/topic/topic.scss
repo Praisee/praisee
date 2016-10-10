@@ -4,10 +4,15 @@
     @include make-container-max-widths();
     @include community-item-list();
     @include community-item-editor();
+    @include review-editor();
     @include expand-button();
 
     .primary-section {
       @include make-col-span(7);
+
+      .question-editor {
+        margin-bottom: 5rem;
+      }
     }
 
     .side-section-container {
@@ -18,10 +23,63 @@
         margin-bottom: 1.5rem;
       }
 
+      .side-section-title {
+        margin-bottom: 1.5rem;
+      }
+
+      .topic-actions {
+        .topic-actions-action {
+          appearance: none;
+          background: none;
+          border: none;
+          display: block;
+          width: 100%;
+          text-align: left;
+          color: $brand-secondary;
+          padding: 0.5rem 0;
+          transition: all $btn-transition-time ease-in-out;
+          white-space: nowrap;
+          overflow: hidden;
+          text-overflow: ellipsis;
+
+          &::before {
+            @extend .fa;
+            color: $gray-lighter;
+            width: 2rem;
+            text-align: center;
+          }
+
+          &:hover, &:hover, &:focus, &.topic-actions-active {
+            color: $brand-secondary-active;
+            background: $gray-lightest;
+            outline: none;
+          }
+
+        }
+
+        .topic-actions-review-action {
+          &::before { content: $fa-var-star; }
+
+          &:hover, &:hover, &:focus, &.topic-actions-active {
+            &::before { color: $star-color; }
+          }
+        }
+
+        .topic-actions-question-action {
+          &::before { content: $fa-var-question; }
+
+          &:hover, &:hover, &:focus, &.topic-actions-active {
+            &::before { color: $brand-primary; }
+          }
+        }
+
+      }
+
       .topic-thumbnail-photo {
         width: 5rem;
         height: 5rem;
         margin: 1rem 0;
+        margin-bottom: 0.5rem;
       }
 
       .photo-gallery {

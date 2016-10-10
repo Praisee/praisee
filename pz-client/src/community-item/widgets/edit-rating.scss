@@ -1,0 +1,24 @@
+@mixin edit-rating {
+  .edit-rating {
+    @include rating-stars($star-size: 2rem);
+
+    @include apply-to-filled-rating-stars() {
+      @extend .fa-star;
+      color: $star-color;
+    };
+
+    @include apply-to-filled-rating-stars(edit-rating-preselected) {
+      @extend .fa-star;
+      color: darken($star-color, 10%);
+    };
+
+    .edit-rating-star {
+      background: none;
+      border: none;
+      appearance: none;
+      outline: none;
+      transition: all $btn-transition-time ease-in-out;
+      @extend .fa-star-o;
+    }
+  }
+}

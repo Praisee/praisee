@@ -3,17 +3,20 @@
 @import 'font-awesome';
 
 @import 'buttons';
-@import '../../user/sign-in-up';
-@import '../../user/avatar';
 @import '../../widgets/expand-button';
 @import '../../widgets/customizable-file-input';
 @import '../../widgets/content-truncator';
+@import '../../widgets/rating';
 @import '../../editor/editor';
+@import '../../user/sign-in-up';
+@import '../../user/avatar';
 @import 'app-layout';
 @import '../../home/home';
 @import '../../topic/topic';
+@import '../../community-item/widgets/edit-rating';
 @import '../../community-item/community-item';
 @import '../../community-item/community-item-editor';
+@import '../../community-item/review-editor';
 @import '../../comments/comment';
 @import '../../comments/comment-editor';
 @import '../../votes/votes';

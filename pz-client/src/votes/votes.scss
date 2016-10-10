@@ -23,7 +23,7 @@
     }
 
     .down-vote {
-      @include btn-secondary-borderless;
+      @include praisee-btn-borderless($gray-light);
     }
 
     .current-vote {

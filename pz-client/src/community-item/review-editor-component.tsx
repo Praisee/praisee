@@ -1,19 +1,19 @@
 import * as React from 'react';
 import * as Relay from 'react-relay';
 
-import CurrentUserType from 'pz-client/src/user/current-user-type';
-import SignInUpOverlay, { ISignInUpContext, SignInUpContextType } from 'pz-client/src/user/sign-in-up-overlay-component';
 import CreateCommunityItemForTopicMutation from 'pz-client/src/community-item/create-community-item-from-topic-mutation';
 import CommunityItemBodyEditor from 'pz-client/src/community-item/community-item-body-editor.component';
 import serializeEditorState from 'pz-client/src/editor/serialize-editor-state';
 import classNames from 'classnames';
 
-export interface IEditorData {
-    summary: string
-    bodyData: any
-}
+import {
+    SignInUpContextType,
+    ISignInUpContext
+} from 'pz-client/src/user/sign-in-up-overlay-component';
 
-export interface IProps {
+import EditRating from 'pz-client/src/community-item/widgets/edit-rating-component';
+
+interface IProps {
     relay: any
 
     communityItem?: {
@@ -28,30 +28,9 @@ export interface IProps {
         id: number,
         name: string
     }
-
-    summaryPlaceholder?: string
-
-    showFullEditor?: boolean
-
-    onSave?: (editorData: IEditorData) => any
-
-    className?: string
 }
 
-class CommunityItemEditor extends React.Component<IProps, any> {
-    render() {
-        const classes = classNames('community-item-editor', this.props.className);
-
-        return (
-            <div className={classes}>
-                <form className="editor-form editor-container" onSubmit={this._saveCommunityItem.bind(this) }>
-                    {this._renderSummary()}
-                    {this._renderBody()}
-                </form>
-            </div>
-        );
-    }
-
+class ReviewCommunityItemEditor extends React.Component<IProps, any> {
     private _delayedStateTimer: any;
     private _delayedState = {};
 
@@ -64,18 +43,67 @@ class CommunityItemEditor extends React.Component<IProps, any> {
     };
 
     state = {
+        rating: null,
         summaryContent: '',
         bodyState: void(0),
+        isEditing: false,
         summaryHasFocus: false,
         bodyHasFocus: false
     };
 
-    private _saying = void(0);
+    render() {
+        return (
+            <div className="review-editor">
+                <form className="editor-form" onSubmit={this._saveCommunityItem.bind(this) }>
+                    {this._renderRating()}
+                    {this._renderEditorContainer()}
+                    {this._renderSubmit()}
+                </form>
+            </div>
+        );
+    }
 
     componentWillUnmount() {
         if (this._delayedStateTimer) {
             clearTimeout(this._delayedStateTimer);
         }
+    }
+
+    private _renderRating() {
+        return (
+            <div className="editor-rating">
+                <EditRating rating={this.state.rating} onChange={this._setRating.bind(this)} />
+
+                <div className="editor-rating-label">
+                    How would you rate {this.props.topic.name}?
+                </div>
+            </div>
+        );
+    }
+
+    private _renderEditorContainer() {
+        if (!this.state.rating) {
+            return;
+        }
+
+        return (
+            <div className="editor-container">
+                {this._renderSummary()}
+                {this._renderBody()}
+            </div>
+        );
+    }
+
+    private _renderSubmit() {
+        if (!this.state.rating) {
+            return;
+        }
+
+        return (
+            <button className="submit">
+                <i className="save" />Post
+            </button>
+        );
     }
 
     private _renderSummary() {
@@ -87,7 +115,7 @@ class CommunityItemEditor extends React.Component<IProps, any> {
             <input
                 className={classes}
                 type="text"
-                placeholder={this._getSummaryPlaceholder() }
+                placeholder="Write a summary for your review"
                 onChange={this._onSummaryChange.bind(this) }
                 onFocus={this._onSummaryFocus.bind(this) }
                 onBlur={this._onSummaryBlur.bind(this) }
@@ -96,7 +124,7 @@ class CommunityItemEditor extends React.Component<IProps, any> {
     }
 
     private _renderBody() {
-        if (!this._shouldShowFullEditor()) {
+        if (!this._isEditing()) {
             return;
         }
 
@@ -108,12 +136,17 @@ class CommunityItemEditor extends React.Component<IProps, any> {
                     onFocus={this._onBodyFocus.bind(this) }
                     onBlur={this._onBodyBlur.bind(this) }
                 />
-
-                <button className="submit">
-                    <i className="save" />Post
-                </button>
             </div>
         )
+    }
+
+    private _setRating(rating: number) {
+        if (!this.context.signInUpContext.isLoggedIn) {
+            this.context.signInUpContext.showSignInUp();
+            return;
+        }
+
+        this.setState({rating});
     }
 
     private _onSummaryFocus() {
@@ -121,6 +154,7 @@ class CommunityItemEditor extends React.Component<IProps, any> {
             this.context.signInUpContext.showSignInUp(event);
             return;
         }
+
         this._setStateDelayed({ summaryHasFocus: true });
     }
 
@@ -140,44 +174,19 @@ class CommunityItemEditor extends React.Component<IProps, any> {
         this._setStateDelayed({ bodyHasFocus: false });
     }
 
-    private _getSummaryPlaceholder() {
-        return this.props.summaryPlaceholder || this._getRandomSaying();
-    }
-
-    private _getRandomSaying() {
-        if (this._saying) {
-            return this._saying;
-        }
-
-        const sayings = [
-            `Say something about`,
-            `Tell us some tips and tricks for`,
-            `Share some tips and tricks for`,
-            `Share something about`,
-            `Review`,
-            `Ask a question about`,
-            `Ask your question about`,
-        ];
-
-        var randomSaying = sayings[Math.floor(Math.random() * (sayings.length - 1))];
-
-        this._saying = `${randomSaying} ${this.props.topic.name}...`;
-        return this._saying;
-    }
-
     private _saveCommunityItem(event) {
         event.preventDefault();
 
-        const editorData = {
+        this.props.relay.commitUpdate(new CreateCommunityItemForTopicMutation({
+            type: 'Review',
+            topic: this.props.topic,
             summary: this.state.summaryContent,
-            bodyData: serializeEditorState(this.state.bodyState)
-        };
-
-        if (this.props.onSave) {
-            this.props.onSave(editorData);
-        } else {
-            this._defaultCommunityItemCreator(editorData)
-        }
+            bodyData: serializeEditorState(this.state.bodyState),
+            reviewDetails: {
+                reviewedTopicId: this.props.topic.id,
+                reviewRating: this.state.rating
+            }
+        }));
     }
 
     private _onSummaryChange(event) {
@@ -200,47 +209,22 @@ class CommunityItemEditor extends React.Component<IProps, any> {
         }, 50);
     }
 
-    private _shouldShowFullEditor(): boolean {
-        return this.props.showFullEditor || (
-            this.state.bodyHasFocus ||
-            this.state.summaryHasFocus ||
-            this.state.summaryContent.length > 0 ||
-            (this.state.bodyState && this.state.bodyState.getCurrentContent().hasText())
-        );
-    }
-
-    private _defaultCommunityItemCreator(editorData: IEditorData) {
-        const {summary, bodyData} = editorData;
-
-        this.props.relay.commitUpdate(new CreateCommunityItemForTopicMutation({
-            type: 'General',
-            topic: this.props.topic,
-            summary,
-            bodyData
-        }));
+    private _isEditing(): boolean {
+        return (
+        this.state.bodyHasFocus ||
+        this.state.summaryHasFocus ||
+        this.state.summaryContent.length > 0 ||
+        (this.state.bodyState && this.state.bodyState.getCurrentContent().hasText()));
     }
 }
 
-export var CreateItemEditor = Relay.createContainer(CommunityItemEditor, {
+export default Relay.createContainer(ReviewCommunityItemEditor, {
     fragments: {
         topic: () => Relay.QL`
             fragment on Topic {
                 id
                 name
                 ${CreateCommunityItemForTopicMutation.getFragment('topic')}
-            }
-        `
-    }
-});
-
-export var UpdateItemEditor = Relay.createContainer(CommunityItemEditor, {
-    fragments: {
-        review: () => Relay.QL`
-            fragment on CommunityItemInterface {
-                id,
-                type,
-                summary,
-                body
             }
         `
     }

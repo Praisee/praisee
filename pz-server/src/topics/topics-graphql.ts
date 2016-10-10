@@ -104,7 +104,7 @@ export default function topicTypes(repositoryAuthorizers: IAppRepositoryAuthoriz
                     args: connectionArgs,
 
                     resolve: async (topic, args, {user}) => {
-                        const cursor = biCursorFromGraphqlArgs(args);
+                        const cursor = biCursorFromGraphqlArgs(args as any);
 
                         const communityItems = await topicsAuthorizer
                             .as(user)
@@ -136,7 +136,7 @@ export default function topicTypes(repositoryAuthorizers: IAppRepositoryAuthoriz
                     args: connectionArgs,
 
                     resolve: async (topic, args, {user}) => {
-                        const cursor = biCursorFromGraphqlArgs(args);
+                        const cursor = biCursorFromGraphqlArgs(args as any);
 
                         const photoGalleryPhotos = await topicsAuthorizer
                             .as(user)

@@ -58,7 +58,7 @@ export default function getViewerType(repositoryAuthorizers: IAppRepositoryAutho
                 args: connectionArgs,
 
                 resolve: async (_, args, {user}) => {
-                    const cursor = biCursorFromGraphqlArgs(args);
+                    const cursor = biCursorFromGraphqlArgs(args as any);
 
                     return connectionFromCursorResults(
                         await communityItemsAuthorizer

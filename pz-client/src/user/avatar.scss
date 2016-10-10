@@ -43,7 +43,7 @@
 
     .trust-button {
       @include btn();
-      @include priasee-btn-outline($brand-primary-minor);
+      @include praisee-btn-outline($brand-primary-minor);
       font-size: 0.7rem;
       padding: 0.2rem 0.5rem;
       margin-left: 1rem;
@@ -52,6 +52,7 @@
     .trust-button-icon {
       @extend .fa-check;
       @extend .fa;
+      margin-right: 0.3rem;
     }
   }
 }
