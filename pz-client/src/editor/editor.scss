@@ -15,6 +15,7 @@
       padding: 0;
       font-size: $font-size;
       border: none;
+      word-break: break-all;
 
       .public-DraftEditor-content {
         min-height: 7rem;

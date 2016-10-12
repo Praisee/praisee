@@ -43,6 +43,14 @@
       }
     }
 
+    .community-item-bottom-editing-comment {
+      display: block;
+
+      .up-vote {
+        @include btn-primary-outline();
+      }
+    }
+
     .reply-button {
       flex: 1;
     }
@@ -55,6 +63,12 @@
       margin-top: 1rem;
       padding-top: 0;
       padding-bottom: 0;
+    }
+
+    .comment-list {
+      .up-vote {
+        @include btn-primary-borderless();
+      }
     }
 
     .community-item-header {

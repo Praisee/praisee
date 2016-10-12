@@ -7,21 +7,17 @@ const signInApi = appInfo.addresses.getSignInApi();
 const signUpApi = appInfo.addresses.getSignUpApi();
 
 interface IProps {
+    onSuccess: (json) => {}
     showSignUp?: boolean
     submitText?: string
-    onSuccess: (json) => {}
-}
-
-interface IState {
-    isShowingSignUp?: boolean
-    isShowingPasswordField?: boolean
+    onInteraction?: () => {}
 }
 
 interface IContext {
     clearSessionData: () => void
 }
 
-export default class SignInUp extends React.Component<IProps, IState> {
+export default class SignInUp extends React.Component<IProps, any> {
     static propTypes = {
         showSignUp: React.PropTypes.bool
     };
@@ -42,7 +38,7 @@ export default class SignInUp extends React.Component<IProps, IState> {
             this._renderSignUp() : this._renderSignIn();
 
         return (
-            <div className="sign-in-up">
+            <div className="embedded-sign-in-up">
                 {content}
             </div>
         );
@@ -51,73 +47,119 @@ export default class SignInUp extends React.Component<IProps, IState> {
     private _renderSignUp() {
         const {submitText} = this.props;
 
+        const onInteraction = this._onInteraction.bind(this);
+
         return (
             <div className="sign-up">
                 <form action={signUpApi} method="post" onSubmit={this._submit.bind(this) }>
-                    <div className="form-group">
-                        <input className="form-control" type="text" name="displayName" placeholder="Your name" key="displayName" />
+                    <div className="sign-in-up-name-group sign-in-up-field-group">
+                        <input
+                            className="sign-in-up-name sign-in-up-field"
+                            type="text"
+                            name="displayName"
+                            placeholder="Your name"
+                            key="displayName"
+                            onFocus={onInteraction}
+                            onChange={onInteraction}
+                        />
                     </div>
 
-                    <div className="form-group">
-                        <input className="form-control" type="text"
-                            name="email" placeholder="Your email" key="email"
-                            onChange={this._emailFieldChanged.bind(this) } />
+                    <div className="sign-in-up-email-group sign-in-up-field-group">
+                        <input
+                            className="sign-in-up-email sign-in-up-field"
+                            type="email"
+                            name="email"
+                            placeholder="Your email"
+                            key="email"
+                            onFocus={onInteraction}
+                            onChange={this._emailFieldChanged.bind(this) }
+                        />
                     </div>
 
                     {this.state.isShowingPasswordField &&
-                        <div className="form-group">
-                            <input className="form-control" type="password" name="password" placeholder="Password" key="password" />
+                        <div className="sign-in-up-password-group sign-in-up-field-group">
+                            <input
+                                className="sign-in-up-password sign-in-up-field"
+                                type="password"
+                                name="password"
+                                placeholder="Password"
+                                key="password"
+                                onFocus={onInteraction}
+                                onChange={onInteraction}
+                            />
                         </div>
                     }
 
-                    <div>
+                    <div className="sign-in-up-button-container">
                         <button type="submit" className="sign-up-button">
-                            {this.state.isShowingPasswordField ? `Sign Up & ${submitText}` : submitText}
+                            {this.state.isShowingPasswordField ? `Sign up & ${submitText}` : submitText}
                         </button>
                     </div>
                 </form>
 
-                <p>
+                <div className="switch-sign-in-up-action">
                     Already have an account?
                     <a href={routePaths.user.signIn() }
                         onClick={this._switchToSignIn.bind(this) }> Sign in here!</a>
-                </p>
+                </div>
             </div>
         );
     }
 
     private _renderSignIn() {
+        const onInteraction = this._onInteraction.bind(this);
+
         return (
             <div className="sign-in">
                 <form action={signInApi} method="post" onSubmit={this._submit.bind(this) }>
-                    <div className="form-group">
-                        <input className="form-control" type="text" name="email" placeholder="Your email" key="email" />
+                    <div className="sign-in-up-email-group sign-in-up-field-group">
+                        <input
+                            className="sign-in-up-email sign-in-up-field"
+                            type="email"
+                            name="email"
+                            placeholder="Your email"
+                            key="email"
+                            onFocus={onInteraction}
+                            onChange={onInteraction}
+                        />
                     </div>
 
-                    <div className="form-group">
-                        <input className="form-control" type="password" name="password" placeholder="Password" key="password" />
+                    <div className="sign-in-up-password-group sign-in-up-field-group">
+                        <input
+                            className="sign-in-up-password sign-in-up-field"
+                            type="password"
+                            name="password"
+                            placeholder="Password"
+                            key="password"
+                            onFocus={onInteraction}
+                            onChange={onInteraction}
+                        />
                     </div>
 
-                    <div>
+                    <div className="sign-in-up-button-container">
                         <button type="submit" className="sign-in-button">{this.props.submitText}</button>
                     </div>
                 </form>
 
-                <p>
+                <div className="switch-sign-in-up-action">
                     Don't have an account?
                     <a href={routePaths.user.signUp() }
                         onClick={this._switchToSignUp.bind(this) }> Sign up here!</a>
-                </p>
+                </div>
             </div>
         );
     }
 
     private _emailFieldChanged(event) {
         this.setState({ isShowingPasswordField: event.target.value.length > 0 });
+
+        this._onInteraction();
     }
 
     private async _submit(event) {
         event.preventDefault();
+
+        this._onInteraction();
 
         const noop = () => { };
         const clearSessionData = this.context.clearSessionData || noop;
@@ -156,6 +198,8 @@ export default class SignInUp extends React.Component<IProps, IState> {
         event.preventDefault();
         this.setState({ isShowingSignUp: true });
         event.target.blur();
+
+        this._onInteraction();
     }
 
     private _switchToSignIn(event) {
@@ -166,5 +210,13 @@ export default class SignInUp extends React.Component<IProps, IState> {
         event.preventDefault();
         this.setState({ isShowingSignUp: false });
         event.target.blur();
+
+        this._onInteraction();
+    }
+
+    private _onInteraction() {
+        if (this.props.onInteraction) {
+            this.props.onInteraction();
+        }
     }
 }

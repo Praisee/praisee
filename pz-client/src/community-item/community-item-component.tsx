@@ -177,17 +177,20 @@ class CommunityItem extends Component<ICommunityItemProps, ICommuintyItemState> 
     private _renderVotesAndReply() {
         const {communityItem} = this.props;
 
+        const classes = classNames('community-item-bottom', {
+            'community-item-bottom-editing-comment': this.state.isEditingComment
+        });
+
         return (
-            <div className="community-item-bottom">
-                {!this.state.isEditingComment && (
-                    <div className="left">
-                        <Votes
-                            key={`communityItem-votes-${communityItem.id}`}
-                            comment={null}
-                            communityItem={this.props.communityItem} />
-                        <CommentBubble onClick={this._toggleComments.bind(this)} communityItem={this.props.communityItem} />
-                    </div>
-                )}
+            <div className={classes}>
+                <div className="left">
+                    <Votes
+                        key={`communityItem-votes-${communityItem.id}`}
+                        comment={null}
+                        communityItem={this.props.communityItem} />
+                    <CommentBubble onClick={this._toggleComments.bind(this)} communityItem={this.props.communityItem} />
+                </div>
+
                 <CreateCommentEditor
                     comment={null}
                     communityItem={communityItem}
