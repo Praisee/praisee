@@ -1,6 +1,5 @@
 {
   "initial:before": {
-    "loopback#favicon": {}
   },
   "initial": {
     "loopback#logger": {
