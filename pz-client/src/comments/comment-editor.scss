@@ -85,8 +85,11 @@
     .embedded-sign-in-up {
       .sign-in-up-field {
         @extend .form-control;
-        margin-bottom: 0.5rem;
         font-size: 0.9rem;
+      }
+
+      .sign-in-up-button-container {
+        margin-top: 0.5rem;
       }
 
       .switch-sign-in-up-action {

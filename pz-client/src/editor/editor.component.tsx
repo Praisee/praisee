@@ -45,7 +45,7 @@ export default class Editor extends React.Component<IProps, any> {
         onChange: () => {},
         onBlur: () => {}
     };
-    
+
     componentDidMount(){
         if(this.props.autoFocus)
             this.focus();
@@ -70,7 +70,7 @@ export default class Editor extends React.Component<IProps, any> {
                         editorState={editorState}
                         handleKeyCommand={this._updateRichStylingFromCommand.bind(this) }
                         onChange={this._updateEditor.bind(this) }
-                        onBlur={this._onBlur.bind(this, event)}
+                        onBlur={this._onBlur.bind(this)}
                         onFocus={this.props.onFocus}
                         placeholder={!this.state.isContentMenuOpen ? this.props.placeholder : ''}
                         plugins={this._editorPlugins}
