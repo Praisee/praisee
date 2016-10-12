@@ -14,7 +14,7 @@
       border: 1px solid $input-border-color;
     }
 
-    .submit {
+    .post-button {
       margin-top: 1.5rem;
       font-size: 1rem;
     }
@@ -23,6 +23,10 @@
       font-size: 0.9rem;
       margin-top: 0.5rem;
       margin-left: 0.5rem;
+    }
+
+    .embedded-sign-in-up {
+      margin-top: 1rem;
     }
   }
 }

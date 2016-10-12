@@ -96,6 +96,7 @@ class Editor extends React.Component<IProps, any> {
                 <input type="text"
                     className="fake-reply-input"
                     onClick={this._showEditor.bind(this)}
+                    onFocus={this._showEditor.bind(this)}
                     placeholder="Reply..." />
             )
         }

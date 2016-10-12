@@ -93,7 +93,7 @@
         font-size: 0.8rem;
       }
 
-      @include media-breakpoint-up(md) {
+      @include media-breakpoint-up(lg) {
         .sign-in-up-field { width: 98%; }
         .sign-in-up-field-group { display: inline-block; width: 33.33%; }
         .switch-sign-in-up-action { font-size: 0.8rem; }

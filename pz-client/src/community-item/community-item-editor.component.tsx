@@ -8,6 +8,8 @@ import CommunityItemBodyEditor from 'pz-client/src/community-item/community-item
 import serializeEditorState from 'pz-client/src/editor/serialize-editor-state';
 import classNames from 'classnames';
 import {withRouter} from 'react-router';
+import SignInUp from 'pz-client/src/user/sign-in-up-embedded-component';
+import handleClick from 'pz-client/src/support/handle-click';
 
 export interface IEditorData {
     summary: string
@@ -52,14 +54,18 @@ export interface IProps {
 
 class CommunityItemEditor extends React.Component<IProps, any> {
     render() {
-        const classes = classNames('community-item-editor', this.props.className);
+        const classes = classNames('community-item-editor', this.props.className, {
+            'community-item-editor-full-editor': this._shouldShowFullEditor()
+        });
 
         return (
             <div className={classes}>
-                <form className="editor-form editor-container" onSubmit={this._saveCommunityItem.bind(this) }>
+                <div className="editor-container">
                     {this._renderSummary()}
                     {this._renderBody()}
-                </form>
+                </div>
+
+                {this._renderSignInUp()}
             </div>
         );
     }
@@ -83,6 +89,8 @@ class CommunityItemEditor extends React.Component<IProps, any> {
     };
 
     private _saying = void(0);
+
+    private _hasInteractedWithSignInUp = false;
 
     componentWillUnmount() {
         if (this._delayedStateTimer) {
@@ -121,26 +129,42 @@ class CommunityItemEditor extends React.Component<IProps, any> {
                     onBlur={this._onBodyBlur.bind(this) }
                 />
 
-                <button className="submit">
-                    <i className="save" />Post
-                </button>
+                {this.context.signInUpContext.isLoggedIn &&
+                    this._renderPostButton()
+                }
             </div>
         )
     }
 
-    private _onSummaryFocus() {
-        if (!this.context.signInUpContext.isLoggedIn) {
-            this.context.signInUpContext.showSignInUp();
+    private _renderPostButton() {
+        return (
+            <button className="post-button"
+                    onClick={handleClick(this._saveCommunityItem.bind(this))}>
+
+                <i className="save-icon" />Post
+            </button>
+        );
+    }
+
+    private _renderSignInUp() {
+        if (!this._shouldShowFullEditor() || this.context.signInUpContext.isLoggedIn) {
             return;
         }
+
+        return (
+            <SignInUp
+                onInteraction={this._recordSignInUpInteraction.bind(this)}
+                onSuccess={this._saveCommunityItem.bind(this)}
+                submitText="Post"
+            />
+        );
+    }
+
+    private _onSummaryFocus() {
         this._setStateDelayed({ summaryHasFocus: true });
     }
 
     private _onBodyFocus() {
-        if (!this.context.signInUpContext.isLoggedIn) {
-            this.context.signInUpContext.showSignInUp();
-            return;
-        }
         this._setStateDelayed({ bodyHasFocus: true });
     }
 
@@ -177,9 +201,7 @@ class CommunityItemEditor extends React.Component<IProps, any> {
         return this._saying;
     }
 
-    private _saveCommunityItem(event) {
-        event.preventDefault();
-
+    private _saveCommunityItem() {
         const editorData = {
             summary: this.state.summaryContent,
             bodyData: serializeEditorState(this.state.bodyState)
@@ -226,6 +248,7 @@ class CommunityItemEditor extends React.Component<IProps, any> {
 
     private _shouldShowFullEditor(): boolean {
         return this.props.showFullEditor || (
+            this._hasInteractedWithSignInUp ||
             this.state.bodyHasFocus ||
             this.state.summaryHasFocus ||
             this.state.summaryContent.length > 0 ||
@@ -257,6 +280,10 @@ class CommunityItemEditor extends React.Component<IProps, any> {
         if (redirectPath) {
             this.props.router.push(redirectPath);
         }
+    }
+
+    private _recordSignInUpInteraction() {
+        this._hasInteractedWithSignInUp = true;
     }
 }
 

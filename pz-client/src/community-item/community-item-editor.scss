@@ -1,10 +1,6 @@
 @mixin community-item-editor-mixin() {
   @include editor(1rem);
 
-  .editor-form {
-    width: 100%;
-  }
-
   .editor-container {
     padding: 1rem 0;
     box-shadow: 1px 1px 4px rgba(0, 0, 0, 0.3);
@@ -47,7 +43,7 @@
     margin-bottom: 0.5rem;
   }
 
-  .submit {
+  .post-button, .sign-up-button, .sign-in-button {
     @include btn;
     @include btn-sm;
     @include btn-primary;
@@ -58,10 +54,43 @@
     line-height: 1.5;
     border-radius: 0.2rem;
 
-    .save {
+    .save-icon, .optional-icon {
       @extend .fa;
       @extend .fa-check;
       padding-right: .5rem;
+    }
+  }
+
+  .sign-up-button, .sign-in-button {
+    font-size: 1rem;
+    margin-top: 0.5rem;
+  }
+
+  .embedded-sign-in-up {
+    .sign-in-up-field {
+      @extend .form-control;
+      margin-bottom: 0.5rem;
+      font-size: 0.9rem;
+    }
+
+    .switch-sign-in-up-action {
+      font-size: 0.9rem;
+      margin-top: 0.5rem;
+    }
+
+    @include media-breakpoint-up(lg) {
+      .sign-in-up-field { width: 96%; }
+      .sign-in-up-field-group { display: inline-block; width: 33.33%; }
+      .switch-sign-in-up-action { font-size: 0.8rem; }
+
+      .sign-up {
+        .sign-in-up-email { margin: 0 auto; }
+        .sign-in-up-password { margin-left: auto; }
+      }
+
+      .sign-in {
+        .sign-in-up-password { margin-left: auto; }
+      }
     }
   }
 }
@@ -69,5 +98,10 @@
 @mixin community-item-editor {
   .community-item-editor {
     @include community-item-editor-mixin();
+
+    .embedded-sign-in-up {
+      border-bottom: 1px solid $hr-border-color;
+      padding-bottom: 2.5rem;
+    }
   }
 }

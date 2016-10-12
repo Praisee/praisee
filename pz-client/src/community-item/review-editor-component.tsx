@@ -6,6 +6,7 @@ import CommunityItemBodyEditor from 'pz-client/src/community-item/community-item
 import serializeEditorState from 'pz-client/src/editor/serialize-editor-state';
 import classNames from 'classnames';
 import {withRouter} from 'react-router';
+import handleClick from 'pz-client/src/support/handle-click';
 
 import {
     SignInUpContextType,
@@ -13,6 +14,8 @@ import {
 } from 'pz-client/src/user/sign-in-up-overlay-component';
 
 import EditRating from 'pz-client/src/community-item/widgets/edit-rating-component';
+
+import SignInUp from 'pz-client/src/user/sign-in-up-embedded-component';
 
 interface IProps {
     relay: any
@@ -52,14 +55,14 @@ class ReviewCommunityItemEditor extends React.Component<IProps, any> {
         bodyHasFocus: false
     };
 
+    private _hasInteractedWithSignInUp = false;
+
     render() {
         return (
             <div className="review-editor">
-                <form className="editor-form" onSubmit={this._saveCommunityItem.bind(this) }>
-                    {this._renderRating()}
-                    {this._renderEditorContainer()}
-                    {this._renderSubmit()}
-                </form>
+                {this._renderRating()}
+                {this._renderEditorContainer()}
+                {this._renderSubmit()}
             </div>
         );
     }
@@ -100,10 +103,26 @@ class ReviewCommunityItemEditor extends React.Component<IProps, any> {
             return;
         }
 
-        return (
-            <button className="submit">
-                <i className="save" />Post
+        const postButton = (
+            <button className="post-button"
+                    onClick={handleClick(this._saveCommunityItem.bind(this))}>
+
+                <i className="save-icon" />Post
             </button>
+        );
+
+        return this.context.signInUpContext.isLoggedIn
+            ? postButton
+            : this._renderSignInUp();
+    }
+
+    private _renderSignInUp() {
+        return (
+            <SignInUp
+                onInteraction={this._recordSignInUpInteraction.bind(this)}
+                onSuccess={this._saveCommunityItem.bind(this)}
+                submitText="Post"
+            />
         );
     }
 
@@ -142,28 +161,14 @@ class ReviewCommunityItemEditor extends React.Component<IProps, any> {
     }
 
     private _setRating(rating: number) {
-        if (!this.context.signInUpContext.isLoggedIn) {
-            this.context.signInUpContext.showSignInUp();
-            return;
-        }
-
         this.setState({rating});
     }
 
     private _onSummaryFocus() {
-        if (!this.context.signInUpContext.isLoggedIn) {
-            this.context.signInUpContext.showSignInUp();
-            return;
-        }
-
         this._setStateDelayed({ summaryHasFocus: true });
     }
 
     private _onBodyFocus() {
-        if (!this.context.signInUpContext.isLoggedIn) {
-            this.context.signInUpContext.showSignInUp();
-            return;
-        }
         this._setStateDelayed({ bodyHasFocus: true });
     }
 
@@ -175,9 +180,7 @@ class ReviewCommunityItemEditor extends React.Component<IProps, any> {
         this._setStateDelayed({ bodyHasFocus: false });
     }
 
-    private _saveCommunityItem(event) {
-        event.preventDefault();
-
+    private _saveCommunityItem() {
         const mutation = new CreateCommunityItemForTopicMutation({
             type: 'Review',
             viewer: this.props.viewer,
@@ -237,6 +240,10 @@ class ReviewCommunityItemEditor extends React.Component<IProps, any> {
         if (redirectPath) {
             this.props.router.push(redirectPath);
         }
+    }
+
+    private _recordSignInUpInteraction() {
+        this._hasInteractedWithSignInUp = true;
     }
 }
 

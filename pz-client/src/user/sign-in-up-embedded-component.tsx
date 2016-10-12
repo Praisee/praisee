@@ -7,10 +7,10 @@ const signInApi = appInfo.addresses.getSignInApi();
 const signUpApi = appInfo.addresses.getSignUpApi();
 
 interface IProps {
-    onSuccess: (json) => {}
+    onSuccess: (json) => any
     showSignUp?: boolean
     submitText?: string
-    onInteraction?: () => {}
+    onInteraction?: () => any
 }
 
 interface IContext {
@@ -38,7 +38,7 @@ export default class SignInUp extends React.Component<IProps, any> {
             this._renderSignUp() : this._renderSignIn();
 
         return (
-            <div className="embedded-sign-in-up">
+            <div className="embedded-sign-in-up" onMouseDown={this._onInteraction.bind(this)}>
                 {content}
             </div>
         );
@@ -92,6 +92,7 @@ export default class SignInUp extends React.Component<IProps, any> {
 
                     <div className="sign-in-up-button-container">
                         <button type="submit" className="sign-up-button">
+                            <i className="optional-icon" />
                             {this.state.isShowingPasswordField ? `Sign up & ${submitText}` : submitText}
                         </button>
                     </div>
@@ -99,8 +100,9 @@ export default class SignInUp extends React.Component<IProps, any> {
 
                 <div className="switch-sign-in-up-action">
                     Already have an account?
-                    <a href={routePaths.user.signIn() }
-                        onClick={this._switchToSignIn.bind(this) }> Sign in here!</a>
+                    <a href={routePaths.user.signIn()}
+                        onMouseDown={this._onInteraction.bind(this)}
+                        onClick={this._switchToSignIn.bind(this)}> Sign in here!</a>
                 </div>
             </div>
         );
@@ -137,14 +139,18 @@ export default class SignInUp extends React.Component<IProps, any> {
                     </div>
 
                     <div className="sign-in-up-button-container">
-                        <button type="submit" className="sign-in-button">{this.props.submitText}</button>
+                        <button type="submit" className="sign-in-button">
+                            <i className="optional-icon" />
+                            {this.props.submitText}
+                        </button>
                     </div>
                 </form>
 
                 <div className="switch-sign-in-up-action">
                     Don't have an account?
-                    <a href={routePaths.user.signUp() }
-                        onClick={this._switchToSignUp.bind(this) }> Sign up here!</a>
+                    <a href={routePaths.user.signUp()}
+                        onMouseDown={this._onInteraction.bind(this)}
+                        onClick={this._switchToSignUp.bind(this)}> Sign up here!</a>
                 </div>
             </div>
         );
