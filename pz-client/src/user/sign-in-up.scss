@@ -14,6 +14,39 @@
   }
 }
 
+@mixin embedded-sign-in-up {
+  .embedded-sign-in-up {
+    .sign-in-up-field {
+      @extend .form-control;
+      font-size: 0.9rem;
+    }
+
+    .sign-in-up-field-group {
+      margin-bottom: 0.5rem;
+    }
+
+    .switch-sign-in-up-action {
+      font-size: 0.9rem;
+      margin-top: 0.5rem;
+    }
+
+    @include media-breakpoint-up(lg) {
+      .sign-in-up-field { width: 96%; }
+      .sign-in-up-field-group { display: inline-block; width: 33.33%; }
+      .switch-sign-in-up-action { font-size: 0.8rem; }
+
+      .sign-up {
+        .sign-in-up-email { margin: 0 auto; }
+        .sign-in-up-password { margin-left: auto; }
+      }
+
+      .sign-in {
+        .sign-in-up-password { margin-left: auto; }
+      }
+    }
+  }
+}
+
 @mixin sign-in-up-namespace {
   .sign-in-up-namespace {
     @include sign-in-up();
