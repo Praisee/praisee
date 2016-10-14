@@ -1,0 +1,8 @@
+// Source: https://css-tricks.com/snippets/css/prevent-long-urls-from-breaking-out-of-container/
+
+@mixin break-long-words {
+  overflow-wrap: break-word;
+  word-wrap: break-word;
+  word-break: break-word;
+  hyphens: auto;
+}

@@ -76,8 +76,9 @@
 
       padding-top: 0.25rem;
       padding-bottom: 0.25rem;
+      padding-right: 1.3rem; // For close button
       min-height: 4rem;
-      word-break: break-all;
+      @include break-long-words();
 
       .public-DraftEditor-content {
         min-height: 1rem;
