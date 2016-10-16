@@ -58,11 +58,13 @@ module.exports = function (User: IUserModel) {
                 affectedUserId: userId
             }
         });
+        
+        let upVoteCount = votesOnUser.filter(vote => vote.isUpVote).length;
 
-        let upVotesCount = votesOnUser.filter(vote => vote.isUpVote).length;
-        let downVoteCount = votesOnUser.length - upVotesCount;
-        let reputation = (upVotesCount - downVoteCount) * 5;
+        let upVoteReputation = upVoteCount * 10;
+        let downVoteReputation = (votesOnUser.length - upVoteCount) * 5;
+        let reputation = upVoteReputation - downVoteReputation;
 
-        return Math.max(0, reputation);
+        return reputation;
     }
 };

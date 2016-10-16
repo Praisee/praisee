@@ -189,6 +189,26 @@ export default function getCommunityItemTypes(repositoryAuthorizers: IAppReposit
                 return result.hasMarkedRead;
             }
         },
+        
+        isMine: {
+            type: new GraphQLNonNull(GraphQLBoolean),
+            
+            resolve: async (communityItem, __, {user}) => {
+                if (!user) {
+                    return false;
+                }
+                
+                return communityItem.userId === user.id;
+            }
+        },
+        
+        reputationEarned: {
+            type: new GraphQLNonNull(GraphQLInt),
+            
+            resolve: async (communityItem, __, {user}) => {
+                return 125;
+            }
+        }
     });
 
     var CommunityItemInterfaceType = new GraphQLInterfaceType({

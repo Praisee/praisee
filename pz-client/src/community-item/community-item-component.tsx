@@ -18,6 +18,7 @@ import handleClick from 'pz-client/src/support/handle-click';
 import CommunityItemSchema from 'pz-client/src/community-item/widgets/community-item-schema-component';
 import UpdateCommunityItemInteractionMutation from 'pz-client/src/community-item/update-community-item-interaction-mutation';
 import CurrentUserType from 'pz-client/src/user/current-user-type';
+import ReputationEarned from 'pz-client/src/widgets/reputation-earned-component';
 
 interface ICommunityItemProps {
     isMinimized: boolean;
@@ -33,7 +34,8 @@ interface ICommunityItemProps {
         comments: any
         topics: Array<{ id: string, name: string, routePath: string }>
         routePath: string
-        currentUserHasMarkedRead
+        currentUserHasMarkedRead: boolean
+        isMine: boolean
     }
 
     body: string;
@@ -159,7 +161,7 @@ class CommunityItem extends Component<ICommunityItemProps, ICommuintyItemState> 
                     <CommunityItemContent
                         className="community-item-body"
                         communityItem={communityItem}
-                    />
+                        />
                 </ContentTruncator>
             );
 
@@ -169,7 +171,7 @@ class CommunityItem extends Component<ICommunityItemProps, ICommuintyItemState> 
                 <CommunityItemContent
                     className="community-item-body"
                     communityItem={communityItem}
-                />
+                    />
             );
         }
     }
@@ -184,10 +186,7 @@ class CommunityItem extends Component<ICommunityItemProps, ICommuintyItemState> 
         return (
             <div className={classes}>
                 <div className="left">
-                    <Votes
-                        key={`communityItem-votes-${communityItem.id}`}
-                        comment={null}
-                        communityItem={this.props.communityItem} />
+                    {this._renderVotesOrReputation()}
                     <CommentBubble onClick={this._toggleComments.bind(this)} communityItem={this.props.communityItem} />
                 </div>
 
@@ -195,8 +194,25 @@ class CommunityItem extends Component<ICommunityItemProps, ICommuintyItemState> 
                     comment={null}
                     communityItem={communityItem}
                     onEditing={this._onEditingComment.bind(this)}
-                />
+                    />
             </div>
+        );
+    }
+
+    private _renderVotesOrReputation() {
+        const {communityItem} = this.props;
+
+        if (communityItem.isMine) {
+            return (
+                <ReputationEarned
+                    communityItem={this.props.communityItem} />
+            );
+        }
+        return (
+            <Votes
+                key={`communityItem-votes-${communityItem.id}`}
+                comment={null}
+                communityItem={this.props.communityItem} />
         );
     }
 
@@ -261,6 +277,7 @@ export default Relay.createContainer(CommunityItem, {
                 }
                 routePath
                 currentUserHasMarkedRead
+                isMine
                 
                 ... on ReviewCommunityItem {
                     reviewedTopic {
@@ -279,6 +296,7 @@ export default Relay.createContainer(CommunityItem, {
                 ${CommunityItemTypeHeader.getFragment('communityItem')}
                 ${CommunityItemSchema.getFragment('communityItem')}
                 ${UpdateCommunityItemInteractionMutation.getFragment('communityItem')}
+                ${ReputationEarned.getFragment('communityItem')}
             }
         `
     }

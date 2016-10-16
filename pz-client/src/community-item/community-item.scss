@@ -38,6 +38,8 @@
     }
 
     .left {
+      display: flex;
+      
       @include media-breakpoint-down(sm) {
         display: block;
       }

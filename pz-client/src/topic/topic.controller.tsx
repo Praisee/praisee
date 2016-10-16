@@ -114,7 +114,7 @@ export class TopicController extends Component<ITopicProps, ITopicState> {
                 <ExpandButton
                     className="show-more-community-items"
                     onExpand={this._showMoreCommunityItems.bind(this)}
-                    isExpanded={canExpand}  
+                    isExpanded={!canExpand}  
                     />
             )
         }

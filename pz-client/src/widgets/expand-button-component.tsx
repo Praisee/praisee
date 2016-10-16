@@ -14,16 +14,16 @@ export default class ExpandButton extends Component<IExpandProps, any>{
         const classes = classNames(
             'expand-button',
             this.props.className,
-            this.props.isExpanded ? "collapse" : "expand"
+            this.props.isExpanded ? "expand-button-collapse" : "expand-button-expand"
         );
 
         return (
-            <div className="expand-container">
+            <div className="expand-button-container">
                 <button
                     className={classes}
                     onClick={handleClick(this.props.onExpand)}>
 
-                    <i className="icon" />
+                    <i className="expand-button-icon" />
                 </button>
             </div>
         );

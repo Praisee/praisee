@@ -1,4 +1,8 @@
 @mixin expand-button {
+  .expand-button-container {
+    text-align: center;
+  }
+  
   .expand-button {
     cursor: pointer;
     border: 1px solid transparent;
@@ -12,25 +16,21 @@
       background-color: $gray-lighter;
     }
 
-    .icon {
+    .expand-button-icon {
       @extend .fa;
       color: $gray-light;
     }
 
-    &.collapse {
-      .icon {
+    &.expand-button-collapse {
+      .expand-button-icon {
         @extend .fa-angle-up;
       }
     }
 
-    &.expand {
-      .icon {
+    &.expand-button-expand {
+      .expand-button-icon {
         @extend .fa-angle-down;
       }
     }
-  }
-
-  .expand-container {
-    text-align: center;
   }
 }
