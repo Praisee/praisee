@@ -9,6 +9,7 @@
         position: relative;
 
         &::after {
+          cursor: pointer;
           display: block;
           content: '';
           background: transparent;

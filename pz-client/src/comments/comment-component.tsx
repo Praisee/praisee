@@ -55,7 +55,7 @@ export class Comment extends Component<any, any>{
         let expandButton = null;
         if (!expand && commentCount > 0) {
             expandButton = (
-                <ExpandButton onExpand={this._expand.bind(this)} />
+                <ExpandButton onExpand={this._expand.bind(this)} isExpanded={expand}/>
             )
         }
 

@@ -3,13 +3,34 @@
     cursor: pointer;
     border: 1px solid transparent;
     border-radius: 3px;
-    padding: 0 1rem 0.4rem 1rem;
+    padding: 0 1rem 0.2rem 1rem;
     line-height: 1;
-    background-color: lighten($gray-lighter, 10%);
+    background-color: $gray-lightest;
     outline: none;
 
     &:active, &:hover, &focus {
       background-color: $gray-lighter;
     }
+
+    .icon {
+      @extend .fa;
+      color: $gray-light;
+    }
+
+    &.collapse {
+      .icon {
+        @extend .fa-angle-up;
+      }
+    }
+
+    &.expand {
+      .icon {
+        @extend .fa-angle-down;
+      }
+    }
+  }
+
+  .expand-container {
+    text-align: center;
   }
 }

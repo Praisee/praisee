@@ -80,7 +80,8 @@ class PhotoGallery extends React.Component<IProps, any> {
         }
 
         return (
-            <ExpandButton onExpand={this._showMorePhotos.bind(this)} />
+            <ExpandButton onExpand={this._showMorePhotos.bind(this)}
+                isExpanded={false}/>
         );
     }
 

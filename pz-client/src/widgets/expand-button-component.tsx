@@ -6,19 +6,26 @@ import classNames from 'classnames';
 interface IExpandProps{
     onExpand: () => {}
     className?: string
+    isExpanded: boolean
 }
 
 export default class ExpandButton extends Component<IExpandProps, any>{
     render() {
-        const classes = classNames('expand-button', this.props.className);
+        const classes = classNames(
+            'expand-button',
+            this.props.className,
+            this.props.isExpanded ? "collapse" : "expand"
+        );
 
         return (
-            <button
-                className={classes}
-                onClick={handleClick(this.props.onExpand)}>
+            <div className="expand-container">
+                <button
+                    className={classes}
+                    onClick={handleClick(this.props.onExpand)}>
 
-                    ...
-            </button>
+                    <i className="icon" />
+                </button>
+            </div>
         );
     }
 }

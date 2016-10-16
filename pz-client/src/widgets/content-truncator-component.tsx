@@ -41,6 +41,7 @@ export default class ContentTruncator extends React.Component<IProps, any> {
                 <ExpandButton
                     className="content-truncator-toggle"
                     onExpand={this._toggleTruncation.bind(this)}
+                    isExpanded={!this._isTruncated()}
                 />
             </div>
         );
