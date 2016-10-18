@@ -2,7 +2,7 @@
   .expand-button-container {
     text-align: center;
   }
-  
+
   .expand-button {
     cursor: pointer;
     border: 1px solid transparent;
@@ -30,6 +30,30 @@
     &.expand-button-expand {
       .expand-button-icon {
         @extend .fa-angle-down;
+      }
+    }
+  }
+
+  .content-truncator {
+    .expand-button-container {
+      position: relative;
+      
+      &.expand-button-container-collapse{
+        margin-top: 0;
+      }
+      
+      &.expand-button-container-expand{
+        margin-top: -.8rem;
+      }
+    }
+
+    .expand-button {
+      background-color: transparent;
+      width: 100%;
+      transition: all 0.2s ease-in-out;
+
+      &:active, &:hover, &focus {
+        background-color: $gray-lightest;
       }
     }
   }

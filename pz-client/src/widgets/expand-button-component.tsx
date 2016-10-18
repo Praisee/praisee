@@ -11,16 +11,21 @@ interface IExpandProps{
 
 export default class ExpandButton extends Component<IExpandProps, any>{
     render() {
-        const classes = classNames(
+        const buttonClasses = classNames(
             'expand-button',
             this.props.className,
             this.props.isExpanded ? "expand-button-collapse" : "expand-button-expand"
         );
+        
+        const containerClasses = classNames(
+            'expand-button-container',
+            this.props.isExpanded ? "expand-button-container-collapse" : "expand-button-container-expand"
+        );
 
         return (
-            <div className="expand-button-container">
+            <div className={containerClasses}>
                 <button
-                    className={classes}
+                    className={buttonClasses}
                     onClick={handleClick(this.props.onExpand)}>
 
                     <i className="expand-button-icon" />

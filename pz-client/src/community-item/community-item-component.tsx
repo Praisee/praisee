@@ -185,7 +185,7 @@ class CommunityItem extends Component<ICommunityItemProps, ICommuintyItemState> 
 
         return (
             <div className={classes}>
-                <div className="left">
+                <div className="community-item-bottom-left">
                     {this._renderVotesOrReputation()}
                     <CommentBubble onClick={this._toggleComments.bind(this)} communityItem={this.props.communityItem} />
                 </div>

@@ -28,15 +28,18 @@ class Avatar extends Component<IAvatarProps, any>{
 
     render() {
         const parent = this.props.communityItem || this.props.comment;
-        const {image, displayName, reputation, trusterCount} = parent.user;
-        const {isCurrentUserTrusting} = parent.user;
+        const {image, displayName, reputation, trusterCount, isCurrentUserTrusting} = parent.user;
 
         return this.schemaInjector.inject(
             <div className="avatar">
                 <img className="avatar-image" src={image || unknownAvatarUrl} />
-                <span className="display-name">{displayName}</span>
-                {this._renderReputation(reputation)}
-                {this._renderTrust(trusterCount, displayName)}
+                <div className="avatar-name-container">
+                    <span className="display-name">{displayName}</span>
+                    <div className="avatar-stats">
+                        {this._renderReputation(reputation)}
+                        {this._renderTrust(trusterCount, displayName)}
+                    </div>
+                </div>
                 {this._renderTrustButton(isCurrentUserTrusting)}
             </div>
         );

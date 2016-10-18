@@ -1,20 +1,27 @@
 @mixin reputation-earned {
   .reputation-earned {
-    color: $gray-lighter;
-    margin: .5rem;
-    padding-top: .2rem;
-    font-size: .9rem;
+    color: $gray-light;
+    font-size: .7rem;
+    text-align: center;
+    width: 11rem;
+    border: 1px solid $gray-lighter;
+    padding: 0.4rem;
+    border-radius: 0.2rem;
+    margin-right: 2rem;
   }
   
   .reputation-earned-amount {
     color: $brand-secondary;
-    font-size: 1rem;
+    font-size: .8rem;
   }
   
   .reputation-earned-heart{
     @extend .fa;
     @extend .fa-heart;
+    color: $brand-secondary;
     font-size: .7rem;
     padding-left: .25rem;
+    padding-left: 0.3rem;
+    padding-right: 0.1rem;
   }
 }

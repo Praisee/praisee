@@ -20,7 +20,7 @@ export class DateDisplay extends Component<IDateDisplayProps, any>{
         return this.schemaInjector.inject(
             <div className="date">
                 <meta content={this.moment.format("YYYY-MM-DDThh:mm:ss")} className={type} />
-                {this.moment.format("LL")}
+                {this.moment.fromNow()}
             </div>
         );
     }

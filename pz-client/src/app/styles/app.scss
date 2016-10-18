@@ -34,7 +34,7 @@
 //@import 'https://fonts.googleapis.com/css?family=Rambla';
 //@import 'https://fonts.googleapis.com/css?family=Amaranth';
 //@import 'https://fonts.googleapis.com/css?family=Montserrat';
-@import 'https://fonts.googleapis.com/css?family=Roboto';
+@import url('https://fonts.googleapis.com/css?family=Roboto:300,400,500,700');
 
 .app-namespace {
   @extend %bootstrap;
