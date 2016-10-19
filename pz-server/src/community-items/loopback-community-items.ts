@@ -183,6 +183,10 @@ export default class CommunityItems implements ICommunityItems, ICommunityItemsB
             return createRecordFromLoopbackCommunityItemInteraction(interactionModel);
         });
     }
+    
+    async getReputationEarned(communityItemId: number, userId: number): Promise<number> {
+        return await this._CommunityItemModel.getReputationEarned(communityItemId, userId);
+    }
 
     async create(communityItem: ICommunityItem, ownerId: number): Promise<ICommunityItem> {
         let communityItemModel = new this._CommunityItemModel({

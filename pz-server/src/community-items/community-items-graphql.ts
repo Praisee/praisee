@@ -85,7 +85,7 @@ export default function getCommunityItemTypes(repositoryAuthorizers: IAppReposit
 
         user: {
             type: types.UserInterfaceType,
-            resolve: async (communityItem, _, {user: currentUser}) => {
+            resolve: async (communityItem: ICommunityItem, _, {user: currentUser}) => {
                 const user = await usersAuthorizer
                     .as(currentUser)
                     .findUserById(communityItem.userId);
@@ -96,7 +96,7 @@ export default function getCommunityItemTypes(repositoryAuthorizers: IAppReposit
 
         commentCount: {
             type: GraphQLInt,
-            resolve: async (communityItem, _, {user}) => {
+            resolve: async (communityItem: ICommunityItem, _, {user}) => {
                 const count = await commentsAuthorizer
                     .as(user)
                     .getCountForRootParent("CommunityItem", communityItem.id);
@@ -119,7 +119,7 @@ export default function getCommunityItemTypes(repositoryAuthorizers: IAppReposit
 
         topics: {
             type: new GraphQLList(types.TopicType),
-            resolve: async (communityItem, _, {user}) => {
+            resolve: async (communityItem: ICommunityItem, _, {user}) => {
                 const topics = await communityItemsAuthorizer
                     .as(user)
                     .findAllTopics(communityItem.id);
@@ -130,7 +130,7 @@ export default function getCommunityItemTypes(repositoryAuthorizers: IAppReposit
 
         routePath: {
             type: GraphQLString,
-            resolve: async (communityItem, _, {user}) => {
+            resolve: async (communityItem: ICommunityItem, _, {user}) => {
                 let route = await vanityRoutePathAuthorizer.as(user).findByRecord(communityItem);
                 return route.routePath;
             }
@@ -189,24 +189,26 @@ export default function getCommunityItemTypes(repositoryAuthorizers: IAppReposit
                 return result.hasMarkedRead;
             }
         },
-        
+
         isMine: {
             type: new GraphQLNonNull(GraphQLBoolean),
-            
-            resolve: async (communityItem, __, {user}) => {
+
+            resolve: async (communityItem: ICommunityItem, __, {user}) => {
                 if (!user) {
                     return false;
                 }
-                
+
                 return communityItem.userId === user.id;
             }
         },
-        
+
         reputationEarned: {
-            type: new GraphQLNonNull(GraphQLInt),
-            
-            resolve: async (communityItem, __, {user}) => {
-                return 125;
+            type: GraphQLInt,
+
+            resolve: async (communityItem: ICommunityItem, __, {user}) => {
+                return communityItemsAuthorizer
+                    .as(user)
+                    .getReputationEarned(communityItem.id);
             }
         }
     });
@@ -228,7 +230,7 @@ export default function getCommunityItemTypes(repositoryAuthorizers: IAppReposit
         }
     });
 
-    function  createCommunityItemType(communityItemType: TCommunityItemType, additionalFields: any = null) {
+    function createCommunityItemType(communityItemType: TCommunityItemType, additionalFields: any = null) {
         return new GraphQLObjectType({
             name: communityItemType + 'CommunityItem',
 
@@ -381,8 +383,8 @@ export default function getCommunityItemTypes(repositoryAuthorizers: IAppReposit
                 communityItem = await reviewsAuthorizer
                     .as(context.user)
                     .updateReviewDetails(
-                        communityItem.id,
-                        Object.assign({}, reviewDetails, {reviewedTopicId})
+                    communityItem.id,
+                    Object.assign({}, reviewDetails, {reviewedTopicId})
                     );
 
             } else if (type === 'Question') {

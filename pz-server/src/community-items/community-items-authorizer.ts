@@ -25,6 +25,7 @@ export interface IAuthorizedCommunityItems {
     findVotesForCommunityItem(communityItemId: number): Promise<Array<IVote>>
     findByUrlSlugName(fullSlug: string): Promise<ICommunityItem>
     findInteraction(communityItemId: number): Promise<ICommunityItemInteraction>
+    getReputationEarned(communityItemId: number): Promise<number | AuthorizationError>
     create(communityItem: ICommunityItem): Promise<ICommunityItem | AuthorizationError>
     update(communityItem: ICommunityItem): Promise<ICommunityItem | AuthorizationError>
     updateInteraction(interaction: ICommunityItemInteraction): Promise<ICommunityItemInteraction | NotAuthenticatedError>
@@ -63,8 +64,15 @@ class AuthorizedCommunityItems implements IAuthorizedCommunityItems {
         return await this._communityItems.findVotesForCommunityItem(communityItemId);
     }
 
-    async findByUrlSlugName(fullSlug: string): Promise<ICommunityItem>{
+    async findByUrlSlugName(fullSlug: string): Promise<ICommunityItem> {
         return await this._communityItems.findByUrlSlugName(fullSlug);
+    }
+
+    async getReputationEarned(communityItemId: number): Promise<number> {
+        if (!this._user) {
+            return null;
+        }
+        return await this._communityItems.getReputationEarned(communityItemId, this._user.id);
     }
 
     async findInteraction(communityItemId: number): Promise<ICommunityItemInteraction> {

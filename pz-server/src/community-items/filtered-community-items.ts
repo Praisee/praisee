@@ -85,6 +85,10 @@ export default class FilteredCommunityItems implements ICommunityItems {
         return this._communityItems.findInteraction(communityItemId, userId);
     }
 
+    async getReputationEarned(communityItemId: number, userId: number): Promise<number>{
+        return await this._communityItems.getReputationEarned(communityItemId, userId);
+    }
+
     async create(communityItem: ICommunityItem, ownerId: number): Promise<ICommunityItem> {
         let filteredBodyData = await this._contentFilterer.filterBeforeWrite(
             communityItem.bodyData
