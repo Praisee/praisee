@@ -2,8 +2,7 @@ import * as React from 'react';
 import SignInUp from 'pz-client/src/user/sign-in-up.component';
 import CurrentUserType from 'pz-client/src/user/current-user-type';
 
-// TODO: Eventually we should make our own overlay component
-import { Modal, ModalHeader, ModalBody } from 'reactstrap';
+import SimpleModal from 'pz-client/src/widgets/simple-modal-component';
 
 interface IProps {
 }
@@ -35,6 +34,8 @@ export default class SignInUpOverlay extends React.Component<IProps, any> {
         currentUser;
     };
 
+    refs: any;
+
     getChildContext() {
         return {
             signInUpContext: {
@@ -53,7 +54,10 @@ export default class SignInUpOverlay extends React.Component<IProps, any> {
     render() {
         return (
             <div className="sign-in-up-overlay">
-                {this._renderModalBody()}
+                <SimpleModal className="app-sign-in-up-overlay-modal" ref="modal">
+                    <SignInUp />
+                </SimpleModal>
+
                 {this.props.children}
             </div>
         )
@@ -64,30 +68,14 @@ export default class SignInUpOverlay extends React.Component<IProps, any> {
             event.preventDefault();
         }
 
-        this.setState({ isSignInUpVisible: true })
+        if (this.refs.modal) {
+            this.refs.modal.show();
+        }
     }
 
     private _hideSignInUp() {
-        this.setState({ isSignInUpVisible: false })
-    }
-
-    private _renderModalBody() {
-        if (this.state.isSignInUpVisible) {
-            return (
-                <Modal className="sign-in-up-overlay-modal"
-                    isOpen={this.state.isSignInUpVisible}
-                    toggle={this._hideSignInUp.bind(this)}>
-
-                    <ModalBody>
-                        <button
-                            className="sign-in-up-overlay-hide-button"
-                            onClick={this._hideSignInUp.bind(this)}
-                            />
-
-                        <SignInUp />
-                    </ModalBody>
-                </Modal>
-            )
+        if (this.refs.modal) {
+            this.refs.modal.hide();
         }
     }
 }

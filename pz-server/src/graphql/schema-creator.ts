@@ -172,15 +172,34 @@ export default function createSchema(repositoryAuthorizers: IAppRepositoryAuthor
 
                 communityItem: {
                     type: types.CommunityItemInterfaceType,
+
                     args: {
+                        id: {
+                            type: GraphQLID
+                        },
+
                         urlSlug: {
                             type: GraphQLString
                         }
                     },
-                    resolve: async (_, {urlSlug}, {user}) => {
-                        const communityItem = await communityItemsAuthorizer
-                            .as(user)
-                            .findByUrlSlugName(urlSlug);
+
+                    resolve: async (_, {id: rawId, urlSlug}, {user}) => {
+                        let communityItem = null;
+
+                        if (rawId) {
+                            const {id} = fromGlobalId(rawId);
+
+                            communityItem = await communityItemsAuthorizer
+                                .as(user)
+                                .findById(id);
+
+                        } else if (urlSlug) {
+
+                            communityItem = await communityItemsAuthorizer
+                                .as(user)
+                                .findByUrlSlugName(urlSlug);
+                        }
+
                         return communityItem;
                     }
                 }
@@ -193,6 +212,9 @@ export default function createSchema(repositoryAuthorizers: IAppRepositoryAuthor
             fields: {
                 createCommunityItem: types.CreateCommunityItemMutation,
                 createCommunityItemFromTopic: types.CreateCommunityItemFromTopicMutation,
+                updateCommunityItemContent: types.UpdateCommunityItemContentMutation,
+                updateCommunityItemType: types.UpdateCommunityItemTypeMutation,
+                destroyCommunityItem: types.DestroyCommunityItemMutation,
                 updateCommunityItemInteraction: types.UpdateCommunityItemInteractionMutation,
 
                 updateReviewDetails: types.UpdateReviewDetailsMutation,

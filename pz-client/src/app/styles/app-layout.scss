@@ -121,28 +121,10 @@
     .app-footer {
       margin-top: 3rem;
     }
-  }
-}
 
-// TODO: Remove this crap eventually plx
-.sign-in-up-overlay-modal {
-  @extend %bootstrap;
-  @extend %font-awesome;
-  @include sign-in-up();
-
-  .sign-in-up-overlay-hide-button {
-    @extend .fa;
-    @extend .fa-close;
-
-    position: absolute;
-    right: 2rem;
-    margin-top: 0.2rem;
-    background: none;
-    border: none;
-
-    &:focus, &:active, &:hover {
-      color: $brand-primary;
-      outline: none;
+    @include simple-modal('app-sign-in-up-overlay-modal') {
+      @include sign-in-up();
     }
+
   }
 }

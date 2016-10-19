@@ -19,9 +19,10 @@ import {IFileUploadResponse} from 'pz-client/src/support/file-upload-requester';
 export interface IProps {
     placeholder?: any
     initialRawContentState?: any
-    onChange?: (editorState) => {}
-    onBlur?: () => {}
-    onFocus?: () => {}
+    onChange?: (editorState) => any
+    onBlur?: () => any
+    onFocus?: () => any
+    className?: string
 }
 
 export default class CommunityItemEditor extends React.Component<IProps, any> {

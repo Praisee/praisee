@@ -3,7 +3,8 @@ import * as React from 'react';
 import {
     EditorState as DraftJsEditorState,
     RichUtils,
-    convertFromRaw
+    convertFromRaw,
+    ContentState
 } from 'draft-js';
 
 import createMentionPlugin from 'pz-client/src/editor/mention-plugin/create-mention-plugin';
@@ -12,6 +13,10 @@ import createDecoratorFromPlugins from 'pz-client/src/editor/create-decorator-fr
 import ContentMenu from 'pz-client/src/editor/content-menu/content-menu.component';
 
 import classNames from 'classnames';
+import {
+    isTextContent,
+    isDraftJs08Content
+} from 'pz-server/src/content/content-data';
 
 var DraftJsEditor = require('draft-js-plugins-editor').default;
 var createToolbarPlugin = require('draft-js-toolbar-plugin').default;
@@ -25,9 +30,9 @@ export interface IProps {
     initialRawContentState?: any
     plugins?: Array<any>
     contentMenuButtons?: any
-    onChange?: (editorState) => {}
-    onBlur?: (event) => {}
-    onFocus?: () => {}
+    onChange?: (editorState) => any
+    onBlur?: (event) => any
+    onFocus?: () => any
 }
 
 export default class Editor extends React.Component<IProps, any> {
@@ -43,12 +48,14 @@ export default class Editor extends React.Component<IProps, any> {
 
     static defaultProps = {
         onChange: () => {},
-        onBlur: () => {}
+        onBlur: () => {},
+        onFocus: () => {}
     };
 
     componentDidMount(){
-        if(this.props.autoFocus)
+        if(this.props.autoFocus) {
             this.focus();
+        }
     }
 
     focus() {
@@ -140,18 +147,23 @@ export default class Editor extends React.Component<IProps, any> {
     }
 
     private _initializeEditorState(initialState) {
-        let editorState;
+        let editorState = DraftJsEditorState.createEmpty();
 
         if (this.props.initialRawContentState) {
-            const contentState = convertFromRaw(this.props.initialRawContentState);
-            editorState = DraftJsEditorState.createWithContent(
-                contentState,
-                createDecoratorFromPlugins(this._editorPlugins)
-            );
+            const rawContentState = JSON.parse(this.props.initialRawContentState);
 
-        } else {
+            if (isDraftJs08Content(rawContentState)) {
+                editorState = DraftJsEditorState.createWithContent(
+                    convertFromRaw(rawContentState.value),
+                    createDecoratorFromPlugins(this._editorPlugins)
+                );
 
-            editorState = DraftJsEditorState.createEmpty()
+            } else if (isTextContent(rawContentState)) {
+                editorState = DraftJsEditorState.createWithContent(
+                    ContentState.createFromText(rawContentState.value),
+                    createDecoratorFromPlugins(this._editorPlugins)
+                );
+            }
         }
 
         this.state = Object.assign({}, initialState, this.state, {

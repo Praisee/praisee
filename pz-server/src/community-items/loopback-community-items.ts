@@ -73,6 +73,10 @@ export default class CommunityItems implements ICommunityItems, ICommunityItemsB
         );
 
         return communityItemModels.map(communityItemModel => {
+            if (!communityItemModel) {
+                return null;
+            }
+
             return createRecordFromLoopbackCommunityItem(communityItemModel);
         });
     }
@@ -257,6 +261,11 @@ export default class CommunityItems implements ICommunityItems, ICommunityItemsB
 
         const result = await promisify(interactionModel.save, interactionModel)();
         return createRecordFromLoopbackCommunityItemInteraction(result);
+    }
+
+    async destroy(communityItem: ICommunityItem): Promise<void> {
+        // TODO: Time to switch to Sequelize?
+        throw new Error('Saving this for another day :)');
     }
 }
 

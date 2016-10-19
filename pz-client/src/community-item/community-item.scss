@@ -281,7 +281,6 @@
     @include make-container();
     @include make-container-max-widths();
     @include community-item();
-    @include community-item-editor();
     @include expand-button();
 
     .primary-section {
@@ -297,6 +296,33 @@
       @include make-col();
       @include media-breakpoint-down(sm){
         @include make-col-span(12);
+      }
+    }
+
+    .community-item-title-container {
+      display: flex;
+      align-items: flex-start;
+
+      .title {
+        flex: 1;
+      }
+
+      .community-item-menu {
+        .community-item-menu-toggle {
+          @extend .fa;
+          @extend .fa-ellipsis-h;
+          appearance: none;
+          background: none;
+          border: none;
+          outline: none;
+          font-size: 1.3rem;
+          color: $gray-light;
+          line-height: 1.8;
+        }
+
+        .dropdown-menu {
+          @extend .dropdown-menu-right;
+        }
       }
     }
 
@@ -368,5 +394,87 @@
         }
       }
     }
+
+    @include simple-modal('app-community-item-delete-confirmation') {
+      .delete-confirmation-content {
+        padding: 2rem;
+      }
+
+      .delete-confirmation-options {
+        margin-top: 1.5rem;
+      }
+
+      .delete-confirmation-delete-button, .delete-confirmation-cancel-button {
+        @include btn();
+        font-size: 0.9rem;
+        margin-right: 0.5rem;
+      }
+
+      .delete-confirmation-delete-button {
+        @include btn-primary();
+      }
+
+      .delete-confirmation-cancel-button {
+        @include btn-primary-outline();
+      }
+    }
+
+  }
+}
+
+@mixin edit-community-item-namespace {
+  .edit-community-item-namespace {
+    @include make-container();
+    @include make-container-max-widths();
+    @include community-item();
+    @include editor();
+
+    .primary-section {
+      @include make-col-span(8);
+    }
+
+    .side-section-container {
+      @include make-col-span(4);
+    }
+
+    .primary-section,
+    .side-section-container {
+      @include make-col();
+      @include media-breakpoint-down(sm){
+        @include make-col-span(12);
+      }
+    }
+
+    .community-item-title-input {
+      @extend .form-control;
+      width: 100%;
+    }
+
+    .community-item-body-editor {
+      @extend .form-control;
+      margin-top: 1rem;
+    }
+
+    .save-community-item-button {
+      @include btn();
+      @include btn-primary();
+      margin-top: 1rem;
+    }
+
+    .discard-control-container {
+      margin-bottom: 1.5rem;
+    }
+
+    .discard-link {
+      color: $gray;
+      font-size: 0.9rem;
+
+      &::before {
+        @extend .fa;
+        content: $fa-var-angle-left;
+        padding-right: 0.5rem;
+      }
+    }
+
   }
 }

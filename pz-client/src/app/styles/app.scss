@@ -8,6 +8,7 @@
 @import '../../widgets/customizable-file-input';
 @import '../../widgets/content-truncator';
 @import '../../widgets/rating';
+@import '../../widgets/simple-modal';
 @import '../../widgets/reputation-earned';
 @import '../../editor/editor';
 @import '../../user/sign-in-up';
@@ -45,6 +46,7 @@
   @include home-namespace();
   @include topic-namespace();
   @include community-item-namespace();
+  @include edit-community-item-namespace();
   @include error();
 
   @include editor-proofofconcept-namespace(); // TODO: Remove this

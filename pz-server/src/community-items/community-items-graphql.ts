@@ -26,7 +26,7 @@ import {
 import {IAppRepositoryAuthorizers} from 'pz-server/src/app/repositories';
 import {
     AuthorizationError,
-    NotAuthenticatedError
+    NotAuthenticatedError, NotOwnerError
 } from 'pz-server/src/support/authorization';
 import {ITypes} from 'pz-server/src/graphql/types';
 import {IVote} from 'pz-server/src/votes/votes';
@@ -190,15 +190,15 @@ export default function getCommunityItemTypes(repositoryAuthorizers: IAppReposit
             }
         },
 
-        isMine: {
+        belongsToCurrentUser: {
             type: new GraphQLNonNull(GraphQLBoolean),
 
-            resolve: async (communityItem: ICommunityItem, __, {user}) => {
+            resolve: async ({userId}, __, {user}) => {
                 if (!user) {
                     return false;
                 }
 
-                return communityItem.userId === user.id;
+                return user.id === userId;
             }
         },
 
@@ -383,8 +383,8 @@ export default function getCommunityItemTypes(repositoryAuthorizers: IAppReposit
                 communityItem = await reviewsAuthorizer
                     .as(context.user)
                     .updateReviewDetails(
-                    communityItem.id,
-                    Object.assign({}, reviewDetails, {reviewedTopicId})
+                        communityItem.id,
+                        Object.assign({}, reviewDetails, {reviewedTopicId})
                     );
 
             } else if (type === 'Question') {
@@ -399,6 +399,154 @@ export default function getCommunityItemTypes(repositoryAuthorizers: IAppReposit
             }
 
             return { communityItem, topicId };
+        },
+    });
+
+    var UpdateCommunityItemContentMutation = mutationWithClientMutationId({
+        name: 'UpdateCommunityItemContent',
+
+        inputFields: () => ({
+            id: { type: new GraphQLNonNull(GraphQLID) },
+            summary: { type: new GraphQLNonNull(GraphQLString) },
+            body: { type: GraphQLString },
+            bodyData: { type: new GraphQLNonNull(types.InputContentDataType) },
+        }),
+
+        outputFields: () => ({
+            communityItem: {
+                type: types.CommunityItemInterfaceType,
+                resolve: ({communityItem}) => communityItem
+            },
+
+            viewer: getViewerField(types, ({communityItem}) => ({
+                lastCreatedCommunityItem: communityItem
+            }))
+        }),
+
+        mutateAndGetPayload: async ({id: rawId, summary, body, bodyData}, context) => {
+            const {id} = fromGlobalId(rawId);
+
+            const parsedBodyData = parseInputContentData(body || bodyData);
+            const authorizedCommunityItems = communityItemsAuthorizer.as(context.user);
+
+            const oldCommunityItem = await authorizedCommunityItems.findById(id);
+
+            if (!oldCommunityItem) {
+                addErrorToResponse(context.responseErrors, 'NotFound', new Error('Community item was not found'));
+                return {};
+            }
+
+            let updatedCommunityItem = await authorizedCommunityItems.update(Object.assign(
+                {}, oldCommunityItem, {
+                    recordType: 'CommunityItem',
+                    id,
+                    summary,
+                    bodyData: parsedBodyData
+                }
+            ));
+
+            if (updatedCommunityItem instanceof AuthorizationError) {
+                if (updatedCommunityItem instanceof NotAuthenticatedError) {
+                    addErrorToResponse(context.responseErrors, 'NotAuthenticated', updatedCommunityItem);
+                } else if (updatedCommunityItem instanceof NotOwnerError) {
+                    addErrorToResponse(context.responseErrors, 'NotOwnerError', updatedCommunityItem);
+                }
+
+                return {};
+            }
+
+            return { communityItem: updatedCommunityItem };
+        },
+    });
+
+    var UpdateCommunityItemTypeMutation = mutationWithClientMutationId({
+        name: 'UpdateCommunityItemType',
+
+        inputFields: () => ({
+            id: { type: new GraphQLNonNull(GraphQLID) },
+            type: { type: new GraphQLNonNull(GraphQLString) },
+        }),
+
+        outputFields: () => ({
+            communityItem: {
+                type: types.CommunityItemInterfaceType,
+                resolve: ({communityItem}) => communityItem
+            },
+
+            viewer: getViewerField(types, ({communityItem}) => ({
+                lastCreatedCommunityItem: communityItem
+            }))
+        }),
+
+        mutateAndGetPayload: async ({id: rawId, type}, context) => {
+            if (type !== 'General' && type !== 'Question') {
+                addErrorToResponse(context.responseErrors, 'BadRequest',
+                    new Error('Only general and question community item types are accepted for this mutation'));
+                return {};
+            }
+
+            const authorizedCommunityItems = communityItemsAuthorizer.as(context.user);
+
+            const {id} = fromGlobalId(rawId);
+            const oldCommunityItem = await authorizedCommunityItems.findById(id);
+
+            if (!oldCommunityItem) {
+                addErrorToResponse(context.responseErrors, 'NotFound', new Error('Community item was not found'));
+                return {};
+            }
+
+            let updatedCommunityItem = await authorizedCommunityItems.update(Object.assign(
+                {}, oldCommunityItem, {
+                    recordType: 'CommunityItem',
+                    id,
+                    type
+                }
+            ));
+
+            if (updatedCommunityItem instanceof AuthorizationError) {
+                if (updatedCommunityItem instanceof NotAuthenticatedError) {
+                    addErrorToResponse(context.responseErrors, 'NotAuthenticated', updatedCommunityItem);
+                } else if (updatedCommunityItem instanceof NotOwnerError) {
+                    addErrorToResponse(context.responseErrors, 'NotOwnerError', updatedCommunityItem);
+                }
+
+                return {};
+            }
+
+            return { communityItem: updatedCommunityItem };
+        },
+    });
+
+    var DestroyCommunityItemMutation = mutationWithClientMutationId({
+        name: 'DestroyCommunityItem',
+
+        inputFields: () => ({
+            id: { type: new GraphQLNonNull(GraphQLID) }
+        }),
+
+        outputFields: () => ({
+            viewer: getViewerField(types)
+        }),
+
+        mutateAndGetPayload: async ({id: rawId}, context) => {
+            const {id} = fromGlobalId(rawId);
+
+            const authorizedCommunityItems = communityItemsAuthorizer.as(context.user);
+
+            const result = await authorizedCommunityItems.destroy({
+                recordType: 'CommunityItem',
+                id
+            });
+
+            if (result && result instanceof AuthorizationError) {
+                if (result instanceof NotAuthenticatedError) {
+                    addErrorToResponse(context.responseErrors, 'NotAuthenticated', result);
+                } else if (result instanceof NotOwnerError) {
+                    addErrorToResponse(context.responseErrors, 'NotOwnerError', result);
+                }
+            }
+
+            return {};
         },
     });
 
@@ -458,6 +606,9 @@ export default function getCommunityItemTypes(repositoryAuthorizers: IAppReposit
 
             CreateCommunityItemMutation,
             CreateCommunityItemFromTopicMutation,
+            UpdateCommunityItemContentMutation,
+            UpdateCommunityItemTypeMutation,
+            DestroyCommunityItemMutation,
             UpdateCommunityItemInteractionMutation
         }
     );

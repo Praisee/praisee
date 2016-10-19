@@ -29,6 +29,7 @@ export interface IAuthorizedCommunityItems {
     create(communityItem: ICommunityItem): Promise<ICommunityItem | AuthorizationError>
     update(communityItem: ICommunityItem): Promise<ICommunityItem | AuthorizationError>
     updateInteraction(interaction: ICommunityItemInteraction): Promise<ICommunityItemInteraction | NotAuthenticatedError>
+    destroy(communityItem: ICommunityItem): Promise<void | AuthorizationError>
 }
 
 class AuthorizedCommunityItems implements IAuthorizedCommunityItems {
@@ -113,6 +114,20 @@ class AuthorizedCommunityItems implements IAuthorizedCommunityItems {
         return this._communityItems.updateInteraction(Object.assign({}, interaction, {
             userId: this._user.id,
         }));
+    }
+
+    async destroy(communityItem: ICommunityItem): Promise<void | AuthorizationError> {
+        const authorizationError = await getUpdateError(
+            communityItem.id,
+            this._user,
+            this._communityItems
+        );
+
+        if (authorizationError) {
+            return authorizationError;
+        }
+
+        return this._communityItems.destroy(communityItem);
     }
 }
 

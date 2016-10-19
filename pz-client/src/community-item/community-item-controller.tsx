@@ -13,12 +13,18 @@ import CommunityItemSchema from 'pz-client/src/community-item/widgets/community-
 import CommunityItemTypeHeader from 'pz-client/src/community-item/widgets/community-item-type-header-component';
 import ReputationEarned from 'pz-client/src/widgets/reputation-earned-component';
 import classNames from 'classnames';
+import { Dropdown, DropdownToggle, DropdownMenu, DropdownItem } from 'reactstrap';
+import {withRouter} from 'react-router';
+import routePaths from 'pz-client/src/router/route-paths';
+import SimpleModal from 'pz-client/src/widgets/simple-modal-component';
+import handleClick from 'pz-client/src/support/handle-click';
+import DestroyCommunityItemMutation from 'pz-client/src/community-item/destroy-community-item-mutation';
 
 interface IContext {
     showNotFoundError: any
 }
 
-export class CommunityItemController extends Component<ICommunityItemProps, ICommunityItemState> {
+export class CommunityItemController extends Component<ICommunityItemProps, any> {
     static contextTypes: React.ValidationMap<any> = {
         showNotFoundError: React.PropTypes.func.isRequired,
         appViewerId: React.PropTypes.string.isRequired,
@@ -31,10 +37,12 @@ export class CommunityItemController extends Component<ICommunityItemProps, ICom
         signInUpContext: ISignInUpContext
     };
 
-    constructor(props, context) {
-        super(props, context);
-        this.state = { isEditingComment: false };
+    state = {
+        isMenuOpen: false,
+        isEditingComment: false
     };
+
+    refs: any;
 
     render() {
         if (!this.props.communityItem) {
@@ -51,16 +59,11 @@ export class CommunityItemController extends Component<ICommunityItemProps, ICom
         return (
             <div className="community-item-namespace" >
                 <div className={communityItemClasses}>
-                    <CommunityItemTypeHeader communityItem={communityItem} />
+                    {this._renderCommunityItemTypeHeader(communityItem)}
 
-                    <div className="title">
-                        {communityItem.summary}
-                    </div>
+                    {this._renderSummary(communityItem)}
 
-                    <Avatar communityItem={communityItem} comment={null}
-                        showReputation={true}
-                        showTrusts={true}
-                        showTrustButton={true} />
+                    {this._renderAvatar()}
 
                     {this._renderCommunityItemContent(communityItem)}
 
@@ -68,16 +71,43 @@ export class CommunityItemController extends Component<ICommunityItemProps, ICom
 
                     {/*this._renderRelatedCommunityItems(communityItem)*/}
 
-                    <div className="comment-container">
-                        {this._renderCommentResponseSection(communityItem)}
+                    {this._renderCommentsSection(communityItem)}
 
-                        {this._renderCommentList(communityItem)}
-                    </div>
+                    {this._renderDeleteConfirmationModal(communityItem)}
 
-                    <CommunityItemSchema communityItem={communityItem} />
+                    {this._renderCommunityItemSchema(communityItem)}
                 </div>
             </div>
         )
+    }
+
+    private _renderCommunityItemTypeHeader(communityItem) {
+        return (
+            <CommunityItemTypeHeader communityItem={communityItem} />
+        );
+    }
+
+    private _renderSummary(communityItem) {
+        return (
+            <div className="community-item-title-container">
+                <div className="title">
+                    {communityItem.summary}
+                </div>
+
+                {this._renderMenu(communityItem)}
+            </div>
+        );
+    }
+
+    private _renderAvatar() {
+        return (
+            <Avatar
+                communityItem={this.props.communityItem} comment={null}
+                showReputation={true}
+                showTrusts={true}
+                showTrustButton={true}
+            />
+        );
     }
 
     private _renderCommunityItemContent(communityItem) {
@@ -85,6 +115,37 @@ export class CommunityItemController extends Component<ICommunityItemProps, ICom
             <div className="community-item-content-container">
                 <CommunityItemContent communityItem={communityItem} />
             </div>
+        );
+    }
+
+    private _renderMenu(communityItem) {
+        if (!communityItem.belongsToCurrentUser) {
+            return;
+        }
+
+        return (
+            <Dropdown className="community-item-menu"
+                      isOpen={this.state.isMenuOpen}
+                      toggle={this._toggleMenu.bind(this)}>
+
+                <DropdownToggle className="community-item-menu-toggle">
+                    <span />
+                </DropdownToggle>
+
+                <DropdownMenu className="community-item-menu-options">
+                    <DropdownItem className="edit-community-item"
+                                  onClick={this._editCommunityItem.bind(this)}>
+
+                        Edit
+                    </DropdownItem>
+
+                    <DropdownItem className="delete-community-item"
+                                  onClick={() => this.refs.deleteConfirmation.show()}>
+
+                        Delete
+                    </DropdownItem>
+                </DropdownMenu>
+            </Dropdown>
         );
     }
 
@@ -99,7 +160,7 @@ export class CommunityItemController extends Component<ICommunityItemProps, ICom
     }
 
     private _renderVotesOrReputation(communityItem) {
-        if (communityItem.isMine) {
+        if (communityItem.belongsToCurrentUser) {
             return (
                 <ReputationEarned
                     communityItem={communityItem} />
@@ -114,6 +175,16 @@ export class CommunityItemController extends Component<ICommunityItemProps, ICom
                     communityItem={communityItem} />
             );
         }
+    }
+
+    private _renderCommentsSection(communityItem) {
+        return (
+            <div className="comment-container">
+                {this._renderCommentResponseSection(communityItem)}
+
+                {this._renderCommentList(communityItem)}
+            </div>
+        );
     }
 
     private _renderCommentResponseSection(communityItem) {
@@ -146,6 +217,68 @@ export class CommunityItemController extends Component<ICommunityItemProps, ICom
                     />
             )
         }
+    }
+
+    private _renderDeleteConfirmationModal(communityItem) {
+        if (!communityItem.belongsToCurrentUser) {
+            return;
+        }
+
+        // const onDelete = handleClick(() => {
+        //     this._deleteCommunityItem();
+        //     this.refs.deleteConfirmation.hide();
+        // });
+
+        const onCancel = handleClick(() => this.refs.deleteConfirmation.hide());
+
+        return (
+            <SimpleModal className="app-community-item-delete-confirmation"
+                         ref="deleteConfirmation">
+
+                <div className="delete-confirmation-content">
+                    Unfortunately we do not support this feature yet. If you would
+                    like to delete your item, please edit it and remove the content
+                    instead for now. Sorry for the inconvenience.
+
+                    <div className="delete-confirmation-options">
+                        <button className="delete-confirmation-delete-button"
+                                onClick={this._editCommunityItem.bind(this)}>
+
+                            Edit Post
+                        </button>
+
+                        <button className="delete-confirmation-cancel-button"
+                                onClick={onCancel}>
+
+                            Cancel
+                        </button>
+                    </div>
+
+                    {/*Are you sure you want to permanently delete this item? All comments*/}
+                    {/*will also be removed.*/}
+
+                    {/*<div className="delete-confirmation-options">*/}
+                        {/*<button className="delete-confirmation-delete-button"*/}
+                                {/*onClick={onDelete}>*/}
+
+                            {/*Delete Post*/}
+                        {/*</button>*/}
+
+                        {/*<button className="delete-confirmation-cancel-button"*/}
+                                {/*onClick={onCancel}>*/}
+
+                            {/*Cancel*/}
+                        {/*</button>*/}
+                    {/*</div>*/}
+                </div>
+            </SimpleModal>
+        );
+    }
+
+    private _renderCommunityItemSchema(communityItem) {
+        return (
+            <CommunityItemSchema communityItem={communityItem} />
+        );
     }
 
     private _renderRelatedCommunityItems(communityItem) {
@@ -200,9 +333,29 @@ export class CommunityItemController extends Component<ICommunityItemProps, ICom
             expandComments: !this.props.relay.variables.expandComments
         })
     }
+
+    private _toggleMenu() {
+        this.setState({isMenuOpen: !this.state.isMenuOpen})
+    }
+
+    private _editCommunityItem() {
+        this.props.router.push(routePaths.communityItem.edit(this.props.communityItem.id))
+    }
+
+    private _deleteCommunityItem() {
+        const mutation = new DestroyCommunityItemMutation({
+            viewerId: this.context.appViewerId,
+            communityItem: this.props.communityItem
+        });
+
+        this.props.relay.commitUpdate(mutation);
+
+        // TODO: This should redirect to the previous Praisee page, if there was one
+        this.props.router.push(routePaths.index());
+    }
 }
 
-export default Relay.createContainer(CommunityItemController, {
+export default Relay.createContainer(withRouter(CommunityItemController), {
     initialVariables: {
         expandCommentsTo: 10,
         expandComments: true
@@ -210,6 +363,7 @@ export default Relay.createContainer(CommunityItemController, {
     fragments: {
         communityItem: ({expandCommentsTo, expandComments}) => Relay.QL`
             fragment on CommunityItemInterface {
+                id
                 summary
                 body
                 user {
@@ -221,7 +375,7 @@ export default Relay.createContainer(CommunityItemController, {
                     routePath
                 }
                 commentCount
-                isMine
+                belongsToCurrentUser
                 
                 ${CommentList.getFragment('communityItem', { expandCommentsTo }).if(expandComments)}
                 ${Avatar.getFragment('communityItem')}
@@ -231,18 +385,19 @@ export default Relay.createContainer(CommunityItemController, {
                 ${CommentBubble.getFragment('communityItem')}
                 ${CommunityItemTypeHeader.getFragment('communityItem')}
                 ${CommunityItemSchema.getFragment('communityItem')}
+                ${DestroyCommunityItemMutation.getFragment('communityItem')}
                 ${ReputationEarned.getFragment('communityItem')}
             }
         `
     }
 });
 
-interface ICommunityItemState {
-    isEditingComment?: boolean
-}
-
 interface ICommunityItemProps {
     params;
     communityItem?;
     relay;
+
+    router: {
+        push: Function
+    }
 }

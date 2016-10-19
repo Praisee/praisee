@@ -57,6 +57,7 @@ export interface ICommunityItems extends IRepository {
     create(communityItem: ICommunityItem, ownerId: number): Promise<ICommunityItem>
     update(communityItem: ICommunityItem): Promise<ICommunityItem>
     updateInteraction(interaction: ICommunityItemInteraction): Promise<ICommunityItemInteraction>
+    destroy(communityItem: ICommunityItem): Promise<void>
 }
 
 export interface ICommunityItemsBatchable {

@@ -1,0 +1,26 @@
+@mixin simple-modal($class: 'app-simple-modal') {
+  @at-root {
+    .#{$class} {
+      @extend %bootstrap;
+      @extend %font-awesome;
+
+      .simple-modal-hide-button {
+        @extend .fa;
+        @extend .fa-close;
+
+        position: absolute;
+        right: 2rem;
+        margin-top: 0.2rem;
+        background: none;
+        border: none;
+
+        &:focus, &:active, &:hover {
+          color: $brand-primary;
+          outline: none;
+        }
+      }
+
+      @content;
+    }
+  }
+}

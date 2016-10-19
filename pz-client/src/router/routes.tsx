@@ -9,6 +9,7 @@ import {
     topicQuery,
     createItemQuery,
     communityItemQuery,
+    editCommunityItemQuery,
     topicHomeQuery
 } from 'pz-client/src/router/route-queries';
 
@@ -18,8 +19,7 @@ import HomeController from 'pz-client/src/home/home.controller';
 import { SignInController, SignUpController } from 'pz-client/src/user/sign-in-up.controller';
 import ProfileController from 'pz-client/src/home/home.controller';
 import CommunityItemController from 'pz-client/src/community-item/community-item-controller';
-import ReviewController from 'pz-client/src/home/home.controller';
-import ComparisonController from 'pz-client/src/home/home.controller';
+import EditCommunityItemController from 'pz-client/src/community-item/edit-community-item-controller';
 import TopicController from 'pz-client/src/topic/topic.controller';
 
 // TODO: Remove this
@@ -40,7 +40,7 @@ export default (
                     path="editor-poc"
                     component={CreateItemEditor}
                     {...mixinRouteQuery(createItemQuery) }
-                    />
+                />
 
                 <Route path="user/sign-in" component={SignInController} />
                 <Route path="user/sign-up" component={SignUpController} />
@@ -48,6 +48,7 @@ export default (
                 <Route path="profile/:urlSlug" component={ProfileController} />
 
                 <Route path="on/:urlSlug" component={CommunityItemController} {...mixinRouteQuery(communityItemQuery) } />
+                <Route path="edit/:id" component={EditCommunityItemController} {...mixinRouteQuery(editCommunityItemQuery) } />
 
                 {/*<Route path="(:urlSlug)-reviews" component={ReviewController} />*/}
                 {/*<Route path="(:urlSlug)-comparisons" component={ComparisonController} />*/}

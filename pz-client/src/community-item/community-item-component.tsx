@@ -35,7 +35,7 @@ interface ICommunityItemProps {
         topics: Array<{ id: string, name: string, routePath: string }>
         routePath: string
         currentUserHasMarkedRead: boolean
-        isMine: boolean
+        belongsToCurrentUser: boolean
     }
 
     body: string;
@@ -206,7 +206,7 @@ class CommunityItem extends Component<ICommunityItemProps, ICommuintyItemState> 
     private _renderVotesOrReputation() {
         const {communityItem} = this.props;
 
-        if (communityItem.isMine) {
+        if (communityItem.belongsToCurrentUser) {
             return (
                 <ReputationEarned
                     communityItem={this.props.communityItem} />
@@ -270,6 +270,7 @@ export default Relay.createContainer(CommunityItem, {
     fragments: {
         communityItem: ({expandCommentsTo, expandComments}) => Relay.QL`
             fragment on CommunityItemInterface {
+                id
                 type
                 createdAt
                 summary
@@ -284,7 +285,7 @@ export default Relay.createContainer(CommunityItem, {
                 }
                 routePath
                 currentUserHasMarkedRead
-                isMine
+                belongsToCurrentUser
                 
                 ... on ReviewCommunityItem {
                     reviewedTopic {

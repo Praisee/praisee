@@ -78,17 +78,23 @@ export var communityItemQuery: IRouteQuery = {
             }
         `
     }
-}
+};
 
-// export var reviewQuery: IRouteQuery = {
-//     queries: {
-//         review: () => Relay.QL`
-//             query {
-//                 review(urlSlug: $urlSlug)
-//             }
-//         `
-//     }
-// };
+export var editCommunityItemQuery: IRouteQuery = {
+    queries: {
+        viewer: () => Relay.QL`
+            query {
+                viewer
+            }
+        `,
+
+        communityItem: () => Relay.QL`
+            query {
+                communityItem(id: $id)
+            }
+        `
+    }
+};
 
 export var createItemQuery: IRouteQuery = {
     queries: {

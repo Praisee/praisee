@@ -80,7 +80,17 @@ export function getResponseErrorTypes(repositoryAuthorizers: IAppRepositoryAutho
                     resolve: async ({name}) => name
                 }
             })
-        )
+        ),
+
+        defineErrorType(
+            'NotFound',
+            () => ({})
+        ),
+
+        defineErrorType(
+            'BadRequest',
+            () => ({})
+        ),
     ];
 
     function defineErrorType(errorType: string, valueFields: () => ({})) {

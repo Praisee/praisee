@@ -166,7 +166,15 @@ export default class FilteredCommunityItems implements ICommunityItems {
         return this._communityItems.updateInteraction(interaction);
     }
 
-    private async _filterBeforeRead(communityItem: ICommunityItem): Promise<ICommunityItem> {
+    destroy(communityItem: ICommunityItem): Promise<void> {
+        return this._communityItems.destroy(communityItem);
+    }
+
+    private async _filterBeforeRead(communityItem: ICommunityItem | null): Promise<ICommunityItem | null> {
+        if (!communityItem) {
+            return null;
+        }
+
         const filteredBodyData = await this._contentFilterer.filterBeforeRead(
             communityItem.bodyData
         );

@@ -85,4 +85,8 @@ export default class CommunityItemsLoader implements ICommunityItems {
     updateInteraction(interaction: ICommunityItemInteraction): Promise<ICommunityItemInteraction> {
         return this._communityItems.updateInteraction(interaction);
     }
+
+    destroy(communityItem: ICommunityItem): Promise<void> {
+        return this._communityItems.destroy(communityItem);
+    }
 }
