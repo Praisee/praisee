@@ -1,6 +1,7 @@
-import {ISluggable, ISluggableInstance} from 'pz-server/src/url-slugs/mixins/sluggable';
-import {ICommunityItemInstance} from 'pz-server/src/models/community-item';
-import {IPhotoInstance} from 'pz-server/src/models/photo';
+import { ISluggable, ISluggableInstance } from 'pz-server/src/url-slugs/mixins/sluggable';
+import { ICommunityItemInstance } from 'pz-server/src/models/community-item';
+import { IPhotoInstance } from 'pz-server/src/models/photo';
+import promisify from 'pz-support/src/promisify';
 
 export type TTopicType = (
     'topic'
@@ -10,6 +11,7 @@ export type TTopicType = (
 
 export interface ITopicModel extends IPersistedModel, ISluggable {
     type: TTopicType
+    getCommunityItemCount(topicId: number): Promise<number>
 }
 
 export interface ITopicInstance extends IPersistedModelInstance, ISluggableInstance {
@@ -30,4 +32,12 @@ export interface ITopicInstance extends IPersistedModelInstance, ISluggableInsta
 }
 
 module.exports = function (Topic: ITopicModel) {
+
+    Topic.getCommunityItemCount = async (topicId: number) => {
+        const TopicCommItemRelations = Topic.app.models.TopicCommunityItem;
+        const count: number = await promisify<number>(
+            TopicCommItemRelations.count, TopicCommItemRelations)({ topicId });
+
+        return count;
+    }
 };

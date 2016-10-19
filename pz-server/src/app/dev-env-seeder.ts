@@ -104,25 +104,20 @@ export class DevEnvSeeder {
     communityItemSeeds() {
         return [
             {
-                topicId: 4,
-                userId: 1,
-                type: "Question",
+                userId: 1, type: "Question",
                 summary: 'Is there any D810 successor is coming in 2016?',
                 body: "I have seen lots of people selling D810 these days in gulf countries. Also its used price gone a bit up than old days. (Don't know why) is there any successor to D810? I want a D810 badly and I can hold a bit if any new camera is going to release in 2016. What is your opinion ? Should I wait or its time to buy D810?"
             },
             {
-                topicId: 4,
-                userId: 3,
-                type: 'Guide',
-                summary: 'Tribute to D300/D300s',
+                userId: 3, type: 'Guide', summary: 'Tribute to D300/D300s',
                 body: `There is really nothing left to discuss about technical aspects of D300/D300s on this forum, thanks to such a painfully long birth of its successor, which was so long that Nikon even had to fast forward its name by one generation Yet it feels a bit sad to let these legendarty veterans vanish in the history pages of this forum without saying proper goodbye. So please, post some of your best images taken with these cameras to remind how great they were, and still are, despite more than 10 year of camera evolution. For me, I am just re-posting my photos from another recent thread, as I think they represent some of my best efforts with my beloved D300 outside of family portraiture. Look forward to many great examples of D300 legacy. Best shots with D200 are also welcome `
             },
             {
-                topicId: 4, userId: 2, type: 'Question', summary: 'Flash for D-500',
+                userId: 2, type: 'Question', summary: 'Flash for D-500',
                 body: `What is a decent flash for the Nikon D-500?`
             },
             {
-                topicId: 4, userId: 3, type: 'Question', summary: 'Hey enthusiasts, how do you justify your purchases?',
+                userId: 3, type: 'Question', summary: 'Hey enthusiasts, how do you justify your purchases?',
                 body: `Hey folks,
 
 I've been silently but actively following this D500 forum for about three months and I thought it was time to ask you all a question. I'm an enthusiast who dreams about doing more, and for the past 5 years I've been a happy Pentax K-5 shooter (great bang-for-the-buck, imho.) In addition to shooting the kids around the house and local high school soccer, I really enjoy the challenge of shooting live theater (mostly the ones my kids are in). If curious, here you go: gallery  My K-5 is showing signs of its age and I'm anxious to upgrade my body and lenses. This site has absolutely convinced me to go with the D500.
@@ -136,28 +131,16 @@ My wife is happy I enjoy shooting as I do, but she worries that any 'extra' mone
 I earned several hundred dollars this year selling my youth theater shots to parents, and I'm thinking about getting into the senior portrait business, but I don't think it realistic that I'll ever actually pay for my gear.
 
 So, if you are an enthusiast on a limited budget . . . how do you justify your purchases?` },
-            { topicId: 4, userId: 3, type: 'Review', summary: 'Setting new standards: Nikon D5 Review', body: `Lots more formatted content here`, reviewedTopicId: 4, reviewRating: 3, reviewPricePaid: '2345.53'},
-            { topicId: 4, userId: 4, type: 'Review', summary: 'The little camera that could: Nikon D1 Review', body: `Mas stuff ici`, reviewedTopicId: 4, reviewRating: 5, reviewPricePaid: '7543.49' }
+            { userId: 3, type: 'Review', summary: 'Setting new standards: Nikon D5 Review', body: `Lots more formatted content here`, reviewedTopicId: 4, reviewRating: 3, reviewPricePaid: '2345.53'},
+            { userId: 4, type: 'Review', summary: 'The little camera that could: Nikon D1 Review', body: `Mas stuff ici`, reviewedTopicId: 4, reviewRating: 5, reviewPricePaid: '7543.49' }
         ];
     }
 
     topicCommunityItemSeeds() {
         return [
-            {
-                communityItemId: 1,
-                topicId: 4
-            },
-
-            {
-                communityItemId: 1,
-                topicId: 3
-            },
-
-            {
-                communityItemId: 1,
-                topicId: 1
-            },
-
+            { communityItemId: 1, topicId: 4 },
+            { communityItemId: 1, topicId: 3 },
+            { communityItemId: 1, topicId: 1 },
             { communityItemId: 2, topicId: 4 },
             { communityItemId: 3, topicId: 4 },
             { communityItemId: 4, topicId: 4 },

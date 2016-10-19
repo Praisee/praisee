@@ -187,8 +187,7 @@ export default class LoopbackTopics implements ITopics, ITopicsBatchable {
     }
 
     async getCommunityItemCount(topicId: number): Promise<number> {
-        const conditions = { topicId };
-        const count = await promisify(this._CommunityItemModel.count, this._CommunityItemModel)(conditions);
+        const count = await this._TopicModel.getCommunityItemCount(topicId);
 
         return count;
     }

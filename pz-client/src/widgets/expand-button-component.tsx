@@ -13,8 +13,7 @@ export default class ExpandButton extends Component<IExpandProps, any>{
     render() {
         const buttonClasses = classNames(
             'expand-button',
-            this.props.className,
-            this.props.isExpanded ? "expand-button-collapse" : "expand-button-expand"
+            this.props.className
         );
         
         const containerClasses = classNames(

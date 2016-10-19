@@ -3,6 +3,18 @@
     text-align: center;
   }
 
+  .expand-button-container-expand {
+    .expand-button-icon {
+      @extend .fa-angle-down;
+    }
+  }
+
+  .expand-button-container-collapse {
+    .expand-button-icon {
+      @extend .fa-angle-up;
+    }
+  }
+
   .expand-button {
     cursor: pointer;
     border: 1px solid transparent;
@@ -20,31 +32,19 @@
       @extend .fa;
       color: $gray-light;
     }
-
-    &.expand-button-collapse {
-      .expand-button-icon {
-        @extend .fa-angle-up;
-      }
-    }
-
-    &.expand-button-expand {
-      .expand-button-icon {
-        @extend .fa-angle-down;
-      }
-    }
   }
 
   .content-truncator {
     .expand-button-container {
       position: relative;
-      
-      &.expand-button-container-collapse{
-        margin-top: 0;
-      }
-      
-      &.expand-button-container-expand{
-        margin-top: -.8rem;
-      }
+    }
+
+    .expand-button-container-collapse {
+      margin-top: 0;
+    }
+
+    .expand-button-container-expand {
+      margin-top: -.8rem;
     }
 
     .expand-button {

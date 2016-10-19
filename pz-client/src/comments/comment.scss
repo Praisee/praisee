@@ -2,8 +2,9 @@
   .comment {
     @include expand-button();
     @include comment-editor();
+    border-top: 1px solid $hr-border-color;
     padding-left: 1rem;
-    margin: 1rem 0;
+    padding-top: 1rem;
 
     .comment-bottom {
       display: flex;
@@ -13,8 +14,7 @@
       }
     }
 
-    .comment-inner {
-      border-bottom: 1px solid $hr-border-color;
+    .comment-inner{
       padding-bottom: 1rem;
     }
 
