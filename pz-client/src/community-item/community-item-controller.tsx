@@ -11,6 +11,7 @@ import { ISignInUpContext, SignInUpContextType } from 'pz-client/src/user/sign-i
 import CommentBubble from 'pz-client/src/community-item/widgets/community-item-comment-bubble-component';
 import CommunityItemSchema from 'pz-client/src/community-item/widgets/community-item-schema-component';
 import CommunityItemTypeHeader from 'pz-client/src/community-item/widgets/community-item-type-header-component';
+import ReputationEarned from 'pz-client/src/widgets/reputation-earned-component';
 import classNames from 'classnames';
 
 interface IContext {
@@ -81,20 +82,38 @@ export class CommunityItemController extends Component<ICommunityItemProps, ICom
 
     private _renderCommunityItemContent(communityItem) {
         return (
-            <CommunityItemContent communityItem={communityItem} />
+            <div className="community-item-content-container">
+                <CommunityItemContent communityItem={communityItem} />
+            </div>
         );
     }
 
     private _renderVoteAndTagSection(communityItem) {
         return (
             <div className="vote-and-tags">
+                {this._renderVotesOrReputation(communityItem)}
+
+                <Tags topics={communityItem.topics} shouldRenderSingleTag={true} />
+            </div>
+        )
+    }
+
+    private _renderVotesOrReputation(communityItem) {
+        if (communityItem.isMine) {
+            return (
+                <ReputationEarned
+                    communityItem={communityItem} />
+            );
+
+        } else {
+
+            return (
                 <Votes
                     key={`communityItem-votes-${communityItem.id}`}
                     comment={null}
-                    communityItem={this.props.communityItem} />
-                <Tags topics={this.props.communityItem.topics} shouldRenderSingleTag={true} />
-            </div>
-        )
+                    communityItem={communityItem} />
+            );
+        }
     }
 
     private _renderCommentResponseSection(communityItem) {
@@ -202,6 +221,7 @@ export default Relay.createContainer(CommunityItemController, {
                     routePath
                 }
                 commentCount
+                isMine
                 
                 ${CommentList.getFragment('communityItem', { expandCommentsTo }).if(expandComments)}
                 ${Avatar.getFragment('communityItem')}
@@ -211,6 +231,7 @@ export default Relay.createContainer(CommunityItemController, {
                 ${CommentBubble.getFragment('communityItem')}
                 ${CommunityItemTypeHeader.getFragment('communityItem')}
                 ${CommunityItemSchema.getFragment('communityItem')}
+                ${ReputationEarned.getFragment('communityItem')}
             }
         `
     }

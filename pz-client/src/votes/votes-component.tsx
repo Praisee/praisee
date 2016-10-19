@@ -81,7 +81,7 @@ class Votes extends React.Component<IVotesProps, any> {
 
     private _doVoteLogic(isUpVote: boolean) {
         if (!this.context.signInUpContext.isLoggedIn) {
-            this.context.signInUpContext.showSignInUp(event);
+            this.context.signInUpContext.showSignInUp();
             return;
         }
 

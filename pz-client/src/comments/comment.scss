@@ -30,6 +30,17 @@
       color: $gray-light;
     }
 
+    @include media-breakpoint-down(sm) {
+      .comment-header {
+        display: block;
+        margin-bottom: 1rem;
+
+        .date {
+          text-align: left;
+        }
+      }
+    }
+
     .reply-button {
       flex: 1;
     }

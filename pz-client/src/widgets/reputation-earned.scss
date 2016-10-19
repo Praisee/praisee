@@ -9,19 +9,18 @@
     border-radius: 0.2rem;
     margin-right: 2rem;
   }
-  
+
   .reputation-earned-amount {
     color: $brand-secondary;
     font-size: .8rem;
   }
-  
+
   .reputation-earned-heart{
     @extend .fa;
     @extend .fa-heart;
     color: $brand-secondary;
     font-size: .7rem;
-    padding-left: .25rem;
     padding-left: 0.3rem;
-    padding-right: 0.1rem;
+    padding-right: 0.2rem;
   }
 }

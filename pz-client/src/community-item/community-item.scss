@@ -9,6 +9,11 @@
     @include votes();
     @include community-item-comment-bubble();
     @include community-item-type-header();
+    @include reputation-earned();
+
+    .community-item-content-container {
+      margin-top: 1rem;
+    }
 
     .community-item-bottom {
       display: flex;
@@ -40,9 +45,6 @@
     .community-item-bottom-left {
       display: flex;
       align-items: center;
-      @include media-breakpoint-down(sm) {
-        display: block;
-      }
     }
 
     .community-item-bottom-editing-comment {
@@ -67,7 +69,7 @@
       padding-bottom: 0;
 
       &:nth-child(1) {
-        padding: 0.75rem 0.25rem 0.75rem 0;
+        padding-left: 0.25rem;
       }
     }
 
@@ -300,6 +302,7 @@
 
     .vote-and-tags {
       display: flex;
+      align-items: center;
       margin-top: 2rem;
 
       .tags {
@@ -307,7 +310,10 @@
       }
 
       .topic-tag {
-        margin-top: 0.7rem;
+        padding-top: 0;
+        padding-bottom: 0;
+        margin-top: 0;
+        margin-bottom: 0;
       }
     }
 
@@ -316,11 +322,15 @@
       margin-top: 1rem;
       margin-bottom: 1rem;
       padding-bottom: 1rem;
-      align-items: flex-start;
+      align-items: center;
     }
 
     .community-item-has-comments .comment-bubble-and-response {
       border-bottom: 1px solid $hr-border-color;
+    }
+
+    .comment-container > .comment-list > .comment:first-child {
+      border-top: none;
     }
 
     .bubble.bubble-hidden {

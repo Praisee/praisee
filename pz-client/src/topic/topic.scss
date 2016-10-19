@@ -6,7 +6,6 @@
     @include community-item-editor();
     @include review-editor();
     @include expand-button();
-    @include reputation-earned();
 
     .primary-section {
       @include make-col-span(7);

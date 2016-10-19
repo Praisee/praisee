@@ -157,21 +157,25 @@ class CommunityItem extends Component<ICommunityItemProps, ICommuintyItemState> 
     private _renderContent(communityItem) {
         if (this.props.truncateLongContent) {
             return (
-                <ContentTruncator truncateToHeight={175} heightMargin={50}>
-                    <CommunityItemContent
-                        className="community-item-body"
-                        communityItem={communityItem}
+                <div className="community-item-content-container">
+                    <ContentTruncator truncateToHeight={175} heightMargin={50}>
+                        <CommunityItemContent
+                            className="community-item-body"
+                            communityItem={communityItem}
                         />
-                </ContentTruncator>
+                    </ContentTruncator>
+                </div>
             );
 
         } else {
 
             return (
-                <CommunityItemContent
-                    className="community-item-body"
-                    communityItem={communityItem}
+                <div className="community-item-content-container">
+                    <CommunityItemContent
+                        className="community-item-body"
+                        communityItem={communityItem}
                     />
+                </div>
             );
         }
     }
@@ -207,13 +211,16 @@ class CommunityItem extends Component<ICommunityItemProps, ICommuintyItemState> 
                 <ReputationEarned
                     communityItem={this.props.communityItem} />
             );
+
+        } else {
+
+            return (
+                <Votes
+                    key={`communityItem-votes-${communityItem.id}`}
+                    comment={null}
+                    communityItem={this.props.communityItem} />
+            );
         }
-        return (
-            <Votes
-                key={`communityItem-votes-${communityItem.id}`}
-                comment={null}
-                communityItem={this.props.communityItem} />
-        );
     }
 
     private _renderCommentList() {
