@@ -14,13 +14,13 @@ export class DevEnvSeeder {
         return [
             {
                 id: 1,
-                email: 'test@praisee.com',
+                email: 'luke.pammant@gmail.com',
                 displayName: 'Andesl Adams',
                 password: 'test'
             },
             {
                 id: 2,
-                email: 'test2@praisee.com',
+                email: 'james@jameskoshigoe.com',
                 displayName: 'Johnny Bravo',
                 password: 'test'
             },

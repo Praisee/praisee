@@ -32,7 +32,9 @@ class Avatar extends Component<IAvatarProps, any>{
 
         return this.schemaInjector.inject(
             <div className="avatar">
-                <img className="avatar-image" src={image || unknownAvatarUrl} />
+                <img className="avatar-image"
+                    src={`${image}?d=${encodeURIComponent(window.location.origin + unknownAvatarUrl)}`} 
+                    onError={this._loadDefaultImage.bind(this)}/>
                 <div className="avatar-name-container">
                     <span className="display-name">{displayName}</span>
                     <div className="avatar-stats">
@@ -89,6 +91,10 @@ class Avatar extends Component<IAvatarProps, any>{
         this.props.relay.commitUpdate(new ToggleTrustMutation({
             user: parent.user
         }));
+    }
+
+    private _loadDefaultImage(event){
+        event.target.src = unknownAvatarUrl;
     }
 }
 

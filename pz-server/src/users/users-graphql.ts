@@ -12,6 +12,7 @@ import {IAppRepositoryAuthorizers} from 'pz-server/src/app/repositories';
 import {ITypes} from 'pz-server/src/graphql/types';
 import * as graphqlRelay from 'graphql-relay';
 import * as graphql from 'graphql';
+import MD5 from 'MD5';
 
 var {
     GraphQLBoolean,
@@ -100,7 +101,10 @@ export default function UsersTypes(repositoryAuthorizers: IAppRepositoryAuthoriz
             },
 
             image: {
-                type: GraphQLString
+                type: GraphQLString,
+                resolve: ({email}) => {
+                    return calculateGravatarUrl(email);
+                }
             },
 
             username: {
@@ -140,7 +144,10 @@ export default function UsersTypes(repositoryAuthorizers: IAppRepositoryAuthoriz
             },
 
             image: {
-                type: GraphQLString
+                type: GraphQLString,
+                resolve: ({email}) => {
+                    return calculateGravatarUrl(email);
+                }
             },
 
             trusterCount: {
@@ -204,4 +211,9 @@ export default function UsersTypes(repositoryAuthorizers: IAppRepositoryAuthoriz
         OtherUserType,
         ToggleTrustMutation
     });
+}
+
+function calculateGravatarUrl(email: string){
+    const hash = MD5(email.toLowerCase().trim());
+    return `https://www.gravatar.com/avatar/${hash}`;
 }

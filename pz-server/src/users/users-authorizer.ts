@@ -16,6 +16,7 @@ export interface IOtherUser extends IRepositoryRecord {
     recordType: 'OtherUser'
     id: number
     displayName: string
+    email: string
 }
 
 export interface IAuthorizedUsers {
@@ -53,6 +54,7 @@ class AuthorizedUsers {
             const otherUser: IOtherUser = {
                 id: user.id,
                 displayName: user.displayName,
+                email: user.email,
                 recordType: 'OtherUser'
             };
 
