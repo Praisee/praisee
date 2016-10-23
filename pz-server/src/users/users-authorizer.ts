@@ -47,6 +47,7 @@ class AuthorizedUsers {
         const user = await this._users.findById(userId);
 
         if (this._user && this._user.id == user.id) {
+            user.recordType = 'CurrentUser';
             return user;
         }
 

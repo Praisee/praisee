@@ -12,6 +12,8 @@ const unknownAvatarUrl = appInfo.addresses.getImage('unknown-avatar.png');
 
 class Avatar extends Component<IAvatarProps, any>{
     schemaInjector: SchemaInjector;
+    user: IUser;
+
     static contextTypes: any = {
         appViewerId: React.PropTypes.string.isRequired,
         signInUpContext: SignInUpContextType
@@ -21,33 +23,32 @@ class Avatar extends Component<IAvatarProps, any>{
         appViewerId: number,
         signInUpContext: ISignInUpContext
     };
+
     constructor(props, context) {
         super(props, context);
         this.schemaInjector = new SchemaInjector(avatarSchema);
+        this.user = (this.props.communityItem || this.props.comment).user;
     }
 
     render() {
-        const parent = this.props.communityItem || this.props.comment;
-        const {image, displayName, reputation, trusterCount, isCurrentUserTrusting} = parent.user;
-
         return this.schemaInjector.inject(
             <div className="avatar">
-                <img className="avatar-image"
-                    src={`${image}?d=${encodeURIComponent(window.location.origin + unknownAvatarUrl)}`} 
-                    onError={this._loadDefaultImage.bind(this)}/>
+                {this._renderImage()}
                 <div className="avatar-name-container">
-                    <span className="display-name">{displayName}</span>
+                    <span className="display-name">{this.user.displayName}</span>
                     <div className="avatar-stats">
-                        {this._renderReputation(reputation)}
-                        {this._renderTrust(trusterCount, displayName)}
+                        {this._renderReputation()}
+                        {this._renderTrust()}
                     </div>
                 </div>
-                {this._renderTrustButton(isCurrentUserTrusting)}
+                {this._renderTrustButton()}
             </div>
         );
     }
 
-    private _renderReputation(reputation: number) {
+    private _renderReputation() {
+        const {reputation} = this.user;
+
         if (this.props.showReputation)
             return (
                 <span className="reputation" title="This user is the highest rated in this topic.">
@@ -57,8 +58,10 @@ class Avatar extends Component<IAvatarProps, any>{
             );
     }
 
-    private _renderTrust(trusterCount: number, displayName: string) {
+    private _renderTrust() {
+        const {trusterCount, displayName} = this.user;
         var singular = trusterCount === 1;
+
         if (this.props.showTrusts)
             return (
                 <span className="trusters"
@@ -69,7 +72,9 @@ class Avatar extends Component<IAvatarProps, any>{
             );
     }
 
-    private _renderTrustButton(isCurrentUserTrusting: boolean) {
+    private _renderTrustButton() {
+        const {isCurrentUserTrusting} = this.user;
+
         if (this.props.showTrustButton)
             return (
                 <button className="trust-button" title="Trust this user"
@@ -78,6 +83,32 @@ class Avatar extends Component<IAvatarProps, any>{
                     {isCurrentUserTrusting ? "Trusted" : "Trust"}
                 </button>
             );
+    }
+
+    private _renderImage() {
+        const {isCurrentUser, image} = this.user;
+
+        if (isCurrentUser) {
+            return (
+                <a href="https://gravatar.com" target="blank">
+                    <div className="avatar-image-container avatar-image-container-is-mine">
+                        <img className="avatar-image"
+                            src={`${image}?d=retro`}
+                            onError={this._loadDefaultImage.bind(this)} />
+                    </div>
+                </a>
+            );
+        }
+
+        else {
+            return (
+                <div className="avatar-image-container">
+                    <img className="avatar-image"
+                        src={`${image}?d=retro`}
+                        onError={this._loadDefaultImage.bind(this)} />
+                </div>
+            );
+        }
     }
 
     private _toggleTrust() {
@@ -93,19 +124,20 @@ class Avatar extends Component<IAvatarProps, any>{
         }));
     }
 
-    private _loadDefaultImage(event){
+    private _loadDefaultImage(event) {
         event.target.src = unknownAvatarUrl;
     }
 }
 
 var otherUserFragment = Relay.QL`
   fragment on OtherUser {
-    isCurrentUserTrusting
-  }
-`;
+        isCurrentUserTrusting
+    }
+ `;
 
 var userFragment = Relay.QL`
     fragment on UserInterface {
+        isCurrentUser
         displayName
         reputation
         trusterCount
@@ -136,12 +168,14 @@ export default Relay.createContainer(Avatar, {
 });
 
 interface IUser {
+    isCurrentUser: boolean;
     displayName: string;
     reputation: number;
     image: string;
     trusterCount: number;
     isCurrentUserTrusting?: boolean
 }
+
 export interface IAvatarProps {
     communityItem: { user: IUser };
     comment: { user: IUser };

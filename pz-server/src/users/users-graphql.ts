@@ -43,8 +43,8 @@ var {
 export default function UsersTypes(repositoryAuthorizers: IAppRepositoryAuthorizers, nodeInterface, types: ITypes) {
     let userAuthorizer = repositoryAuthorizers.users;
 
-    var resolveType = function (value) {
-        if (value.email) {
+    var resolveType = function (value, {user}) {
+        if (user && user.id === value.id) {
             return CurrentUserType;
         }
         else {
@@ -58,21 +58,15 @@ export default function UsersTypes(repositoryAuthorizers: IAppRepositoryAuthoriz
         fields: () => ({
             id: globalIdField('User'),
 
-            displayName: {
-                type: GraphQLString
-            },
+            displayName: { type: GraphQLString },
 
-            reputation: {
-                type: GraphQLInt
-            },
+            reputation: { type: GraphQLInt },
 
-            image: {
-                type: GraphQLString
-            },
+            image: { type: GraphQLString },
 
-            trusterCount: {
-                type: GraphQLInt
-            }
+            trusterCount: { type: GraphQLInt },
+
+            isCurrentUser: { type: new GraphQLNonNull(GraphQLBoolean) }
         }),
 
         resolveType: resolveType
@@ -83,11 +77,6 @@ export default function UsersTypes(repositoryAuthorizers: IAppRepositoryAuthoriz
 
         fields: () => ({
             id: globalIdField(CurrentUserType.Name),
-
-            serverId: {
-                type: new GraphQLNonNull(GraphQLInt),
-                resolve: (user) => user.id
-            },
 
             displayName: {
                 type: GraphQLString
@@ -107,10 +96,6 @@ export default function UsersTypes(repositoryAuthorizers: IAppRepositoryAuthoriz
                 }
             },
 
-            username: {
-                type: GraphQLString
-            },
-
             email: {
                 type: GraphQLString
             },
@@ -120,6 +105,20 @@ export default function UsersTypes(repositoryAuthorizers: IAppRepositoryAuthoriz
                 resolve: async ({id}, _, {user}) => {
                     return userAuthorizer.as(user).getTotalTrusters(id);
                 }
+            },
+
+            serverId: {
+                type: new GraphQLNonNull(GraphQLInt),
+                resolve: (user) => user.id
+            },
+
+            username: {
+                type: GraphQLString
+            },
+
+            isCurrentUser: {
+                type:  new GraphQLNonNull(GraphQLBoolean),
+                resolve: ({id}, _, user) => true
             }
         }),
 
@@ -162,6 +161,11 @@ export default function UsersTypes(repositoryAuthorizers: IAppRepositoryAuthoriz
                 resolve: ({id}, _, {user}) => {
                     return userAuthorizer.as(user).isUserTrusting(id);
                 }
+            },
+
+            isCurrentUser: {
+                type:  new GraphQLNonNull(GraphQLBoolean),
+                resolve: ({id}, _, user) => false
             }
         }),
 
@@ -213,7 +217,7 @@ export default function UsersTypes(repositoryAuthorizers: IAppRepositoryAuthoriz
     });
 }
 
-function calculateGravatarUrl(email: string){
+function calculateGravatarUrl(email: string) {
     const hash = MD5(email.toLowerCase().trim());
     return `https://www.gravatar.com/avatar/${hash}`;
 }

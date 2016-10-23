@@ -5,7 +5,7 @@ import {
 export type TOptionalUser = {id: number} | null;
 
 export interface IUser extends IRepositoryRecord {
-    recordType: 'User'
+    recordType: 'User' | 'CurrentUser' | 'OtherUser'
     id: number
     displayName: string
     email: string

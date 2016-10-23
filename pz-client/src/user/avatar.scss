@@ -10,7 +10,6 @@
       width: 2em;
       height: 2em;
       border-radius: 50%;
-      margin-right: .5em;
     }
 
     .avatar-name-container {
@@ -74,6 +73,26 @@
       span:nth-child(1) {
         padding-left: 0;
         margin-left: 0;
+      }
+    }
+
+    .avatar-image-container {
+      margin-right: .5em;
+      position: relative;
+    }
+
+    .avatar-image-container.avatar-image-container-is-mine {
+      &:hover {
+        @extend .fa;
+        @extend .fa-cloud-upload;
+        color: white;
+
+        &::before {
+          position: absolute;
+          bottom: 0;
+          right: 0;
+          text-shadow: 0 0 1px #000;
+        }
       }
     }
   }
