@@ -6,19 +6,19 @@ import Votes from 'pz-client/src/votes/votes-component';
 import Avatar from 'pz-client/src/user/avatar.component';
 import CommunityItemContent from 'pz-client/src/community-item/community-item-content.component';
 import Tags from 'pz-client/src/community-item/tags-component';
-import { CreateCommentEditor } from 'pz-client/src/comments/comment-editor-component';
+import CreateCommentEditor from 'pz-client/src/comments/create-comment-editor-component';
 import { ISignInUpContext, SignInUpContextType } from 'pz-client/src/user/sign-in-up-overlay-component';
 import CommentBubble from 'pz-client/src/community-item/widgets/community-item-comment-bubble-component';
 import CommunityItemSchema from 'pz-client/src/community-item/widgets/community-item-schema-component';
 import CommunityItemTypeHeader from 'pz-client/src/community-item/widgets/community-item-type-header-component';
 import ReputationEarned from 'pz-client/src/widgets/reputation-earned-component';
 import classNames from 'classnames';
-import { Dropdown, DropdownToggle, DropdownMenu, DropdownItem } from 'reactstrap';
 import {withRouter} from 'react-router';
 import routePaths from 'pz-client/src/router/route-paths';
 import SimpleModal from 'pz-client/src/widgets/simple-modal-component';
 import handleClick from 'pz-client/src/support/handle-click';
 import DestroyCommunityItemMutation from 'pz-client/src/community-item/destroy-community-item-mutation';
+import {ContextMenu, ContextMenuOption} from 'pz-client/src/widgets/context-menu-component';
 
 interface IContext {
     showNotFoundError: any
@@ -38,7 +38,6 @@ export class CommunityItemController extends Component<ICommunityItemProps, any>
     };
 
     state = {
-        isMenuOpen: false,
         isEditingComment: false
     };
 
@@ -124,28 +123,18 @@ export class CommunityItemController extends Component<ICommunityItemProps, any>
         }
 
         return (
-            <Dropdown className="community-item-menu"
-                      isOpen={this.state.isMenuOpen}
-                      toggle={this._toggleMenu.bind(this)}>
+            <ContextMenu className="community-item-menu">
+                <ContextMenuOption className="edit-community-item"
+                                   onClick={this._editCommunityItem.bind(this)}>
 
-                <DropdownToggle className="community-item-menu-toggle">
-                    <span />
-                </DropdownToggle>
+                    Edit
+                </ContextMenuOption>
 
-                <DropdownMenu className="community-item-menu-options">
-                    <DropdownItem className="edit-community-item"
-                                  onClick={this._editCommunityItem.bind(this)}>
-
-                        Edit
-                    </DropdownItem>
-
-                    <DropdownItem className="delete-community-item"
-                                  onClick={() => this.refs.deleteConfirmation.show()}>
-
-                        Delete
-                    </DropdownItem>
-                </DropdownMenu>
-            </Dropdown>
+                <ContextMenuOption className="delete-community-item"
+                                   onClick={() => this.refs.deleteConfirmation.show()}>
+                    Delete
+                </ContextMenuOption>
+            </ContextMenu>
         );
     }
 
@@ -332,10 +321,6 @@ export class CommunityItemController extends Component<ICommunityItemProps, any>
         this.props.relay.setVariables({
             expandComments: !this.props.relay.variables.expandComments
         })
-    }
-
-    private _toggleMenu() {
-        this.setState({isMenuOpen: !this.state.isMenuOpen})
     }
 
     private _editCommunityItem() {

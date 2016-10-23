@@ -61,6 +61,7 @@ export interface ITypes {
     CommentType
     CommentConnection
     CreateCommentMutation
+    UpdateCommentMutation
 
     TopicType
     TopicThumbnailPhotoType

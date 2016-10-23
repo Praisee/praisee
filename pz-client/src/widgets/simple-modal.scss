@@ -1,9 +1,6 @@
 @mixin simple-modal($class: 'app-simple-modal') {
-  @at-root {
+  @at-root(without: all) {
     .#{$class} {
-      @extend %bootstrap;
-      @extend %font-awesome;
-
       .simple-modal-hide-button {
         @extend .fa;
         @extend .fa-close;

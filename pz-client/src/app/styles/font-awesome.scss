@@ -2,7 +2,8 @@
 @import '../../../../node_modules/font-awesome/scss/_mixins';
 @import '../../../../node_modules/font-awesome/scss/_path';
 
-%font-awesome {
+//%font-awesome {
+
     @import '../../../../node_modules/font-awesome/scss/_core';
     @import '../../../../node_modules/font-awesome/scss/_larger';
     @import '../../../../node_modules/font-awesome/scss/_fixed-width';
@@ -13,4 +14,11 @@
     // @import '../../../../node_modules/font-awesome/scss/_stacked';
     // @import '../../../../node_modules/font-awesome/scss/_screen-reader';
     @import '../../../../node_modules/font-awesome/scss/_icons';
-}
+
+//}
+// Sorry, its too much of a pain to use placeholders throughout multiple classes.
+// This issue last reared its ugly head when trying to extend modal classes from
+// %bootstrap and %font-awesome. For some reason that creates huge selectors and
+// causes all the fonts to change size.
+// Blame SASS for not allowing placeholders and classes to be used as mixins.
+// Core CSS

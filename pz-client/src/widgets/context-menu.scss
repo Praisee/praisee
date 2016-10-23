@@ -1,0 +1,25 @@
+@mixin context-menu($class: 'context-menu') {
+  .#{$class} {
+    text-align: right;
+
+    .#{$class}-toggle {
+      @extend .fa;
+      @extend .fa-ellipsis-h;
+      appearance: none;
+      background: none;
+      border: none;
+      outline: none;
+      font-size: 1.3rem;
+      color: $gray-light;
+      line-height: 1.8;
+    }
+
+    .#{$class}-option {
+      outline: none;
+    }
+
+    .dropdown-menu {
+      @extend .dropdown-menu-right;
+    }
+  }
+}

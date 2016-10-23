@@ -12,6 +12,14 @@ import {ICursorResults, TBiCursor} from 'pz-server/src/support/cursors/cursors';
 import {findWithCursor} from '../support/cursors/loopback-helpers';
 import {cursorLoopbackModelsToRecords} from '../support/cursors/repository-helpers';
 
+export function createRecordFromLoopbackComment(comment: ICommentInstance): IComment {
+    return createRecordFromLoopback<IComment>('Comment', comment);
+}
+
+export function cursorCommentLoopbackModelsToRecords(comments: ICursorResults<ICommentInstance>): ICursorResults<IComment> {
+    return cursorLoopbackModelsToRecords<IComment>('Comment', comments);
+}
+
 export default class Comments implements IComments {
     private _CommentModel: ICommentModel;
 
@@ -27,17 +35,17 @@ export default class Comments implements IComments {
             return null;
         }
 
-        return createRecordFromLoopback<IComment>('Comment', commentModel);
+        return createRecordFromLoopbackComment(commentModel);
     }
 
     async findSomeByUserId(cursor: TBiCursor, userId: number): Promise<ICursorResults<IComment>> {
-        const cursorResults = await findWithCursor(
+        const cursorResults = await findWithCursor<ICommentInstance>(
             this._CommentModel,
             cursor,
             { where: { userId } }
         );
 
-        return cursorLoopbackModelsToRecords<IComment>('Comment', cursorResults);
+        return cursorCommentLoopbackModelsToRecords(cursorResults);
     }
 
     isOwner(userId: number, commentId: number): Promise<boolean> {
@@ -52,9 +60,9 @@ export default class Comments implements IComments {
             parentId: comment.parentId,
             userId: userId
         });
-        
+
         let result = await commentModel.save();
-        return createRecordFromLoopback<IComment>('Comment', result);
+        return createRecordFromLoopbackComment(result);
     }
 
     async findAllByParentCommentId(commentId: number): Promise<Array<IComment>> {
@@ -64,7 +72,7 @@ export default class Comments implements IComments {
         const comments = await promisify<ICommentInstance[]>(comment.comments, comment)();
 
         return comments.map((comment) =>
-            createRecordFromLoopback<IComment>('Comment', comment)
+            createRecordFromLoopbackComment(comment)
         );
     }
 
@@ -77,7 +85,7 @@ export default class Comments implements IComments {
     }
 
     private async _getCommentsForComment(commentInstance: ICommentInstance): Promise<IComment> {
-        let comment = createRecordFromLoopback<IComment>('Comment', commentInstance);
+        let comment = createRecordFromLoopbackComment(commentInstance);
         comment.comments = [];
 
         const comments = await promisify<ICommentInstance[]>(commentInstance.comments, commentInstance)();
@@ -100,18 +108,18 @@ export default class Comments implements IComments {
             createRecordFromLoopback<IVote>('Vote', vote)
         );
     }
-    
+
     async getCountForRootParent(rootParentType: string, rootParentId: number): Promise<number>{
         const conditions = { rootParentType, rootParentId };
         const count = await promisify(this._CommentModel.count, this._CommentModel)(conditions);
-        
+
         return count;
     }
 
      async getCountForParent(parentType: string, parentId: number): Promise<number>{
         const conditions = { parentType, parentId };
         const count = await promisify(this._CommentModel.count, this._CommentModel)(conditions);
-        
+
         return count;
     }
 
@@ -120,13 +128,18 @@ export default class Comments implements IComments {
             throw new Error('Cannot update record without an id');
         }
 
-        let commentModel = new this._CommentModel({
-            id: comment.id,
-            body: comment.body
-        });
+        let commentModel: ICommentInstance = await promisify(
+            this._CommentModel.findById, this._CommentModel)(comment.id);
+
+        if (!commentModel) {
+            throw new Error('Could not find community item: ' + comment.id);
+        }
+
+        commentModel.body = comment.body;
+        commentModel.bodyData = comment.bodyData;
 
         const result = await promisify(commentModel.save, commentModel)();
-        return createRecordFromLoopback<IComment>('Comment', result);
+        return createRecordFromLoopbackComment(result);
     }
 }
 

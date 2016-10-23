@@ -3,7 +3,7 @@ import { Component } from 'react';
 import * as Relay from 'react-relay';
 import Votes from 'pz-client/src/votes/votes-component';
 import Avatar from 'pz-client/src/user/avatar.component';
-import { CreateCommentEditor } from 'pz-client/src/comments/comment-editor-component';
+import CreateCommentEditor from 'pz-client/src/comments/create-comment-editor-component';
 import { ISignInUpContext, SignInUpContextType } from 'pz-client/src/user/sign-in-up-overlay-component';
 import classNames from 'classnames';
 import CommunityItemBodyEditor from 'pz-client/src/community-item/community-item-body-editor.component';

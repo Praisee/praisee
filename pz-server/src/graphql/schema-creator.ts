@@ -220,6 +220,7 @@ export default function createSchema(repositoryAuthorizers: IAppRepositoryAuthor
                 updateReviewDetails: types.UpdateReviewDetailsMutation,
 
                 createComment: types.CreateCommentMutation,
+                updateComment: types.UpdateCommentMutation,
 
                 createVote: types.CreateVoteMutation,
                 updateVote: types.UpdateVoteMutation,

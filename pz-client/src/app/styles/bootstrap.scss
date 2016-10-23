@@ -7,7 +7,8 @@
 @import '../../../../node_modules/bootstrap/scss/animation';
 @import '../../../../node_modules/bootstrap/scss/modal';
 
-%bootstrap {
+//%bootstrap {
+
   // Core CSS
   @import '../../../../node_modules/bootstrap/scss/type';
   //@import '../../../../node_modules/bootstrap/scss/images';
@@ -48,4 +49,11 @@
   //@import '../../../../node_modules/bootstrap/scss/utilities-background';
   //@import '../../../../node_modules/bootstrap/scss/utilities-spacing';
   //@import '../../../../node_modules/bootstrap/scss/utilities-responsive';
-}
+
+//}
+// Sorry, its too much of a pain to use placeholders throughout multiple classes.
+// This issue last reared its ugly head when trying to extend modal classes from
+// %bootstrap and %font-awesome. For some reason that creates huge selectors and
+// causes all the fonts to change size.
+// Blame SASS for not allowing placeholders and classes to be used as mixins.
+// Core CSS

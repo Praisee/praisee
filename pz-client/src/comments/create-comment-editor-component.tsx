@@ -194,7 +194,7 @@ class Editor extends React.Component<IProps, any> {
     }
 }
 
-export let CreateCommentEditor = Relay.createContainer(Editor, {
+export default Relay.createContainer(Editor, {
     fragments: {
         comment: () => Relay.QL`
             fragment on Comment {
@@ -206,17 +206,6 @@ export let CreateCommentEditor = Relay.createContainer(Editor, {
             fragment on CommunityItemInterface {
                 id
                 ${CreateCommentMutation.getFragment('communityItem')}
-            }
-        `
-    }
-});
-
-export var UpdateItemEditor = Relay.createContainer(Editor, {
-    fragments: {
-        comment: () => Relay.QL`
-            fragment on Comment {
-                id,
-                body
             }
         `
     }

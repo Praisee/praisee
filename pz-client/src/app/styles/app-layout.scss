@@ -122,9 +122,9 @@
       margin-top: 3rem;
     }
 
-    @include simple-modal('app-sign-in-up-overlay-modal') {
-      @include sign-in-up();
-    }
-
   }
+}
+
+@include simple-modal('app-sign-in-up-overlay-modal') {
+  @include sign-in-up();
 }

@@ -302,27 +302,10 @@
     .community-item-title-container {
       display: flex;
       align-items: flex-start;
+      @include context-menu();
 
       .title {
         flex: 1;
-      }
-
-      .community-item-menu {
-        .community-item-menu-toggle {
-          @extend .fa;
-          @extend .fa-ellipsis-h;
-          appearance: none;
-          background: none;
-          border: none;
-          outline: none;
-          font-size: 1.3rem;
-          color: $gray-light;
-          line-height: 1.8;
-        }
-
-        .dropdown-menu {
-          @extend .dropdown-menu-right;
-        }
       }
     }
 
@@ -395,30 +378,30 @@
       }
     }
 
-    @include simple-modal('app-community-item-delete-confirmation') {
-      .delete-confirmation-content {
-        padding: 2rem;
-      }
+  }
+}
 
-      .delete-confirmation-options {
-        margin-top: 1.5rem;
-      }
+@include simple-modal('app-community-item-delete-confirmation') {
+  .delete-confirmation-content {
+    padding: 2rem;
+  }
 
-      .delete-confirmation-delete-button, .delete-confirmation-cancel-button {
-        @include btn();
-        font-size: 0.9rem;
-        margin-right: 0.5rem;
-      }
+  .delete-confirmation-options {
+    margin-top: 1.5rem;
+  }
 
-      .delete-confirmation-delete-button {
-        @include btn-primary();
-      }
+  .delete-confirmation-delete-button, .delete-confirmation-cancel-button {
+    @include btn();
+    font-size: 0.9rem;
+    margin-right: 0.5rem;
+  }
 
-      .delete-confirmation-cancel-button {
-        @include btn-primary-outline();
-      }
-    }
+  .delete-confirmation-delete-button {
+    @include btn-primary();
+  }
 
+  .delete-confirmation-cancel-button {
+    @include btn-primary-outline();
   }
 }
 

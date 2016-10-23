@@ -12,7 +12,7 @@
       max-width: 30rem;
     }
 
-    .reply-button, .sign-up-button, .sign-in-button {
+    .reply-button, .sign-up-button, .sign-in-button, .save-button {
       @include btn;
       @include btn-sm;
       @include btn-primary;

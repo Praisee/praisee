@@ -1,12 +1,18 @@
 import {IAppRepositoryAuthorizers} from 'pz-server/src/app/repositories';
 import {ITypes} from 'pz-server/src/graphql/types';
 import {IVote} from 'pz-server/src/votes/votes';
-import {AuthorizationError} from 'pz-server/src/support/authorization';
-import convertTextToData from 'pz-server/src/content/text-to-data-converter';
+
+import {
+    AuthorizationError,
+    NotAuthenticatedError,
+    NotOwnerError
+} from 'pz-server/src/support/authorization';
+
 import {parseInputContentData} from 'pz-server/src/content/input-content-data';
 import {addErrorToResponse} from 'pz-server/src/errors/errors-graphql';
 import * as graphqlRelay from 'graphql-relay';
 import * as graphql from 'graphql';
+import {getViewerField} from '../graphql/viewer-graphql';
 
 var {
     GraphQLBoolean,
@@ -138,6 +144,18 @@ export default function CommentTypes(repositoryAuthorizers: IAppRepositoryAuthor
 
                     return aggregate;
                 }
+            },
+
+            belongsToCurrentUser: {
+                type: new GraphQLNonNull(GraphQLBoolean),
+
+                resolve: async ({userId}, __, {user}) => {
+                    if (!user) {
+                        return false;
+                    }
+
+                    return user.id === userId;
+                }
             }
         }),
 
@@ -183,10 +201,7 @@ export default function CommentTypes(repositoryAuthorizers: IAppRepositoryAuthor
                 }
             },
 
-            viewer: {
-                type: types.ViewerType,
-                resolve: () => ({ id: 'viewer' })
-            }
+            viewer: getViewerField(types)
         }),
 
         mutateAndGetPayload: async ({body, bodyData, communityItemId, commentId}, context) => {
@@ -209,9 +224,63 @@ export default function CommentTypes(repositoryAuthorizers: IAppRepositoryAuthor
         },
     });
 
+    const UpdateCommentMutation = mutationWithClientMutationId({
+        name: 'UpdateComment',
+
+        inputFields: () => ({
+            id: { type: new GraphQLNonNull(GraphQLID) },
+            body: { type: GraphQLString },
+            bodyData: { type: types.InputContentDataType }
+        }),
+
+        outputFields: () => ({
+            comment: {
+                type: types.CommentType,
+                resolve: ({comment}) => comment
+            },
+
+            viewer: getViewerField(types)
+        }),
+
+        mutateAndGetPayload: async ({id: rawId, body, bodyData}, context) => {
+            const {id} = fromGlobalId(rawId);
+
+            const parsedBodyData = parseInputContentData(body || bodyData);
+            const authorizedComments = commentsAuthorizer.as(context.user);
+
+            const oldComment = await authorizedComments.findById(id);
+
+            if (!oldComment) {
+                addErrorToResponse(context.responseErrors, 'NotFound', new Error('Comment was not found'));
+                return {};
+            }
+
+            let updatedComment = await authorizedComments.update(Object.assign(
+                {}, oldComment, {
+                    recordType: 'Comment',
+                    id,
+                    bodyData: parsedBodyData
+                }
+            ));
+
+            if (updatedComment instanceof AuthorizationError) {
+                if (updatedComment instanceof NotAuthenticatedError) {
+                    addErrorToResponse(context.responseErrors, 'NotAuthenticated', updatedComment);
+                } else if (updatedComment instanceof NotOwnerError) {
+                    addErrorToResponse(context.responseErrors, 'NotOwnerError', updatedComment);
+                }
+
+                return {};
+            }
+
+            return { comment: updatedComment };
+        },
+    });
+
     return {
         CommentType,
         CommentConnection,
-        CreateCommentMutation
+        CreateCommentMutation,
+        UpdateCommentMutation
     };
 }

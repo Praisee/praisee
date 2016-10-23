@@ -2,6 +2,7 @@
   .comment {
     @include expand-button();
     @include comment-editor();
+    @include context-menu();
     border-top: 1px solid $hr-border-color;
     padding-left: 1rem;
     padding-top: 1rem;
@@ -44,5 +45,29 @@
     .reply-button {
       flex: 1;
     }
+  }
+}
+
+@include simple-modal('app-comment-delete-confirmation') {
+  .delete-confirmation-content {
+    padding: 2rem;
+  }
+
+  .delete-confirmation-options {
+    margin-top: 1.5rem;
+  }
+
+  .delete-confirmation-delete-button, .delete-confirmation-cancel-button {
+    @include btn();
+    font-size: 0.9rem;
+    margin-right: 0.5rem;
+  }
+
+  .delete-confirmation-delete-button {
+    @include btn-primary();
+  }
+
+  .delete-confirmation-cancel-button {
+    @include btn-primary-outline();
   }
 }
