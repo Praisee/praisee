@@ -186,14 +186,14 @@ class CommunityItemEditor extends React.Component<IProps, any> {
         }
 
         const sayings = [
-            `This is where you write a review about`,
-            `This is where you ask a question about`,
-            `This is where you ask your question about`,
+            `Add something to %s...`,
+            `What do you think about %s?`,
+            `Share your thoughts on %s...`
         ];
 
         var randomSaying = sayings[Math.floor(Math.random() * (sayings.length - 1))];
 
-        this._saying = `${randomSaying} ${this.props.topic.name}...`;
+        this._saying = randomSaying.replace('%s', this.props.topic.name);
         return this._saying;
     }
 
