@@ -11,6 +11,11 @@
     p {
       margin-top: 1.5rem;
     }
+
+    .error-text {
+      @extend .alert;
+      @extend .alert-danger;
+    }
   }
 }
 
@@ -30,6 +35,11 @@
       margin-top: 0.5rem;
     }
 
+    .error-text {
+      @extend .alert;
+      @extend .alert-danger;
+    }
+    
     @include media-breakpoint-up(lg) {
       .sign-in-up-field { width: 96%; }
       .sign-in-up-field-group { display: inline-block; width: 33.33%; }

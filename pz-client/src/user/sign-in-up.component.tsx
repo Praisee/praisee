@@ -1,5 +1,5 @@
 import * as React from 'react';
-import {Link} from 'react-router';
+import { Link } from 'react-router';
 import routePaths from 'pz-client/src/router/route-paths';
 import appInfo from 'pz-client/src/app/app-info';
 
@@ -24,7 +24,8 @@ export default class SignInUp extends React.Component<IProps, any> {
     };
 
     state = {
-        isShowingSignUp: this.props.showSignUp !== false
+        isShowingSignUp: this.props.showSignUp !== false,
+        errorText: ""
     };
 
     context: IContext;
@@ -48,7 +49,7 @@ export default class SignInUp extends React.Component<IProps, any> {
                         <legend>Sign Up</legend>
 
                         <div className="form-group">
-                            <input className="form-control" type="text" name="displayName" placeholder="Your name" key="displayName"/>
+                            <input className="form-control" type="text" name="displayName" placeholder="Your name" key="displayName" />
                         </div>
 
                         <div className="form-group">
@@ -59,6 +60,8 @@ export default class SignInUp extends React.Component<IProps, any> {
                             <input className="form-control" type="password" name="password" placeholder="Password" key="password" />
                         </div>
 
+                        {this.state.errorText && <p className="error-text">{this.state.errorText}</p>}
+
                         <div>
                             <button type="submit" className="sign-up-button">Sign Up</button>
                         </div>
@@ -68,7 +71,7 @@ export default class SignInUp extends React.Component<IProps, any> {
                 <p>
                     Already have an account?
                     <a href={routePaths.user.signIn()}
-                       onClick={this._switchToSignIn.bind(this)}> Sign in here!</a>
+                        onClick={this._switchToSignIn.bind(this)}> Sign in here!</a>
                 </p>
             </div>
         );
@@ -89,6 +92,8 @@ export default class SignInUp extends React.Component<IProps, any> {
                             <input className="form-control" type="password" name="password" placeholder="Password" key="password" />
                         </div>
 
+                        {this.state.errorText && <p className="error-text">{this.state.errorText}</p>}
+
                         <div>
                             <button type="submit" className="sign-in-button">Sign In</button>
                         </div>
@@ -98,7 +103,7 @@ export default class SignInUp extends React.Component<IProps, any> {
                 <p>
                     Don't have an account?
                     <a href={routePaths.user.signUp()}
-                       onClick={this._switchToSignUp.bind(this)}> Sign up here!</a>
+                        onClick={this._switchToSignUp.bind(this)}> Sign up here!</a>
                 </p>
             </div>
         );
@@ -107,9 +112,6 @@ export default class SignInUp extends React.Component<IProps, any> {
     private async _submit(event) {
         event.preventDefault();
 
-        const noop = () => {};
-        const clearSessionData = this.context.clearSessionData || noop;
-
         // TODO: We need a form library
         const formObject = Array.from((new FormData(event.target) as any).entries())
             .reduce((formObject, [key, value]) => {
@@ -117,7 +119,7 @@ export default class SignInUp extends React.Component<IProps, any> {
                 return formObject;
             }, {});
 
-        await fetch(event.target.action, {
+        fetch(event.target.action, {
             method: 'POST',
             credentials: 'same-origin',
             headers: {
@@ -125,9 +127,39 @@ export default class SignInUp extends React.Component<IProps, any> {
                 'Content-Type': 'application/json'
             },
             body: JSON.stringify(formObject)
-        });
+        })
+            .then(this._handlePostResponse.bind(this))
+            .then(this._handleJson.bind(this))
+            .catch(this._handleError.bind(this));
+    }
 
-        clearSessionData();
+    private _handlePostResponse(response: IResponse) {
+        if (response.status === 422) {
+            throw new Error("That email is already in use.");
+        }
+        if (response.status === 500) {
+            throw new Error("Opps! It looks like we're having trouble. Please try again later.");
+        }
+        if (response.ok) {
+            return response.json();
+        }
+    }
+
+    private _handleJson(json: any) {
+        const noop = () => { };
+        const clearSessionData = this.context.clearSessionData || noop;
+
+        if (json.success) {
+            clearSessionData();
+        } else {
+            throw new Error("Incorrect username or password");
+        }
+    }
+
+    private _handleError(error: Error) {
+        this.setState({
+            errorText: error.message
+        });
     }
 
     private _switchToSignUp(event) {
@@ -136,7 +168,10 @@ export default class SignInUp extends React.Component<IProps, any> {
         }
 
         event.preventDefault();
-        this.setState({isShowingSignUp: true});
+        this.setState({
+            isShowingSignUp: true,
+            errorText: ""
+        });
         event.target.blur();
     }
 
@@ -146,7 +181,10 @@ export default class SignInUp extends React.Component<IProps, any> {
         }
 
         event.preventDefault();
-        this.setState({isShowingSignUp: false});
+        this.setState({
+            isShowingSignUp: false,
+            errorText: ""
+        });
         event.target.blur();
     }
 }

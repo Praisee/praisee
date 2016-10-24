@@ -28,7 +28,8 @@ export default class SignInUp extends React.Component<IProps, any> {
 
     state = {
         isShowingSignUp: this.props.showSignUp !== false,
-        isShowingPasswordField: false
+        isShowingPasswordField: false,
+        errorText: ""
     };
 
     context: IContext;
@@ -51,7 +52,7 @@ export default class SignInUp extends React.Component<IProps, any> {
 
         return (
             <div className="sign-up">
-                <form action={signUpApi} method="post" onSubmit={this._submit.bind(this) }>
+                <form action={signUpApi} method="post" onSubmit={this._submit.bind(this)}>
                     <div className="sign-in-up-name-group sign-in-up-field-group">
                         <input
                             className="sign-in-up-name sign-in-up-field"
@@ -61,7 +62,7 @@ export default class SignInUp extends React.Component<IProps, any> {
                             key="displayName"
                             onFocus={onInteraction}
                             onChange={onInteraction}
-                        />
+                            />
                     </div>
 
                     <div className="sign-in-up-email-group sign-in-up-field-group">
@@ -72,8 +73,8 @@ export default class SignInUp extends React.Component<IProps, any> {
                             placeholder="Your email"
                             key="email"
                             onFocus={onInteraction}
-                            onChange={this._emailFieldChanged.bind(this) }
-                        />
+                            onChange={this._emailFieldChanged.bind(this)}
+                            />
                     </div>
 
                     {this.state.isShowingPasswordField &&
@@ -86,9 +87,11 @@ export default class SignInUp extends React.Component<IProps, any> {
                                 key="password"
                                 onFocus={onInteraction}
                                 onChange={onInteraction}
-                            />
+                                />
                         </div>
                     }
+
+                    {this.state.errorText && <p className="error-text">{this.state.errorText}</p>}
 
                     <div className="sign-in-up-button-container">
                         <button type="submit" className="sign-up-button">
@@ -113,7 +116,7 @@ export default class SignInUp extends React.Component<IProps, any> {
 
         return (
             <div className="sign-in">
-                <form action={signInApi} method="post" onSubmit={this._submit.bind(this) }>
+                <form action={signInApi} method="post" onSubmit={this._submit.bind(this)}>
                     <div className="sign-in-up-email-group sign-in-up-field-group">
                         <input
                             className="sign-in-up-email sign-in-up-field"
@@ -123,7 +126,7 @@ export default class SignInUp extends React.Component<IProps, any> {
                             key="email"
                             onFocus={onInteraction}
                             onChange={onInteraction}
-                        />
+                            />
                     </div>
 
                     <div className="sign-in-up-password-group sign-in-up-field-group">
@@ -135,8 +138,10 @@ export default class SignInUp extends React.Component<IProps, any> {
                             key="password"
                             onFocus={onInteraction}
                             onChange={onInteraction}
-                        />
+                            />
                     </div>
+
+                    {this.state.errorText && <p className="error-text">{this.state.errorText}</p>}
 
                     <div className="sign-in-up-button-container">
                         <button type="submit" className="sign-in-button">
@@ -167,9 +172,6 @@ export default class SignInUp extends React.Component<IProps, any> {
 
         this._onInteraction();
 
-        const noop = () => { };
-        const clearSessionData = this.context.clearSessionData || noop;
-
         // TODO: We need a form library
         const formObject = Array.from((new FormData(event.target) as any).entries())
             .reduce((formObject, [key, value]) => {
@@ -186,14 +188,41 @@ export default class SignInUp extends React.Component<IProps, any> {
             },
             body: JSON.stringify(formObject)
         })
-            .then((response) => {
-                if (response.ok) {
-                    if (this.props.onSuccess) {
-                        this.props.onSuccess(response.json);
-                    }
-                    clearSessionData();
-                }
-            });
+            .then(this._handlePostResponse.bind(this))
+            .then(this._handleJson.bind(this))
+            .catch(this._handleError.bind(this));
+    }
+
+    private _handlePostResponse(response: IResponse) {
+        if (response.status === 422) {
+            throw new Error("That email is already in use.");
+        }
+        if (response.status === 500) {
+            throw new Error("Opps! It looks like we're having trouble. Please try again later.");
+        }
+        if (response.ok) {
+            return response.json();
+        }
+    }
+
+    private _handleJson(json: any) {
+        const noop = () => { };
+        const clearSessionData = this.context.clearSessionData || noop;
+
+        if (json.success) {
+            if (this.props.onSuccess) {
+                this.props.onSuccess(json);
+            }
+            clearSessionData();
+        } else {
+            throw new Error("Incorrect username or password");
+        }
+    }
+
+    private _handleError(error: Error) {
+        this.setState({
+            errorText: error.message
+        });
     }
 
     private _switchToSignUp(event) {
@@ -202,7 +231,10 @@ export default class SignInUp extends React.Component<IProps, any> {
         }
 
         event.preventDefault();
-        this.setState({ isShowingSignUp: true });
+        this.setState({
+            isShowingSignUp: true,
+            errorText: ""
+        });
         event.target.blur();
 
         this._onInteraction();
@@ -214,7 +246,10 @@ export default class SignInUp extends React.Component<IProps, any> {
         }
 
         event.preventDefault();
-        this.setState({ isShowingSignUp: false });
+        this.setState({
+            isShowingSignUp: false,
+            errorText: ""
+        });
         event.target.blur();
 
         this._onInteraction();
