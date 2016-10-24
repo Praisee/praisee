@@ -2,6 +2,7 @@ import * as React from 'react';
 import Editor from 'pz-client/src/editor/editor.component';
 import appInfo from 'pz-client/src/app/app-info';
 import XhrSingleFileUploadRequester from 'pz-client/src/support/file-upload-requester';
+import {ISignInUpContext, SignInUpContextType} from 'pz-client/src/user/sign-in-up-overlay-component';
 import {
     AddPhotoButton,
     AddHeading1Button,
@@ -26,6 +27,14 @@ export interface IProps {
 }
 
 export default class CommunityItemEditor extends React.Component<IProps, any> {
+    static contextTypes: any = {
+        signInUpContext: SignInUpContextType,
+    };
+
+    context: {
+        signInUpContext: ISignInUpContext
+    };
+    
     private _editorPlugins = [
         createAttachmentPlugin()
     ];
@@ -65,9 +74,9 @@ export default class CommunityItemEditor extends React.Component<IProps, any> {
     private _renderContentMenuButtons() {
         return (
             <div className="community-item-editor-menu">
-                <AddPhotoButton
+                {this.context.signInUpContext.isLoggedIn && <AddPhotoButton
                     onPhotoUploadRequested={this._uploadPhoto.bind(this)}
-                />
+                />}
 
                 <AddHeading1Button
                     editorState={this.state.editorState}

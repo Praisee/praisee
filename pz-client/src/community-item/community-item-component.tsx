@@ -23,21 +23,7 @@ import ReputationEarned from 'pz-client/src/widgets/reputation-earned-component'
 interface ICommunityItemProps {
     isMinimized: boolean;
     truncateLongContent: boolean;
-
-    communityItem: {
-        id: number
-        user: { displayName: string }
-        summary: string
-        body: string
-        createdAt: Date
-        commentCount: number
-        comments: any
-        topics: Array<{ id: string, name: string, routePath: string }>
-        routePath: string
-        currentUserHasMarkedRead: boolean
-        belongsToCurrentUser: boolean
-    }
-
+    communityItem: ICommunityItemViewModel;
     body: string;
     relay: any;
     createCommunityItemVoteMutation: any;
@@ -46,6 +32,20 @@ interface ICommunityItemProps {
 interface ICommuintyItemState {
     isEditingComment?: boolean;
     isMinimized?: boolean;
+}
+
+interface ICommunityItemViewModel {
+    id: number
+    user: { displayName: string }
+    summary: string
+    body: string
+    createdAt: Date
+    commentCount: number
+    comments: any
+    topics: Array<{ id: string, name: string, routePath: string }>
+    routePath: string
+    currentUserHasMarkedRead: boolean
+    belongsToCurrentUser: boolean
 }
 
 class CommunityItem extends Component<ICommunityItemProps, ICommuintyItemState> {
