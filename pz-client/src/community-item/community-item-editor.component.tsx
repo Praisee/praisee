@@ -186,13 +186,9 @@ class CommunityItemEditor extends React.Component<IProps, any> {
         }
 
         const sayings = [
-            `Say something about`,
-            `Tell us some tips and tricks for`,
-            `Share some tips and tricks for`,
-            `Share something about`,
-            `Review`,
-            `Ask a question about`,
-            `Ask your question about`,
+            `This is where you write a review about`,
+            `This is where you ask a question about`,
+            `This is where you ask your question about`,
         ];
 
         var randomSaying = sayings[Math.floor(Math.random() * (sayings.length - 1))];
