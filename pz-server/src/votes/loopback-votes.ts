@@ -214,10 +214,12 @@ export default class LoopbackVotes implements IVotes, IVotesBatchable {
             whereValues = params;
         }
 
+        // Note: Loopback auto-lowercases everything (awesome!) so we need to assume
+        // lowercase fields and aliases as a result.
         const query = `
             SELECT
                 COUNT(*) AS total,
-                SUM(CASE WHEN isupvote THEN 1 ELSE 0 END) as upVotes,
+                SUM(CASE WHEN isupvote THEN 1 ELSE 0 END) as upvotes,
                 ${fieldsSql}
             FROM vote
             WHERE
@@ -238,16 +240,28 @@ export default class LoopbackVotes implements IVotes, IVotesBatchable {
                 };
             }
 
+            const total = Number(result.total);
+            const upVotes = Number(result.upvotes); // Note, Loopback requires upVotes to be lowercase
+
             return {
-                upVotes: result.upVotes,
-                downVotes: result.total - result.upVotes,
-                total: result.total
+                upVotes,
+                downVotes: total - upVotes,
+                total: total
             };
         };
 
         if (unsafeFields.length > 1) {
             results.forEach(result => {
-                const fieldValues = unsafeFields.map(field => result[field]);
+                const fieldValues = unsafeFields.map(field => {
+                    const dbField = field.toLowerCase(); // TODO: This will probably not be lowercased in the future
+
+                    if (!(dbField in result)) {
+                        throw new Error(`${dbField} is missing from votes aggregate result`);
+                    }
+
+                    return result[dbField];
+                });
+
                 resultsMap.set(fieldValues.join(':'), result);
             });
 
@@ -258,7 +272,13 @@ export default class LoopbackVotes implements IVotes, IVotesBatchable {
             const field = unsafeFields[0];
 
             results.forEach(result => {
-                resultsMap.set(result[field], result);
+                const dbField = field.toLowerCase(); // TODO: This will probably not be lowercased in the future
+
+                if (!(dbField in result)) {
+                    throw new Error(`${dbField} is missing from votes aggregate result`);
+                }
+
+                resultsMap.set(result[dbField], result);
             });
 
             return params.map(param => resultToVoteAggregate(resultsMap.get(param)));

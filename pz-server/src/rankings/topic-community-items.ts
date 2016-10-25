@@ -6,8 +6,10 @@ import {
     ICommunityItem
 } from 'pz-server/src/community-items/community-items';
 import {IComments, IComment} from 'pz-server/src/comments/comments';
-import {IUsers, IUser} from '../users/users';
-import {startBenchmark, endBenchmark} from '../support/benchmark';
+import {IUsers, IUser} from 'pz-server/src/users/users';
+import {startBenchmark, endBenchmark} from 'pz-server/src/support/benchmark';
+
+import * as timSort from 'timsort';
 
 var rankAndCacheChannel = 'pz-server/src/rankings/topicCommunityItems/rankAndCache';
 var rankAndCacheAsViewerChannel = 'pz-server/src/rankings/topicCommunityItems/rankAndCacheAsViewer';
@@ -174,7 +176,8 @@ async function rankAndCacheWorker(
         return [communityItemId, rank];
     });
 
-    const communityItemRanks = await Promise.all<[number, number]>(communityItemRankPromises);
+    const unnormalizedRankings = await Promise.all<[number, number]>(communityItemRankPromises);
+    const communityItemRanks = normalizeRankings(unnormalizedRankings);
 
     if (viewerId) {
         await repositories.rankingsCache.setTopicCommunityItemRanksForViewer(
@@ -189,6 +192,35 @@ async function rankAndCacheWorker(
     endBenchmark(benchmark);
 
     return {done: true};
+}
+
+/**
+ * Re-ranks items using sequential integers to eliminate ties. In the short
+ * term, this fixes the limited scoring of the fallback ranking algorithm. This may
+ * break something else and may be mostly unnecessary when scores have more
+ * variance, so its usage should be re-evaluated in the future.
+ */
+function normalizeRankings(communityItemRanks: Array<[number, number]>): Array<[number, number]> {
+    // TODO: A better solution can be arrived at by combining the sort and mapping stages
+
+    let sortedCommunityItemRanks: Array<[number, number]> = communityItemRanks.slice(0);
+
+    timSort.sort(sortedCommunityItemRanks, (ranking1, ranking2) => {
+        const [id1, rank1] = ranking1;
+        const [id2, rank2] = ranking2;
+
+        if (rank1 === rank2) {
+            return id1 - id2;
+        } else {
+            return rank1 - rank2;
+        }
+    });
+
+    let counter = 1;
+
+    return sortedCommunityItemRanks.map<[number, number]>(
+        ([id]) => [id, counter++]
+    );
 }
 
 export interface ITopicCommunityItemsFeatureMap extends
@@ -283,7 +315,7 @@ function calculateFallbackRankFromFeaturesWorker(request: ICalculateRankFromFeat
     score = upVotesToViewsConfidenceScore(featureMap.itemUpVotes, featureMap.itemUpVotes); // TODO: Include views
     rank += weight * score;
 
-    weight = 0.01;
+    weight = 0.05;
     score = freshnessScore(featureMap.itemAge);
     rank += weight * score;
 

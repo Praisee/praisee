@@ -27,8 +27,10 @@ export default class VotesLoader implements IVotes {
             ),
 
             getAllAggregatesForParents: createDataLoaderBatcher(
-                this._votes.getAllAggregatesForParents.bind(this._votes),
-                {cacheKeyFn: ([parentType, parentId]) => `${parentType}:${parentId}`}
+                this._votes.getAllAggregatesForParents.bind(this._votes)
+
+                // {cacheKeyFn: ([parentType, parentId]) => `${parentType}:${parentId}`}
+                // We don't have cache invalidation yet...
             ),
 
             getAllAggregatesForAffectedUsers: createDataLoaderBatcher(
