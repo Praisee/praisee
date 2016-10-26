@@ -29,11 +29,11 @@ export default (
     <Router>
         <Route path="/" component={AppController as any} {...mixinRouteQuery(appQuery) } >
 
-            {/*<IndexRoute component={HomeController} {...mixinRouteQuery(homeQuery)} />*/}
+            <IndexRoute component={HomeController} {...mixinRouteQuery(homeQuery)} />
 
             <Route component={AppLayout} {...mixinRouteQuery(appLayoutQuery) }>
                 {/* TODO: Remove this shit */}
-                <IndexRoute component={TopicController} {...mixinRouteQuery(topicHomeQuery)} />
+                {/*<IndexRoute component={TopicController} {...mixinRouteQuery(topicHomeQuery)} />*/}
 
                 {/* TODO: Remove this shit */}
                 <Route

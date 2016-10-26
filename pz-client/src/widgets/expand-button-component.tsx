@@ -4,9 +4,9 @@ import handleClick from 'pz-client/src/support/handle-click';
 import classNames from 'classnames';
 
 interface IExpandProps{
-    onExpand: () => {}
+    onExpand: () => any
+    isExpanded?: boolean
     className?: string
-    isExpanded: boolean
 }
 
 export default class ExpandButton extends Component<IExpandProps, any>{
@@ -15,7 +15,7 @@ export default class ExpandButton extends Component<IExpandProps, any>{
             'expand-button',
             this.props.className
         );
-        
+
         const containerClasses = classNames(
             'expand-button-container',
             this.props.isExpanded ? "expand-button-container-collapse" : "expand-button-container-expand"

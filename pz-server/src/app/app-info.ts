@@ -9,6 +9,13 @@ let appInfo = {
         getImage: (imagePath: string) =>
             path.join(appInfo.addresses.getImages(), imagePath),
 
+        getImageFullUrl: (imagePath: string, protocol: string = '') => url.resolve(
+            `${protocol ? protocol + ':' : ''}//` + (
+                serverInfo.isProductionEnv() ? 'www.praisee.com' : `localhost:${serverInfo.getPort()}`
+            ),
+            appInfo.addresses.getImage(imagePath)
+        ),
+
         getGraphqlApi: () => '/i/graphql',
 
         getSignInApi: () => '/i/sign-in',

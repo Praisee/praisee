@@ -86,3 +86,29 @@ export function getCommunityItemContentPhotoVariationsUrls(photoServerPath): ICo
         }
     };
 }
+
+export interface IStaticPhotoVariations extends ICommonPhotoVarations {
+    variations: {
+        initialLoad: string
+        mobile: string
+
+        mediumFit: string
+        mediumFitMobile: string
+    }
+}
+
+export function getStaticPhotoVariationsUrls(staticPhotoUrl): IStaticPhotoVariations {
+    const getPhotoBuilder = getPhotoBuilderFactory(staticPhotoUrl);
+
+    return {
+        defaultUrl: getPhotoBuilder().fitIn(1000, 1000).buildUrl(),
+
+        variations: {
+            initialLoad: getPhotoBuilder().resize(1, 1).filter('blur(1000)').buildUrl(),
+            mobile: getPhotoBuilder().fitIn(400, 400).buildUrl(),
+
+            mediumFit: getPhotoBuilder().fitIn(400, 400).buildUrl(),
+            mediumFitMobile: getPhotoBuilder().fitIn(200, 200).buildUrl(),
+        }
+    };
+}

@@ -2,6 +2,8 @@
   .home-namespace {
     .app-header {
       @include app-header();
+      margin-left: 0;
+      margin-right: 0;
       border-bottom: none;
       margin-bottom: 1.5rem;
 
@@ -15,9 +17,6 @@
     }
 
     .primary-content {
-      @extend .jumbotron;
-      @extend .jumbotron-fluid;
-
       @include site-search();
     }
 
@@ -32,9 +31,132 @@
       margin-bottom: 1rem;
     }
 
-    .temporary-content {
+    .praisee-logo {
+      height: 4vw;
+    }
+
+    .primary-content .site-search {
+      margin: 0 auto;
+      margin-top: 3rem;
+      margin-bottom: 5rem;
+      width: 50%;
+
+      .search-input-container {
+        border: 1px solid transparent;
+        border-bottom: 1px solid $input-border-color;
+        border-radius: 0;
+      }
+
+      &.site-search-has-focus .search-input-container {
+        border-bottom: 1px solid $input-border-focus;
+      }
+    }
+
+    .topic-tiles {
       @include make-container();
       @include make-container-max-widths();
+      @include expand-button();
+      @extend .card-columns;
+
+      .topic-tile {
+        @extend .card;
+        border: none;
+        min-height: 15rem;
+        height: 30vh;
+        overflow: hidden;
+      }
+
+      .background-container {
+        position: absolute;
+        top: 0;
+        bottom: 0;
+        left: 0;
+        right: 0;
+
+        .initial-load-image {
+          position: absolute;
+          top: 0;
+          bottom: 0;
+          left: 0;
+          right: 0;
+          width: 100%;
+          opacity: 1;
+          transition: opacity 100ms ease-in-out;
+        }
+
+        .background-image {
+          width: 100%;
+          height: 100%;
+          object-fit: cover;
+          opacity: 0;
+          transition: opacity 100ms ease-in-out;
+        }
+
+        &.background-has-loaded {
+          .initial-load-image { opacity: 0; }
+          .background-image { opacity: 1; }
+        }
+      }
+
+      .topic-tile-inner {
+        position: absolute;
+        top: 0;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        z-index: 2;
+        background: transparentize($black, 0.5);
+      }
+
+      .topic-header {
+        @extend .card-img-top;
+        width: 100%;
+        display: block;
+        color: $white;
+        font-size: 2rem;
+        text-align: center;
+        margin: 1rem 0;
+      }
+
+      .community-items {
+        @extend .card-block;
+        list-style: none;
+        padding: 0.5rem 1rem;
+        margin: 0;
+        font-size: 0.9rem;
+      }
+
+      .community-item {
+        width: 100%;
+        white-space: nowrap;
+        text-overflow: ellipsis;
+        overflow: hidden;
+        padding: 0;
+        margin: 0;
+      }
+
+      .community-item-link {
+        color: $white;
+      }
+
+      .expand-button {
+        margin-bottom: 0.5rem;
+        background: none;
+
+        .expand-button-icon {
+          color: $white;
+        }
+
+        &:hover, &:active, &:focus {
+          background: none;
+        }
+      }
     }
+
+    .app-footer {
+      margin-top: 3rem;
+    }
+
+
   }
 }

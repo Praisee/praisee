@@ -8,6 +8,7 @@ import topicTypes from 'pz-server/src/topics/topics-graphql';
 import {getTopicAttributeTypes} from 'pz-server/src/topics/topic-attributes/topic-attributes-graphql';
 import {getResponseErrorTypes} from 'pz-server/src/errors/errors-graphql';
 import inputDataTypes from 'pz-server/src/content/input-content-data';
+import {getStaticPhotosTypes} from 'pz-server/src/photos/static-photos-graphql';
 
 export function initializeTypes(repositoryAuthorizers: IAppRepositoryAuthorizers, nodeInterface): ITypes {
     let types: any = {};
@@ -21,6 +22,7 @@ export function initializeTypes(repositoryAuthorizers: IAppRepositoryAuthorizers
         topicTypes(repositoryAuthorizers, nodeInterface, types),
         getTopicAttributeTypes(repositoryAuthorizers, nodeInterface, types),
         communityItemTypes(repositoryAuthorizers, nodeInterface, types),
+        getStaticPhotosTypes(types),
         getResponseErrorTypes(repositoryAuthorizers, nodeInterface, types),
         viewerTypes(repositoryAuthorizers, nodeInterface, types),
         inputDataTypes(repositoryAuthorizers, nodeInterface, types)
@@ -79,6 +81,8 @@ export interface ITypes {
     ViewerType
 
     InputContentDataType
+
+    StaticPhotoType
 }
 
 

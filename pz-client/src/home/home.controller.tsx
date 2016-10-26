@@ -6,6 +6,8 @@ import Header from 'pz-client/src/app/layout/header.component';
 import Footer from 'pz-client/src/app/layout/footer.component';
 import appInfo from 'pz-client/src/app/app-info';
 import SignInUpOverlay from 'pz-client/src/user/sign-in-up-overlay-component';
+import TopicTile from 'pz-client/src/home/topic-tile-component';
+import Masonry from 'react-masonry-component';
 
 const logoUrl = appInfo.addresses.getImage('praisee-logo.svg');
 
@@ -14,9 +16,21 @@ export interface IHomeControllerProps {
 
     viewer: {
         topics: Array<any>
-    },
+
+        staticPhotos: [{
+            name: string
+            variations
+        }]
+    }
 
     currentUser: any
+
+    electronicsTopic
+    cosmeticsTopic
+    homeGardenTopic
+    photographyTopic
+    artsCraftsTopic
+    outdoorsTopic
 }
 
 export class Home extends Component<IHomeControllerProps, any> {
@@ -33,16 +47,20 @@ export class Home extends Component<IHomeControllerProps, any> {
                     <div className="primary-content">
                         <div className="primary-content-container">
                             <h1 className="branding-large">
-                                <img src={logoUrl} alt="Praisee" />
+                                <img className="praisee-logo" src={logoUrl} alt="Praisee" />
                             </h1>
 
                             <SiteSearch />
                         </div>
                     </div>
 
-                    <div className="temporary-content">
-                        <p>Topics loaded: {this.props.viewer.topics.length}</p>
-                        <p>Client loaded: {this.state.clientLoaded ? 'true' : 'false'}</p>
+                    <div className="topic-tiles">
+                        {this._renderTopicTile(this.props.electronicsTopic, 'electronics-topic', 'electronics')}
+                        {this._renderTopicTile(this.props.cosmeticsTopic, 'cosmetics-topic', 'cosmetics')}
+                        {this._renderTopicTile(this.props.homeGardenTopic, 'home-garden-topic', 'homeGarden')}
+                        {this._renderTopicTile(this.props.photographyTopic, 'photography-topic', 'photography')}
+                        {this._renderTopicTile(this.props.artsCraftsTopic, 'arts-crafts-topic', 'artsCrafts')}
+                        {this._renderTopicTile(this.props.outdoorsTopic, 'outdoors-topic', 'outdoors')}
                     </div>
 
                     <Footer />
@@ -51,8 +69,18 @@ export class Home extends Component<IHomeControllerProps, any> {
         );
     }
 
-    componentDidMount() {
-        this.setState({clientLoaded: true})
+    private _renderTopicTile(topic, className, backgroundPhotoName) {
+        const backgroundPhotoUrls = this.props.viewer.staticPhotos.find(
+            ({name}) => name === backgroundPhotoName
+        );
+
+        return (
+            <TopicTile
+                topic={topic}
+                className={className}
+                backgroundPhotoUrls={backgroundPhotoUrls}
+            />
+        );
     }
 }
 
@@ -64,6 +92,17 @@ export default Relay.createContainer(Home, {
                     id
                     name
                 }
+                
+                staticPhotos {
+                    name
+                    
+                    variations {
+                        initialLoad
+                        mediumFit
+                        mediumFitMobile
+                    }
+                }
+                
                 ${Header.getFragment('viewer')}
             }
         `,
@@ -72,6 +111,13 @@ export default Relay.createContainer(Home, {
             fragment on UserInterface {
                 ${Header.getFragment('currentUser')}
             }
-        `
+        `,
+
+        electronicsTopic: () => Relay.QL`fragment on Topic { ${TopicTile.getFragment('topic')} }`,
+        cosmeticsTopic: () => Relay.QL`fragment on Topic { ${TopicTile.getFragment('topic')} }`,
+        homeGardenTopic: () => Relay.QL`fragment on Topic { ${TopicTile.getFragment('topic')} }`,
+        photographyTopic: () => Relay.QL`fragment on Topic { ${TopicTile.getFragment('topic')} }`,
+        artsCraftsTopic: () => Relay.QL`fragment on Topic { ${TopicTile.getFragment('topic')} }`,
+        outdoorsTopic: () => Relay.QL`fragment on Topic { ${TopicTile.getFragment('topic')} }`,
     }
 });

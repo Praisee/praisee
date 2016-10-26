@@ -11,6 +11,7 @@ import {
 } from 'pz-server/src/graphql/cursor-helpers';
 
 import {ITypes} from 'pz-server/src/graphql/types';
+import {getStaticPhotosField} from 'pz-server/src/photos/static-photos-graphql';
 
 var {
     GraphQLBoolean,
@@ -71,6 +72,8 @@ export default function getViewerType(repositoryAuthorizers: IAppRepositoryAutho
             lastCreatedCommunityItem: {
                 type: types.CommunityItemInterfaceType
             },
+
+            staticPhotos: getStaticPhotosField(types),
 
             responseErrorsList: {
                 type: new GraphQLList(types.ResponseErrorInterfaceType),
