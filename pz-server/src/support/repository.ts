@@ -13,6 +13,10 @@ export function createRecord<T extends IRepositoryRecord>(recordType: string, da
     return record;
 }
 
-export function createRecordFromLoopback<T extends IRepositoryRecord>(recordType: string, data: IPersistedModelInstance): T {
+export function createRecordFromLoopback<T extends IRepositoryRecord>(recordType: string, data: IPersistedModelInstance | null): T | null {
+    if (!data) {
+        return null;
+    }
+
     return createRecord<T>(recordType, data.__data);
 }

@@ -50,6 +50,11 @@ export class Home extends Component<IHomeControllerProps, any> {
                                 <img className="praisee-logo" src={logoUrl} alt="Praisee" />
                             </h1>
 
+                            <h2 className="praisee-description">
+                                Find product reviews, questions and answers by
+                                others like you.
+                            </h2>
+
                             <SiteSearch />
                         </div>
                     </div>
@@ -70,6 +75,10 @@ export class Home extends Component<IHomeControllerProps, any> {
     }
 
     private _renderTopicTile(topic, className, backgroundPhotoName) {
+        if (!topic) {
+            return;
+        }
+
         const backgroundPhotoUrls = this.props.viewer.staticPhotos.find(
             ({name}) => name === backgroundPhotoName
         );
