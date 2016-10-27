@@ -5,15 +5,17 @@ import handleClick from 'pz-client/src/support/handle-click';
 import classNames from 'classnames';
 
 interface IReputationEarnedProps {
-    communityItem
+    communityItem?
+    comment?
 }
 
 class ReputationEarned extends Component<IReputationEarnedProps, any>{
     render() {
+        let parent = this.props.communityItem || this.props.comment
         return (
             <div className="reputation-earned">
                 <span className="reputation-earned-amount">
-                    +{this.props.communityItem.reputationEarned}
+                    +{parent.reputationEarned}
                 </span>
                 <i className="reputation-earned-heart" />
                 <span> earned</span>
@@ -26,6 +28,11 @@ export default Relay.createContainer(ReputationEarned, {
     fragments: {
         communityItem: () => Relay.QL`
             fragment on CommunityItemInterface {
+                reputationEarned
+            }
+        `,
+        comment: () => Relay.QL`
+            fragment on Comment {
                 reputationEarned
             }
         `

@@ -209,6 +209,7 @@ class CommunityItem extends Component<ICommunityItemProps, ICommuintyItemState> 
         if (communityItem.belongsToCurrentUser) {
             return (
                 <ReputationEarned
+                    comment={null}
                     communityItem={this.props.communityItem} />
             );
 

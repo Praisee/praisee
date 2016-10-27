@@ -59,12 +59,18 @@ module.exports = function (User: IUserModel) {
             }
         });
         
-        let upVoteCount = votesOnUser.filter(vote => vote.isUpVote).length;
+        let communityItemVotes = votesOnUser.filter(vote => vote.parentType === "CommunityItem");
+        let communityItemUpVoteCount = communityItemVotes.filter(vote => vote.isUpVote).length;
+        let communityItemUpVoteReputation = communityItemUpVoteCount * 10;
+        let communityItemDownVoteReputation = (communityItemVotes.length - communityItemUpVoteCount) * 5;
+        let communityItemReputation = communityItemUpVoteReputation - communityItemDownVoteReputation;
 
-        let upVoteReputation = upVoteCount * 10;
-        let downVoteReputation = (votesOnUser.length - upVoteCount) * 5;
-        let reputation = upVoteReputation - downVoteReputation;
-
-        return reputation;
+        let commentVotes = votesOnUser.filter(vote => vote.parentType === "Comment");
+        let commentUpVoteCount = commentVotes.filter(vote => vote.isUpVote).length;
+        let commentUpVoteReputation = commentUpVoteCount * 4;
+        let commentDownVoteReputation = (commentVotes.length - commentUpVoteCount) * 2;
+        let commentReputation = commentUpVoteReputation - commentDownVoteReputation;
+        
+        return communityItemUpVoteReputation + commentReputation;
     }
 };

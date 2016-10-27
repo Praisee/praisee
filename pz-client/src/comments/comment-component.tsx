@@ -15,6 +15,7 @@ import {ContextMenu, ContextMenuOption} from 'pz-client/src/widgets/context-menu
 import handleClick from 'pz-client/src/support/handle-click';
 import SimpleModal from 'pz-client/src/widgets/simple-modal-component';
 import UpdateCommentEditor from 'pz-client/src/comments/update-comment-editor-component';
+import ReputationEarned from 'pz-client/src/widgets/reputation-earned-component';
 
 export interface ICommentProps {
     comment: {
@@ -78,14 +79,14 @@ export class Comment extends Component<ICommentProps, any>{
                         showReputation={true}
                         showTrusts={true}
                         showTrustButton={true}
-                    />
+                        />
                 </div>
 
                 <div className="comment-header-secondary">
                     <DateDisplay
                         date={this.props.comment.createdAt}
                         type="date-created"
-                    />
+                        />
 
                     {this._renderMenu()}
                 </div>
@@ -101,13 +102,13 @@ export class Comment extends Component<ICommentProps, any>{
         return (
             <ContextMenu className="community-item-menu">
                 <ContextMenuOption className="edit-community-item"
-                                   onClick={this._editComment.bind(this)}>
+                    onClick={this._editComment.bind(this)}>
 
                     Edit
                 </ContextMenuOption>
 
                 <ContextMenuOption className="delete-community-item"
-                                   onClick={() => this.refs.deleteConfirmation.show()}>
+                    onClick={() => this.refs.deleteConfirmation.show()}>
                     Delete
                 </ContextMenuOption>
             </ContextMenu>
@@ -120,12 +121,12 @@ export class Comment extends Component<ICommentProps, any>{
                 {this._renderContent()}
 
                 <div className="comment-bottom">
-                    {this._renderVotesSection()}
+                    {this._renderVotesOrReputation()}
 
                     <CreateCommentEditor
                         comment={this.props.comment}
                         communityItem={null}
-                        onEditing={this._onCreatingComment.bind(this) } />
+                        onEditing={this._onCreatingComment.bind(this)} />
                 </div>
 
                 {this._renderExpandButton()}
@@ -144,23 +145,32 @@ export class Comment extends Component<ICommentProps, any>{
                 <UpdateCommentEditor
                     comment={this.props.comment}
                     onCloseEditor={this._closeCommentEditor.bind(this)}
-                />
+                    />
             );
         }
     }
 
-    private _renderVotesSection() {
+    private _renderVotesOrReputation() {
         if (this.state.isCreatingComment) {
             return;
         }
 
-        return (
-            <Votes
-                key={`comment-votes-${this.props.comment.id}`}
-                comment={this.props.comment}
-                communityItem={null}
-            />
-        );
+        if (this.props.comment.belongsToCurrentUser) {
+            return (
+                <ReputationEarned
+                    comment={this.props.comment}
+                    communityItem={null} />
+            );
+
+        } else {
+            return (
+                <Votes
+                    key={`comment-votes-${this.props.comment.id}`}
+                    comment={this.props.comment}
+                    communityItem={null}
+                    />
+            );
+        }
     }
 
     private _renderExpandButton() {
@@ -171,7 +181,7 @@ export class Comment extends Component<ICommentProps, any>{
         }
 
         return (
-            <ExpandButton onExpand={this._expand.bind(this)} isExpanded={false}/>
+            <ExpandButton onExpand={this._expand.bind(this)} isExpanded={false} />
         );
     }
 
@@ -188,7 +198,7 @@ export class Comment extends Component<ICommentProps, any>{
                 comment={this.props.comment}
                 communityItem={null}
                 currentDepth={currentDepth}
-            />
+                />
         );
     }
 
@@ -206,7 +216,7 @@ export class Comment extends Component<ICommentProps, any>{
 
         return (
             <SimpleModal className="app-comment-delete-confirmation"
-                         ref="deleteConfirmation">
+                ref="deleteConfirmation">
 
                 <div className="delete-confirmation-content">
                     Unfortunately we do not support this feature yet. If you would
@@ -215,13 +225,13 @@ export class Comment extends Component<ICommentProps, any>{
 
                     <div className="delete-confirmation-options">
                         <button className="delete-confirmation-delete-button"
-                                onClick={this._editComment.bind(this)}>
+                            onClick={this._editComment.bind(this)}>
 
                             Edit Comment
                         </button>
 
                         <button className="delete-confirmation-cancel-button"
-                                onClick={onCancel}>
+                            onClick={onCancel}>
 
                             Cancel
                         </button>
@@ -278,6 +288,7 @@ export default Relay.createContainer(Comment, {
                 createdAt
                 commentCount 
                 belongsToCurrentUser
+                reputationEarned
                 
                 user {
                     id
@@ -289,6 +300,7 @@ export default Relay.createContainer(Comment, {
                 ${CommentList.getFragment('comment', { currentDepth }).if(expand)}
                 ${CreateCommentEditor.getFragment('comment')}
                 ${Votes.getFragment('comment')}
+                ${ReputationEarned.getFragment('comment')}
             } 
         `
     }

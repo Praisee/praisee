@@ -97,6 +97,10 @@ export default class Comments implements IComments {
 
         return comment;
     }
+    
+    async getReputationEarned(commentId: number, userId: number): Promise<number> {
+        return await this._CommentModel.getReputationEarned(commentId, userId);
+    }
 
     async findVotesForComment(commentId: number): Promise<Array<IVote>> {
         const comment: ICommentInstance = await promisify(

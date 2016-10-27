@@ -156,6 +156,16 @@ export default function CommentTypes(repositoryAuthorizers: IAppRepositoryAuthor
 
                     return user.id === userId;
                 }
+            },
+            
+            reputationEarned: {
+                type: GraphQLInt,
+
+                resolve: async ({id}, __, {user}) => {
+                return commentsAuthorizer
+                    .as(user)
+                    .getReputationEarned(id);
+                }
             }
         }),
 

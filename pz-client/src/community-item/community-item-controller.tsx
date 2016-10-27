@@ -152,6 +152,7 @@ export class CommunityItemController extends Component<ICommunityItemProps, any>
         if (communityItem.belongsToCurrentUser) {
             return (
                 <ReputationEarned
+                    comment={null}
                     communityItem={communityItem} />
             );
 

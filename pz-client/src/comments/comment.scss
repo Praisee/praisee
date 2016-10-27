@@ -9,6 +9,7 @@
 
     .comment-bottom {
       display: flex;
+      align-items: center;
 
       @include media-breakpoint-down(sm) {
         display: block;

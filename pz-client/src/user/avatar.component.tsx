@@ -73,7 +73,11 @@ class Avatar extends Component<IAvatarProps, any>{
     }
 
     private _renderTrustButton() {
-        const {isCurrentUserTrusting} = this.user;
+        const {isCurrentUserTrusting, isCurrentUser} = this.user;
+
+        if (isCurrentUser) {
+            return;
+        }
 
         if (this.props.showTrustButton)
             return (
