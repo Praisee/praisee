@@ -1,5 +1,7 @@
 import {Form} from 'multiparty';
 import promisify from 'pz-support/src/promisify';
+import createGoogleCloudStorage from '@google-cloud/storage';
+import uuid from 'node-uuid';
 
 import {
     IAuthorizer,
@@ -14,6 +16,7 @@ import {getCommunityItemContentPhotoVariationsUrls as getPhotoVariationsUrls} fr
 import {IPhoto, IPhotos} from 'pz-server/src/photos/photos';
 import ExtendableError from 'pz-server/src/support/extendable-error';
 import {ITopicInstance} from 'pz-server/src/models/topic';
+import createSlug from 'pz-server/src/url-slugs/slugger';
 
 var requestJs = require('request');
 requestJs.debug = true;
@@ -155,63 +158,48 @@ export function createPhotoUploadRoute(
                 return;
             }
 
-            const formData = {
-                media: {
-                    value: formPart,
-                    options: {
-                        filename: formPart.filename,
-                        contentType,
-                        knownLength: formPart.byteCount
+            // TODO: The upload handler should be passed in, instead of hardcoded
+            (uploadToGoogleCloudStorage(formPart, formPart.filename, contentType, formPart.byteCount)
+                .then(({statusCode, photoPath}) => {
+                    if (statusCode === 200) {
+                        respondWithSuccess(response, photoId, photoPath);
+                        photos.as(request.user).updateToUploadedPhoto(photoId, photoPath);
+                        return;
                     }
-                }
-            };
 
-            const uploadRequest = {
-                url: appInfo.addresses.getPhotoServerUploadApi(),
-                formData,
-                preambleCRLF: true,
-                postambleCRLF: true
-            };
+                    if (statusCode === 415) {
+                        respondWithUnsupportedFileType(
+                            response,
+                            'The provided file type cannot be handled by this server.'
+                        );
+                        return;
+                    }
 
-            requestJs.post(uploadRequest, (error, uploadResponse) => {
-                if (error) {
-                    next(error);
-                    return;
-                }
+                    if (statusCode === 412) {
+                        respondWithFileConstraintError(
+                            response,
+                            'The provided file is either too big or failed some other validation constraint.'
+                        );
+                        return;
+                    }
 
-                if (uploadResponse.statusCode === 201 && uploadResponse.headers['location']) {
-                    const photoPath = path.relative('/image', uploadResponse.headers['location']);
-                    respondWithSuccess(response, photoId, photoPath);
-                    photos.as(request.user).updateToUploadedPhoto(photoId, photoPath);
-                    return;
-                }
-
-                if (uploadResponse.statusCode === 415) {
-                    respondWithUnsupportedFileType(
-                        response,
-                        'The provided file type cannot be handled by this server.'
+                    console.error(
+                        'Received an unexpected response from the image upload service:',
+                        statusCode,
+                        request,
+                        response
                     );
-                    return;
-                }
 
-                if (uploadResponse.statusCode === 412) {
-                    respondWithFileConstraintError(
-                        response,
-                        'The provided file is either too big or failed some other validation constraint.'
-                    );
-                    return;
-                }
+                    throw new Error('Unexpected error response from image upload service: ' + statusCode);
+                })
 
-                console.error(
-                    'Received an unexpected response from the image upload service:',
-                    response.statusCode,
-                    response.statusMessage,
-                    request,
-                    response
-                );
-
-                next(new Error('Unexpected error response from image upload service: ' + response.statusCode));
-            });
+                .catch(error => {
+                    if (error) {
+                        next(error);
+                        return;
+                    }
+                })
+            );
         });
 
         form.on('error', (error) => {
@@ -232,3 +220,101 @@ export function createPhotoUploadRoute(
         form.parse(request);
     });
 }
+
+interface IPhotoUploadResponse {
+    statusCode: number
+    photoPath?: string
+}
+
+export function uploadToThumbor(
+        photoStream: any, filename: string, contentType: string, byteCount: number
+    ): Promise<IPhotoUploadResponse> {
+
+    return new Promise((resolve, reject) => {
+        const formData = {
+            media: {
+                value: photoStream,
+                options: {
+                    filename: filename,
+                    contentType,
+                    knownLength: byteCount
+                }
+            }
+        };
+
+        const uploadRequest = {
+            url: appInfo.addresses.getPhotoServerUploadApi(),
+            formData,
+            preambleCRLF: true,
+            postambleCRLF: true
+        };
+
+        requestJs.post(uploadRequest, (error, uploadResponse) => {
+            if (error) {
+                reject(error);
+                return;
+            }
+
+            if (uploadResponse.statusCode === 201 && uploadResponse.headers['location']) {
+                const photoPath = path.relative('/image', uploadResponse.headers['location']);
+                resolve({statusCode: 200, photoPath});
+                return;
+            }
+
+            resolve({statusCode: uploadResponse.statusCode})
+        });
+    });
+}
+
+export async function uploadToGoogleCloudStorage(
+    photoStream: any, filename: string, contentType: string, byteCount: number
+): Promise<IPhotoUploadResponse> {
+
+    const createPhotoPath = () => {
+        const sanitizedFilename = createSlug(filename, {
+            minChars: 1,
+            replacementPattern: /[^a-zA-Z0-9\.]/g,
+            nonRepeatableChars: '.',
+            onFailureCall: () => uuid.v4()
+        });
+
+        return uuid.v4() + '/' + sanitizedFilename;
+    };
+
+    const storage = createGoogleCloudStorage({projectId: appInfo.googleCloud.projectId()});
+    const bucket = storage.bucket(appInfo.googleCloud.photoServerBucket());
+
+    let photoPath = null;
+
+    for (let i = 0; i < 3; ++i) {
+        let temporaryPhotoPath = createPhotoPath();
+        let [fileCollision] = await bucket.file(temporaryPhotoPath).exists();
+
+        if (!fileCollision) {
+            photoPath = temporaryPhotoPath;
+            break;
+        }
+    }
+
+    if (!photoPath) {
+        throw new Error('Failed to generate a unique file name for: ' + filename);
+    }
+
+    return new Promise<IPhotoUploadResponse>((resolve, reject) => {
+        // TODO: We should be checking to ensure the file is an image, otherwise
+        // TODO: this could be uploading malware
+
+        const remoteWriteStream = bucket.file(photoPath).createWriteStream();
+
+        (photoStream.pipe(remoteWriteStream)
+            .on('error', function(error) {
+                reject(error);
+            })
+
+            .on('finish', function() {
+                resolve({statusCode: 200, photoPath})
+            })
+        );
+    });
+}
+

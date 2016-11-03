@@ -170,7 +170,9 @@ ln --symbolic /usr/lib/python2.7/dist-packages/cv.py
 ln --symbolic /usr/lib/python2.7/dist-packages/cv.pyc
 popd
 sudo ln /dev/null /dev/raw1394 # http://stackoverflow.com/a/34820475/786810
-pip install -r /var/praisee/pz-server/src/photos/photo-server/requirements.txt
+pushd /var/praisee/pz-server/src/photos/photo-server/
+pip install -r requirements.txt
+popd
 
 printf '-'
 printf 'Provisioning complete'

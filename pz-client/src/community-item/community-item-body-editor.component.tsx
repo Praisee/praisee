@@ -34,7 +34,7 @@ export default class CommunityItemEditor extends React.Component<IProps, any> {
     context: {
         signInUpContext: ISignInUpContext
     };
-    
+
     private _editorPlugins = [
         createAttachmentPlugin()
     ];
@@ -74,9 +74,7 @@ export default class CommunityItemEditor extends React.Component<IProps, any> {
     private _renderContentMenuButtons() {
         return (
             <div className="community-item-editor-menu">
-                {this.context.signInUpContext.isLoggedIn && <AddPhotoButton
-                    onPhotoUploadRequested={this._uploadPhoto.bind(this)}
-                />}
+                {this._renderAddPhotoButton()}
 
                 <AddHeading1Button
                     editorState={this.state.editorState}
@@ -88,6 +86,18 @@ export default class CommunityItemEditor extends React.Component<IProps, any> {
                     onChange={this._updateEditorState.bind(this)}
                 />
             </div>
+        );
+    }
+
+    private _renderAddPhotoButton() {
+        if (!this.context.signInUpContext.isLoggedIn) {
+            return;
+        }
+
+        return (
+            <AddPhotoButton
+                onPhotoUploadRequested={this._uploadPhoto.bind(this)}
+            />
         );
     }
 

@@ -37,6 +37,13 @@ let appInfo = {
         // Non-public APIs
 
         getPhotoServerUploadApi: () => 'http://localhost:8888/image',
+    },
+
+    // Non-public APIs
+    googleCloud: {
+        projectId: () => 'praisee-144100',
+
+        photoServerBucket: () => serverInfo.isProductionEnv() ? 'praisee-photos' : 'praisee-dev-photos'
     }
 };
 

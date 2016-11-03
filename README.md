@@ -2,8 +2,10 @@
 
 An npm-driven app.
 
-## Dependencies
+## The following must be installed
 
-- NodeJS 4
+- NodeJS 6
+
+- `gcloud` tool
 
 - Vagrant

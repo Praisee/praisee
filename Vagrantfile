@@ -56,6 +56,9 @@ Vagrant.configure(2) do |config|
     vm.memory = 2048
   end
 
+  # Google Cloud credentials location
+  config.vm.synced_folder "~/.config/gcloud/", "/home/vagrant/.config/gcloud"
+
   # View the documentation for the provider you are using for more
   # information on available options.
 
@@ -200,7 +203,9 @@ Vagrant.configure(2) do |config|
     ln --symbolic /usr/lib/python2.7/dist-packages/cv.pyc
     popd
     sudo ln /dev/null /dev/raw1394 # http://stackoverflow.com/a/34820475/786810
-    pip install -r /vagrant/pz-server/src/uploads/thumbor/requirements.txt
+    pushd /vagrant/pz-server/src/photos/photo-server/
+    pip install -r requirements.txt
+    popd
 
     printf '-'
     printf 'Provisioning complete'

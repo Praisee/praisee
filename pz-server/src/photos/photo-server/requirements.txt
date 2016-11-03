@@ -1,5 +1,8 @@
+setuptools
 thumbor
 numpy
 matplotlib
 tc_redis
 cairosvg
+git+https://github.com/slapers/thumbor-cloud-storage.git
+./multi-loader
