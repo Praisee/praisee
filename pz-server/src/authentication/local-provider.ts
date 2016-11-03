@@ -14,12 +14,14 @@ var LocalStrategy = require('passport-local');
 export default function provideLocalAuth(app: IApp, userModel: IUser, options: any) {
     var authPath = options.authPath;
 
-    var checkUsernameAndPassword = (username, password, done) => {
+    var checkEmailAndPassword = (email, password, done) => {
+        const lowercaseEmail = email && email.toLowerCase();
+
         var query = {
             where: {
                 or: [
-                    { username: username },
-                    { email: username },
+                    { username: lowercaseEmail },
+                    { email: lowercaseEmail },
                 ],
             },
         };
@@ -78,10 +80,10 @@ export default function provideLocalAuth(app: IApp, userModel: IUser, options: a
 
                 switch (options.usernameField) {
                     case  'email':
-                        login({ email: username, password: password });
+                        login({ email, password: password });
                         break;
                     case 'username':
-                        login({ username: username, password: password });
+                        login({ username: email, password: password });
                         break;
                 }
 
@@ -107,7 +109,7 @@ export default function provideLocalAuth(app: IApp, userModel: IUser, options: a
             usernameField: options.usernameField || 'username',
             passwordField: options.passwordField || 'password',
             session: options.session, authInfo: true,
-        }, options), checkUsernameAndPassword
+        }, options), checkEmailAndPassword
     );
 
     passport.use('local', strategy);
