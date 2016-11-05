@@ -17,6 +17,7 @@ export default class ToggleTrustMutation extends Relay.Mutation {
                 viewer {
                     responseErrorsList
                 }
+
                 trustedUser {
                     trusterCount
                     isCurrentUserTrusting

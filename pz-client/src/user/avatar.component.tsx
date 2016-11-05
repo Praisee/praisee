@@ -3,7 +3,6 @@ import * as React from 'react';
 import * as Relay from 'react-relay';
 import appInfo from 'pz-client/src/app/app-info';
 import SchemaInjector, { ISchemaType } from 'pz-client/src/support/schema-injector';
-import { DateDisplay } from 'pz-client/src/widgets/date-display.component'
 import ToggleTrustMutation from 'pz-client/src/user/toggle-trust-mutation';
 import { ISignInUpContext, SignInUpContextType } from 'pz-client/src/user/sign-in-up-overlay-component';
 import handleClick from 'pz-client/src/support/handle-click';
@@ -27,70 +26,84 @@ class Avatar extends Component<IAvatarProps, any>{
     constructor(props, context) {
         super(props, context);
         this.schemaInjector = new SchemaInjector(avatarSchema);
-        this.user = (this.props.communityItem || this.props.comment).user;
     }
 
     render() {
         return this.schemaInjector.inject(
             <div className="avatar">
                 {this._renderImage()}
+
                 <div className="avatar-name-container">
-                    <span className="display-name">{this.user.displayName}</span>
+                    <span className="display-name">{this._getUser().displayName}</span>
                     <div className="avatar-stats">
                         {this._renderReputation()}
                         {this._renderTrust()}
                     </div>
                 </div>
+
                 {this._renderTrustButton()}
             </div>
         );
     }
 
+    private _getUser() {
+        return (this.props.communityItem || this.props.comment).user;
+    }
+
     private _renderReputation() {
-        const {reputation} = this.user;
+        const {reputation} = this._getUser();
 
         if (this.props.showReputation)
             return (
                 <span className="reputation" title="This user is the highest rated in this topic.">
                     {reputation || 0}
+
                     <i className="reputation-icon"></i>
                 </span>
             );
     }
 
     private _renderTrust() {
-        const {trusterCount, displayName} = this.user;
-        var singular = trusterCount === 1;
+        const {trusterCount, displayName} = this._getUser();
+        const singular = trusterCount === 1;
 
-        if (this.props.showTrusts)
+        const hint = `${trusterCount} ${singular ? "person" : "people"} trust${singular ? "s" : ""} ${displayName}`;
+
+        if (this.props.showTrusts) {
             return (
-                <span className="trusters"
-                    title={`${trusterCount} ${singular ? "person" : "people"} trust${singular ? "s" : ""} ${displayName}`} >
+                <span className="trusters" title={hint}>
                     {trusterCount || 0}
+
                     <i className="trusters-icon"></i>
                 </span>
             );
+        }
     }
 
     private _renderTrustButton() {
-        const {isCurrentUserTrusting, isCurrentUser} = this.user;
+        const {isCurrentUserTrusting, isCurrentUser} = this._getUser();
 
         if (isCurrentUser) {
             return;
         }
 
-        if (this.props.showTrustButton)
-            return (
-                <button className="trust-button" title="Trust this user"
+        if (!this.props.showTrustButton) {
+            return;
+        }
+
+        return (
+            <button className="trust-button" title="Trust this user"
                     onClick={handleClick(this._toggleTrust.bind(this))}>
-                    <i className="trust-button-icon"></i>
-                    {isCurrentUserTrusting ? "Trusted" : "Trust"}
-                </button>
-            );
+
+                <i className="trust-button-icon"></i>
+
+                {isCurrentUserTrusting ? "Trusted" : "Trust"}
+            </button>
+        );
     }
 
     private _renderImage() {
-        const {isCurrentUser, image} = this.user;
+        const {isCurrentUser, image} = this._getUser();
 
         if (isCurrentUser) {
             return (
@@ -117,7 +130,7 @@ class Avatar extends Component<IAvatarProps, any>{
 
     private _toggleTrust() {
         if (!this.context.signInUpContext.isLoggedIn) {
-            this.context.signInUpContext.showSignInUp(event);
+            this.context.signInUpContext.showSignInUp();
             return;
         }
 
