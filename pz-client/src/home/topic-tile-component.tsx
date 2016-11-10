@@ -5,6 +5,7 @@ import classNames from 'classnames';
 import {Link} from 'react-router';
 import ExpandButton from 'pz-client/src/widgets/expand-button-component';
 import {withRouter} from 'react-router';
+import ImageLoader from 'pz-client/src/widgets/image-loader';
 
 export interface ITopicTileProps {
     topic: {
@@ -92,17 +93,17 @@ class TopicTile extends Component<ITopicTileProps, any> {
         let backgroundImage, initialLoadImage;
 
         if (backgroundPhotoUrls) {
-            backgroundImage = (
-                <img
-                    className="background-image"
-                    src={backgroundPhotoUrls.mediumFit}
-                    alt=""
-                    onLoad={() => this.setState({backgroundHasLoaded: true})}
-                />
-            );
-
             initialLoadImage = (
                 <img className="initial-load-image" src={backgroundPhotoUrls.initialLoad} />
+            );
+
+            backgroundImage = (
+                <ImageLoader
+                    className="background-image"
+                    src={backgroundPhotoUrls.mediumFit}
+                    placeholder={initialLoadImage}
+                    alt=""
+                />
             );
         }
 
@@ -113,7 +114,6 @@ class TopicTile extends Component<ITopicTileProps, any> {
         return (
             <div className={classes}>
                 {backgroundImage}
-                {initialLoadImage}
             </div>
         );
     }

@@ -96,7 +96,11 @@
           right: 0;
           width: 100%;
           opacity: 1;
-          transition: opacity 500ms ease-in-out;
+        }
+
+        @keyframes background-image-loaded {
+          0% { opacity: 0; }
+          100% { opacity: 1; }
         }
 
         .background-image {
@@ -104,12 +108,15 @@
           height: 100%;
           object-fit: cover;
           opacity: 0;
-          transition: opacity 500ms ease-in-out;
-        }
 
-        &.background-has-loaded {
-          .initial-load-image { opacity: 0; }
-          .background-image { opacity: 1; }
+          &.image-loader-has-loaded {
+            opacity: 1;
+            animation: background-image-loaded 500ms ease-in-out;
+          }
+
+          &.image-loader-is-cached {
+            opacity: 1;
+          }
         }
       }
 
