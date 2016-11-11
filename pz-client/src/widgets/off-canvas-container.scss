@@ -1,0 +1,27 @@
+@mixin off-canvas-container {
+  .off-canvas-wrapper {
+    @include make-row();
+    overflow: hidden;
+  }
+  
+  .off-canvas-container {
+    @include make-container();
+
+    @include media-breakpoint-down(sm) {
+      position: relative;
+      transition: all .25s ease-out;
+      right: 0;
+    }
+    
+    &.off-canvas-container-active {
+      right: 75%;
+    }
+    
+    .off-canvas-content {
+      position: absolute;
+      top: 0;
+      width: 75%;
+      right: -75%;
+    }
+  }
+}

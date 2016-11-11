@@ -6,6 +6,7 @@
     @include community-item-editor();
     @include review-editor();
     @include expand-button();
+    @include off-canvas-container();
 
     .primary-section {
       @include make-col-span(7);

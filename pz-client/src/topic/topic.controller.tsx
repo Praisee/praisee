@@ -10,6 +10,7 @@ import {ITopic} from 'pz-server/src/topics/topics';
 import SchemaInjector, {ISchemaType} from 'pz-client/src/support/schema-injector';
 import CommunityItem from 'pz-client/src/community-item/community-item-component';
 import ExpandButton from 'pz-client/src/widgets/expand-button-component'
+import OffCanvasContainer from 'pz-client/src/widgets/off-canvas-container-component'
 
 import {
     notFoundContext,
@@ -35,8 +36,10 @@ export class TopicController extends Component<ITopicProps, ITopicState> {
 
         return (
             <div className="topic-namespace" >
-                {this._renderPrimarySection() }
-                {this._renderSideSection() }
+                <OffCanvasContainer>
+                    {this._renderPrimarySection() }
+                    {this._renderSideSection() }
+                </OffCanvasContainer>
             </div>
         )
     }
@@ -137,7 +140,7 @@ export class TopicController extends Component<ITopicProps, ITopicState> {
 
     _renderSideSection() {
         return (
-            <div className="side-section-container">
+            <div className="side-section-container off-canvas-content">
                 <SideSection
                     topic={this.props.topic}
                     topicActions={this._getTopicActions()}
