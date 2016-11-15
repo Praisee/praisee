@@ -45,6 +45,13 @@
             "description": "Whether or not the topic has been verified by a moderator yet"
         },
 
+        "isCategory": {
+            "type": "boolean",
+            "required": false,
+            "default": false,
+            "description": "Whether or not the topic is a category (can have prizes, moderators, not reviewable, etc)"
+        },
+
         "thumbnailPhotoPath": {
             "type": "string",
             "required": false,

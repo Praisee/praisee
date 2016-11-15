@@ -43,7 +43,7 @@ class SideSection extends Component<ISideSectionProps, any> {
 
                 <div className="side-section-block">
                     <TopicActions
-                        topicName={this.props.topic.name}
+                        topic={topic}
                         topicActions={this.props.topicActions}
                         topicReviewActionActive={this.props.topicReviewActionActive}
                         topicQuestionActionActive={this.props.topicQuestionActionActive}
@@ -135,6 +135,8 @@ export default Relay.createContainer(SideSection, {
                         mobile
                     }
                 }
+                
+                ${TopicActions.getFragment('topic')}
                 
                 ${PhotoGallery.getFragment('topic')}
                 

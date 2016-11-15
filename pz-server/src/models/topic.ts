@@ -25,6 +25,7 @@ export interface ITopicInstance extends IPersistedModelInstance, ISluggableInsta
     description: string | null
     overviewContent: string | null
     isVerified: boolean
+    isCategory: boolean
     thumbnailPhotoPath: string | null
     communityItems: IRelatedPersistedModel<ICommunityItemInstance>
     photos: IRelatedPersistedModel<IPhotoInstance>

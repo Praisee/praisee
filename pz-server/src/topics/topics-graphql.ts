@@ -91,6 +91,10 @@ export default function topicTypes(repositoryAuthorizers: IAppRepositoryAuthoriz
                     type: new GraphQLNonNull(GraphQLBoolean)
                 },
 
+                isCategory: {
+                    type: new GraphQLNonNull(GraphQLBoolean)
+                },
+
                 attributes: {
                     type: new GraphQLNonNull(new GraphQLList(types.TopicAttributeInterfaceType)),
 

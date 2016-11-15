@@ -43,17 +43,20 @@ export class DevEnvSeeder {
         return [
             {
                 name: 'Photography',
-                isVerified: true
+                isVerified: true,
+                isCategory: true
             },
 
             {
                 name: 'Videography',
-                isVerified: true
+                isVerified: true,
+                isCategory: true
             },
 
             {
                 name: 'Cameras',
-                isVerified: true
+                isVerified: true,
+                isCategory: true
             },
 
             {
@@ -85,27 +88,32 @@ export class DevEnvSeeder {
 
             {
                 name: 'Cosmetics',
-                isVerified: true
+                isVerified: true,
+                isCategory: true
             },
 
             {
                 name: 'Electronics',
-                isVerified: true
+                isVerified: true,
+                isCategory: true
             },
 
             {
                 name: 'Home & Garden',
-                isVerified: true
+                isVerified: true,
+                isCategory: true
             },
 
             {
                 name: 'Outdoors',
-                isVerified: true
+                isVerified: true,
+                isCategory: true
             },
 
             {
                 name: 'Arts & Crafts',
-                isVerified: true
+                isVerified: true,
+                isCategory: true
             },
 
             {

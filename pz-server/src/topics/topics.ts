@@ -24,6 +24,7 @@ export interface ITopic extends IRepositoryRecord {
     thumbnailPath?: string
     overviewContent?: string
     isVerified?: boolean
+    isCategory?: boolean
     communityItems?: Array<ICommunityItem>
 }
 

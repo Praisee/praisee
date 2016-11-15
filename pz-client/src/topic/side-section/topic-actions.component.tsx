@@ -1,11 +1,16 @@
 import * as React from 'react';
+import * as Relay from 'react-relay';
 import classNames from 'classnames';
 
 import handleClick from 'pz-client/src/support/handle-click';
 import {ITopicActions} from 'pz-client/src/topic/topic.controller';
 
 interface IProps {
-    topicName: string
+    topic: {
+        name: string
+        isCategory: boolean
+    }
+
     topicActions: ITopicActions
 
     topicReviewActionActive?: boolean
@@ -14,25 +19,38 @@ interface IProps {
     hideSideContent: Function
 }
 
-export default class TopicActions extends React.Component<IProps, any>{
+class TopicActions extends React.Component<IProps, any>{
     render() {
         return (
             <div className="topic-actions">
-                {this._renderAction(
-                    `Review ${this.props.topicName}`,
-                    'topic-actions-review-action',
-                    this.props.topicActions.toggleTopicReviewEditor,
-                    this.props.topicReviewActionActive
-                )}
-
-                {this._renderAction(
-                    `Ask a question about ${this.props.topicName}`,
-                    'topic-actions-question-action',
-                    this.props.topicActions.toggleTopicQuestionEditor,
-                    this.props.topicQuestionActionActive
-                )}
+                {this._renderReviewAction()}
+                {this._renderQuestionAction()}
             </div>
         )
+    }
+
+    private _renderReviewAction() {
+        const label = this.props.topic.isCategory ?
+            'Add a review' : `Review ${this.props.topic.name}`;
+
+        return this._renderAction(
+            label,
+            'topic-actions-review-action',
+            this.props.topicActions.toggleTopicReviewEditor,
+            this.props.topicReviewActionActive
+        );
+    }
+
+    private _renderQuestionAction() {
+        const label = this.props.topic.isCategory ?
+            'Ask a question' : `Ask a question about ${this.props.topic.name}`;
+
+        return this._renderAction(
+            label,
+            'topic-actions-question-action',
+            this.props.topicActions.toggleTopicQuestionEditor,
+            this.props.topicQuestionActionActive
+        );
     }
 
     private _renderAction(label, className, actionHandler, isActive) {
@@ -49,8 +67,19 @@ export default class TopicActions extends React.Component<IProps, any>{
         );
     }
 
-    private _hideSideContentAndPerformAction(actionHandler){
+    private _hideSideContentAndPerformAction(actionHandler) {
         this.props.hideSideContent();
         actionHandler();
     }
 }
+
+export default Relay.createContainer(TopicActions, {
+    fragments: {
+        topic: () => Relay.QL`
+            fragment on Topic {
+                name
+                isCategory
+            }
+        `
+    }
+});
