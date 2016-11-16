@@ -1,10 +1,18 @@
 @mixin app-header {
   @include make-row();
-  margin-top: 0.8rem;
+  padding-top: 0.8rem;
   margin-bottom: 2.5rem;
   border-bottom: 1px solid #eee;
 
-  .app-layout-container {
+
+  @include media-breakpoint-down(sm) {
+    position: fixed;
+    background-color: $body-bg;
+    z-index: 100;
+    width: 100%;
+  }
+  
+  .app-header-container {
     @include make-container();
     @include make-container-max-widths();
     display: flex;
@@ -47,8 +55,8 @@
   }
 
   @include media-breakpoint-down(sm) {
-    .app-layout-container {
-      display: block;
+    .app-header-container {
+      display: flex;
     }
 
     .app-branding, .app-search, .app-controls {
@@ -64,7 +72,7 @@
     }
 
     .app-controls {
-      margin: 0;
+      display: none;
     }
   }
 
@@ -97,8 +105,41 @@
     min-height: 0.8rem;
 
     @include media-breakpoint-down(sm) {
-      height: 6vw;
+      height: 3vw;
     }
+  }
+  
+  .nav-toggler {
+    display: none;
+    
+    @include media-breakpoint-down(sm) {
+      display: block;
+    }
+  }
+  
+  .nav-toggler-icon {
+    @extend .fa;
+    @extend .fa-bars;
+  }
+
+  .drop-down-menu {
+    display: none;
+    
+    @include media-breakpoint-down(sm) {
+      display: block;
+      max-height: 112px; /* TODO: Don't hard code. If set too high it looks laggy on click though */
+      overflow: hidden;
+      transition: .5s max-height;
+      text-align: right;
+
+      .drop-down-menu-item {
+        padding:1rem;
+      }
+    }
+  }
+  
+  .drop-down-menu-collapsed {
+    max-height: 0;
   }
 }
 
@@ -106,7 +147,7 @@
   .app-layout {
     @include make-container();
 
-    .app-layout-container {
+    .app-header-container {
       @include make-container();
     }
 
@@ -121,7 +162,12 @@
     .app-footer {
       margin-top: 3rem;
     }
-
+    
+    .app-content {
+      @include media-breakpoint-down(sm) {
+        padding-top: 100px;
+      }
+    }
   }
 }
 

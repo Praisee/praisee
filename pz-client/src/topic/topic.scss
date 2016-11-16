@@ -20,6 +20,10 @@
       @include make-col-span(4);
       padding-left: 3rem;
 
+      .side-section {
+        padding-left: 4rem;
+      }
+
       .side-section-block {
         margin-bottom: 1.5rem;
       }
