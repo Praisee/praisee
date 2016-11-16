@@ -4,24 +4,54 @@
     overflow: hidden;
   }
   
+  .off-canvas-toggle-button {
+    display: none;
+  }
+  
   .off-canvas-container {
     @include make-container();
-
     @include media-breakpoint-down(sm) {
       position: relative;
       transition: all .25s ease-out;
       right: 0;
+      
+      .off-canvas-toggle-button {
+        @include btn();
+        display: block;
+        transform: rotate(-90deg);
+        right: -84px;
+        z-index: 1000;
+        position: absolute;
+        top: 170px;
+        border: 1px solid #efefef;
+        background: white;
+        border-radius: 5px;
+        border-bottom: none;
+      }
+      
+      &.off-canvas-container-active {
+        right: 75%;
+      }
+      
+      .off-canvas-content {
+        position: absolute;
+        top: 0;
+        width: 75%;
+        right: -75%;
+      }
     }
     
-    &.off-canvas-container-active {
-      right: 75%;
+    .off-canvas-container-toggle-icon-expand,
+    .off-canvas-container-toggle-icon-collapse {
+      @extend .fa;
     }
     
-    .off-canvas-content {
-      position: absolute;
-      top: 0;
-      width: 75%;
-      right: -75%;
+    .off-canvas-container-toggle-icon-expand {
+      @extend .fa-angle-up;
+    }
+    
+    .off-canvas-container-toggle-icon-collapse {
+      @extend .fa-angle-down;
     }
   }
 }

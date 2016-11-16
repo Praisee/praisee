@@ -7,12 +7,22 @@ export default class OffCanvasContainer extends Component<any, any> {
 
     render() {
         var containerClasses = classNames("off-canvas-container", { "off-canvas-container-active": this.state.active });
-
+        var toggleIcon = classNames("off-canvas-container-toggle-icon", 
+            { "off-canvas-container-toggle-icon-collapse": this.state.active },
+            { "off-canvas-container-toggle-icon-expand": !this.state.active });
+        var showHideVerbiage = this.state.active ? "hide" : "show";
+        
         return (
             <div className="off-canvas-wrapper" >
-                <button onClick={this._toggleOffCanvasContainer.bind(this)}>toggle side</button>
-                
                 <div className={containerClasses} >
+
+                    <button
+                        className="off-canvas-toggle-button"
+                        onClick={this._toggleOffCanvasContainer.bind(this)}>
+                        <i className={toggleIcon} />
+                        {`${showHideVerbiage} more information`}
+                    </button>
+
                     {this.props.children}
                 </div>
             </div>
