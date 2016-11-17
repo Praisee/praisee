@@ -10,7 +10,7 @@ import {ITopic} from 'pz-server/src/topics/topics';
 import SchemaInjector, {ISchemaType} from 'pz-client/src/support/schema-injector';
 import CommunityItem from 'pz-client/src/community-item/community-item-component';
 import ExpandButton from 'pz-client/src/widgets/expand-button-component'
-import OffCanvasContainer from 'pz-client/src/widgets/off-canvas-container-component'
+import classNames from 'classnames';
 
 import {
     notFoundContext,
@@ -36,10 +36,7 @@ export class TopicController extends Component<ITopicProps, ITopicState> {
 
         return (
             <div className="topic-namespace" >
-                <OffCanvasContainer>
-                    {this._renderPrimarySection() }
-                    {this._renderSideSection() }
-                </OffCanvasContainer>
+                {this._renderOffCanvasContainer() }
             </div>
         )
     }
@@ -50,7 +47,8 @@ export class TopicController extends Component<ITopicProps, ITopicState> {
 
     state = {
         isShowingReviewEditor: false,
-        isShowingQuestionEditor: false
+        isShowingQuestionEditor: false,
+        isSideBarActive: false
     };
 
     componentWillReceiveProps(nextProps) {
@@ -62,12 +60,13 @@ export class TopicController extends Component<ITopicProps, ITopicState> {
         if (topicIsNotAvailable || topicHasChanged) {
             this.setState({
                 isShowingReviewEditor: false,
-                isShowingQuestionEditor: false
+                isShowingQuestionEditor: false,
+                isSideBarActive: false
             })
         }
     }
 
-    _renderPrimarySection() {
+    private _renderPrimarySection() {
         return (
             <div className="primary-section" >
                 {this._renderContributionSection() }
@@ -76,7 +75,7 @@ export class TopicController extends Component<ITopicProps, ITopicState> {
         )
     }
 
-    _renderContributionSection() {
+    private _renderContributionSection() {
         if (this.state.isShowingReviewEditor) {
             return (
                 <ReviewEditor topic={this.props.topic} viewer={this.props.viewer} />
@@ -95,7 +94,7 @@ export class TopicController extends Component<ITopicProps, ITopicState> {
         }
     }
 
-    _renderTopicContentSection() {
+    private _renderTopicContentSection() {
         if (this.props.topic.communityItems.edges.length > 0) {
             return this._renderTopicContent();
         }
@@ -104,7 +103,7 @@ export class TopicController extends Component<ITopicProps, ITopicState> {
         }
     }
 
-    _renderTopicContent() {
+    private _renderTopicContent() {
         const rows = this.props.topic.communityItems.edges
             .map(({node}) =>
                 <CommunityItem key={node.id} communityItem={node} truncateLongContent={true} />
@@ -130,7 +129,7 @@ export class TopicController extends Component<ITopicProps, ITopicState> {
         );
     }
 
-    _renderEmptyContent() {
+    private _renderEmptyContent() {
         return (
             <div>
                 <span>Be the first to review, ask a question, or talk about {this.props.topic.name}</span>
@@ -138,7 +137,7 @@ export class TopicController extends Component<ITopicProps, ITopicState> {
         ); //change to list of questions
     }
 
-    _renderSideSection() {
+    private _renderSideSection() {
         return (
             <div className="side-section-container off-canvas-content">
                 <SideSection
@@ -151,7 +150,7 @@ export class TopicController extends Component<ITopicProps, ITopicState> {
         )
     }
 
-    _getTopicActions(): ITopicActions {
+    private _getTopicActions(): ITopicActions {
         return {
             toggleTopicReviewEditor: () => {
                 if (this.state.isShowingReviewEditor) {
@@ -177,14 +176,37 @@ export class TopicController extends Component<ITopicProps, ITopicState> {
         };
     }
 
-    _addContribution() {
-        console.log("submited");
-        var num = Math.random();
-        return num > .5 ? Promise.resolve(true) : Promise.resolve(false);
+    private _showMoreCommunityItems() {
+        this.props.relay.setVariables({ limit: this.props.relay.variables.limit + 5 })
     }
 
-    _showMoreCommunityItems() {
-        this.props.relay.setVariables({ limit: this.props.relay.variables.limit + 5 })
+    private _toggleOffCanvasContainer() {
+        this.setState({ isSideBarActive: !this.state.isSideBarActive });
+    }
+
+    private _renderOffCanvasContainer(){
+        var containerClasses = classNames("off-canvas-container", { "off-canvas-container-active": this.state.isSideBarActive });
+        
+        return (
+            <div className="off-canvas-wrapper" >
+                <div className={containerClasses} >
+                    <h1 
+                        className="off-canvas-toggle-header"
+                        onClick={this._toggleOffCanvasContainer.bind(this)}>
+                        
+                        {this.props.topic.name}
+                        <i className="off-canvas-container-toggle-icon" />
+                    </h1>
+                    
+                    <div className="primary-section-overlay"
+                        onClick={this._toggleOffCanvasContainer.bind(this)}>
+                    </div>
+                    
+                    {this._renderPrimarySection()}
+                    {this._renderSideSection()}
+                </div>
+            </div>
+        )
     }
 }
 
@@ -225,6 +247,9 @@ export default Relay.createContainer(TopicController, {
 });
 
 interface ITopicState {
+    isShowingReviewEditor?: boolean,
+    isShowingQuestionEditor?: boolean,
+    isSideBarActive?: boolean;
 }
 
 interface ITopicProps {

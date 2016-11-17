@@ -67,7 +67,7 @@ class Header extends React.Component<IAppLayoutProps, IAppLayoutState> {
                     </div>
 
                     <button className="nav-toggler"
-                            onClick={this._toggleDropDownMenu.bind(this)}>
+                        onClick={this._toggleDropDownMenu.bind(this)}>
                         <i className="nav-toggler-icon" />
                     </button>
                 </div>
@@ -76,10 +76,6 @@ class Header extends React.Component<IAppLayoutProps, IAppLayoutState> {
                     <div className="drop-down-menu-item">
                         {this._renderUserControls()}
                     </div>
-                    
-                    <div className="drop-down-menu-item">
-                        <a href="#">Show extras</a>
-                    </div>
                 </div>
 
                 <ErrorList viewer={this.props.viewer} />
@@ -87,7 +83,7 @@ class Header extends React.Component<IAppLayoutProps, IAppLayoutState> {
         );
     }
 
-    private _toggleDropDownMenu(){
+    private _toggleDropDownMenu() {
         this.setState({ isDropdownActive: !this.state.isDropdownActive });
     }
 

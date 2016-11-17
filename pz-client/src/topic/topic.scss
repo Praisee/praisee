@@ -154,6 +154,8 @@
       @include media-breakpoint-down(sm){
         @include make-col-span(12);
       }
+      
+      padding-top: 1rem;
     }
 
     .show-more-community-items {

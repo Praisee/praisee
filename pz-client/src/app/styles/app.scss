@@ -11,7 +11,6 @@
 @import '../../widgets/simple-modal';
 @import '../../widgets/reputation-earned';
 @import '../../widgets/context-menu';
-@import '../../widgets/off-canvas-container';
 @import '../../editor/editor';
 @import '../../user/sign-in-up';
 @import '../../user/avatar';
@@ -26,6 +25,7 @@
 @import '../../comments/comment-editor';
 @import '../../votes/votes';
 @import '../../search/site-search';
+@import '../../topic/side-section/off-canvas-container';
 @import 'error.scss';
 
 @import '../../editor/proofofconcept/editor'; // TODO: Remove this
