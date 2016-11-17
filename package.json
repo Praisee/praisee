@@ -28,7 +28,8 @@
     "test": "npm run testsIn pz-server/build/test/unit pz-server/build/test/smoke pz-server/build/test/integration pz-client/build/test/acceptance pz-client/build/test/integration pz-client/build/test/unit",
     "redisCommander": "redis-commander",
     "foreman": "nf",
-    "foremanStartDev": "npm run foreman -- start --procfile Procfile.dev --port 3000"
+    "foremanStartDev": "npm run foreman -- start --procfile Procfile.dev --port 3000",
+    "rebuildSearch": "cd ./pz-server && npm run rebuildSearch"
   },
   "dependencies": {
     "@google-cloud/storage": "^0.4.0",

@@ -16,7 +16,8 @@
     "buildDev": "gulp  buildDev",
     "watch": "gulp  watch",
     "buildSourcesQuick": "gulp  buildSourcesQuick",
-    "slc": "slc"
+    "slc": "slc",
+    "rebuildSearch": "node  build/src/search/search-rebuilder-cli/start-cli"
   },
   "dependencies": {
   },

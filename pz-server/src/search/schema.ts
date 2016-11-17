@@ -32,13 +32,13 @@ export default {
         number_of_shards: 1,
 
     },
-    
+
     // Search index types
     types: {
         communityItem: 'communityItem',
         topic: 'topic'
     },
-    
+
     // Search type mappings
     typeMappings: {
         communityItem: {
@@ -47,7 +47,7 @@ export default {
                     type: 'string',
                     index: 'not_analyzed'
                 },
-                
+
                 routePath: {
                     type: 'string',
                     index: 'not_analyzed'
@@ -62,7 +62,7 @@ export default {
                 }
             }
         },
-        
+
         topic: {
             properties: {
                 type: {
@@ -74,7 +74,7 @@ export default {
                     type: 'string',
                     index: 'not_analyzed'
                 },
-                
+
                 name: {
                     type: 'string',
                     analyzer: 'autocomplete',
@@ -83,6 +83,11 @@ export default {
 
                 description: {
                     type: 'string'
+                },
+
+                isCategory: {
+                    type: 'boolean',
+                    index: 'not_analyzed'
                 }
             }
         }

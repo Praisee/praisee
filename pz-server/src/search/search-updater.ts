@@ -28,7 +28,7 @@ export interface ISearchUpdaterModels {
 export default class SearchUpdater {
     public updateFrequency = 5; // TODO: Set this to something higher like 30 in production
 
-    public searchClient: SearchClient;
+    private _searchClient: SearchClient;
 
     private _models: ISearchUpdaterModels;
 
@@ -38,7 +38,7 @@ export default class SearchUpdater {
 
     constructor(models: ISearchUpdaterModels, searchClient: SearchClient) {
         this._models = models;
-        this.searchClient = searchClient;
+        this._searchClient = searchClient;
     }
 
     start() {
@@ -74,7 +74,7 @@ export default class SearchUpdater {
 
         const bulkOperations = this._jobsToBulkOperations(incompleteJobs);
 
-        await this.searchClient.performBulkOperations(bulkOperations);
+        await this._searchClient.performBulkOperations(bulkOperations);
 
         await SearchUpdateJob.markAsCompletedByIds(
             incompleteJobs.map(incompleteJob => incompleteJob.id)
@@ -99,6 +99,38 @@ export default class SearchUpdater {
         this._operationHooks.forEach(({modelName, operationName, hook}) => {
             this._models[modelName].removeObserver(operationName, hook);
         });
+    }
+
+    // TODO: This should be extracted out into a separate module
+    async rebuildSearch(): Promise<void> {
+        const {SearchUpdateJob} = this._models;
+
+        await promisify(SearchUpdateJob.destroyAll, SearchUpdateJob)();
+
+        await this._searchClient.resetIndexFromSchema(searchSchema);
+
+        await Promise.all([
+            this._rebuildSearchForModel('CommunityItem'),
+            this._rebuildSearchForModel('Topic'),
+            this._rebuildSearchForModel('UrlSlug'),
+        ]);
+
+        await this.runJobs();
+    }
+
+    private async _rebuildSearchForModel(modelName): Promise<void> {
+        console.log('Creating search update jobs for ' + modelName + '...');
+
+        const Model = this._models[modelName];
+
+        // TODO: This won't scale. It needs to be batched.
+        const allModels = await promisify(Model.find, Model)({});
+
+        const modelJobs = allModels.map(model => this._createSearchUpdateJob(
+            modelName, model.id, 'save'
+        ));
+
+        await Promise.all(modelJobs);
     }
 
     private _addHook(modelName, operationName, hook) {
@@ -220,7 +252,8 @@ export default class SearchUpdater {
 
             const document = {
                 name: topic.name,
-                description: topic.description
+                description: topic.description,
+                isCategory: topic.isCategory
             };
 
             return this._createSaveJob(path, document);
