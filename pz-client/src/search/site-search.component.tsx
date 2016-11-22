@@ -2,7 +2,7 @@ import * as React from 'react';
 import {Component} from 'react';
 import SuggestionsClient from 'pz-client/src/search/suggestions-client';
 import {Link, withRouter} from 'react-router';
-import {ISearchSuggestionResult} from 'pz-server/src/search/search-results';
+import {ISuggestionResult} from 'pz-server/src/search/suggestion-results';
 import classNames from 'classnames';
 
 var Autosuggest = require('react-autosuggest');
@@ -130,7 +130,7 @@ class SiteSearch extends Component<ISiteSearchProps, any> {
         return location.state._appSiteSearchSuggestion.title || '';
     }
 
-    _renderSuggestion(suggestion: ISearchSuggestionResult) {
+    _renderSuggestion(suggestion: ISuggestionResult) {
         return (
             <span className="suggestion-link">
                 {suggestion.title}

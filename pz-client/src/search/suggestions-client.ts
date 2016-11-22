@@ -1,8 +1,8 @@
 import * as queryString from 'querystring';
 import appInfo from 'pz-client/src/app/app-info';
 
-import {ISearchSuggestionResult} from 'pz-server/src/search/search-results';
-export {ISearchSuggestionResult} from 'pz-server/src/search/search-results';
+import {ISuggestionResult} from 'pz-server/src/search/suggestion-results';
+export {ISuggestionResult} from 'pz-server/src/search/suggestion-results';
 
 export default class SuggestionsClient {
     private _apiPath;
@@ -11,7 +11,7 @@ export default class SuggestionsClient {
         this._apiPath = apiPath;
     }
 
-    async getSuggestions(query: string): Promise<Array<ISearchSuggestionResult>> {
+    async getSuggestions(query: string): Promise<Array<ISuggestionResult>> {
         const response = await fetch(this._apiPath + '?' + queryString.stringify({query}), {
             credentials: 'same-origin'
         });
@@ -27,6 +27,6 @@ export default class SuggestionsClient {
             throw new Error('Unable to find search results in body');
         }
 
-        return responseBody.results as Array<ISearchSuggestionResult>;
+        return responseBody.results as Array<ISuggestionResult>;
     }
 }

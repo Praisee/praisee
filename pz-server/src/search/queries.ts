@@ -2,21 +2,21 @@ import {ISearchQuery} from 'pz-server/src/search/search';
 
 export function getSuggestionsForUserQuery(query: string): ISearchQuery {
     return {
-        query: {
-            bool: {
-                should: [
+        "query": {
+            "bool": {
+                "should": [
                     {
-                        bool: {
-                            filter: {
-                                type: {
-                                    value: 'topic'
+                        "bool": {
+                            "filter": {
+                                "type": {
+                                    "value": "topic"
                                 }
                             },
-                            must: {
-                                match: {
-                                    name: {
-                                        query: query,
-                                        boost: 2
+                            "must": {
+                                "match": {
+                                    "name": {
+                                        "query": query,
+                                        "boost": 2
                                     }
                                 }
                             }
@@ -24,21 +24,47 @@ export function getSuggestionsForUserQuery(query: string): ISearchQuery {
                     },
 
                     {
-                        bool: {
-                            filter: {
-                                type: {
-                                    value: 'communityItem'
+                        "bool": {
+                            "filter": {
+                                "type": {
+                                    "value": "communityItem"
                                 }
                             },
-                            must: {
-                                multi_match: {
-                                    query: query,
-                                    fields: ['summary', 'body']
+                            "must": {
+                                "multi_match": {
+                                    "query": query,
+                                    "fields": ["summary", "body"]
                                 }
                             }
                         }
                     }
                 ]
+            }
+        }
+    }
+}
+
+export function getNonCategorySuggestionsForUserQuery(query: string): ISearchQuery {
+    return {
+        "query": {
+            "bool": {
+                "filter": [
+                    {
+                        "type": {
+                            "value": "topic"
+                        }
+                    },
+                    {
+                        "term": {
+                            "isCategory": false
+                        }
+                    }
+                ],
+                "must": {
+                    "match": {
+                        "name": query
+                    }
+                }
             }
         }
     }

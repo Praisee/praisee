@@ -1,6 +1,6 @@
 import * as React from 'react';
 import appInfo from 'pz-client/src/app/app-info';
-import SuggestionsClient, {ISearchSuggestionResult} from 'pz-client/src/search/suggestions-client';
+import SuggestionsClient, {ISuggestionResult} from 'pz-client/src/search/suggestions-client';
 
 import {fromJS} from 'immutable';
 
@@ -41,7 +41,7 @@ export default function createMentionSuggestions(PluginMentionSuggestions) {
             });
         }
 
-        private _suggestionToPluginFormat(suggestion: ISearchSuggestionResult) {
+        private _suggestionToPluginFormat(suggestion: ISuggestionResult) {
             return {
                 name: suggestion.title,
                 type: suggestion.type,

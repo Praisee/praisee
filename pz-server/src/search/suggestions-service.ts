@@ -7,9 +7,7 @@ import {
     ISearchResultHit
 } from 'pz-server/src/search/search';
 
-import {ISearchSuggestionResult} from 'pz-server/src/search/search-results';
-
-import {getSuggestionsForUserQuery} from 'pz-server/src/search/queries';
+import {ISuggestionResult} from 'pz-server/src/search/suggestion-results';
 
 interface ISearchClient {
     search(query: ISearchQuery, path?: IPath): Promise<IRawSearchResults>
@@ -24,10 +22,8 @@ export default class SuggestionsService {
         this._searchClient = searchClient;
     }
 
-    async suggest(queryString: string): Promise<Array<ISearchSuggestionResult>> {
+    async suggest(query: ISearchQuery): Promise<Array<ISuggestionResult>> {
         // TODO: Accept a context parameter to refine search further
-
-        const query = getSuggestionsForUserQuery(queryString);
 
         const results = await this._searchClient.search(
             query, {index: this._searchSchema.index}
@@ -38,7 +34,7 @@ export default class SuggestionsService {
         return hits.map(hit => this._convertSearchHitIntoSearchSuggestions(hit));
     }
 
-    _convertSearchHitIntoSearchSuggestions(searchHit: ISearchResultHit): ISearchSuggestionResult {
+    _convertSearchHitIntoSearchSuggestions(searchHit: ISearchResultHit): ISuggestionResult {
 
         switch(searchHit._type) {
             case 'topic':
