@@ -29,6 +29,8 @@ interface ISideSectionProps {
     topicActions: ITopicActions
     topicReviewActionActive?: boolean
     topicQuestionActionActive?: boolean
+    
+    hideSideContent: Function
 }
 
 class SideSection extends Component<ISideSectionProps, any> {
@@ -45,6 +47,7 @@ class SideSection extends Component<ISideSectionProps, any> {
                         topicActions={this.props.topicActions}
                         topicReviewActionActive={this.props.topicReviewActionActive}
                         topicQuestionActionActive={this.props.topicQuestionActionActive}
+                        hideSideContent={this.props.hideSideContent}
                     />
                 </div>
 

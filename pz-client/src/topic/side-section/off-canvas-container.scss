@@ -6,6 +6,11 @@
   
   .off-canvas-toggle-header {
     display: none;
+    font-size: 1.5rem;
+  }
+
+  .off-canvas-toggle-header-text {
+    vertical-align: middle;
   }
   
   .off-canvas-container {
@@ -18,6 +23,7 @@
       .off-canvas-toggle-header {
         display: block;
         padding: 1rem;
+        padding-top: 2rem;
       }
       
       &.off-canvas-container-active {
@@ -52,9 +58,11 @@
   
   .off-canvas-container-toggle-icon {
     @extend .fa;
-    @extend .fa-angle-right;
+    @extend .fa-chevron-circle-right;
 
-    padding-left: 1rem;
+    padding-left: .8rem;
+    color: $gray-lighter;
+    font-size: 1.2rem;
   }
   
   .side-section-container {

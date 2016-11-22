@@ -36,7 +36,7 @@ export class TopicController extends Component<ITopicProps, ITopicState> {
 
         return (
             <div className="topic-namespace" >
-                {this._renderOffCanvasContainer() }
+                {this._renderOffCanvasContainer()}
             </div>
         )
     }
@@ -69,8 +69,8 @@ export class TopicController extends Component<ITopicProps, ITopicState> {
     private _renderPrimarySection() {
         return (
             <div className="primary-section" >
-                {this._renderContributionSection() }
-                {this._renderTopicContentSection() }
+                {this._renderContributionSection()}
+                {this._renderTopicContentSection()}
             </div>
         )
     }
@@ -116,7 +116,7 @@ export class TopicController extends Component<ITopicProps, ITopicState> {
                 <ExpandButton
                     className="show-more-community-items"
                     onExpand={this._showMoreCommunityItems.bind(this)}
-                    isExpanded={!canExpand}  
+                    isExpanded={!canExpand}
                     />
             )
         }
@@ -145,7 +145,8 @@ export class TopicController extends Component<ITopicProps, ITopicState> {
                     topicActions={this._getTopicActions()}
                     topicReviewActionActive={this.state.isShowingReviewEditor}
                     topicQuestionActionActive={this.state.isShowingQuestionEditor}
-                />
+                    hideSideContent={this._hideSideContent.bind(this)}
+                    />
             </div>
         )
     }
@@ -184,24 +185,28 @@ export class TopicController extends Component<ITopicProps, ITopicState> {
         this.setState({ isSideBarActive: !this.state.isSideBarActive });
     }
 
-    private _renderOffCanvasContainer(){
+    private _hideSideContent() {
+        this.setState({isSideBarActive: false});
+    }
+
+    private _renderOffCanvasContainer() {
         var containerClasses = classNames("off-canvas-container", { "off-canvas-container-active": this.state.isSideBarActive });
-        
+
         return (
             <div className="off-canvas-wrapper" >
                 <div className={containerClasses} >
-                    <h1 
-                        className="off-canvas-toggle-header"
+                    <h1 className="off-canvas-toggle-header"
                         onClick={this._toggleOffCanvasContainer.bind(this)}>
-                        
-                        {this.props.topic.name}
+                        <span className="off-canvas-toggle-header-text">
+                            {this.props.topic.name}
+                        </span>
                         <i className="off-canvas-container-toggle-icon" />
                     </h1>
-                    
+
                     <div className="primary-section-overlay"
                         onClick={this._toggleOffCanvasContainer.bind(this)}>
                     </div>
-                    
+
                     {this._renderPrimarySection()}
                     {this._renderSideSection()}
                 </div>

@@ -10,6 +10,8 @@ interface IProps {
 
     topicReviewActionActive?: boolean
     topicQuestionActionActive?: boolean
+
+    hideSideContent: Function
 }
 
 export default class TopicActions extends React.Component<IProps, any>{
@@ -40,10 +42,15 @@ export default class TopicActions extends React.Component<IProps, any>{
 
         return (
             <button className={classes}
-                    onClick={handleClick(actionHandler)}>
+                    onClick={ () => this._hideSideContentAndPerformAction(actionHandler)}>
 
                 {label}
             </button>
         );
+    }
+
+    private _hideSideContentAndPerformAction(actionHandler){
+        this.props.hideSideContent();
+        actionHandler();
     }
 }
