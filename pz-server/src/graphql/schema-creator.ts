@@ -15,6 +15,8 @@ import {
     communityItemIdResolver,
     communityItemTypeResolver
 } from 'pz-server/src/community-items/community-items-graphql';
+import {getTopicLookupField} from 'pz-server/src/topics/topics-graphql';
+import {getViewer} from 'pz-server/src/graphql/viewer-graphql';
 
 var {
     connectionDefinitions,
@@ -52,11 +54,11 @@ export default function createSchema(repositoryAuthorizers: IAppRepositoryAuthor
     } = repositoryAuthorizers;
 
 
-    const idResolver = (globalId, {user}) => {
+    const idResolver = async (globalId, {user}): Promise<IRepositoryRecord> => {
         const {type, id} = graphqlRelay.fromGlobalId(globalId);
 
         if (type === 'Viewer') {
-            return { id: 'viewer' };
+            return getViewer();
         }
 
         if (type === 'OtherUser' || type === 'CurrentUser') {
@@ -155,20 +157,7 @@ export default function createSchema(repositoryAuthorizers: IAppRepositoryAuthor
                     }
                 },
 
-                topic: {
-                    type: types.TopicType,
-                    args: {
-                        urlSlug: {
-                            type: GraphQLString
-                        }
-                    },
-                    resolve: async (_, {urlSlug}, {user}) => {
-                        const topics = topicsAuthorizer.as(user);
-
-                        const topic = await topics.findByUrlSlugName(urlSlug);
-                        return topic;
-                    }
-                },
+                topic: getTopicLookupField(repositoryAuthorizers, types),
 
                 communityItem: {
                     type: types.CommunityItemInterfaceType,
@@ -211,7 +200,6 @@ export default function createSchema(repositoryAuthorizers: IAppRepositoryAuthor
 
             fields: {
                 createCommunityItem: types.CreateCommunityItemMutation,
-                createCommunityItemFromTopic: types.CreateCommunityItemFromTopicMutation,
                 updateCommunityItemContent: types.UpdateCommunityItemContentMutation,
                 updateCommunityItemType: types.UpdateCommunityItemTypeMutation,
                 destroyCommunityItem: types.DestroyCommunityItemMutation,

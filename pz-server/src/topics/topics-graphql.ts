@@ -243,3 +243,35 @@ function createRoutePathType(
         }
     }
 }
+
+export function getTopicLookupField(repositoryAuthorizers: IAppRepositoryAuthorizers, types: ITypes) {
+    return {
+        type: types.TopicType,
+
+        args: {
+            serverId: {
+                type: GraphQLInt
+            },
+
+            urlSlug: {
+                type: GraphQLString
+            }
+        },
+
+        resolve: async (_, {serverId, urlSlug}, {user}) => {
+            if (!serverId && !urlSlug) {
+                return null;
+            }
+
+            const topics = repositoryAuthorizers.topics.as(user);
+
+            if (serverId) {
+                return await topics.findById(serverId);
+
+            } else {
+
+                return await topics.findByUrlSlugName(urlSlug);
+            }
+        }
+    };
+}

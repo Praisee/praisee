@@ -59,4 +59,8 @@ export default class TopicsLoader implements ITopics {
     getCommunityItemCount(topicId: number): Promise<number> {
         return this._topics.getCommunityItemCount(topicId);
     }
+
+    createAllByNames(topicNames: Array<string>): Promise<Array<ITopic>> {
+        return this._topics.createAllByNames(topicNames);
+    }
 }

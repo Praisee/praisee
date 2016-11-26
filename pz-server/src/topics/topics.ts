@@ -8,17 +8,10 @@ import {TBiCursor, ICursorResults} from 'pz-server/src/support/cursors/cursors';
 import {TOptionalUser} from 'pz-server/src/users/users';
 import {IPhoto} from 'pz-server/src/photos/photos';
 
-export type TTopicType = (
-    'topic'
-    | 'brand'
-    | 'product'
-);
-
 export interface ITopic extends IRepositoryRecord {
     recordType: 'Topic'
 
     id?: number
-    type: TTopicType
     name: string
     description?: string
     thumbnailPath?: string
@@ -37,6 +30,7 @@ export interface ITopics extends IRepository {
     findSomePhotoGalleryPhotosRanked(topicId: number, asUser: TOptionalUser, cursor: TBiCursor): Promise<ICursorResults<IPhoto>>
     findAllCommunityItemIds(topicId: number): Promise<Array<number>>
     getCommunityItemCount(topicId: number): Promise<number>
+    createAllByNames(topicNames: Array<string>): Promise<Array<ITopic>>
 }
 
 export interface ITopicsBatchable {

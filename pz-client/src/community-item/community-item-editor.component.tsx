@@ -3,7 +3,7 @@ import * as Relay from 'react-relay';
 
 import CurrentUserType from 'pz-client/src/user/current-user-type';
 import SignInUpOverlay, { ISignInUpContext, SignInUpContextType } from 'pz-client/src/user/sign-in-up-overlay-component';
-import CreateCommunityItemForTopicMutation from 'pz-client/src/community-item/create-community-item-from-topic-mutation';
+import CreateCommunityItemMutation from 'pz-client/src/community-item/create-community-item-mutation';
 import CommunityItemBodyEditor from 'pz-client/src/community-item/community-item-body-editor.component';
 import serializeEditorState from 'pz-client/src/editor/serialize-editor-state';
 import classNames from 'classnames';
@@ -256,9 +256,9 @@ class CommunityItemEditor extends React.Component<IProps, any> {
     private _getDefaultMutationForSave(editorData: IEditorData) {
         const {summary, bodyData} = editorData;
 
-        return new CreateCommunityItemForTopicMutation({
+        return new CreateCommunityItemMutation({
             type: 'General',
-            topic: this.props.topic,
+            topicIds: [this.props.topic.id],
             viewer: this.props.viewer,
             summary,
             bodyData
@@ -268,10 +268,10 @@ class CommunityItemEditor extends React.Component<IProps, any> {
     private _redirectOnSuccess(response) {
         const redirectPath = (
             response
-            && response.createCommunityItemFromTopic
-            && response.createCommunityItemFromTopic.viewer
-            && response.createCommunityItemFromTopic.viewer.lastCreatedCommunityItem
-            && response.createCommunityItemFromTopic.viewer.lastCreatedCommunityItem.routePath
+            && response.createCommunityItem
+            && response.createCommunityItem.viewer
+            && response.createCommunityItem.viewer.lastCreatedCommunityItem
+            && response.createCommunityItem.viewer.lastCreatedCommunityItem.routePath
         );
 
         if (redirectPath) {
@@ -288,7 +288,7 @@ export var CreateItemEditor = Relay.createContainer(withRouter(CommunityItemEdit
     fragments: {
         viewer: () => Relay.QL`
             fragment on Viewer {
-                ${CreateCommunityItemForTopicMutation.getFragment('viewer')}
+                ${CreateCommunityItemMutation.getFragment('viewer')}
                 
                 lastCreatedCommunityItem {
                     routePath
@@ -300,7 +300,6 @@ export var CreateItemEditor = Relay.createContainer(withRouter(CommunityItemEdit
             fragment on Topic {
                 id
                 name
-                ${CreateCommunityItemForTopicMutation.getFragment('topic')}
             }
         `
     }

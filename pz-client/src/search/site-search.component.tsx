@@ -12,11 +12,11 @@ const searchClasses = {
     containerOpen:               'container-open',
     input:                       'search-input',
     suggestionsContainer:        'suggestions-container',
+    suggestionsList:             'suggestions-list',
     suggestion:                  'suggestion',
     suggestionFocused:           'suggestion-focused',
     sectionContainer:            'section-container',
     sectionTitle:                'section-title',
-    sectionSuggestionsContainer: 'section-suggestions-container'
 };
 
 export interface ISiteSearchProps {
@@ -67,7 +67,8 @@ class SiteSearch extends Component<ISiteSearchProps, any> {
 
         const classes = classNames('site-search', {
             'site-search-has-focus': this.state.hasFocus,
-            'site-search-has-input': value && value.length
+            'site-search-has-input': value && value.length,
+            'site-search-has-suggestions': suggestions.length
         });
 
         return (
@@ -78,7 +79,8 @@ class SiteSearch extends Component<ISiteSearchProps, any> {
                     <Autosuggest
                         suggestions={suggestions}
                         inputProps={inputProps}
-                        onSuggestionsUpdateRequested={this._onSuggestionsUpdateRequested.bind(this)}
+                        onSuggestionsFetchRequested={this._onSuggestionsUpdateRequested.bind(this)}
+                        onSuggestionsClearRequested={this._onSuggestionsClearRequested.bind(this)}
                         getSuggestionValue={this._getSuggestionValue.bind(this)}
                         renderSuggestion={this._renderSuggestion.bind(this)}
                         onSuggestionSelected={this._goToSuggestion.bind(this)}
@@ -100,13 +102,13 @@ class SiteSearch extends Component<ISiteSearchProps, any> {
         this._hasUnmounted = true;
     }
 
-    _updateValue(_, { newValue }) {
+    private _updateValue(_, { newValue }) {
         this.setState({
             value: newValue
         });
     }
 
-    _onSuggestionsUpdateRequested({ value }) {
+    private _onSuggestionsUpdateRequested({ value }) {
         this.search.getSuggestions(value).then(suggestions => {
             if (this._hasUnmounted) {
                 return;
@@ -116,11 +118,19 @@ class SiteSearch extends Component<ISiteSearchProps, any> {
         });
     }
 
-    _getSuggestionValue(suggestion) {
+    private _onSuggestionsClearRequested() {
+        if (this._hasUnmounted) {
+            return;
+        }
+
+        this.setState({suggestions: []});
+    }
+
+    private _getSuggestionValue(suggestion) {
         return suggestion.title;
     }
 
-    _getLastSelectedSuggestionValue() {
+    private _getLastSelectedSuggestionValue() {
         const location = this.context && this.context.location;
 
         if (!location || !location.state || !location.state._appSiteSearchSuggestion) {
@@ -130,7 +140,7 @@ class SiteSearch extends Component<ISiteSearchProps, any> {
         return location.state._appSiteSearchSuggestion.title || '';
     }
 
-    _renderSuggestion(suggestion: ISuggestionResult) {
+    private _renderSuggestion(suggestion: ISuggestionResult) {
         return (
             <span className="suggestion-link">
                 {suggestion.title}
@@ -138,18 +148,18 @@ class SiteSearch extends Component<ISiteSearchProps, any> {
         );
     }
 
-    _goToSuggestion(_, { suggestion }) {
+    private _goToSuggestion(_, { suggestion }) {
         this.props.router.push({
             pathname: suggestion.routePath,
             state: {_appSiteSearchSuggestion: suggestion}
         });
     }
 
-    _onFocus() {
+    private _onFocus() {
         this.setState({hasFocus: true});
     }
 
-    _offFocus() {
+    private _offFocus() {
         this.setState({hasFocus: false});
     }
 }

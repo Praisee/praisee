@@ -49,7 +49,6 @@ export interface ITypes {
 
     CommunityItemConnection
     CreateCommunityItemMutation
-    CreateCommunityItemFromTopicMutation
     UpdateCommunityItemContentMutation
     UpdateCommunityItemTypeMutation
     DestroyCommunityItemMutation

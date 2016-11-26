@@ -1,7 +1,7 @@
 import * as React from 'react';
 import * as Relay from 'react-relay';
 
-import CreateCommunityItemForTopicMutation from 'pz-client/src/community-item/create-community-item-from-topic-mutation';
+import CreateCommunityItemMutation from 'pz-client/src/community-item/create-community-item-mutation';
 import CommunityItemBodyEditor from 'pz-client/src/community-item/community-item-body-editor.component';
 import serializeEditorState from 'pz-client/src/editor/serialize-editor-state';
 import classNames from 'classnames';
@@ -16,17 +16,25 @@ import {
 import EditRating from 'pz-client/src/community-item/widgets/edit-rating-component';
 
 import SignInUp from 'pz-client/src/user/sign-in-up-embedded-component';
+import ReviewTopicSelector from 'pz-client/src/community-item/review-topic-selector-component';
 
 interface IProps {
     relay: any
 
     viewer: {
         id: any
+
+        topic: {
+            id: any
+            serverId: number
+            name: string
+        }
     }
 
-    topic: {
+    topic?: {
         id: any
         name: string
+        isCategory: boolean
     }
 
     router: {
@@ -52,7 +60,9 @@ class ReviewCommunityItemEditor extends React.Component<IProps, any> {
         bodyState: void(0),
         isEditing: false,
         summaryHasFocus: false,
-        bodyHasFocus: false
+        bodyHasFocus: false,
+        hasSelectedTopic: false,
+        newTopicName: null
     };
 
     private _hasInteractedWithSignInUp = false;
@@ -60,6 +70,7 @@ class ReviewCommunityItemEditor extends React.Component<IProps, any> {
     render() {
         return (
             <div className="review-editor">
+                {this._renderTopicSelector()}
                 {this._renderRating()}
                 {this._renderEditorContainer()}
                 {this._renderSubmit()}
@@ -73,19 +84,68 @@ class ReviewCommunityItemEditor extends React.Component<IProps, any> {
         }
     }
 
+    private _getTopic(): {id: any, name: string} | null {
+        return this.props.topic || (this.state.hasSelectedTopic && this.props.viewer.topic);
+    }
+
+    private _canChangeTopic() {
+        return !this.props.topic;
+    }
+
+    private _hasSelectedTopic() {
+        return this.props.topic || this.state.hasSelectedTopic;
+    }
+
+    private _renderTopicSelector() {
+        if (this.props.topic) {
+            return;
+        }
+
+        if (this._hasSelectedTopic()) {
+            return;
+        }
+
+        return (
+            <ReviewTopicSelector
+                onTopicSelected={this._selectTopic.bind(this)}
+                onNewTopicSelected={this._selectNewTopic.bind(this)}
+            />
+        );
+    }
+
     private _renderRating() {
+        const topic = this._getTopic();
+
+        if (!this._hasSelectedTopic()) {
+            return;
+        }
+
+        const topicName = topic ? topic.name : this.state.newTopicName;
+
+        const clearTopicButton = this._canChangeTopic() && (
+            <button
+                className="clear-topic-button"
+                onClick={this._clearSelectedTopic.bind(this)}
+            />
+        );
+
         return (
             <div className="editor-rating">
                 <EditRating rating={this.state.rating} onChange={this._setRating.bind(this)} />
 
                 <div className="editor-rating-label">
-                    How would you rate {this.props.topic.name}?
+                    How would you rate <span className="selected-topic">{topicName}</span>?
+                    {clearTopicButton}
                 </div>
             </div>
         );
     }
 
     private _renderEditorContainer() {
+        if (!this._hasSelectedTopic()) {
+            return;
+        }
+
         if (!this.state.rating) {
             return;
         }
@@ -181,16 +241,29 @@ class ReviewCommunityItemEditor extends React.Component<IProps, any> {
     }
 
     private _saveCommunityItem() {
-        const mutation = new CreateCommunityItemForTopicMutation({
+        const topic = this._getTopic();
+        const newTopicName = this.state.newTopicName;
+
+        if (!topic && !newTopicName) {
+            throw new Error('No topic available');
+        }
+
+        let reviewDetails: any = {
+            reviewRating: this.state.rating
+        };
+
+        if (topic) {
+            reviewDetails.reviewedTopicId = topic.id;
+        } else {
+            reviewDetails.newReviewedTopic = newTopicName;
+        }
+
+        const mutation = new CreateCommunityItemMutation({
             type: 'Review',
             viewer: this.props.viewer,
-            topic: this.props.topic,
             summary: this.state.summaryContent,
             bodyData: serializeEditorState(this.state.bodyState),
-            reviewDetails: {
-                reviewedTopicId: this.props.topic.id,
-                reviewRating: this.state.rating
-            }
+            reviewDetails
         });
 
         this.props.relay.commitUpdate(mutation,
@@ -231,10 +304,10 @@ class ReviewCommunityItemEditor extends React.Component<IProps, any> {
     private _redirectOnSuccess(response) {
         const redirectPath = (
             response
-            && response.createCommunityItemFromTopic
-            && response.createCommunityItemFromTopic.viewer
-            && response.createCommunityItemFromTopic.viewer.lastCreatedCommunityItem
-            && response.createCommunityItemFromTopic.viewer.lastCreatedCommunityItem.routePath
+            && response.createCommunityItem
+            && response.createCommunityItem.viewer
+            && response.createCommunityItem.viewer.lastCreatedCommunityItem
+            && response.createCommunityItem.viewer.lastCreatedCommunityItem.routePath
         );
 
         if (redirectPath) {
@@ -245,16 +318,46 @@ class ReviewCommunityItemEditor extends React.Component<IProps, any> {
     private _recordSignInUpInteraction() {
         this._hasInteractedWithSignInUp = true;
     }
+
+    private _selectTopic(serverId: number) {
+        this.setState({hasSelectedTopic: true, newTopicName: null});
+        this.props.relay.setVariables({selectedTopicServerId: serverId});
+    }
+
+    private _selectNewTopic(topicName: string) {
+        this.setState({hasSelectedTopic: true, newTopicName: topicName});
+        this.props.relay.setVariables({selectedTopicServerId: null});
+    }
+
+    private _clearSelectedTopic() {
+        this.setState({
+            hasSelectedTopic: false,
+            newTopicName: null,
+            rating: null
+        });
+
+        this.props.relay.setVariables({selectedTopicServerId: null});
+    }
 }
 
 export default Relay.createContainer(withRouter(ReviewCommunityItemEditor), {
+    initialVariables: {
+        selectedTopicServerId: null
+    },
+
     fragments: {
         viewer: () => Relay.QL`
             fragment on Viewer {
-                ${CreateCommunityItemForTopicMutation.getFragment('viewer')}
+                ${CreateCommunityItemMutation.getFragment('viewer')}
                 
                 lastCreatedCommunityItem {
                     routePath
+                }
+                
+                topic(serverId: $selectedTopicServerId) {
+                    id
+                    serverId
+                    name
                 }
             }
         `,
@@ -263,7 +366,6 @@ export default Relay.createContainer(withRouter(ReviewCommunityItemEditor), {
             fragment on Topic {
                 id
                 name
-                ${CreateCommunityItemForTopicMutation.getFragment('topic')}
             }
         `
     }

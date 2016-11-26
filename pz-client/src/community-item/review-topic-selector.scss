@@ -1,0 +1,95 @@
+@mixin review-topic-selector {
+  .review-topic-selector {
+    position: relative;
+
+    .review-topic-selector-container {
+      box-shadow: 1px 1px 4px rgba(0, 0, 0, 0.3);
+      border-radius: 3px;
+      padding: 0.4rem;
+      padding-left: 1rem;
+      margin-left: 1rem;
+      margin-right: 1rem;
+      margin-bottom: 2rem;
+
+      @include media-breakpoint-down(md) {
+        margin-left: 0;
+        margin-right: 0;
+      }
+    }
+
+    .review-topic-selector-icon {
+      @extend .fa;
+      @extend .fa-pencil;
+      position: absolute;
+      pointer-events: none;
+      top: 0.8rem;
+      color: $editor-placeholder;
+
+      @include media-breakpoint-down(md) {
+        top: 0.7rem;
+      }
+
+      @include media-breakpoint-down(xs) {
+        font-size: 0.8rem;
+        top: 0.8rem;
+      }
+    }
+
+    &.review-topic-selector-has-input .review-topic-selector-input-icon {
+      color: $body-color;
+    }
+
+    .review-topic-selector-input {
+      width: 100%;
+      font-size: 1.2rem;
+      border: none;
+      padding-left: 1.5rem;
+
+      @include media-breakpoint-down(md) {
+        font-size: 1rem;
+      }
+
+      @include media-breakpoint-down(xs) {
+        font-size: 0.8rem;
+      }
+
+      &::placeholder {
+        color: $editor-placeholder;
+      }
+
+      &:active,
+      &:focus {
+        outline: none;
+
+        &::placeholder {
+          color: $editor-placeholder-focused;
+        }
+      }
+
+      &:focus, &:active {
+        outline: none;
+      }
+    }
+
+    .suggestions-list {
+      margin: 0;
+      padding: 0;
+      @extend .dropdown-menu;
+      display: block;
+      margin-top: 0.25rem;
+      margin-left: 1rem;
+    }
+
+    .suggestion {
+      @extend .dropdown-item;
+      cursor: pointer;
+    }
+
+    .suggestion-focused,
+    .suggestion:hover,
+    .suggestion:active,
+    .suggestion:focus {
+      @extend .dropdown-item.active;
+    }
+  }
+}

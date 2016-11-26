@@ -77,9 +77,16 @@ export class TopicController extends Component<ITopicProps, ITopicState> {
 
     private _renderContributionSection() {
         if (this.state.isShowingReviewEditor) {
-            return (
-                <ReviewEditor topic={this.props.topic} viewer={this.props.viewer} />
-            );
+            if (this.props.topic.isCategory) {
+                return (
+                    <ReviewEditor topic={null} viewer={this.props.viewer} />
+                );
+
+            } else {
+                return (
+                    <ReviewEditor topic={this.props.topic} viewer={this.props.viewer} />
+                );
+            }
 
         } else if (this.state.isShowingQuestionEditor) {
             return (
@@ -223,16 +230,17 @@ export default Relay.createContainer(TopicController, {
         topic: () => Relay.QL`
             fragment on Topic {
                 id
-                name                
+                name
+                isCategory
                 communityItemCount
                 communityItems(first: $limit) {
-                     edges{
+                     edges {
                         node{
                             id,
                             ${CommunityItem.getFragment('communityItem')}
                         }
                     }
-                },
+                }
                 
                 ${SideSection.getFragment('topic')}
                 ${CreateItemEditor.getFragment('topic')}
@@ -265,6 +273,7 @@ interface ITopicProps {
         name
         communityItemCount
         communityItems
+        isCategory
     }
 
     viewer

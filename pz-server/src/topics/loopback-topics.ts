@@ -7,7 +7,7 @@ import {
 } from 'pz-server/src/community-items/loopback-community-items';
 
 import {
-    ITopicModel as ILoopbackTopic, ITopicInstance as ILookbackTopicInstance
+    ITopicModel as ILoopbackTopic, ITopicInstance as ILookbackTopicInstance,
 } from 'pz-server/src/models/topic';
 
 import {
@@ -192,7 +192,25 @@ export default class LoopbackTopics implements ITopics, ITopicsBatchable {
         return count;
     }
 
-    create(topic: ITopic) {
+    async createAllByNames(topicNames: Array<string>): Promise<Array<ITopic>> {
+        if (!topicNames.length) {
+            return [];
+        }
+
+        const Topic = this._TopicModel;
+
+        const topics = await promisify<Array<ILookbackTopicInstance>>(Topic.create, Topic)(
+            topicNames.map(topicName => ({
+                name: topicName
+            }))
+        );
+
+        if (!topics) {
+            console.error('Failed to create new topics', topicNames);
+            throw new Error('Failed to create new topics');
+        }
+
+        return topics.map(createRecordFromLoopbackTopic);
     }
 
     private async _findSomeCommunityItemsByFilter(cursor, filter) {

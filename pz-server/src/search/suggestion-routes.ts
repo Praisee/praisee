@@ -5,6 +5,7 @@ import {
     getSuggestionsForUserQuery,
     getNonCategorySuggestionsForUserQuery
 } from 'pz-server/src/search/queries';
+import appInfo from 'pz-server/src/app/app-info';
 
 module.exports = function (app: IApp) {
     let suggester = new SuggestionsService(searchSchema, app.services.searchClient);
@@ -21,17 +22,17 @@ module.exports = function (app: IApp) {
         return handler(request, response, query);
     };
 
-    app.get('/i/search/suggestions', routeQueryHandler((request, response, query) => {
+    app.get(appInfo.addresses.getSearchSuggestionsApi(), routeQueryHandler((request, response, query) => {
         const searchQuery = getSuggestionsForUserQuery(query);
         suggester.suggest(searchQuery).then(results => response.json({results}));
     }));
 
-    app.get('/i/search/mention-suggestions', routeQueryHandler((request, response, query) => {
+    app.get(appInfo.addresses.getMentionSuggestionsApi(), routeQueryHandler((request, response, query) => {
         const searchQuery = getSuggestionsForUserQuery(query);
         suggester.suggest(searchQuery).then(results => response.json({results}));
     }));
 
-    app.get('/i/search/reviewable-topic-suggestions', routeQueryHandler((request, response, query) => {
+    app.get(appInfo.addresses.getReviewableTopicSuggestionsApi(), routeQueryHandler((request, response, query) => {
         const searchQuery = getNonCategorySuggestionsForUserQuery(query);
         suggester.suggest(searchQuery).then(results => response.json({results}));
     }));

@@ -12,6 +12,7 @@ import {
 
 import {ITypes} from 'pz-server/src/graphql/types';
 import {getStaticPhotosField} from 'pz-server/src/photos/static-photos-graphql';
+import {getTopicLookupField} from 'pz-server/src/topics/topics-graphql';
 
 var {
     GraphQLBoolean,
@@ -49,6 +50,8 @@ export default function getViewerType(repositoryAuthorizers: IAppRepositoryAutho
 
             id: globalIdField('Viewer'),
 
+            topic: getTopicLookupField(repositoryAuthorizers, types),
+
             topics: {
                 type: new GraphQLList(types.TopicType),
                 resolve: (_, __, {user}) => topicsAuthorizer.as(user).findAll()
@@ -81,7 +84,9 @@ export default function getViewerType(repositoryAuthorizers: IAppRepositoryAutho
                     return responseErrors;
                 }
             }
-        })
+        }),
+
+        interfaces: [nodeInterface]
     });
 
     return {
@@ -89,11 +94,18 @@ export default function getViewerType(repositoryAuthorizers: IAppRepositoryAutho
     };
 }
 
+export function getViewer() {
+    return {
+        recordType: 'Viewer',
+        id: 'viewer'
+    };
+}
+
 export function getViewerField(types: ITypes, viewerResolver?: Function) {
     return {
         type: new GraphQLNonNull(types.ViewerType),
         resolve: (...args) => {
-            const viewer = { id: 'viewer' };
+            const viewer = getViewer();
 
             if (viewerResolver) {
                 return Object.assign(viewer, viewerResolver(...args));

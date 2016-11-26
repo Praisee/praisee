@@ -16,6 +16,7 @@ export interface IAuthorizedTopics {
     findSomeCommunityItemsRanked(topicId: number, cursor: TBiCursor): Promise<ICursorResults<ICommunityItem>>
     findSomePhotoGalleryPhotosRanked(topicId: number, cursor: TBiCursor): Promise<ICursorResults<IPhoto>>
     getCommunityItemCount(topicId: number): Promise<number>
+    createAllByNames(topicNames: Array<string>): Promise<Array<ITopic>>
 }
 
 class AuthorizedTopics implements IAuthorizedTopics {
@@ -39,7 +40,7 @@ class AuthorizedTopics implements IAuthorizedTopics {
         return this._topics.findAllByIds(ids);
     }
 
-    findByUrlSlugName(fullSlug: string){
+    findByUrlSlugName(fullSlug: string) {
         return this._topics.findByUrlSlugName(fullSlug);
     }
 
@@ -53,6 +54,15 @@ class AuthorizedTopics implements IAuthorizedTopics {
 
     getCommunityItemCount(topicId: number): Promise<number>{
         return this._topics.getCommunityItemCount(topicId);
+    }
+
+    createAllByNames(topicNames: Array<string>): Promise<Array<number>> {
+        if (topicNames.length > 5) {
+            // TODO: This should be handled better, or at least returned instead of thrown
+            throw new Error('Failing because user tried to create more than 5 topics');
+        }
+
+        return this._topics.createAllByNames(topicNames);
     }
 }
 

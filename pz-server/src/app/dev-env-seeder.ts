@@ -62,28 +62,30 @@ export class DevEnvSeeder {
             {
                 name: 'Nikon',
                 isVerified: true,
-                overviewContent: "Nikon Corporation, also known just as Nikon, is a Japanese multinational corporation headquartered in Tokyo, Japan, specializing in optics and imaging products."
+                overviewContent: "Nikon Corporation, also known just as Nikon, is a Japanese multinational corporation headquartered in Tokyo, Japan, specializing in optics and imaging products.",
+                isCategory: true
             },
 
-            // ...[
-            //     'D1', 'D1X', 'D2X', 'D2Xs', 'D3X',
-            //     'D1H', 'D2H', 'D2Hs', 'D3', 'D3S', 'D4', 'D4S', 'D5',
-            //     'D800', 'D800E', 'D810', 'D810A',
-            //     'Df',
-            //     'D700', 'D750',
-            //     'D100', 'D200', 'D300', 'D300S', 'D500',
-            //     'D600', 'D610',
-            //     'D70', 'D70s', 'D80', 'D90', 'D7000', 'D7100', 'D7200',
-            //     'D50', 'D40X', 'D60', 'D5000', 'D5100', 'D5200', 'D5300', 'D5500',
-            //     'D40', 'D3000', 'D3100', 'D3200', 'D3300'
-            // ].map(model => ({
-            //     name: `Nikon ${model}`,
-            //     isVerified: true
-            // })),
+            ...[
+                'D1', 'D1X', 'D2X', 'D2Xs', 'D3X',
+                'D1H', 'D2H', 'D2Hs', 'D3', 'D3S', 'D4', 'D4S', 'D5',
+                'D800', 'D800E', 'D810', 'D810A',
+                'Df',
+                'D700', 'D750',
+                'D100', 'D200', 'D300', 'D300S', 'D500',
+                'D600', 'D610',
+                'D70', 'D70s', 'D80', 'D90', 'D7000', 'D7100', 'D7200',
+                'D50', 'D40X', 'D60', 'D5000', 'D5100', 'D5200', 'D5300', 'D5500',
+                'D40', 'D3000', 'D3100', 'D3200', 'D3300'
+            ].map(model => ({
+                name: `Nikon ${model}`,
+                isVerified: true
+            })),
 
             {
                 name: 'Canon',
-                isVerified: true
+                isVerified: true,
+                isCategory: true
             },
 
             {

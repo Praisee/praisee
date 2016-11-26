@@ -187,7 +187,7 @@ export default class CommunityItems implements ICommunityItems, ICommunityItemsB
             return createRecordFromLoopbackCommunityItemInteraction(interactionModel);
         });
     }
-    
+
     async getReputationEarned(communityItemId: number, userId: number): Promise<number> {
         return await this._CommunityItemModel.getReputationEarned(communityItemId, userId);
     }
@@ -203,13 +203,11 @@ export default class CommunityItems implements ICommunityItems, ICommunityItemsB
 
         const result = await promisify<ICommunityItemInstance>(communityItemModel.save, communityItemModel)();
 
-        const topicPromises = [];
-
-        communityItem.topics.forEach((topic) => {
-            topicPromises.push(promisify(result.topics.add, result)(topic));
+        const topicPromises = communityItem.topics.map((topic) => {
+            return promisify(result.topics.add, result)(topic);
         });
 
-        await topicPromises;
+        await Promise.all(topicPromises);
 
         return createRecordFromLoopbackCommunityItem(result);
     }

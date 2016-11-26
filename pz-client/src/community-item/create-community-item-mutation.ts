@@ -1,11 +1,11 @@
 import * as Relay from 'react-relay';
 
-export default class CreateCommunityItemFromTopicMutation extends Relay.Mutation {
+export default class CreateCommunityItemMutation extends Relay.Mutation {
     // This method should return a GraphQL operation that represents
     // the mutation to be performed. This presumes that the server
     // implements a mutation type named ‘likeStory’.
     getMutation() {
-        return Relay.QL`mutation { createCommunityItemFromTopic }`;
+        return Relay.QL`mutation { createCommunityItem }`;
     }
 
     // Use this method to prepare the variables that will be used as
@@ -16,7 +16,8 @@ export default class CreateCommunityItemFromTopicMutation extends Relay.Mutation
             type: this.props.type,
             summary: this.props.summary,
             bodyData: this.props.bodyData,
-            topicId: this.props.topic.id,
+            topicIds: this.props.topicIds || [],
+            newTopics: this.props.newTopics,
             reviewDetails: null
         };
 
@@ -50,11 +51,7 @@ export default class CreateCommunityItemFromTopicMutation extends Relay.Mutation
     // }
     getFatQuery() {
         return Relay.QL `
-            fragment on CreateCommunityItemFromTopicPayload {
-                topic {
-                    id,
-                    communityItems
-                }
+            fragment on CreateCommunityItemPayload {
                 viewer {
                     lastCreatedCommunityItem {
                         routePath
@@ -81,7 +78,6 @@ export default class CreateCommunityItemFromTopicMutation extends Relay.Mutation
         return [{
             type: 'FIELDS_CHANGE',
             fieldIDs: {
-                topic: this.props.topic.id,
                 viewer: this.props.viewer.id
             }
         }];
@@ -99,11 +95,6 @@ export default class CreateCommunityItemFromTopicMutation extends Relay.Mutation
     //     `,
     // };
     static fragments = {
-        topic: () => Relay.QL`
-            fragment on Topic {
-                id
-            }
-        `,
         viewer: () => Relay.QL`
             fragment on Viewer {
                 id

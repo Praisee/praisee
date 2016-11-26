@@ -6,7 +6,7 @@ import {
     IEditorData
 } from 'pz-client/src/community-item/community-item-editor.component';
 
-import CreateCommunityItemForTopicMutation from 'pz-client/src/community-item/create-community-item-from-topic-mutation';
+import CreateCommunityItemMutation from 'pz-client/src/community-item/create-community-item-mutation';
 
 export interface IProps {
     relay: any
@@ -38,7 +38,7 @@ class QuestionEditor extends React.Component<IProps, any> {
     private _createQuestionMutation(editorData: IEditorData) {
         const {summary, bodyData} = editorData;
 
-        return new CreateCommunityItemForTopicMutation({
+        return new CreateCommunityItemMutation({
             type: 'Question',
             viewer: this.props.viewer,
             topic: this.props.topic,
@@ -53,7 +53,7 @@ export default Relay.createContainer(QuestionEditor, {
         viewer: () => Relay.QL`
             fragment on Viewer {
                 ${CreateItemEditor.getFragment('viewer')}
-                ${CreateCommunityItemForTopicMutation.getFragment('viewer')}
+                ${CreateCommunityItemMutation.getFragment('viewer')}
                 
                 lastCreatedCommunityItem {
                     routePath
@@ -66,7 +66,6 @@ export default Relay.createContainer(QuestionEditor, {
                 id
                 name
                 ${CreateItemEditor.getFragment('topic')}
-                ${CreateCommunityItemForTopicMutation.getFragment('topic')}
             }
         `
     }

@@ -42,7 +42,9 @@
       }
     }
 
-    .suggestions-container {
+    .suggestions-list {
+      margin: 0;
+      padding: 0;
       @extend .dropdown-menu;
       display: block;
     }

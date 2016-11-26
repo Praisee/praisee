@@ -24,6 +24,7 @@ let appInfo = {
 
         getSearchSuggestionsApi: () => '/i/search/suggestions',
         getMentionSuggestionsApi: () => '/i/search/mention-suggestions',
+        getReviewableTopicSuggestionsApi: () => '/i/search/reviewable-topic-suggestions',
 
         // TODO: This should be a CDN path
         getPhotosApi: () => serverInfo.isProductionEnv() ? '//photos.praisee.com' : 'http://localhost:8888',

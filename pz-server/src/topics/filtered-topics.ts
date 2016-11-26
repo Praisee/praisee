@@ -1,19 +1,9 @@
-import {ICommunityItems, ICommunityItem} from 'pz-server/src/community-items/community-items';
-import {
-    IDataToTextConverter,
-    IContentData,
-    isDraftJs08Content,
-    IDraftjs08Content
-} from 'pz-server/src/content/content-data';
+import {ICommunityItem} from 'pz-server/src/community-items/community-items';
 import {ITopic, ITopics} from 'pz-server/src/topics/topics';
 import {TBiCursor, ICursorResults} from 'pz-server/src/support/cursors/cursors';
 import {IContentFilterer} from 'pz-server/src/content/content-filterer';
 import {promisedMapCursorResults} from 'pz-server/src/support/cursors/map-cursor-results';
-import {IComment} from 'pz-server/src/comments/comments';
-import {IVote} from 'pz-server/src/votes/votes';
-import {IPhotos, IPhoto} from 'pz-server/src/photos/photos';
-import {filterAttachments} from '../content/filters/attachment-data';
-import {IAttachment} from 'pz-client/src/editor/attachment-plugin/attachment';
+import {IPhoto} from 'pz-server/src/photos/photos';
 import {TOptionalUser} from '../users/users';
 
 export default class FilteredTopics implements ITopics {
@@ -61,6 +51,10 @@ export default class FilteredTopics implements ITopics {
 
     getCommunityItemCount(topicId: number): Promise<number> {
         return this._topics.getCommunityItemCount(topicId);
+    }
+
+    createAllByNames(topicNames: Array<string>): Promise<Array<ITopic>> {
+        return this._topics.createAllByNames(topicNames);
     }
 
     async _filterCommunityItemBeforeRead(communityItem: ICommunityItem): Promise<ICommunityItem> {

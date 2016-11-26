@@ -35,7 +35,6 @@ export default class SuggestionsService {
     }
 
     _convertSearchHitIntoSearchSuggestions(searchHit: ISearchResultHit): ISuggestionResult {
-
         switch(searchHit._type) {
             case 'topic':
                 return {

@@ -45,6 +45,7 @@ import {
 
 import {getViewerField} from 'pz-server/src/graphql/viewer-graphql';
 import {addErrorToResponse} from 'pz-server/src/errors/errors-graphql';
+import {GraphQLUnionType} from 'graphql/type/definition';
 
 export default function getCommunityItemTypes(repositoryAuthorizers: IAppRepositoryAuthorizers, nodeInterface, types: ITypes) {
     const communityItemsAuthorizer = repositoryAuthorizers.communityItems;
@@ -278,48 +279,21 @@ export default function getCommunityItemTypes(repositoryAuthorizers: IAppReposit
             type: { type: new GraphQLNonNull(GraphQLString) },
             summary: { type: new GraphQLNonNull(GraphQLString) },
             body: { type: GraphQLString },
-            bodyData: { type: new GraphQLNonNull(types.InputContentDataType) }
-        }),
-
-        outputFields: () => ({
-            viewer: getViewerField(types)
-        }),
-
-        mutateAndGetPayload: async ({type, summary, body, bodyData}, context) => {
-            const parsedBodyData = parseInputContentData(body || bodyData);
-
-            const communityItem = await communityItemsAuthorizer.as(context.user).create({
-                recordType: 'CommunityItem',
-                type,
-                summary,
-                bodyData: parsedBodyData
-            });
-
-            if (communityItem instanceof AuthorizationError) {
-                return { communityItem: null };
-            }
-
-            return { communityItem };
-        },
-    });
-
-    var CreateCommunityItemFromTopicMutation = mutationWithClientMutationId({
-        name: 'CreateCommunityItemFromTopic',
-
-        inputFields: () => ({
-            type: { type: new GraphQLNonNull(GraphQLString) },
-            summary: { type: new GraphQLNonNull(GraphQLString) },
-            body: { type: GraphQLString },
             bodyData: { type: new GraphQLNonNull(types.InputContentDataType) },
-            topicId: { type: new GraphQLNonNull(GraphQLString) },
+            topicIds: { type: new GraphQLList(GraphQLID) },
+            newTopics: { type: new GraphQLList(GraphQLString) },
 
             // TODO: This is a hack, community item types should have their own dedicated mutations
             reviewDetails: {
                 type: new GraphQLInputObjectType({
-                    name: 'CreateCommunityItemFromTopicReviewDetails',
+                    name: 'CreateCommunityItemReviewDetails',
                     fields: {
                         reviewedTopicId: {
-                            type: new GraphQLNonNull(GraphQLID)
+                            type: GraphQLID
+                        },
+
+                        newReviewedTopic: {
+                            type: GraphQLString
                         },
 
                         reviewRating: {
@@ -339,33 +313,81 @@ export default function getCommunityItemTypes(repositoryAuthorizers: IAppReposit
         }),
 
         outputFields: () => ({
-            topic: {
-                type: types.TopicType,
-                resolve: ({topicId}, {user}) => {
-                    if (!topicId) {
-                        return null;
-                    }
-
-                    return topicsAuthorizer.as(user).findById(topicId);
-                }
-            },
+            // topic: {
+            //     type: types.TopicType,
+            //     resolve: ({topicId}, {user}) => {
+            //         if (!topicId) {
+            //             return null;
+            //         }
+            //
+            //         return topicsAuthorizer.as(user).findById(topicId);
+            //     }
+            // },
 
             viewer: getViewerField(types, ({communityItem}) => ({
                 lastCreatedCommunityItem: communityItem
             }))
         }),
 
-        mutateAndGetPayload: async ({type, summary, body, bodyData, topicId: rawTopicId, reviewDetails}, context) => {
-            const parsedBodyData = parseInputContentData(body || bodyData);
-            const {id: topicId} = fromGlobalId(rawTopicId);
+        mutateAndGetPayload: async (payload, context) => {
+            const {
+                type,
+                summary,
+                body,
+                bodyData,
+                topicIds: rawTopicIds,
+                newTopics: newTopicNames,
+                reviewDetails
+            } = payload;
+
             const authorizedCommunityItems = communityItemsAuthorizer.as(context.user);
+            const authorizedTopics = topicsAuthorizer.as(context.user);
+
+            const parsedBodyData = parseInputContentData(body || bodyData);
+
+            let topicIds = rawTopicIds ? rawTopicIds.map((rawTopicId) => {
+                const {id: topicId} = fromGlobalId(rawTopicId);
+                return topicId;
+            }) : [];
+
+            const newTopics = await authorizedTopics.createAllByNames(newTopicNames || []);
+            const newTopicIds = newTopics.map(newTopic => newTopic.id);
+
+            let reviewedTopicId;
+
+            // TODO: This is a hack, community item types should have their own dedicated mutations
+            // TODO: Also, this code is utter shit and needs to be cleaned up
+            if (type === 'Review' && reviewDetails) {
+                // We have to put this code up here to be able to push the reviewed
+                // topic onto the list of associated topics. It's hacky and needs to
+                // be reworked in the future.
+
+                if (reviewDetails.reviewedTopicId) {
+                    let parsedId = fromGlobalId(reviewDetails.reviewedTopicId);
+                    reviewedTopicId = parsedId.id;
+
+                } else if (reviewDetails.newReviewedTopic) {
+
+                    const [newTopic] = await authorizedTopics.createAllByNames([
+                        reviewDetails.newReviewedTopic
+                    ]);
+
+                    reviewedTopicId = newTopic.id;
+                }
+
+                if (!reviewedTopicId) {
+                    throw new Error('No topic available to review');
+                }
+
+                topicIds.push(reviewedTopicId);
+            }
 
             let communityItem = await authorizedCommunityItems.create({
                 recordType: 'CommunityItem',
                 type: 'General', // This is updated later when all the details have been verified
                 summary,
                 bodyData: parsedBodyData,
-                topics: [topicId]
+                topics: [...topicIds, ...newTopicIds]
             });
 
             if (communityItem instanceof AuthorizationError) {
@@ -378,8 +400,6 @@ export default function getCommunityItemTypes(repositoryAuthorizers: IAppReposit
 
             // TODO: This is a hack, community item types should have their own dedicated mutations
             if (type === 'Review' && reviewDetails) {
-                const {id: reviewedTopicId} = fromGlobalId(reviewDetails.reviewedTopicId);
-
                 communityItem = await reviewsAuthorizer
                     .as(context.user)
                     .updateReviewDetails(
@@ -398,7 +418,7 @@ export default function getCommunityItemTypes(repositoryAuthorizers: IAppReposit
                 return {};
             }
 
-            return { communityItem, topicId };
+            return { communityItem };
         },
     });
 
@@ -605,7 +625,6 @@ export default function getCommunityItemTypes(repositoryAuthorizers: IAppReposit
             CommunityItemConnection,
 
             CreateCommunityItemMutation,
-            CreateCommunityItemFromTopicMutation,
             UpdateCommunityItemContentMutation,
             UpdateCommunityItemTypeMutation,
             DestroyCommunityItemMutation,
