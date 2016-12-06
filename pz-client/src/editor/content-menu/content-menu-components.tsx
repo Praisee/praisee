@@ -3,7 +3,28 @@ import * as ReactDom from 'react-dom';
 import handleClick from 'pz-client/src/support/handle-click';
 import classNames from 'classnames';
 
-export interface IProps {
+export interface IFixedContentMenuProps {
+    className?: string
+}
+
+export class FixedContentMenu extends React.Component<IFixedContentMenuProps, any> {
+    render() {
+        const classes = classNames(
+            'content-menu',
+            'fixed-content-menu',
+            'content-menu-items',
+            this.props.className
+        );
+
+        return (
+            <div className={classes}>
+                {this.props.children}
+            </div>
+        );
+    }
+}
+
+export interface ICursorContentMenuProps {
     onOpenRequested: () => any
     onCloseRequested: () => any
     isOpen: boolean
@@ -14,9 +35,9 @@ export interface IProps {
 // Shamelessly ripped from Megadraft. Someday we'll have more time (and class) to
 // create our own container that follows the editor cursor.
 // Source: https://github.com/globocom/megadraft/blob/17fa0874ffc441def80124824b75f1de7893621d/src/components/Sidebar.js
-export default class ContentMenu extends React.Component<IProps, any> {
+export class CursorContentMenu extends React.Component<ICursorContentMenuProps, any> {
     render() {
-        const classes = classNames('content-menu', this.props.className, {
+        const classes = classNames('content-menu', 'cursor-content-menu', this.props.className, {
             'content-menu-open': this.props.isOpen
         });
 

@@ -5,9 +5,8 @@ import XhrSingleFileUploadRequester from 'pz-client/src/support/file-upload-requ
 import {ISignInUpContext, SignInUpContextType} from 'pz-client/src/user/sign-in-up-overlay-component';
 import {
     AddPhotoButton,
-    AddHeading1Button,
-    AddHeading2Button
-} from 'pz-client/src/editor/content-menu/content-menu-buttons.component';
+    EmbedVideoButton
+} from 'pz-client/src/editor/content-menu/content-menu-buttons-component';
 
 import {
     createAttachmentPlugin,
@@ -16,6 +15,7 @@ import {
 
 import {IPhotoAttachment} from 'pz-client/src/editor/attachment-plugin/attachment';
 import {IFileUploadResponse} from 'pz-client/src/support/file-upload-requester';
+import {FixedContentMenu} from 'pz-client/src/editor/content-menu/content-menu-components';
 
 export interface IProps {
     placeholder?: any
@@ -24,6 +24,8 @@ export interface IProps {
     onBlur?: () => any
     onFocus?: () => any
     className?: string
+    headerContent?: any
+    footerContent?: any
 }
 
 export default class CommunityItemEditor extends React.Component<IProps, any> {
@@ -55,14 +57,25 @@ export default class CommunityItemEditor extends React.Component<IProps, any> {
 
     render() {
         return (
-            <Editor
-                {...this.props}
-                editorState={this.state.editorState}
-                onChange={this._updateEditorState.bind(this)}
-                plugins={this._editorPlugins}
-                contentMenuButtons={this._renderContentMenuButtons()}
-                ref="editor"
-            />
+            <div className="community-item-body-editor">
+                <FixedContentMenu>
+                    {this._renderContentMenuButtons()}
+                </FixedContentMenu>
+
+                <div className="editor-container">
+                    {this.props.headerContent}
+
+                    <Editor
+                        {...this.props}
+                        editorState={this.state.editorState}
+                        onChange={this._updateEditorState.bind(this)}
+                        plugins={this._editorPlugins}
+                        ref="editor"
+                    />
+
+                    {this.props.footerContent}
+                </div>
+            </div>
         );
     }
 
@@ -75,16 +88,7 @@ export default class CommunityItemEditor extends React.Component<IProps, any> {
         return (
             <div className="community-item-editor-menu">
                 {this._renderAddPhotoButton()}
-
-                <AddHeading1Button
-                    editorState={this.state.editorState}
-                    onChange={this._updateEditorState.bind(this)}
-                />
-
-                <AddHeading2Button
-                    editorState={this.state.editorState}
-                    onChange={this._updateEditorState.bind(this)}
-                />
+                {this._renderEmbedVideoButton()}
             </div>
         );
     }
@@ -97,6 +101,15 @@ export default class CommunityItemEditor extends React.Component<IProps, any> {
         return (
             <AddPhotoButton
                 onPhotoUploadRequested={this._uploadPhoto.bind(this)}
+            />
+        );
+    }
+
+    private _renderEmbedVideoButton() {
+        return (
+            <EmbedVideoButton
+                editorState={this.state.editorState}
+                onChange={this._updateEditorState.bind(this)}
             />
         );
     }

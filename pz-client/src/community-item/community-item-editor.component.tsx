@@ -60,11 +60,7 @@ class CommunityItemEditor extends React.Component<IProps, any> {
 
         return (
             <div className={classes}>
-                <div className="editor-container">
-                    {this._renderSummary()}
-                    {this._renderBody()}
-                </div>
-
+                {this._renderBody()}
                 {this._renderSignInUp()}
             </div>
         );
@@ -116,10 +112,6 @@ class CommunityItemEditor extends React.Component<IProps, any> {
     }
 
     private _renderBody() {
-        if (!this._shouldShowFullEditor()) {
-            return;
-        }
-
         return (
             <div>
                 <CommunityItemBodyEditor
@@ -127,16 +119,18 @@ class CommunityItemEditor extends React.Component<IProps, any> {
                     onChange={this._onBodyChange.bind(this) }
                     onFocus={this._onBodyFocus.bind(this) }
                     onBlur={this._onBodyBlur.bind(this) }
+                    headerContent={this._renderSummary()}
+                    footerContent={this._renderPostButton()}
                 />
-
-                {this.context.signInUpContext.isLoggedIn &&
-                    this._renderPostButton()
-                }
             </div>
         )
     }
 
     private _renderPostButton() {
+        if (!this.context.signInUpContext.isLoggedIn) {
+            return;
+        }
+
         return (
             <button className="post-button"
                     onClick={handleClick(this._saveCommunityItem.bind(this))}>

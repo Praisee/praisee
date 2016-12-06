@@ -10,7 +10,7 @@ import {
 import createMentionPlugin from 'pz-client/src/editor/mention-plugin/create-mention-plugin';
 import createDecoratorFromPlugins from 'pz-client/src/editor/create-decorator-from-plugins';
 
-import ContentMenu from 'pz-client/src/editor/content-menu/content-menu.component';
+import {CursorContentMenu} from 'pz-client/src/editor/content-menu/content-menu-components';
 
 import classNames from 'classnames';
 import {
@@ -29,7 +29,7 @@ export interface IProps {
     placeholder?: any
     initialRawContentState?: any
     plugins?: Array<any>
-    contentMenuButtons?: any
+    cursorContentMenuButtons?: any
     onChange?: (editorState) => any
     onBlur?: (event) => any
     onFocus?: () => any
@@ -43,7 +43,7 @@ export default class Editor extends React.Component<IProps, any> {
         onChange: React.PropTypes.func,
         onBlur: React.PropTypes.func,
         plugins: React.PropTypes.array,
-        ccontentMenuButtons: React.PropTypes.any
+        cursorContentMenuButtons: React.PropTypes.any
     };
 
     static defaultProps = {
@@ -69,7 +69,7 @@ export default class Editor extends React.Component<IProps, any> {
 
         return (
             <div className={classes}>
-                {this._renderContentMenu()}
+                {this._renderCursorContentMenu()}
 
                 <div className="editor-area" onClick={this._closeContentMenu.bind(this)}>
                     <DraftJsEditor
@@ -129,20 +129,20 @@ export default class Editor extends React.Component<IProps, any> {
         clearTimeout(this._blurDebounce);
     }
 
-    private _renderContentMenu() {
-        if (!this.props.contentMenuButtons) {
+    private _renderCursorContentMenu() {
+        if (!this.props.cursorContentMenuButtons) {
             return;
         }
 
         return (
-            <ContentMenu
+            <CursorContentMenu
                 isOpen={this.state.isContentMenuOpen}
                 onOpenWillBeRequested={this._contentMenuWillBeRequested.bind(this)}
                 onOpenRequested={this._openContentMenu.bind(this)}
                 onCloseRequested={this._closeContentMenu.bind(this)}>
 
-                {this.props.contentMenuButtons}
-            </ContentMenu>
+                {this.props.cursorContentMenuButtons}
+            </CursorContentMenu>
         );
     }
 

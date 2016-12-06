@@ -4,6 +4,8 @@ import classNames from 'classnames';
 import handleClick from 'pz-client/src/support/handle-click';
 import EditorState = Draft.Model.ImmutableData.EditorState;
 import {RichUtils} from 'draft-js';
+import {insertAttachment} from '../attachment-plugin/attachment-plugin';
+import getYoutubeId from 'get-youtube-id';
 
 export interface IContentMenuButtonProps {
     className?: string
@@ -26,14 +28,17 @@ export class ContentMenuButton extends React.Component<IContentMenuButtonProps, 
     }
 
     static contextTypes: any = {
-        closeContentMenu: React.PropTypes.func.isRequired
+        closeContentMenu: React.PropTypes.func
     };
 
     context: any;
 
     _triggerClickAndClose(event) {
         this.props.onClick(event);
-        this.context.closeContentMenu();
+
+        if (this.context.closeContentMenu) {
+            this.context.closeContentMenu();
+        }
     }
 }
 
@@ -63,13 +68,19 @@ export class AddPhotoButton extends React.Component<IAddPhotoButtonProps, any> {
                 acceptImages={true}
                 onChange={this._uploadPhoto.bind(this)}>
 
-                <ContentMenuButton className="add-photo-button" />
+                <ContentMenuButton className="add-photo-button">
+                    <i className="add-photo-button-icon" />
+
+                    <span className="add-photo-button-label">
+                        Add photo
+                    </span>
+                </ContentMenuButton>
             </CustomizableFileInput>
         );
     }
 
     static contextTypes: any = {
-        closeContentMenu: React.PropTypes.func.isRequired
+        closeContentMenu: React.PropTypes.func
     };
 
     context: any;
@@ -84,7 +95,10 @@ export class AddPhotoButton extends React.Component<IAddPhotoButtonProps, any> {
         }
 
         this.props.onPhotoUploadRequested(photo);
-        this.context.closeContentMenu();
+
+        if (this.context.closeContentMenu) {
+            this.context.closeContentMenu();
+        }
     }
 }
 
@@ -137,5 +151,55 @@ export class AddHeading2Button extends React.Component<IAddHeadingProps, any> {
                 H2
             </AddHeadingButton>
         );
+    }
+}
+
+interface IEmbedVideoProps {
+    editorState: EditorState
+    onChange?: (editorState: EditorState) => any
+}
+
+export class EmbedVideoButton extends React.Component<IEmbedVideoProps, any> {
+    render() {
+        return (
+            <ContentMenuButton className="embed-video-button"
+                               onClick={this._showEmbedVideoPrompt.bind(this)}>
+
+                <i className="embed-video-button-icon" />
+
+                <span className="embed-video-button-label">
+                    Embed video
+                </span>
+            </ContentMenuButton>
+        );
+    }
+
+    _showEmbedVideoPrompt() {
+        const videoUrl = window.prompt('Paste a YouTube video link');
+
+        if (!videoUrl) {
+            return;
+        }
+
+        const videoId = getYoutubeId(videoUrl);
+
+        if (!videoId) {
+            return;
+        }
+
+        this._embedVideo(videoId);
+    }
+
+    _embedVideo(videoId: string) {
+        if (!this.props.onChange) {
+            return;
+        }
+
+        const editorState = insertAttachment(this.props.editorState, {
+            attachmentType: 'Youtube',
+            videoId
+        });
+
+        this.props.onChange(editorState);
     }
 }

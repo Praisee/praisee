@@ -40,6 +40,8 @@ interface IProps {
     router: {
         push: Function
     }
+
+    className?: string
 }
 
 class ReviewCommunityItemEditor extends React.Component<IProps, any> {
@@ -58,7 +60,6 @@ class ReviewCommunityItemEditor extends React.Component<IProps, any> {
         rating: null,
         summaryContent: '',
         bodyState: void(0),
-        isEditing: false,
         summaryHasFocus: false,
         bodyHasFocus: false,
         hasSelectedTopic: false,
@@ -68,11 +69,15 @@ class ReviewCommunityItemEditor extends React.Component<IProps, any> {
     private _hasInteractedWithSignInUp = false;
 
     render() {
+        const classes = classNames('review-editor', this.props.className, {
+            'review-editor-show-full-body': this._shouldShowFullBody()
+        });
+
         return (
-            <div className="review-editor">
+            <div className={classes}>
                 {this._renderTopicSelector()}
                 {this._renderRating()}
-                {this._renderEditorContainer()}
+                {this._renderBody()}
                 {this._renderSubmit()}
             </div>
         );
@@ -141,23 +146,6 @@ class ReviewCommunityItemEditor extends React.Component<IProps, any> {
         );
     }
 
-    private _renderEditorContainer() {
-        if (!this._hasSelectedTopic()) {
-            return;
-        }
-
-        if (!this.state.rating) {
-            return;
-        }
-
-        return (
-            <div className="editor-container">
-                {this._renderSummary()}
-                {this._renderBody()}
-            </div>
-        );
-    }
-
     private _renderSubmit() {
         if (!this.state.rating) {
             return;
@@ -204,19 +192,22 @@ class ReviewCommunityItemEditor extends React.Component<IProps, any> {
     }
 
     private _renderBody() {
-        if (!this._isEditing()) {
+        if (!this._hasSelectedTopic()) {
+            return;
+        }
+
+        if (!this.state.rating) {
             return;
         }
 
         return (
-            <div>
-                <CommunityItemBodyEditor
-                    placeholder="Elaborate here if you wish..."
-                    onChange={this._onBodyChange.bind(this) }
-                    onFocus={this._onBodyFocus.bind(this) }
-                    onBlur={this._onBodyBlur.bind(this) }
-                />
-            </div>
+            <CommunityItemBodyEditor
+                placeholder="Elaborate here if you wish..."
+                onChange={this._onBodyChange.bind(this) }
+                onFocus={this._onBodyFocus.bind(this) }
+                onBlur={this._onBodyBlur.bind(this) }
+                headerContent={this._renderSummary()}
+            />
         )
     }
 
@@ -293,7 +284,7 @@ class ReviewCommunityItemEditor extends React.Component<IProps, any> {
         }, 50);
     }
 
-    private _isEditing(): boolean {
+    private _shouldShowFullBody(): boolean {
         return (
         this.state.bodyHasFocus ||
         this.state.summaryHasFocus ||

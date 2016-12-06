@@ -22,57 +22,57 @@
       }
     }
 
-    .content-menu {
+    .cursor-content-menu {
       position: relative;
-    }
 
-    .content-menu-toggle {
-      @extend .fa;
-      @extend .fa-plus;
-      position: absolute;
-      left: -2.5rem;
-      top: 0.4rem;
-      border: none;
-      background: none;
-      padding: 0;
-      margin: 0;
-      font-size: 0.9rem;
-      outline: none;
-
-      &:active, &:focus, &:hover {
-        color: $btn-primary-bg;
-      }
-    }
-
-    .content-menu-items {
-      display: none;
-      position: relative;
-      z-index: 10;
-    }
-
-    .content-menu-open {
       .content-menu-toggle {
         @extend .fa;
-        @extend .fa-minus;
+        @extend .fa-plus;
+        position: absolute;
+        left: -2.5rem;
+        top: 0.4rem;
+        border: none;
+        background: none;
+        padding: 0;
+        margin: 0;
+        font-size: 0.9rem;
+        outline: none;
+
+        &:active, &:focus, &:hover {
+          color: $btn-primary-bg;
+        }
       }
 
       .content-menu-items {
-        display: block;
-        background: white;
-        border-radius: 10%;
+        display: none;
+        position: relative;
+        z-index: 10;
       }
-    }
 
-    .content-menu-button {
-      width: 1.5rem;
-      height: 1.5rem;
-      border: none;
-      background: none;
-      padding: 0;
-      margin: 0;
-      margin-right: 0.2rem;
-      font-size: 0.9rem;
-      vertical-align: middle;
+      &.content-menu-open {
+        .content-menu-toggle {
+          @extend .fa;
+          @extend .fa-minus;
+        }
+
+        .content-menu-items {
+          display: block;
+          background: white;
+          border-radius: 10%;
+        }
+      }
+
+      .content-menu-button {
+        width: 1.5rem;
+        height: 1.5rem;
+        border: none;
+        background: none;
+        padding: 0;
+        margin: 0;
+        margin-right: 0.2rem;
+        font-size: 0.9rem;
+        vertical-align: middle;
+      }
     }
 
     .add-photo-button-container {
@@ -94,3 +94,93 @@
 @mixin editor-content {
   @extend %draftjs-styles;
 }
+
+@mixin praisee-editor-button-never-changes-like-a-boss {
+  @include button-variant($btn-secondary-color, $btn-secondary-bg, $btn-secondary-border);
+  cursor: default;
+
+  @include hover {
+    color: $btn-secondary-color;
+    background: $btn-secondary-bg;
+    border: 1px solid $btn-secondary-border;
+  }
+
+  &:focus,
+  &.focus {
+    color: $btn-secondary-color;
+    background: $btn-secondary-bg;
+    border: 1px solid $btn-secondary-border;
+  }
+
+  &:active,
+  &.active,
+  .open > &.dropdown-toggle {
+    color: $btn-secondary-color;
+    background: $btn-secondary-bg;
+    border: 1px solid $btn-secondary-border;
+
+    &:hover,
+    &:focus,
+    &.focus {
+      color: $btn-secondary-color;
+      background: $btn-secondary-bg;
+      border: 1px solid $btn-secondary-border;
+    }
+  }
+
+  &.disabled,
+  &:disabled {
+    &:focus,
+    &.focus {
+      color: $btn-secondary-bg;
+      background: $btn-secondary-color;
+      border: 1px solid $btn-secondary-color;
+    }
+    @include hover {
+      color: $btn-secondary-bg;
+      background: $btn-secondary-color;
+      border: 1px solid $btn-secondary-color;
+    }
+  }
+}
+
+@mixin fixed-content-menu {
+  .fixed-content-menu {
+    margin-bottom: 1rem;
+
+    .add-photo-button, .embed-video-button {
+      @include btn();
+      @include btn-sm();
+      @include praisee-editor-button-never-changes-like-a-boss();
+      vertical-align: top;
+    }
+
+    .embed-video-button-icon, .add-photo-button-icon {
+      @extend .fa;
+      font-size: 1.2rem;
+      margin-right: 0.5rem;
+      vertical-align: middle;
+    }
+
+    .embed-video-button-label, .add-photo-button-label {
+      vertical-align: middle;
+    }
+
+    .add-photo-button-icon {
+      @extend .fa-image;
+    }
+
+    .embed-video-button-icon {
+      @extend .fa-youtube-play;
+    }
+
+    .add-photo-button-container {
+      @include customizable-file-input(7.5rem, 2.5rem);
+
+      display: inline-block;
+      margin-right: 1rem;
+      vertical-align: top;
+    }
+  }
+}
+

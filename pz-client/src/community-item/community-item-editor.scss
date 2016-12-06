@@ -1,6 +1,7 @@
 @mixin community-item-editor-mixin() {
   @include editor(1rem);
   @include embedded-sign-in-up();
+  @include fixed-content-menu();
 
   .editor-container {
     padding: 1rem 0;

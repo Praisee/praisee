@@ -82,7 +82,6 @@ export class CommunityItemController extends Component<ICommunityItemProps, any>
     private _renderCommunityItemBodyEditor() {
         return (
             <CommunityItemBodyEditor
-                className="community-item-body-editor"
                 placeholder="Elaborate here if you wish..."
                 initialRawContentState={this.props.communityItem.bodyData}
                 onChange={(editorState) => this.setState({updatedBody: editorState})}

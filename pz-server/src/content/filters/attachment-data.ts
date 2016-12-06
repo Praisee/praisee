@@ -2,7 +2,10 @@ import {IDraftjs08Data} from 'pz-support/definitions/draftjs-data.d';
 import {IPhotos} from 'pz-server/src/photos/photos';
 import appInfo from 'pz-server/src/app/app-info';
 import {getCommunityItemContentPhotoVariationsUrls as getPhotoVariationsUrls} from 'pz-server/src/photos/photo-variations';
-import {IAttachment} from 'pz-client/src/editor/attachment-plugin/attachment';
+import {
+    IAttachment,
+    isPhotoAttachment
+} from 'pz-client/src/editor/attachment-plugin/attachment';
 
 const attachmentNamespace = 'praiseeAttachment';
 
@@ -44,24 +47,29 @@ export async function filterAttachments(
 
 export async function cleanAttachmentData(content: IDraftjs08Data, photos: IPhotos): Promise<IDraftjs08Data> {
     return filterAttachments(content, async (attachment: IAttachment) => {
-        const {id, attachmentType, caption} = attachment;
+        const {attachmentType, caption} = attachment;
 
         if (attachmentType === 'Loading') {
             return null;
         }
 
-        if (!id || !attachmentType) {
-            throw new Error('Invalid attachment: id or attachmentType missing');
+        if (!attachmentType) {
+            throw new Error('Invalid attachment: attachmentType missing');
         }
 
         let additionalData;
 
-        if (attachmentType === 'Photo') {
-            additionalData = await getPhotoAttachmentData(photos, id);
+        if (isPhotoAttachment(attachment)) {
+            const photoId = attachment.id;
+
+            if (!attachmentType) {
+                throw new Error('Invalid photo attachment: id missing');
+            }
+
+            additionalData = await getPhotoAttachmentData(photos, photoId);
         }
 
         return Object.assign({}, attachment, additionalData, {
-            id: id,
             attachmentType: attachmentType,
             caption: caption ? caption.toString() : null
         });
