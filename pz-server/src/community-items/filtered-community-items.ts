@@ -16,7 +16,10 @@ import {IComment} from 'pz-server/src/comments/comments';
 import {IVote} from 'pz-server/src/votes/votes';
 import {IPhotos, IPhoto} from 'pz-server/src/photos/photos';
 import {filterAttachments} from '../content/filters/attachment-data';
-import {IAttachment} from 'pz-client/src/editor/attachment-plugin/attachment';
+import {
+    IAttachment,
+    isPhotoAttachment
+} from 'pz-client/src/editor/attachment-plugin/attachment';
 
 export default class FilteredCommunityItems implements ICommunityItems {
     private _communityItems: ICommunityItems;
@@ -198,7 +201,7 @@ export default class FilteredCommunityItems implements ICommunityItems {
 
         const filteredBodyData = Object.assign({}, bodyData, {
             value: await filterAttachments(bodyData.value, async (attachment: IAttachment) => {
-                if (attachment.attachmentType !== 'Photo') {
+                if (!isPhotoAttachment(attachment)) {
                     return attachment;
                 }
 

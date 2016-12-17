@@ -70,7 +70,8 @@ interface IYoutubeAttachmentProps {
 
 class YoutubeAttachment extends React.Component<IYoutubeAttachmentProps, any> {
     render() {
-        const url = `http://youtube.com/embed/${this.props.attachment.videoId}`;
+        const safeVideoId = encodeURIComponent(this.props.attachment.videoId);
+        const url = `http://youtube.com/embed/${safeVideoId}`;
 
         // TODO: This shouldn't be hardcoded, it needs to be moved to a stylesheet
         // From: https://css-tricks.com/NetMag/FluidWidthVideo/Article-FluidWidthVideo.php

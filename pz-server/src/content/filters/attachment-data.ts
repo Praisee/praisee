@@ -1,10 +1,11 @@
 import {IDraftjs08Data} from 'pz-support/definitions/draftjs-data.d';
 import {IPhotos} from 'pz-server/src/photos/photos';
-import appInfo from 'pz-server/src/app/app-info';
+
 import {getCommunityItemContentPhotoVariationsUrls as getPhotoVariationsUrls} from 'pz-server/src/photos/photo-variations';
+
 import {
     IAttachment,
-    isPhotoAttachment
+    isPhotoAttachment, IYoutubeAttachment, isYoutubeAttachment
 } from 'pz-client/src/editor/attachment-plugin/attachment';
 
 const attachmentNamespace = 'praiseeAttachment';
@@ -67,6 +68,9 @@ export async function cleanAttachmentData(content: IDraftjs08Data, photos: IPhot
             }
 
             additionalData = await getPhotoAttachmentData(photos, photoId);
+
+        } else if (isYoutubeAttachment(attachment)) {
+            additionalData = cleanYoutubeAttachmentData(attachment);
         }
 
         return Object.assign({}, attachment, additionalData, {
@@ -76,7 +80,7 @@ export async function cleanAttachmentData(content: IDraftjs08Data, photos: IPhot
     })
 }
 
-export async function getPhotoAttachmentData(photos: IPhotos, photoId: number) {
+async function getPhotoAttachmentData(photos: IPhotos, photoId: number) {
     const photo = await photos.findById(photoId);
 
     if (!photo) {
@@ -84,4 +88,14 @@ export async function getPhotoAttachmentData(photos: IPhotos, photoId: number) {
     }
 
     return getPhotoVariationsUrls(photo.photoServerPath);
+}
+
+function cleanYoutubeAttachmentData(attachment: IYoutubeAttachment) {
+    const videoId = attachment.videoId;
+
+    if (!/[a-zA-Z0-9_-]/.test(videoId)) {
+        throw new Error('Not a valid YouTube video ID: ' + videoId);
+    }
+
+    return {};
 }
