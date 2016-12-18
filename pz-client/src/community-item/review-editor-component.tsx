@@ -16,7 +16,7 @@ import {
 import EditRating from 'pz-client/src/community-item/widgets/edit-rating-component';
 
 import SignInUp from 'pz-client/src/user/sign-in-up-embedded-component';
-import ReviewTopicSelector from 'pz-client/src/community-item/review-topic-selector-component';
+import ReviewTopicSelector from 'pz-client/src/community-item/widgets/review-topic-selector-component';
 
 interface IProps {
     relay: any

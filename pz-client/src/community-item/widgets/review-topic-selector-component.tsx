@@ -38,21 +38,13 @@ export default class ReviewTopicSelector extends React.Component<IProps, any> {
         this.state = {
             value: props.initialValue || '',
             suggestions: [],
-            hasFocus: false
+            hasFocus: false,
+            shouldShowInput: false
         }
     }
 
     render() {
         const { value, suggestions } = this.state;
-
-        const inputProps = {
-            placeholder: this.props.placeholder || 'What product would you like to review?',
-            value,
-            onChange: this._updateValue.bind(this),
-            onFocus: this._onFocus.bind(this),
-            onBlur: this._onBlur.bind(this),
-            // autoFocus: true
-        };
 
         const classes = classNames('review-topic-selector', {
             'review-topic-selector-has-focus': this.state.hasFocus,
@@ -62,23 +54,74 @@ export default class ReviewTopicSelector extends React.Component<IProps, any> {
 
         return (
             <div className={classes}>
-                <div className="review-topic-selector-container">
-                    <i className="review-topic-selector-icon" />
-
-                    <Autosuggest
-                        suggestions={suggestions}
-                        inputProps={inputProps}
-                        onSuggestionsFetchRequested={this._getSuggestionsForValue.bind(this)}
-                        onSuggestionsClearRequested={this._clearSuggestions.bind(this)}
-                        getSuggestionValue={this._getSuggestionValue.bind(this)}
-                        renderSuggestion={this._renderSuggestion.bind(this)}
-                        onSuggestionSelected={this._onTopicSelected.bind(this)}
-                        focusInputOnSuggestionClick={false}
-                        focusFirstSuggestion={true}
-                        theme={searchClasses}
-                    />
-                </div>
+                {this._renderCallToActionOrInput()}
             </div>
+        );
+    }
+
+    private _renderCallToActionOrInput() {
+        if (this.state.shouldShowInput) {
+            return this._renderInput();
+        }
+
+        const showInput = () => this.setState({shouldShowInput: true});
+
+        return (
+            <button className="review-topic-selector-call-to-action"
+                    onClick={showInput}>
+
+                <i className="review-topic-selector-call-to-action-icon" />
+
+                <span className="review-topic-selector-call-to-action-label">
+                    Add your review
+                </span>
+            </button>
+        );
+    }
+
+    private _renderInput() {
+        const { value, suggestions } = this.state;
+
+        const inputProps = {
+            placeholder: this.props.placeholder || 'What product would you like to review?',
+            value,
+            onChange: this._updateValue.bind(this),
+            onFocus: this._onFocus.bind(this),
+            onBlur: this._onBlur.bind(this),
+            autoFocus: true
+        };
+
+        return (
+            <div className="review-topic-selector-container">
+                <i className="review-topic-selector-icon" />
+
+                <Autosuggest
+                    suggestions={suggestions}
+                    inputProps={inputProps}
+                    onSuggestionsFetchRequested={this._getSuggestionsForValue.bind(this)}
+                    onSuggestionsClearRequested={this._clearSuggestions.bind(this)}
+                    getSuggestionValue={this._getSuggestionValue.bind(this)}
+                    renderSuggestion={this._renderSuggestion.bind(this)}
+                    onSuggestionSelected={this._onTopicSelected.bind(this)}
+                    focusInputOnSuggestionClick={false}
+                    focusFirstSuggestion={true}
+                    theme={searchClasses}
+                />
+            </div>
+        );
+    }
+
+    private _renderSuggestion(suggestion: any) {
+        let title = suggestion.title;
+
+        if (suggestion.isNewSuggestion) {
+            title = `Add ${suggestion.value}`;
+        }
+
+        return (
+            <span className="suggestion-link">
+                {title}
+            </span>
         );
     }
 
@@ -135,20 +178,6 @@ export default class ReviewTopicSelector extends React.Component<IProps, any> {
 
     private _getSuggestionValue(suggestion) {
         return suggestion.isNewSuggestion ? suggestion.value : suggestion.title;
-    }
-
-    private _renderSuggestion(suggestion: any) {
-        let title = suggestion.title;
-
-        if (suggestion.isNewSuggestion) {
-            title = `Add ${suggestion.value}`;
-        }
-
-        return (
-            <span className="suggestion-link">
-                {title}
-            </span>
-        );
     }
 
     private _onFocus() {

@@ -89,5 +89,23 @@
     .suggestion:focus {
       @extend .dropdown-item.active;
     }
+
+    .review-topic-selector-call-to-action {
+      .review-topic-selector-call-to-action-icon {
+        @extend .fa;
+        @extend .fa-star-o;
+        color: $star-color;
+        margin-right: 1rem;
+
+        @include media-breakpoint-down(md) {
+        }
+
+        @include media-breakpoint-down(xs) {
+        }
+      }
+
+      @include btn();
+      @include btn-primary-outline();
+    }
   }
 }
