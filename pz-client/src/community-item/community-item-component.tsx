@@ -21,12 +21,13 @@ import CurrentUserType from 'pz-client/src/user/current-user-type';
 import ReputationEarned from 'pz-client/src/widgets/reputation-earned-component';
 
 interface ICommunityItemProps {
-    isMinimized: boolean;
-    truncateLongContent: boolean;
-    communityItem: ICommunityItemViewModel;
-    body: string;
-    relay: any;
-    createCommunityItemVoteMutation: any;
+    isMinimized: boolean
+    truncateLongContent: boolean
+    communityItem: ICommunityItemViewModel
+    body: string
+    relay: any
+    createCommunityItemVoteMutation: any
+    linkShouldOpenInTab: boolean
 }
 
 interface ICommuintyItemState {
@@ -120,9 +121,13 @@ class CommunityItem extends Component<ICommunityItemProps, ICommuintyItemState> 
                 </a>
             )
         } else {
+            const target = this.props.linkShouldOpenInTab && '_blank';
+
             return (
                 <Link className="title-link maximized"
-                    to={communityItem.routePath}>
+                      to={communityItem.routePath}
+                      target={target}>
+
                     {communityItem.summary}
                 </Link>
             )
