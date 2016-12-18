@@ -82,6 +82,7 @@ export default class Editor extends React.Component<IProps, any> {
                         placeholder={!this.state.isContentMenuOpen ? this.props.placeholder : ''}
                         plugins={this._editorPlugins}
                         readOnly={this.state.isReadOnly || this.state.isContentMenuOpen}
+                        spellCheck={true}
                     />
 
                     <MentionSuggestions />
