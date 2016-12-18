@@ -51,7 +51,7 @@ export default class ReviewTopicSelector extends React.Component<IProps, any> {
             onChange: this._updateValue.bind(this),
             onFocus: this._onFocus.bind(this),
             onBlur: this._onBlur.bind(this),
-            autoFocus: true
+            // autoFocus: true
         };
 
         const classes = classNames('review-topic-selector', {

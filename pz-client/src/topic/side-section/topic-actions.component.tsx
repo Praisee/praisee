@@ -13,7 +13,7 @@ interface IProps {
 
     topicActions: ITopicActions
 
-    topicReviewActionActive?: boolean
+    topicGeneralActionActive?: boolean
     topicQuestionActionActive?: boolean
 
     hideSideContent: Function
@@ -23,21 +23,20 @@ class TopicActions extends React.Component<IProps, any>{
     render() {
         return (
             <div className="topic-actions">
-                {this._renderReviewAction()}
+                {this._renderGeneralAction()}
                 {this._renderQuestionAction()}
             </div>
         )
     }
 
-    private _renderReviewAction() {
-        const label = this.props.topic.isCategory ?
-            'Add a review' : `Review ${this.props.topic.name}`;
+    private _renderGeneralAction() {
+        const label = `Discuss ${this.props.topic.name}`;
 
         return this._renderAction(
             label,
-            'topic-actions-review-action',
-            this.props.topicActions.toggleTopicReviewEditor,
-            this.props.topicReviewActionActive
+            'topic-actions-general-action',
+            this.props.topicActions.toggleTopicGeneralEditor,
+            this.props.topicGeneralActionActive
         );
     }
 

@@ -23,7 +23,7 @@ interface IContext extends INotFoundContext {
 }
 
 export interface ITopicActions {
-    toggleTopicReviewEditor: () => any
+    toggleTopicGeneralEditor: () => any
     toggleTopicQuestionEditor: () => any
 }
 
@@ -46,7 +46,7 @@ export class TopicController extends Component<ITopicProps, ITopicState> {
     context: IContext;
 
     state = {
-        isShowingReviewEditor: false,
+        isShowingGeneralEditor: false,
         isShowingQuestionEditor: false,
         isSideBarActive: false
     };
@@ -59,7 +59,7 @@ export class TopicController extends Component<ITopicProps, ITopicState> {
 
         if (topicIsNotAvailable || topicHasChanged) {
             this.setState({
-                isShowingReviewEditor: false,
+                isShowingGeneralEditor: false,
                 isShowingQuestionEditor: false,
                 isSideBarActive: false
             })
@@ -76,17 +76,10 @@ export class TopicController extends Component<ITopicProps, ITopicState> {
     }
 
     private _renderContributionSection() {
-        if (this.state.isShowingReviewEditor) {
-            if (this.props.topic.isCategory) {
-                return (
-                    <ReviewEditor topic={null} viewer={this.props.viewer} />
-                );
-
-            } else {
-                return (
-                    <ReviewEditor topic={this.props.topic} viewer={this.props.viewer} />
-                );
-            }
+        if (this.state.isShowingGeneralEditor) {
+            return (
+                <CreateItemEditor topic={this.props.topic} viewer={this.props.viewer} />
+            );
 
         } else if (this.state.isShowingQuestionEditor) {
             return (
@@ -95,9 +88,16 @@ export class TopicController extends Component<ITopicProps, ITopicState> {
 
         } else {
 
-            return (
-                <CreateItemEditor topic={this.props.topic} viewer={this.props.viewer} />
-            );
+            if (this.props.topic.isCategory) {
+                return (
+                    <ReviewEditor key={this.props.topic.id} topic={null} viewer={this.props.viewer} />
+                );
+
+            } else {
+                return (
+                    <ReviewEditor key={this.props.topic.id} topic={this.props.topic} viewer={this.props.viewer} />
+                );
+            }
         }
     }
 
@@ -155,7 +155,7 @@ export class TopicController extends Component<ITopicProps, ITopicState> {
                 <SideSection
                     topic={this.props.topic}
                     topicActions={this._getTopicActions()}
-                    topicReviewActionActive={this.state.isShowingReviewEditor}
+                    topicGeneralActionActive={this.state.isShowingGeneralEditor}
                     topicQuestionActionActive={this.state.isShowingQuestionEditor}
                     hideSideContent={this._hideSideContent.bind(this)}
                     />
@@ -165,12 +165,12 @@ export class TopicController extends Component<ITopicProps, ITopicState> {
 
     private _getTopicActions(): ITopicActions {
         return {
-            toggleTopicReviewEditor: () => {
-                if (this.state.isShowingReviewEditor) {
-                    this.setState({isShowingReviewEditor: false});
+            toggleTopicGeneralEditor: () => {
+                if (this.state.isShowingGeneralEditor) {
+                    this.setState({isShowingGeneralEditor: false});
                 } else {
                     this.setState({
-                        isShowingReviewEditor: true,
+                        isShowingGeneralEditor: true,
                         isShowingQuestionEditor: false
                     });
                 }
@@ -182,7 +182,7 @@ export class TopicController extends Component<ITopicProps, ITopicState> {
                 } else {
                     this.setState({
                         isShowingQuestionEditor: true,
-                        isShowingReviewEditor: false
+                        isShowingGeneralEditor: false
                     });
                 }
             }
@@ -265,7 +265,7 @@ export default Relay.createContainer(TopicController, {
 });
 
 interface ITopicState {
-    isShowingReviewEditor?: boolean,
+    isShowingGeneralEditor?: boolean,
     isShowingQuestionEditor?: boolean,
     isSideBarActive?: boolean;
 }
