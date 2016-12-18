@@ -55,7 +55,8 @@ export interface IProps {
 class CommunityItemEditor extends React.Component<IProps, any> {
     render() {
         const classes = classNames('community-item-editor', this.props.className, {
-            'community-item-editor-full-editor': this._shouldShowFullEditor()
+            'editor-show-full-body': this._shouldShowFullBody(),
+            'editor-hide-full-body': !this._shouldShowFullBody()
         });
 
         return (
@@ -141,7 +142,7 @@ class CommunityItemEditor extends React.Component<IProps, any> {
     }
 
     private _renderSignInUp() {
-        if (!this._shouldShowFullEditor() || this.context.signInUpContext.isLoggedIn) {
+        if (!this._shouldShowFullBody() || this.context.signInUpContext.isLoggedIn) {
             return;
         }
 
@@ -237,7 +238,7 @@ class CommunityItemEditor extends React.Component<IProps, any> {
         }, 50);
     }
 
-    private _shouldShowFullEditor(): boolean {
+    private _shouldShowFullBody(): boolean {
         return this.props.showFullEditor || (
             this._hasInteractedWithSignInUp ||
             this.state.bodyHasFocus ||

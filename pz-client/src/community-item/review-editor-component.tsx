@@ -70,7 +70,8 @@ class ReviewCommunityItemEditor extends React.Component<IProps, any> {
 
     render() {
         const classes = classNames('review-editor', this.props.className, {
-            'review-editor-show-full-body': this._shouldShowFullBody()
+            'editor-show-full-body': this._shouldShowFullBody(),
+            'editor-hide-full-body': !this._shouldShowFullBody()
         });
 
         return (

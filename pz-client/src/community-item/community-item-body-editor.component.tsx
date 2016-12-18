@@ -63,7 +63,9 @@ export default class CommunityItemEditor extends React.Component<IProps, any> {
                 </FixedContentMenu>
 
                 <div className="editor-container">
-                    {this.props.headerContent}
+                    <div className="editor-header">
+                        {this.props.headerContent}
+                    </div>
 
                     <Editor
                         {...this.props}
@@ -73,7 +75,9 @@ export default class CommunityItemEditor extends React.Component<IProps, any> {
                         ref="editor"
                     />
 
-                    {this.props.footerContent}
+                    <div className="editor-footer">
+                        {this.props.footerContent}
+                    </div>
                 </div>
             </div>
         );

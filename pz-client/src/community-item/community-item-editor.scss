@@ -35,6 +35,12 @@
     }
   }
 
+  &.editor-hide-full-body {
+    .editor-area, .editor-footer {
+      display: none;
+    }
+  }
+
   .community-item-content {
     @include editor-content();
   }
