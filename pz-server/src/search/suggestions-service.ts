@@ -42,7 +42,8 @@ export default class SuggestionsService {
                     type: 'topic',
                     title: searchHit._source.name,
                     routePath: searchHit._source.routePath,
-                    thumbnailPath: ''
+                    thumbnailPath: '',
+                    isCategory: searchHit._source.isCategory
                 };
 
             case 'communityItem':

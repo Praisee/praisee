@@ -38,6 +38,7 @@ export default class ReviewTopicSelector extends React.Component<IProps, any> {
         this.state = {
             value: props.initialValue || '',
             suggestions: [],
+            currentValueIsNotReviewable: false,
             hasFocus: false,
             shouldShowInput: false
         }
@@ -141,12 +142,24 @@ export default class ReviewTopicSelector extends React.Component<IProps, any> {
             return;
         }
 
-        const valueIsASuggestion = suggestions.find(
+        const indexOfValueInSuggestions = suggestions.findIndex(
             suggestion => suggestion.title.toLowerCase() === currentValue.toLowerCase()
         );
 
-        if (valueIsASuggestion) {
-            this.setState({suggestions});
+        if (indexOfValueInSuggestions !== -1) {
+            const exactMatchSuggestion = suggestions[indexOfValueInSuggestions];
+
+            if (exactMatchSuggestion.isCategory) {
+                let suggestionsWithoutCategory = suggestions.slice();
+                suggestionsWithoutCategory.splice(indexOfValueInSuggestions, 1);
+
+                this.setState({suggestions: suggestionsWithoutCategory});
+
+            } else {
+
+                this.setState({suggestions});
+            }
+
             return;
         }
 

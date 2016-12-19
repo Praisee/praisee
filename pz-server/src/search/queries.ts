@@ -44,28 +44,58 @@ export function getSuggestionsForUserQuery(query: string): ISearchQuery {
     }
 }
 
-export function getNonCategorySuggestionsForUserQuery(query: string): ISearchQuery {
+export function getReviewableSuggestionsForUserQuery(query: string): ISearchQuery {
     return {
         "query": {
-            "bool": {
-                "filter": [
-                    {
-                        "type": {
-                            "value": "topic"
-                        }
-                    },
-                    {
-                        "term": {
-                            "isCategory": false
+        "bool": {
+            "should": [
+                // Partial match non-categories
+                {
+                    "bool": {
+                        "filter": [
+                            {
+                                "type": {
+                                    "value": "topic"
+                                }
+                            },
+                            {
+                                "term": {
+                                    "isCategory": false
+                                }
+                            }
+                        ],
+                        "must": {
+                            "match": {
+                                "name": query
+                            }
                         }
                     }
-                ],
-                "must": {
-                    "match": {
-                        "name": query
+                },
+
+                // Or match exactly on a category so we know to disallow adding it
+                {
+                    "bool": {
+                        "filter": [
+                            {
+                                "type": {
+                                    "value": "topic"
+                                }
+                            },
+                            {
+                                "term": {
+                                    "isCategory": true
+                                }
+                            }
+                        ],
+                        "must": {
+                            "match": {
+                                "name.lowercaseExactMatch": query
+                            }
+                        }
                     }
                 }
-            }
+            ]
         }
-    }
+        }
+    };
 }

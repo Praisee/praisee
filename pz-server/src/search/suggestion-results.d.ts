@@ -4,8 +4,10 @@ export interface ISuggestionResult {
     title: string
     routePath: string
     thumbnailPath: string
+    [customProperties: string]: any
 }
 
 export interface ITopicSearchSuggestionResult extends ISuggestionResult {
     type: 'topic'
+    isCategory: boolean
 }

@@ -3,7 +3,7 @@ import SuggestionsService from 'pz-server/src/search/suggestions-service';
 import searchSchema from 'pz-server/src/search/schema';
 import {
     getSuggestionsForUserQuery,
-    getNonCategorySuggestionsForUserQuery
+    getReviewableSuggestionsForUserQuery
 } from 'pz-server/src/search/queries';
 import appInfo from 'pz-server/src/app/app-info';
 
@@ -33,7 +33,7 @@ module.exports = function (app: IApp) {
     }));
 
     app.get(appInfo.addresses.getReviewableTopicSuggestionsApi(), routeQueryHandler((request, response, query) => {
-        const searchQuery = getNonCategorySuggestionsForUserQuery(query);
+        const searchQuery = getReviewableSuggestionsForUserQuery(query);
         suggester.suggest(searchQuery).then(results => response.json({results}));
     }));
 };

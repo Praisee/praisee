@@ -5,11 +5,12 @@ export default {
     // Search index settings
     settings: {
 
-        // Autocomplete ngram analyzer config
-        // https://www.elastic.co/guide/en/elasticsearch/guide/current/_index_time_search_as_you_type.html
         analysis: {
+
             filter: {
-                autocomplete_filter: {
+                // Autocomplete ngram analyzer config
+                // https://www.elastic.co/guide/en/elasticsearch/guide/current/_index_time_search_as_you_type.html
+                pz_autocomplete_filter: {
                     type: 'edge_ngram',
                     min_gram: 1,
                     max_gram: 20
@@ -17,13 +18,20 @@ export default {
             },
 
             analyzer: {
-                autocomplete: {
+                // Autocomplete ngram analyzer config
+                pz_autocomplete: {
                     type: 'custom',
                     tokenizer: 'standard',
                     filter: [
                         'lowercase',
-                        'autocomplete_filter'
+                        'pz_autocomplete_filter'
                     ]
+                },
+
+                pz_lowercase_keyword: {
+                    type: 'custom',
+                    tokenizer: 'keyword',
+                    filter: 'lowercase'
                 }
             }
         },
@@ -43,11 +51,6 @@ export default {
     typeMappings: {
         communityItem: {
             properties: {
-                type: {
-                    type: 'string',
-                    index: 'not_analyzed'
-                },
-
                 routePath: {
                     type: 'string',
                     index: 'not_analyzed'
@@ -65,11 +68,6 @@ export default {
 
         topic: {
             properties: {
-                type: {
-                    type: 'string',
-                    index: 'not_analyzed'
-                },
-
                 routePath: {
                     type: 'string',
                     index: 'not_analyzed'
@@ -77,8 +75,15 @@ export default {
 
                 name: {
                     type: 'string',
-                    analyzer: 'autocomplete',
-                    search_analyzer: 'standard'
+                    analyzer: 'pz_autocomplete',
+                    search_analyzer: 'standard',
+
+                    fields: {
+                        lowercaseExactMatch: {
+                            type: 'string',
+                            analyzer: 'pz_lowercase_keyword'
+                        }
+                    }
                 },
 
                 description: {
