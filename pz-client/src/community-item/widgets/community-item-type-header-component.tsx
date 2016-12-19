@@ -33,7 +33,7 @@ class CommunityItem extends React.Component<any, any> {
 
         const reviewRatingClasses = classNames(
             'review-rating',
-            'rating-' + reviewRating + '-stars'
+            'rating-' + reviewRating.toString().replace('.', '-') + '-stars'
         );
 
         return (

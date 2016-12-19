@@ -3,6 +3,7 @@ import {
     GraphQLBoolean,
     GraphQLID,
     GraphQLInt,
+    GraphQLFloat,
     GraphQLList,
     GraphQLNonNull,
     GraphQLObjectType,
@@ -62,7 +63,7 @@ export function getReviewFields(repositoryAuthorizers: IAppRepositoryAuthorizers
         },
 
         reviewRating: {
-            type: GraphQLInt
+            type: GraphQLFloat
         },
 
         reviewPricePaid: {
@@ -91,7 +92,7 @@ export function getReviewMutationTypes(repositoryAuthorizers: IAppRepositoryAuth
             },
 
             reviewRating: {
-                type: GraphQLInt
+                type: GraphQLFloat
             },
 
             reviewPricePaid: {

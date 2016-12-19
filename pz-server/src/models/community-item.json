@@ -51,7 +51,10 @@
 
         "reviewRating": {
             "type": "number",
-            "description": "The review rating (1-5)"
+            "description": "The review rating (1-5)",
+            "postgresql": {
+                "dataType": "numeric"
+            }
         },
 
         "reviewPricePaid": {

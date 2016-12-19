@@ -1,6 +1,48 @@
 @mixin edit-rating {
   .edit-rating {
-    @include rating-stars($star-size: 2rem);
+    .rating-star-group {
+      @extend .fa;
+      @extend .fa-star;
+      position: relative;
+      margin-right: 0.5rem;
+      font-size: 2rem;
+      color: transparent;
+
+      &:hover, &:active, &:focus {
+        .rating-star {
+          transform: scale(1.3);
+        }
+      }
+    }
+
+    .rating-star {
+      @extend .fa;
+      @extend .fa-star;
+      color: $gray-lighter;
+      font-size: 2rem;
+      position: absolute;
+      right: 0;
+      top: 0;
+      margin: 0;
+      padding: 0;
+      overflow: hidden;
+      width: 51%;
+      transform-origin: left;
+
+      &::before {
+        position: relative;
+        left: -100%;
+      }
+    }
+
+    .rating-star-1 {
+      width: 100%;
+      transform-origin: center;
+
+      &::before {
+        left: 0;
+      }
+    }
 
     @include apply-to-filled-rating-stars() {
       @extend .fa-star;
@@ -11,6 +53,18 @@
       @extend .fa-star;
       color: darken($star-color, 10%);
     };
+
+    @include apply-to-rating-half-star() {
+      position: absolute;
+      left: 0;
+      transform-origin: right;
+      z-index: 1;
+
+      &::before {
+        position: relative;
+        left: 0;
+      }
+    }
 
     .edit-rating-star {
       background: none;

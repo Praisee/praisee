@@ -2,6 +2,7 @@ import {
     GraphQLBoolean,
     GraphQLID,
     GraphQLInt,
+    GraphQLFloat,
     GraphQLList,
     GraphQLNonNull,
     GraphQLObjectType,
@@ -297,7 +298,7 @@ export default function getCommunityItemTypes(repositoryAuthorizers: IAppReposit
                         },
 
                         reviewRating: {
-                            type: new GraphQLNonNull(GraphQLInt)
+                            type: new GraphQLNonNull(GraphQLFloat)
                         },
 
                         reviewPricePaid: {

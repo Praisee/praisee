@@ -19,7 +19,7 @@ export default class FilteredReviews implements IReviews {
         }
 
         let reviewRating = reviewDetails.reviewRating ?
-            Math.min(Math.max(Math.round(reviewDetails.reviewRating), 1), 5) : null;
+            Math.min(Math.max(Math.round(reviewDetails.reviewRating*2)/2, 1), 5) : null;
 
         if (reviewRating && (Number.isNaN(reviewRating) || !Number.isFinite(reviewRating))) {
             reviewRating = null;

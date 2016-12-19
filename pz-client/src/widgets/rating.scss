@@ -3,26 +3,80 @@
     .rating-star-1 { @content; }
   }
 
+  &.#{$class-prefix}-1-5-stars {
+    .rating-star-1, .rating-star-1-5 { @content; }
+  }
+
   &.#{$class-prefix}-2-stars {
-    .rating-star-1, .rating-star-2 { @content; }
+    .rating-star-1, .rating-star-1-5, .rating-star-2 { @content; }
+  }
+
+  &.#{$class-prefix}-2-5-stars {
+    .rating-star-1, .rating-star-1-5, .rating-star-2, .rating-star-2-5 { @content; }
   }
 
   &.#{$class-prefix}-3-stars {
-    .rating-star-1, .rating-star-2, .rating-star-3 { @content; }
+    .rating-star-1, .rating-star-1-5, .rating-star-2, .rating-star-2-5, .rating-star-3 { @content; }
+  }
+
+  &.#{$class-prefix}-3-5-stars {
+    .rating-star-1, .rating-star-1-5, .rating-star-2, .rating-star-2-5, .rating-star-3, .rating-star-3-5 { @content; }
   }
 
   &.#{$class-prefix}-4-stars {
-    .rating-star-1, .rating-star-2, .rating-star-3, .rating-star-4 { @content; }
+    .rating-star-1, .rating-star-1-5, .rating-star-2, .rating-star-2-5, .rating-star-3, .rating-star-3-5, .rating-star-4 { @content; }
+  }
+
+  &.#{$class-prefix}-4-5-stars {
+    .rating-star-1, .rating-star-1-5, .rating-star-2, .rating-star-2-5, .rating-star-3, .rating-star-3-5, .rating-star-4, .rating-star-4-5 { @content; }
   }
 
   &.#{$class-prefix}-5-stars {
-    .rating-star-1, .rating-star-2, .rating-star-3, .rating-star-4, .rating-star-5 { @content; }
+    .rating-star-1, .rating-star-1-5, .rating-star-2, .rating-star-2-5, .rating-star-3, .rating-star-3-5, .rating-star-4, .rating-star-4-5, .rating-star-5 { @content; }
   }
+}
+
+@mixin apply-to-rating-half-stars($class-prefix: rating) {
+  &.#{$class-prefix}-1-5-stars {
+    .rating-star-2 { @content; }
+  }
+
+  &.#{$class-prefix}-2-5-stars {
+    .rating-star-3 { @content; }
+  }
+
+  &.#{$class-prefix}-3-5-stars {
+    .rating-star-4 { @content; }
+  }
+
+  &.#{$class-prefix}-4-5-stars {
+    .rating-star-5 { @content; }
+  }
+}
+
+@mixin apply-to-rating-half-star() {
+  .rating-star-1-5 { @content; }
+  .rating-star-2-5 { @content; }
+  .rating-star-3-5 { @content; }
+  .rating-star-4-5 { @content; }
 }
 
 @mixin rating-stars($star-size: 0.7rem) {
   @include apply-to-filled-rating-stars() {
     color: $star-color;
+  };
+
+  @include apply-to-rating-half-stars() {
+    position: relative;
+
+    &::after {
+      color: $star-color;
+      position: absolute;
+      content: $fa-var-star-half;
+      top: 0;
+      left: 0;
+      z-index: 1;
+    }
   };
 
   .rating-star {

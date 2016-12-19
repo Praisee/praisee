@@ -14,9 +14,9 @@ export default class EditRating extends React.Component<IProps, any> {
 
         const classes = classNames('edit-rating', {
             'edit-rating-blank': !rating,
-            [`rating-${rating}-stars`]: rating,
+            [`rating-${this._ratingToClassName(rating)}-stars`]: rating,
             'edit-rating-preselected': preselectedRating,
-            [`edit-rating-preselected-${preselectedRating}-stars`]: preselectedRating
+            [`edit-rating-preselected-${this._ratingToClassName(preselectedRating)}-stars`]: preselectedRating
         });
 
         return (
@@ -35,15 +35,37 @@ export default class EditRating extends React.Component<IProps, any> {
     };
 
     _renderRatingButton(rating: number) {
-        const classes = classNames('edit-rating-star', 'rating-star', `rating-star-${rating}`);
+        const createStarButton = (rating: number) => {
+            const classes = classNames(
+                'edit-rating-star',
+                'rating-star',
+                `rating-star-${this._ratingToClassName(rating)}`
+            );
+
+            return (
+                <button
+                    className={classes}
+                    onClick={handleClick(() => this._onChangeRating(rating))}
+                    onMouseOver={() => this._preselectRating(rating)}
+                    onMouseOut={() => this._preselectRating(null)}
+                />
+            );
+        };
+
+        let halfStarButton;
+
+        if (rating > 1) {
+            const previousStar = rating - 1;
+            halfStarButton = createStarButton(previousStar + 0.5);
+        }
+
+        const fullStarButton = createStarButton(rating);
 
         return (
-            <button
-                className={classes}
-                onClick={handleClick(() => this._onChangeRating(rating))}
-                onMouseOver={() => this._preselectRating(rating)}
-                onMouseOut={() => this._preselectRating(null)}
-            />
+            <span className="rating-star-group">
+                {halfStarButton}
+                {fullStarButton}
+            </span>
         );
     }
 
@@ -53,5 +75,13 @@ export default class EditRating extends React.Component<IProps, any> {
 
     _preselectRating(rating) {
         this.setState({preselectedRating: rating});
+    }
+
+    _ratingToClassName(rating: number) {
+        if (!rating) {
+            return '';
+        }
+
+        return rating.toString().replace('.', '-');
     }
 }
