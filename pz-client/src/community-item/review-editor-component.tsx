@@ -37,6 +37,10 @@ interface IProps {
         isCategory: boolean
     }
 
+    fromTopic?: {
+        id: any
+    }
+
     router: {
         push: Function
     }
@@ -250,11 +254,14 @@ class ReviewCommunityItemEditor extends React.Component<IProps, any> {
             reviewDetails.newReviewedTopic = newTopicName;
         }
 
+        const additionalTopicIds = this.props.fromTopic ? [this.props.fromTopic.id] : [];
+
         const mutation = new CreateCommunityItemMutation({
             type: 'Review',
             viewer: this.props.viewer,
             summary: this.state.summaryContent,
             bodyData: serializeEditorState(this.state.bodyState),
+            topicIds: additionalTopicIds,
             reviewDetails
         });
 
@@ -358,6 +365,12 @@ export default Relay.createContainer(withRouter(ReviewCommunityItemEditor), {
             fragment on Topic {
                 id
                 name
+            }
+        `,
+
+        fromTopic: () => Relay.QL`
+            fragment on Topic {
+                id
             }
         `
     }

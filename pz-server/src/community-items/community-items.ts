@@ -30,7 +30,7 @@ export interface ICommunityItem extends IRepositoryRecord {
     updatedAt?: Date
     comments?: any
     votes?: any
-    topics?: ITopic[]
+    topics?: Array<ITopic> | Array<number>
 }
 
 export interface ICommunityItemInteraction extends IRepositoryRecord {

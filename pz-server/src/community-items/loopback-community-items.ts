@@ -203,7 +203,7 @@ export default class CommunityItems implements ICommunityItems, ICommunityItemsB
 
         const result = await promisify<ICommunityItemInstance>(communityItemModel.save, communityItemModel)();
 
-        const topicPromises = communityItem.topics.map((topic) => {
+        const topicPromises = (communityItem.topics as Array<any>).map((topic) => {
             return promisify(result.topics.add, result)(topic);
         });
 

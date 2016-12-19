@@ -90,12 +90,22 @@ export class TopicController extends Component<ITopicProps, ITopicState> {
 
             if (this.props.topic.isCategory) {
                 return (
-                    <ReviewEditor key={this.props.topic.id} topic={null} viewer={this.props.viewer} />
+                    <ReviewEditor
+                        key={this.props.topic.id}
+                        topic={null}
+                        fromTopic={this.props.topic}
+                        viewer={this.props.viewer}
+                    />
                 );
 
             } else {
                 return (
-                    <ReviewEditor key={this.props.topic.id} topic={this.props.topic} viewer={this.props.viewer} />
+                    <ReviewEditor
+                        key={this.props.topic.id}
+                        topic={this.props.topic}
+                        fromTopic={this.props.topic}
+                        viewer={this.props.viewer}
+                    />
                 );
             }
         }
@@ -250,6 +260,7 @@ export default Relay.createContainer(TopicController, {
                 ${SideSection.getFragment('topic')}
                 ${CreateItemEditor.getFragment('topic')}
                 ${ReviewEditor.getFragment('topic')}
+                ${ReviewEditor.getFragment('fromTopic')}
                 ${QuestionEditor.getFragment('topic')}
             }
         `,

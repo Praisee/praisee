@@ -345,13 +345,13 @@ export default function getCommunityItemTypes(repositoryAuthorizers: IAppReposit
 
             const parsedBodyData = parseInputContentData(body || bodyData);
 
-            let topicIds = rawTopicIds ? rawTopicIds.map((rawTopicId) => {
+            let topicIds: Array<number> = rawTopicIds ? rawTopicIds.map((rawTopicId) => {
                 const {id: topicId} = fromGlobalId(rawTopicId);
                 return topicId;
             }) : [];
 
             const newTopics = await authorizedTopics.createAllByNames(newTopicNames || []);
-            const newTopicIds = newTopics.map(newTopic => newTopic.id);
+            const newTopicIds: Array<number> = newTopics.map(newTopic => newTopic.id);
 
             let reviewedTopicId;
 
@@ -382,12 +382,14 @@ export default function getCommunityItemTypes(repositoryAuthorizers: IAppReposit
                 topicIds.push(reviewedTopicId);
             }
 
+            const dedupeArray = <T>(array: Array<T>): Array<T> => Array.from(new Set(array));
+
             let communityItem = await authorizedCommunityItems.create({
                 recordType: 'CommunityItem',
                 type: 'General', // This is updated later when all the details have been verified
                 summary,
                 bodyData: parsedBodyData,
-                topics: [...topicIds, ...newTopicIds]
+                topics: dedupeArray([...topicIds, ...newTopicIds])
             });
 
             if (communityItem instanceof AuthorizationError) {

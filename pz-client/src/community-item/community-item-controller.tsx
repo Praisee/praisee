@@ -5,7 +5,7 @@ import CommentList from 'pz-client/src/comments/comment-list-component';
 import Votes from 'pz-client/src/votes/votes-component';
 import Avatar from 'pz-client/src/user/avatar.component';
 import CommunityItemContent from 'pz-client/src/community-item/community-item-content.component';
-import Tags from 'pz-client/src/community-item/tags-component';
+import Tags from 'pz-client/src/community-item/widgets/tags-component';
 import CreateCommentEditor from 'pz-client/src/comments/create-comment-editor-component';
 import { ISignInUpContext, SignInUpContextType } from 'pz-client/src/user/sign-in-up-overlay-component';
 import CommentBubble from 'pz-client/src/community-item/widgets/community-item-comment-bubble-component';
