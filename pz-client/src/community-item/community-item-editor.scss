@@ -2,6 +2,7 @@
   @include editor(1rem);
   @include embedded-sign-in-up();
   @include fixed-content-menu();
+  @include summary-editor();
 
   .editor-container {
     padding: 1rem 0;

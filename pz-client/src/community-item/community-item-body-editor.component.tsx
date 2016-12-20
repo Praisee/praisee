@@ -17,6 +17,8 @@ import {IPhotoAttachment} from 'pz-client/src/editor/attachment-plugin/attachmen
 import {IFileUploadResponse} from 'pz-client/src/support/file-upload-requester';
 import {FixedContentMenu} from 'pz-client/src/editor/content-menu/content-menu-components';
 
+import prependText from 'pz-client/src/editor/editor-state/prepend-text';
+
 export interface IProps {
     placeholder?: any
     initialRawContentState?: any
@@ -51,8 +53,17 @@ export default class CommunityItemEditor extends React.Component<IProps, any> {
         editorState: null
     };
 
+    refs: {
+        editor: any
+    };
+
     focus() {
-        (this.refs as any).editor.focus();
+        this.refs.editor.focus();
+    }
+
+    prependText(text: string) {
+        const editorState = prependText(this.state.editorState, text);
+        this._updateEditorState(editorState);
     }
 
     render() {

@@ -10,6 +10,7 @@ import classNames from 'classnames';
 import {withRouter} from 'react-router';
 import SignInUp from 'pz-client/src/user/sign-in-up-embedded-component';
 import handleClick from 'pz-client/src/support/handle-click';
+import SummaryEditor from 'pz-client/src/community-item/widgets/summary-editor-component';
 
 export interface IEditorData {
     summary: string
@@ -85,6 +86,10 @@ class CommunityItemEditor extends React.Component<IProps, any> {
         bodyHasFocus: false
     };
 
+    refs: {
+        bodyEditor: any
+    };
+
     private _saying = void(0);
 
     private _hasInteractedWithSignInUp = false;
@@ -101,11 +106,11 @@ class CommunityItemEditor extends React.Component<IProps, any> {
         });
 
         return (
-            <input
+            <SummaryEditor
                 className={classes}
-                type="text"
                 placeholder={this._getSummaryPlaceholder() }
                 onChange={this._onSummaryChange.bind(this) }
+                onOverflow={this._addOverflowedSummaryToBody.bind(this)}
                 onFocus={this._onSummaryFocus.bind(this) }
                 onBlur={this._onSummaryBlur.bind(this) }
             />
@@ -116,6 +121,7 @@ class CommunityItemEditor extends React.Component<IProps, any> {
         return (
             <div>
                 <CommunityItemBodyEditor
+                    ref="bodyEditor"
                     placeholder="Elaborate here if you wish..."
                     onChange={this._onBodyChange.bind(this) }
                     onFocus={this._onBodyFocus.bind(this) }
@@ -218,8 +224,8 @@ class CommunityItemEditor extends React.Component<IProps, any> {
         }
     }
 
-    private _onSummaryChange(event) {
-        this.setState({ summaryContent: event.target.value });
+    private _onSummaryChange(value) {
+        this.setState({ summaryContent: value });
     }
 
     private _onBodyChange(bodyState) {
@@ -276,6 +282,13 @@ class CommunityItemEditor extends React.Component<IProps, any> {
 
     private _recordSignInUpInteraction() {
         this._hasInteractedWithSignInUp = true;
+    }
+
+    private _addOverflowedSummaryToBody(overflowedText: string) {
+        setTimeout(() => {
+            this.refs.bodyEditor.focus();
+            this.refs.bodyEditor.prependText(overflowedText);
+        }, 0);
     }
 }
 

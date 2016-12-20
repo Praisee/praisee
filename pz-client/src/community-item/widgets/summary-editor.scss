@@ -1,0 +1,5 @@
+@mixin summary-editor() {
+  .summary-editor {
+    @import '../../../../node_modules/draft-js/dist/Draft';
+  }
+}

@@ -17,6 +17,7 @@ import EditRating from 'pz-client/src/community-item/widgets/edit-rating-compone
 
 import SignInUp from 'pz-client/src/user/sign-in-up-embedded-component';
 import ReviewTopicSelector from 'pz-client/src/community-item/widgets/review-topic-selector-component';
+import SummaryEditor from 'pz-client/src/community-item/widgets/summary-editor-component';
 
 interface IProps {
     relay: any
@@ -68,6 +69,10 @@ class ReviewCommunityItemEditor extends React.Component<IProps, any> {
         bodyHasFocus: false,
         hasSelectedTopic: false,
         newTopicName: null
+    };
+
+    refs: {
+        bodyEditor: any
     };
 
     private _hasInteractedWithSignInUp = false;
@@ -185,11 +190,11 @@ class ReviewCommunityItemEditor extends React.Component<IProps, any> {
         });
 
         return (
-            <input
+            <SummaryEditor
                 className={classes}
-                type="text"
                 placeholder="Write a summary for your review"
                 onChange={this._onSummaryChange.bind(this) }
+                onOverflow={this._addOverflowedSummaryToBody.bind(this)}
                 onFocus={this._onSummaryFocus.bind(this) }
                 onBlur={this._onSummaryBlur.bind(this) }
             />
@@ -207,6 +212,7 @@ class ReviewCommunityItemEditor extends React.Component<IProps, any> {
 
         return (
             <CommunityItemBodyEditor
+                ref="bodyEditor"
                 placeholder="Elaborate here if you wish..."
                 onChange={this._onBodyChange.bind(this) }
                 onFocus={this._onBodyFocus.bind(this) }
@@ -234,6 +240,13 @@ class ReviewCommunityItemEditor extends React.Component<IProps, any> {
 
     private _onBodyBlur() {
         this._setStateDelayed({ bodyHasFocus: false });
+    }
+
+    private _addOverflowedSummaryToBody(overflowedText: string) {
+        setTimeout(() => {
+            this.refs.bodyEditor.focus();
+            this.refs.bodyEditor.prependText(overflowedText);
+        }, 0);
     }
 
     private _saveCommunityItem() {
@@ -272,8 +285,8 @@ class ReviewCommunityItemEditor extends React.Component<IProps, any> {
         );
     }
 
-    private _onSummaryChange(event) {
-        this.setState({ summaryContent: event.target.value });
+    private _onSummaryChange(value) {
+        this.setState({ summaryContent: value });
     }
 
     private _onBodyChange(bodyState) {
