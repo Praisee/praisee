@@ -45,6 +45,7 @@ export default class SignInUp extends React.Component<IProps, any> {
     private _renderSignUp() {
         return (
             <div className="sign-up">
+                <Link to="/auth/facebook" target="_blank">FaceBook</Link>
                 <form action={signUpApi} method="post" onSubmit={this._submit.bind(this)}>
                     <fieldset>
                         <legend>Sign Up</legend>
@@ -81,6 +82,7 @@ export default class SignInUp extends React.Component<IProps, any> {
     private _renderSignIn() {
         return (
             <div className="sign-up">
+                <Link to="/auth/facebook" target="_blank">FaceBook</Link>
                 <form action={signInApi} method="post" onSubmit={this._submit.bind(this)}>
                     <fieldset>
                         <legend>Sign In</legend>

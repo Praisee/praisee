@@ -1,5 +1,6 @@
 import authProvidersConfig from 'pz-server/src/authentication/authentication-providers';
 import provideLocalAuth from 'pz-server/src/authentication/local-provider';
+import provideFacebookAuth from 'pz-server/src/authentication/oauth-provider';
 import appInfo from '../app/app-info';
 
 var loopback = require('loopback');
@@ -84,6 +85,7 @@ export class AuthenticationInitializer {
 
     _provideAuthStrategies() {
         provideLocalAuth(this._app, this._app.models.PraiseeUser, authProvidersConfig.local);
+        provideFacebookAuth(this._app, this._app.models.PraiseeUser, authProvidersConfig["facebook-login"]);
     }
 }
 
