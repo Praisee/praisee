@@ -20,17 +20,17 @@ export default {
         'successRedirect': '/',
         'scope': ['email', 'public_profile', 'user_friends']
     },
-    'google-link': {
-        'provider': 'google',
-        'module': 'passport-google-oauth',
-        'strategy': 'OAuth2Strategy',
-        'clientID': '{google-client-id-2}',
-        'clientSecret': '{google-client-secret-2}',
-        'callbackURL': 'http://localhost:3000/link/google/callback',
-        'authPath': '/link/google',
-        'callbackPath': '/link/google/callback',
-        'successRedirect': '/link/account',
-        'scope': ['email', 'profile'],
-        'link': true
-    }
+    // 'google-link': {
+    //     'provider': 'google',
+    //     'module': 'passport-google-oauth',
+    //     'strategy': 'OAuth2Strategy',
+    //     'clientID': '{google-client-id-2}',
+    //     'clientSecret': '{google-client-secret-2}',
+    //     'callbackURL': 'http://localhost:3000/link/google/callback',
+    //     'authPath': '/link/google',
+    //     'callbackPath': '/link/google/callback',
+    //     'successRedirect': '/link/account',
+    //     'scope': ['email', 'profile'],
+    //     'link': true
+    // }
 }
