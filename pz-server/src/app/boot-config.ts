@@ -8,14 +8,15 @@ export default {
     bootScripts: [
         pzPath('pz-server', 'src/cache/initialize-cache'),
         pzPath('pz-server', 'src/app/initialize-worker-client'),
-        pzPath('pz-server', 'src/app/repository-initializer'),
+        pzPath('pz-server', 'src/app/repository-initializer'), 
+        // Due to model changes in authentication-initializer we need to initialize before auto-updating models
+        pzPath('pz-server', 'src/authentication/authentication-initializer'),
         pzPath('pz-server', 'src/app/auto-update-models'),
 
         // Search initializer needs to come before any DB inserts/updates/deletes
         pzPath('pz-server', 'src/search/search-initializer'),
 
         pzPath('pz-server', 'src/app/dev-env-seeder'),
-        pzPath('pz-server', 'src/authentication/authentication-initializer'),
         pzPath('pz-server', 'src/users/sign-up-route'),
         pzPath('pz-server', 'src/graphql/graphql-initializer'),
         pzPath('pz-server', 'src/site/template-renderer'),
