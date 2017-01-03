@@ -61,7 +61,7 @@
   .rating-star-4-5 { @content; }
 }
 
-@mixin rating-stars($star-size: 0.7rem) {
+@mixin rating-stars-mixin($star-size: 0.7rem) {
   @include apply-to-filled-rating-stars() {
     color: $star-color;
   };
@@ -85,5 +85,11 @@
     color: $gray-lighter;
     margin-right: 0.1rem;
     font-size: $star-size;
+  }
+}
+
+@mixin rating-stars() {
+  .rating-stars {
+    @include rating-stars-mixin();
   }
 }

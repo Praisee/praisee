@@ -53,6 +53,9 @@ export interface ITopicPhotoGalleryPhotoVariations extends ICommonPhotoVarations
 
         thumbnail: string
         mobileThumbnail: string
+
+        square: string
+        mobileSquare: string
     }
 }
 
@@ -67,7 +70,10 @@ export function getTopicPhotoGalleryPhotoVariationsUrls(photoServerPath): ITopic
             mobile: getPhotoBuilder().smartCrop(true).fitIn(400, 400).buildUrl(),
 
             thumbnail: getPhotoBuilder().smartCrop(true).fitIn(300, 300).buildUrl(),
-            mobileThumbnail: getPhotoBuilder().smartCrop(true).fitIn(75, 75).buildUrl()
+            mobileThumbnail: getPhotoBuilder().smartCrop(true).fitIn(75, 75).buildUrl(),
+
+            square: getPhotoBuilder().smartCrop(true).resize(500, 500).buildUrl(),
+            mobileSquare: getPhotoBuilder().smartCrop(true).resize(100, 100).buildUrl()
         }
     };
 }

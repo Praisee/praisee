@@ -4,6 +4,7 @@ import {
     GraphQLBoolean,
     GraphQLID,
     GraphQLInt,
+    GraphQLFloat,
     GraphQLList,
     GraphQLNonNull,
     GraphQLObjectType,
@@ -154,6 +155,31 @@ export default function topicTypes(repositoryAuthorizers: IAppRepositoryAuthoriz
 
                         return connectionFromCursorResults(photoGalleryPhotosUrls);
                     }
+                },
+
+                topTenReviewedSubTopics: {
+                    type: new GraphQLList(types.TopicType),
+
+                    resolve: (topic, __, {user}) => {
+                        if (!topic.isCategory) {
+                            return null;
+                        }
+
+                        return topicsAuthorizer
+                            .as(user)
+                            .findTopTenReviewedTopicsByCategoryId(topic.id);
+                    }
+                },
+
+                ratingForViewer: {
+                    type: GraphQLFloat,
+
+                    resolve: async (topic, _, {user}) => {
+                        // TODO: Use a user-personalized rating
+                        return topicsAuthorizer
+                            .as(user)
+                            .getAverageRatingById(topic.id);
+                    }
                 }
             });
         },
@@ -211,7 +237,10 @@ export default function topicTypes(repositoryAuthorizers: IAppRepositoryAuthoriz
                         mobile: {type: new GraphQLNonNull(GraphQLString)},
 
                         thumbnail: {type: new GraphQLNonNull(GraphQLString)},
-                        mobileThumbnail: {type: new GraphQLNonNull(GraphQLString)}
+                        mobileThumbnail: {type: new GraphQLNonNull(GraphQLString)},
+
+                        square: {type: new GraphQLNonNull(GraphQLString)},
+                        mobileSquare: {type: new GraphQLNonNull(GraphQLString)}
                     }
                 })
             }
@@ -273,5 +302,23 @@ export function getTopicLookupField(repositoryAuthorizers: IAppRepositoryAuthori
                 return await topics.findByUrlSlugName(urlSlug);
             }
         }
+    };
+}
+
+export function getTopicsField(repositoryAuthorizers: IAppRepositoryAuthorizers, types: ITypes) {
+    const topicsAuthorizer = repositoryAuthorizers.topics;
+
+    return {
+        type: new GraphQLList(types.TopicType),
+        resolve: (_, __, {user}) => topicsAuthorizer.as(user).findAll()
+    };
+}
+
+export function getTopTenCategoriesByReviewsField(repositoryAuthorizers: IAppRepositoryAuthorizers, types: ITypes) {
+    const topicsAuthorizer = repositoryAuthorizers.topics;
+
+    return {
+        type: new GraphQLList(types.TopicType),
+        resolve: (_, __, {user}) => topicsAuthorizer.as(user).findTopTenCategoriesByReviews()
     };
 }

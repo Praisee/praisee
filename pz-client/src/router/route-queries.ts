@@ -50,43 +50,7 @@ export var homeQuery: IRouteQuery = {
             query {
                 currentUser
             }
-        `,
-
-        electronicsTopic: () => Relay.QL`
-            query {
-                topic(urlSlug: "Electronics")
-            }
-        `,
-
-        cosmeticsTopic: () => Relay.QL`
-            query {
-                topic(urlSlug: "Cosmetics")
-            }
-        `,
-
-        homeGardenTopic: () => Relay.QL`
-            query {
-                topic(urlSlug: "Home-Garden")
-            }
-        `,
-
-        photographyTopic: () => Relay.QL`
-            query {
-                topic(urlSlug: "Photography")
-            }
-        `,
-
-        artsCraftsTopic: () => Relay.QL`
-            query {
-                topic(urlSlug: "Arts-Crafts")
-            }
-        `,
-
-        outdoorsTopic: () => Relay.QL`
-            query {
-                topic(urlSlug: "Outdoors")
-            }
-        `,
+        `
     }
 };
 

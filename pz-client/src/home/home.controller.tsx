@@ -8,6 +8,8 @@ import appInfo from 'pz-client/src/app/app-info';
 import SignInUpOverlay from 'pz-client/src/user/sign-in-up-overlay-component';
 import TopicTile from 'pz-client/src/home/topic-tile-component';
 import Masonry from 'react-masonry-component';
+import {Link} from 'react-router';
+import RatingStars from 'pz-client/src/widgets/rating-stars-component';
 
 const logoUrl = appInfo.addresses.getImage('praisee-logo.svg');
 
@@ -15,22 +17,32 @@ export interface IHomeControllerProps {
     params: any,
 
     viewer: {
-        topics: Array<any>
-
-        staticPhotos: [{
+        topTenCategoriesByReviews: [{
+            id: any
             name: string
-            variations
+            routePath: any
+
+            topTenReviewedSubTopics: [{
+                id: any
+                name: string
+                routePath: any
+                ratingForViewer: number
+
+                photoGallery: {
+                    edges: [{
+                        node: {
+                            variations: {
+                                square: string
+                                mobileSquare: string
+                            }
+                        }
+                    }]
+                }
+            }]
         }]
     }
 
     currentUser: any
-
-    electronicsTopic
-    cosmeticsTopic
-    homeGardenTopic
-    photographyTopic
-    artsCraftsTopic
-    outdoorsTopic
 }
 
 export class Home extends Component<IHomeControllerProps, any> {
@@ -44,28 +56,42 @@ export class Home extends Component<IHomeControllerProps, any> {
                 <SignInUpOverlay>
                     <Header currentUser={this.props.currentUser} viewer={this.props.viewer} />
 
+                    <div className="branding-container">
+                        <h1 className="branding-large">
+                            <img className="praisee-logo" src={logoUrl} alt="Praisee" />
+                        </h1>
+
+                        <h2 className="praisee-description">
+                            The one stop review spot.
+                        </h2>
+                    </div>
+
                     <div className="primary-content">
                         <div className="primary-content-container">
-                            <h1 className="branding-large">
-                                <img className="praisee-logo" src={logoUrl} alt="Praisee" />
-                            </h1>
+                            <div className="add-review-section">
+                                <button className="add-review-button">
+                                    <i className="add-review-icon" />
 
-                            <h2 className="praisee-description">
-                                Find product reviews, questions and answers by
-                                others like you.
-                            </h2>
+                                    <span className="add-review-label">
+                                        Add your review
+                                    </span>
+                                </button>
+                            </div>
 
-                            <SiteSearch />
+                            <div className="or-divider">
+                                or
+                            </div>
+
+                            <div className="search-section">
+                                <SiteSearch />
+                            </div>
                         </div>
                     </div>
 
-                    <div className="topic-tiles">
-                        {this._renderTopicTile(this.props.electronicsTopic, 'electronics-topic', 'electronics')}
-                        {this._renderTopicTile(this.props.cosmeticsTopic, 'cosmetics-topic', 'cosmetics')}
-                        {this._renderTopicTile(this.props.homeGardenTopic, 'home-garden-topic', 'homeGarden')}
-                        {this._renderTopicTile(this.props.photographyTopic, 'photography-topic', 'photography')}
-                        {this._renderTopicTile(this.props.artsCraftsTopic, 'arts-crafts-topic', 'artsCrafts')}
-                        {this._renderTopicTile(this.props.outdoorsTopic, 'outdoors-topic', 'outdoors')}
+                    <div className="secondary-section">
+                        <div className="categories-section">
+                            {this._renderCategories()}
+                        </div>
                     </div>
 
                     <Footer />
@@ -74,21 +100,83 @@ export class Home extends Component<IHomeControllerProps, any> {
         );
     }
 
-    private _renderTopicTile(topic, className, backgroundPhotoName) {
-        if (!topic) {
-            return;
+    private _renderCategories() {
+        return this.props.viewer.topTenCategoriesByReviews.map(category => {
+            return this._renderCategory(category);
+        });
+    }
+
+    private _renderCategory(category) {
+        return (
+            <div key={category.id} className="category-reviews">
+                <h2 className="category-heading">
+                    <Link to={category.routePath} className="category-heading-link">
+                        {category.name} Reviews
+                    </Link>
+                </h2>
+
+                <div className="category-products">
+                    <div className="category-products-inner">
+                        {category.topTenReviewedSubTopics.map(product => {
+                            return this._renderProduct(product);
+                        })}
+                    </div>
+                </div>
+            </div>
+        );
+    }
+
+    private _renderProduct(product) {
+        return (
+            <div key={product.id} className="product">
+                <Link to={product.routePath} className="product-photos-link">
+                    {this._renderProductPhotos(product)}
+                </Link>
+
+                <Link to={product.routePath} className="product-link">
+                    {product.name}
+                </Link>
+
+                <div className="product-rating">
+                    <RatingStars rating={product.ratingForViewer} />
+                </div>
+            </div>
+        );
+    }
+
+    private _renderProductPhotos(product) {
+        if (!product.photoGallery.edges.length) {
+            return (
+                <div className="product-photos no-photos">
+                </div>
+            );
         }
 
-        const backgroundPhotoUrls = this.props.viewer.staticPhotos.find(
-            ({name}) => name === backgroundPhotoName
-        );
+        const [photo1, photo2, photo3] = product.photoGallery.edges;
+        const getPhotoUrl = (photo) => photo.node.variations.square;
+
+        if (!photo2 && !photo3) {
+            return (
+                <div className="product-photos single-product-photo">
+                    <img className="product-photo" src={getPhotoUrl(photo1)} alt={product.name} />
+                </div>
+            )
+        }
 
         return (
-            <TopicTile
-                topic={topic}
-                className={className}
-                backgroundPhotoUrls={backgroundPhotoUrls}
-            />
+            <div className="product-photos multiple-product-photos">
+                <div className="primary-photo">
+                    <img className="product-photo" src={getPhotoUrl(photo1)} alt={product.name} />
+                </div>
+
+                <div className="secondary-photos">
+                    <img className="product-photo" src={getPhotoUrl(photo2)} alt={product.name} />
+
+                    {photo3 &&
+                    <img className="product-photo" src={getPhotoUrl(photo3)} alt={product.name} />
+                    }
+                </div>
+            </div>
         );
     }
 }
@@ -97,22 +185,32 @@ export default Relay.createContainer(Home, {
     fragments: {
         viewer: () => Relay.QL`
             fragment on Viewer {
-                topics {
+                ${Header.getFragment('viewer')}
+
+                topTenCategoriesByReviews {
                     id
                     name
-                }
-                
-                staticPhotos {
-                    name
-                    
-                    variations {
-                        initialLoad
-                        mediumFit
-                        mediumFitMobile
+                    routePath
+
+                    topTenReviewedSubTopics {
+                        id
+                        name
+                        routePath
+                        ratingForViewer
+
+                        photoGallery(first: 3) {
+                            edges {
+                                node {
+                                    variations {
+                                        square
+                                        mobileSquare
+                                    }
+                                }
+                            }
+                        }
                     }
+
                 }
-                
-                ${Header.getFragment('viewer')}
             }
         `,
 
@@ -120,13 +218,6 @@ export default Relay.createContainer(Home, {
             fragment on UserInterface {
                 ${Header.getFragment('currentUser')}
             }
-        `,
-
-        electronicsTopic: () => Relay.QL`fragment on Topic { ${TopicTile.getFragment('topic')} }`,
-        cosmeticsTopic: () => Relay.QL`fragment on Topic { ${TopicTile.getFragment('topic')} }`,
-        homeGardenTopic: () => Relay.QL`fragment on Topic { ${TopicTile.getFragment('topic')} }`,
-        photographyTopic: () => Relay.QL`fragment on Topic { ${TopicTile.getFragment('topic')} }`,
-        artsCraftsTopic: () => Relay.QL`fragment on Topic { ${TopicTile.getFragment('topic')} }`,
-        outdoorsTopic: () => Relay.QL`fragment on Topic { ${TopicTile.getFragment('topic')} }`,
+        `
     }
 });

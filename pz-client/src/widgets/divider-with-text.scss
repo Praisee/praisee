@@ -1,0 +1,20 @@
+@mixin divider-with-text($color, $text-padding) {
+  text-align: center;
+  line-height: 100%;
+  max-width: 100%;
+  overflow: hidden;
+
+  &:before, &:after {
+    content: '';
+    vertical-align: top;
+    display: inline-block;
+    width: 50%;
+    height: 0.5em;
+    border-bottom: 1px solid $color;
+    margin: 0 $text-padding 0 -55%;
+  }
+
+  &:after {
+    margin: 0 -55% 0 $text-padding;
+  }
+}

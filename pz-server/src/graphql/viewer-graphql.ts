@@ -12,7 +12,11 @@ import {
 
 import {ITypes} from 'pz-server/src/graphql/types';
 import {getStaticPhotosField} from 'pz-server/src/photos/static-photos-graphql';
-import {getTopicLookupField} from 'pz-server/src/topics/topics-graphql';
+import {
+    getTopicLookupField,
+    getTopicsField,
+    getTopTenCategoriesByReviewsField
+} from 'pz-server/src/topics/topics-graphql';
 
 var {
     GraphQLBoolean,
@@ -40,7 +44,6 @@ var {
 
 export default function getViewerType(repositoryAuthorizers: IAppRepositoryAuthorizers, nodeInterface, types) {
     const commentsAuthorizer = repositoryAuthorizers.comments;
-    const topicsAuthorizer = repositoryAuthorizers.topics;
     const communityItemsAuthorizer = repositoryAuthorizers.communityItems;
 
     const ViewerType = new GraphQLObjectType({
@@ -52,10 +55,9 @@ export default function getViewerType(repositoryAuthorizers: IAppRepositoryAutho
 
             topic: getTopicLookupField(repositoryAuthorizers, types),
 
-            topics: {
-                type: new GraphQLList(types.TopicType),
-                resolve: (_, __, {user}) => topicsAuthorizer.as(user).findAll()
-            },
+            topics: getTopicsField(repositoryAuthorizers, types),
+
+            topTenCategoriesByReviews: getTopTenCategoriesByReviewsField(repositoryAuthorizers, types),
 
             myCommunityItems: {
                 type: types.CommunityItemConnection.connectionType,

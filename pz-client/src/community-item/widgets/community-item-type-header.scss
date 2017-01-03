@@ -13,7 +13,7 @@
       }
 
       .review-rating {
-        @include rating-stars();
+        @include rating-stars-mixin();
       }
     }
 

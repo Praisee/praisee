@@ -30,6 +30,14 @@ export default class FilteredTopics implements ITopics {
         return this._topics.findByUrlSlugName(urlSlugName);
     }
 
+    findTopTenCategoriesByReviews(): Promise<Array<ITopic>> {
+        return this._topics.findTopTenCategoriesByReviews();
+    }
+
+    findTopTenReviewedTopicsByCategoryId(id: number): Promise<Array<ITopic>> {
+        return this._topics.findTopTenReviewedTopicsByCategoryId(id);
+    }
+
     async findSomeCommunityItemsRanked(topicId: number, asUser: TOptionalUser, cursor: TBiCursor): Promise<ICursorResults<ICommunityItem>> {
         const filteredCursorResults = await promisedMapCursorResults(
             await this._topics.findSomeCommunityItemsRanked(topicId, asUser, cursor),
@@ -55,6 +63,10 @@ export default class FilteredTopics implements ITopics {
 
     createAllByNames(topicNames: Array<string>): Promise<Array<ITopic>> {
         return this._topics.createAllByNames(topicNames);
+    }
+
+    getAverageRatingById(id: number): Promise<number | null> {
+        return this._topics.getAverageRatingById(id);
     }
 
     async _filterCommunityItemBeforeRead(communityItem: ICommunityItem): Promise<ICommunityItem> {

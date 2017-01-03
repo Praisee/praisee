@@ -32,6 +32,7 @@ import {IPhotosEvents} from 'pz-server/src/photos/photos-events';
 import {IPhoto} from 'pz-server/src/photos/photos';
 import {IPhotoModel as ILoopbackPhoto, IPhotoInstance as ILoopbackPhotoInstance} from 'pz-server/src/models/photo';
 import {cursorPhotoLoopbackModelsToRecords} from 'pz-server/src/photos/loopback-photos';
+import loopbackQuery from 'pz-server/src/support/loopback-query';
 
 export function createRecordFromLoopbackTopic(topic: ILookbackTopicInstance): ITopic {
     return createRecordFromLoopback<ITopic>('Topic', topic);
@@ -110,6 +111,71 @@ export default class LoopbackTopics implements ITopics, ITopicsBatchable {
         }
 
         return createRecordFromLoopbackTopic(result);
+    }
+
+    async findTopTenCategoriesByReviews(): Promise<Array<ITopic>> {
+        const query = `
+            SELECT topic.*, COUNT(topiccommunityitem.*) AS popularity
+            FROM topiccommunityitem
+            INNER JOIN topic ON (topic.id = topiccommunityitem.topicid)
+            INNER JOIN communityitem ON (communityitem.id = topiccommunityitem.communityitemid)
+            WHERE
+                topic.iscategory = TRUE
+                AND topic.isverified = TRUE
+                AND communityitem.type = 'Review'
+            GROUP BY topic.id
+            ORDER BY popularity DESC
+            LIMIT 10
+        `;
+
+        const results = await loopbackQuery(this._TopicModel, query);
+
+        return results.map(result => {
+            return {
+                recordType: 'Topic',
+                id: result.id,
+                name: result.name,
+                description: result.name,
+                thumbnailPath: result.thumbnailpath,
+                overviewContent: result.overviewcontent,
+                isVerified: result.isverified,
+                isCategory: result.iscategory,
+                communityItems: result.communityitems
+            } as ITopic;
+        });
+    }
+
+    async findTopTenReviewedTopicsByCategoryId(id: number): Promise<Array<ITopic>> {
+        const query = `
+            SELECT topic.*, COUNT(topiccommunityitem.*) AS popularity
+            FROM topiccommunityitem
+            INNER JOIN communityitem ON (communityitem.id = topiccommunityitem.communityitemid)
+            INNER JOIN topic ON (topic.id = communityitem.reviewedtopicid)
+            WHERE
+                topiccommunityitem.topicid = $1
+                AND topic.id != $1
+                AND topic.isverified = TRUE
+                AND communityitem.type = 'Review'
+            GROUP BY topic.id
+            ORDER BY popularity DESC
+            LIMIT 10
+        `;
+
+        const results = await loopbackQuery(this._TopicModel, query, id);
+
+        return results.map(result => {
+            return {
+                recordType: 'Topic',
+                id: result.id,
+                name: result.name,
+                description: result.name,
+                thumbnailPath: result.thumbnailpath,
+                overviewContent: result.overviewcontent,
+                isVerified: result.isverified,
+                isCategory: result.iscategory,
+                communityItems: result.communityitems
+            } as ITopic;
+        });
     }
 
     async findSomeCommunityItemsRanked(topicId: number, asUser: TOptionalUser, cursor: TBiCursor): Promise<ICursorResults<ICommunityItem>> {
@@ -211,6 +277,27 @@ export default class LoopbackTopics implements ITopics, ITopicsBatchable {
         }
 
         return topics.map(createRecordFromLoopbackTopic);
+    }
+
+    async getAverageRatingById(id: number): Promise<number | null> {
+        const query = `
+            SELECT AVG(communityitem.reviewrating) AS rating
+            FROM topiccommunityitem
+            INNER JOIN communityitem ON (communityitem.id = topiccommunityitem.communityitemid)
+            WHERE
+                topiccommunityitem.topicid = $1
+                AND communityitem.type = 'Review'
+            GROUP BY topiccommunityitem.topicid
+            LIMIT 1
+        `;
+
+        const results = await loopbackQuery(this._TopicModel, query, id);
+
+        if (!results.length) {
+            return null;
+        }
+
+        return results[0].rating;
     }
 
     private async _findSomeCommunityItemsByFilter(cursor, filter) {

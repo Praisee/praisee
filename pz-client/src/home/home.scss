@@ -1,7 +1,13 @@
 @mixin home-namespace {
   .home-namespace {
+    position: relative;
+
     .app-header {
       @include app-header();
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
       margin-left: 0;
       margin-right: 0;
       border-bottom: none;
@@ -17,7 +23,69 @@
     }
 
     .primary-content {
+      color: transparentize($white, 0.5);
+      background: $brand-primary;
+      margin-top: 2.5rem;
       @include site-search();
+
+      .add-review-section, .search-section {
+        padding: 2.5rem 0;
+      }
+
+      .add-review-section {
+        padding-top: 3.5rem;
+        text-align: center;
+
+        .add-review-button {
+          @include btn();
+          @include btn-lg();
+          @include btn-reversed-primary();
+          padding-left: 2rem;
+          padding-right: 2rem;
+        }
+
+        .add-review-icon {
+          @extend .fa;
+          @extend .fa-star;
+          margin-right: 0.8rem;
+        }
+      }
+
+      .or-divider {
+        @include divider-with-text(transparentize($white, 0.8), 2rem);
+        width: 60%;
+        margin: 0 auto;
+      }
+
+      .search-section {
+        padding-bottom: 3.5rem;
+
+        .site-search {
+          margin: 0 auto;
+          width: 40%;
+        }
+
+        .site-search {
+          .search-input-container, .search-input {
+            color: $white;
+            background: $brand-primary;
+          }
+
+          .search-input-container {
+            border: 1px solid transparent;
+            border-bottom: 1px solid transparentize($white, 0.3);
+            border-radius: 0;
+          }
+
+          &.site-search-has-focus .search-input-container {
+            border-bottom: 1px solid $white;
+          }
+
+          &.site-search-has-input .search-input-icon {
+            color: $white;
+          }
+        }
+      }
     }
 
     .primary-content-container {
@@ -28,6 +96,7 @@
     .branding-large {
       @extend .display-3;
       text-align: center;
+      margin-top: 1rem;
       margin-bottom: 1rem;
 
       @include media-breakpoint-down(sm) {
@@ -67,111 +136,69 @@
       }
     }
 
-    .topic-tiles {
+    .secondary-section {
       @include make-container();
       @include make-container-max-widths();
-      @include expand-button();
-      @extend .card-columns;
+      padding-top: 4rem;
 
-      .topic-tile {
-        @extend .card;
-        border: none;
-        min-height: 15rem;
-        height: 30vh;
-        overflow: hidden;
-      }
+      .category-products {
+        .product {
+          @extend .card;
+          @extend .card-block;
+          border: none;
 
-      .background-container {
-        position: absolute;
-        top: 0;
-        bottom: 0;
-        left: 0;
-        right: 0;
-
-        .initial-load-image {
-          position: absolute;
-          top: 0;
-          bottom: 0;
-          left: 0;
-          right: 0;
-          width: 100%;
-          opacity: 1;
-        }
-
-        @keyframes background-image-loaded {
-          0% { opacity: 0; }
-          100% { opacity: 1; }
-        }
-
-        .background-image {
-          width: 100%;
-          height: 100%;
-          object-fit: cover;
-          opacity: 0;
-
-          &.image-loader-has-loaded {
-            opacity: 1;
-            animation: background-image-loaded 500ms ease-in-out;
-          }
-
-          &.image-loader-is-cached {
-            opacity: 1;
+          @include media-breakpoint-up(sm) {
+            width: 33%;
+            display: inline-block;
+            vertical-align: top;
           }
         }
-      }
 
-      .topic-tile-inner {
-        position: absolute;
-        top: 0;
-        bottom: 0;
-        left: 0;
-        right: 0;
-        z-index: 2;
-        background: transparentize($black, 0.5);
-      }
-
-      .topic-header {
-        @extend .card-img-top;
-        width: 100%;
-        display: block;
-        color: $white;
-        font-size: 2rem;
-        text-align: center;
-        margin: 1rem 0;
-      }
-
-      .community-items {
-        @extend .card-block;
-        list-style: none;
-        padding: 0.5rem 1rem;
-        margin: 0;
-        font-size: 0.9rem;
-      }
-
-      .community-item {
-        width: 100%;
-        white-space: nowrap;
-        text-overflow: ellipsis;
-        overflow: hidden;
-        padding: 0;
-        margin: 0;
-        color: $white;
-      }
-
-      .community-item-link {
-        color: $white;
-      }
-
-      .expand-button {
-        margin-bottom: 0.5rem;
-        background: none;
-
-        .expand-button-icon {
-          color: $white;
+        .product-link {
         }
 
-        &:hover, &:active, &:focus {
-          background: none;
+        .product-rating {
+          @include rating-stars();
+        }
+      }
+
+      .product-photos {
+        margin-bottom: 1rem;
+
+        &.no-photos {
+          width: 60%;
+          padding-top: 60%;
+          border: 1px solid $brand-secondary;
+        }
+
+        &.single-product-photo {
+          .product-photo {
+            width: 60%;
+          }
+        }
+
+        &.multiple-product-photos {
+          .primary-photo, .secondary-photos {
+            display: inline-block;
+            vertical-align: top;
+          }
+
+          .primary-photo {
+            width: 60%;
+            padding-right: 5%;
+          }
+
+          .secondary-photos {
+            width: 25%;
+
+            .product-photo:first-child {
+              margin-bottom: 20%;
+            }
+          }
+
+          .product-photo {
+            width: 100%;
+          }
         }
       }
     }

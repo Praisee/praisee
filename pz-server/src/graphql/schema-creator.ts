@@ -15,7 +15,11 @@ import {
     communityItemIdResolver,
     communityItemTypeResolver
 } from 'pz-server/src/community-items/community-items-graphql';
-import {getTopicLookupField} from 'pz-server/src/topics/topics-graphql';
+
+import {
+    getTopicLookupField
+} from 'pz-server/src/topics/topics-graphql';
+
 import {getViewer} from 'pz-server/src/graphql/viewer-graphql';
 
 var {

@@ -52,6 +52,14 @@ export default class TopicsLoader implements ITopics {
         return this._topics.findSomePhotoGalleryPhotosRanked(topicId, asUser, cursor);
     }
 
+    findTopTenCategoriesByReviews(): Promise<Array<ITopic>> {
+        return this._topics.findTopTenCategoriesByReviews();
+    }
+
+    findTopTenReviewedTopicsByCategoryId(id: number): Promise<Array<ITopic>> {
+        return this._topics.findTopTenReviewedTopicsByCategoryId(id);
+    }
+
     findAllCommunityItemIds(topicId: number): Promise<Array<number>> {
         return this._topics.findAllCommunityItemIds(topicId);
     }
@@ -62,5 +70,9 @@ export default class TopicsLoader implements ITopics {
 
     createAllByNames(topicNames: Array<string>): Promise<Array<ITopic>> {
         return this._topics.createAllByNames(topicNames);
+    }
+
+    getAverageRatingById(id: number): Promise<number | null> {
+        return this._topics.getAverageRatingById(id);
     }
 }

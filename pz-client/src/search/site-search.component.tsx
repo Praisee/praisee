@@ -58,7 +58,7 @@ class SiteSearch extends Component<ISiteSearchProps, any> {
         const { value, suggestions } = this.state;
 
         const inputProps = {
-            placeholder: 'What are you looking for?',
+            placeholder: 'Find product reviews',
             value,
             onChange: this._updateValue.bind(this),
             onFocus: this._onFocus.bind(this),

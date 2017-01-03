@@ -47,6 +47,41 @@ fieldset[disabled] a.btn {
   pointer-events: none;
 }
 
+// Button Activation Mixin
+@mixin praisee-btn-activation-mixin() {
+  @include hover {
+    @content;
+  }
+
+  &:focus,
+  &.focus {
+    @content;
+  }
+
+  &:active,
+  &.active,
+  .open > &.dropdown-toggle {
+    @content;
+
+    &:hover,
+    &:focus,
+    &.focus {
+      @content;
+    }
+  }
+
+  &.disabled,
+  &:disabled {
+    &:focus,
+    &.focus {
+      @content;
+    }
+    @include hover {
+      @content;
+    }
+  }
+}
+
 //
 // Alternate buttons
 //
@@ -54,6 +89,7 @@ fieldset[disabled] a.btn {
 @mixin btn-primary {
   @include button-variant($btn-primary-color, $btn-primary-bg, $btn-primary-border);
 }
+
 @mixin btn-secondary {
   @include button-variant($btn-secondary-color, $btn-secondary-bg, $btn-secondary-border);
 
@@ -101,17 +137,37 @@ fieldset[disabled] a.btn {
     }
   }
 }
+
 @mixin btn-info {
   @include button-variant($btn-info-color, $btn-info-bg, $btn-info-border);
 }
+
 @mixin btn-success {
   @include button-variant($btn-success-color, $btn-success-bg, $btn-success-border);
 }
+
 @mixin btn-warning {
   @include button-variant($btn-warning-color, $btn-warning-bg, $btn-warning-border);
 }
+
 @mixin btn-danger {
   @include button-variant($btn-danger-color, $btn-danger-bg, $btn-danger-border);
+}
+
+@mixin btn-reversed-primary {
+  @include button-variant($brand-primary, $white, $white);
+
+  border: 1px solid transparent;
+
+  @include praisee-btn-activation-mixin() {
+    color: darken($brand-primary, 10%);
+    background: $white;
+    border: 1px solid transparent;
+  }
+}
+
+@mixin praisee-btn-filled($fill-color, $background-color) {
+  @include button-variant($background-color, $fill-color, $fill-color);
 }
 
 @mixin praisee-btn-outline($color) {

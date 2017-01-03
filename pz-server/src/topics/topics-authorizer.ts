@@ -13,10 +13,13 @@ export interface IAuthorizedTopics {
     findById(id: number): Promise<ITopic>
     findAllByIds(ids: Array<number>): Promise<Array<ITopic>>
     findByUrlSlugName(urlSlugName: string): Promise<ITopic>
+    findTopTenCategoriesByReviews(): Promise<Array<ITopic>>
+    findTopTenReviewedTopicsByCategoryId(id: number): Promise<Array<ITopic>>
     findSomeCommunityItemsRanked(topicId: number, cursor: TBiCursor): Promise<ICursorResults<ICommunityItem>>
     findSomePhotoGalleryPhotosRanked(topicId: number, cursor: TBiCursor): Promise<ICursorResults<IPhoto>>
     getCommunityItemCount(topicId: number): Promise<number>
     createAllByNames(topicNames: Array<string>): Promise<Array<ITopic>>
+    getAverageRatingById(id: number): Promise<number | null>
 }
 
 class AuthorizedTopics implements IAuthorizedTopics {
@@ -44,6 +47,14 @@ class AuthorizedTopics implements IAuthorizedTopics {
         return this._topics.findByUrlSlugName(fullSlug);
     }
 
+    findTopTenCategoriesByReviews(): Promise<Array<ITopic>> {
+        return this._topics.findTopTenCategoriesByReviews();
+    }
+
+    findTopTenReviewedTopicsByCategoryId(id: number): Promise<Array<ITopic>> {
+        return this._topics.findTopTenReviewedTopicsByCategoryId(id);
+    }
+
     findSomeCommunityItemsRanked(topicId: number, cursor: TBiCursor) {
         return this._topics.findSomeCommunityItemsRanked(topicId, this._user, cursor);
     }
@@ -63,6 +74,10 @@ class AuthorizedTopics implements IAuthorizedTopics {
         }
 
         return this._topics.createAllByNames(topicNames);
+    }
+
+    getAverageRatingById(id: number): Promise<number | null> {
+        return this._topics.getAverageRatingById(id);
     }
 }
 
