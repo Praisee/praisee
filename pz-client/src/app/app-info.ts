@@ -13,6 +13,8 @@ let appInfo = {
         getSignInApi: () => '/i/sign-in',
         getSignUpApi: () => '/i/sign-up',
         getSignOutApi: () => '/i/sign-out',
+        getFacebookAuthRoute: () => '/i/auth/facebook',
+        getFacebookLinkRoute: () => '/i/link/facebook',
 
         getSearchSuggestionsApi: () => '/i/search/suggestions',
         getMentionSuggestionsApi: () => '/i/search/mention-suggestions',

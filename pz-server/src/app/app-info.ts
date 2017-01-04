@@ -16,11 +16,18 @@ let appInfo = {
             appInfo.addresses.getImage(imagePath)
         ),
 
+        //TODO: *SECURITY* - Change protocol in prod to https once cert is installed
+        getUrlBase: () => serverInfo.isProductionEnv() ? 'http://www.praisee.com' : `http://localhost:${serverInfo.getPort()}`,
+
         getGraphqlApi: () => '/i/graphql',
 
         getSignInApi: () => '/i/sign-in',
         getSignUpApi: () => '/i/sign-up',
         getSignOutApi: () => '/i/sign-out',
+        getFacebookAuthRoute: () => '/i/auth/facebook',
+        getFacebookAuthCallbackRoute: () => '/i/auth/facebook/callback',
+        getFacebookLinkRoute: () => '/i/link/facebook',
+        getFacebookLinkCallbackRoute: () => '/i/link/facebook/callback',
 
         getSearchSuggestionsApi: () => '/i/search/suggestions',
         getMentionSuggestionsApi: () => '/i/search/mention-suggestions',
