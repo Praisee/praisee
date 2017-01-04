@@ -54,6 +54,16 @@ export var homeQuery: IRouteQuery = {
     }
 };
 
+export var addReviewQuery: IRouteQuery = {
+    queries: {
+        viewer: () => Relay.QL`
+            query {
+                viewer
+            }
+        `
+    }
+};
+
 export var topicQuery: IRouteQuery = {
     queries: {
         viewer: () => Relay.QL`

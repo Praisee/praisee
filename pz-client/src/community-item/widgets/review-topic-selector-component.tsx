@@ -23,6 +23,7 @@ export interface IProps {
     placeholder?: string
     onTopicSelected?: (serverId: number) => any
     onNewTopicSelected?: (topicName: string) => any
+    autoFocus?: boolean
 }
 
 export default class ReviewTopicSelector extends React.Component<IProps, any> {
@@ -40,7 +41,7 @@ export default class ReviewTopicSelector extends React.Component<IProps, any> {
             suggestions: [],
             currentValueIsNotReviewable: false,
             hasFocus: false,
-            shouldShowInput: false
+            shouldShowInput: props.autoFocus || false
         }
     }
 

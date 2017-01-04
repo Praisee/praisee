@@ -1,0 +1,46 @@
+@mixin add-review-namespace {
+  .add-review-namespace {
+    @include make-container();
+    @include make-container-max-widths();
+    @include review-editor();
+
+    .review-editor .review-topic-selector {
+      width: 28rem;
+
+      @include media-breakpoint-down(md) {
+        width: 23rem;
+      }
+
+      @include media-breakpoint-down(xs) {
+        width: 19rem;
+        margin: 0 auto;
+      }
+
+      .review-topic-selector-container {
+        box-shadow: none;
+        border: 1px solid transparent;
+        border-bottom: 1px solid $gray-lighter;
+        border-radius: 0;
+      }
+
+      &.review-topic-selector-has-focus, &.review-topic-selector-has-input {
+        .review-topic-selector-container {
+          border-bottom: 1px solid $input-border-focus;
+        }
+      }
+
+    }
+
+    .praisee-logo {
+      display: block;
+      margin: 3rem 0;
+      width: 10rem;
+
+      @include media-breakpoint-down(xs) {
+        margin-left: auto;
+        margin-right: auto;
+      }
+    }
+
+  }
+}

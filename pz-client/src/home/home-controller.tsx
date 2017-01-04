@@ -10,11 +10,14 @@ import TopicTile from 'pz-client/src/home/topic-tile-component';
 import Masonry from 'react-masonry-component';
 import {Link} from 'react-router';
 import RatingStars from 'pz-client/src/widgets/rating-stars-component';
+import {withRouter} from 'react-router';
+import handleClick from 'pz-client/src/support/handle-click';
+import routePaths from 'pz-client/src/router/route-paths';
 
 const logoUrl = appInfo.addresses.getImage('praisee-logo.svg');
 
 export interface IHomeControllerProps {
-    params: any,
+    params: any
 
     viewer: {
         topTenCategoriesByReviews: [{
@@ -43,6 +46,10 @@ export interface IHomeControllerProps {
     }
 
     currentUser: any
+
+    router: {
+        push(location)
+    }
 }
 
 export class Home extends Component<IHomeControllerProps, any> {
@@ -69,13 +76,7 @@ export class Home extends Component<IHomeControllerProps, any> {
                     <div className="primary-content">
                         <div className="primary-content-container">
                             <div className="add-review-section">
-                                <button className="add-review-button">
-                                    <i className="add-review-icon" />
-
-                                    <span className="add-review-label">
-                                        Add your review
-                                    </span>
-                                </button>
+                                {this._renderAddReviewButton()}
                             </div>
 
                             <div className="or-divider">
@@ -100,13 +101,35 @@ export class Home extends Component<IHomeControllerProps, any> {
         );
     }
 
+    private _renderAddReviewButton() {
+        const goToAddReviewPage = () => {
+            this.props.router.push({
+                pathname: routePaths.addReview()
+            });
+        };
+
+        return (
+            <button className="add-review-button" onClick={handleClick(goToAddReviewPage)}>
+                <i className="add-review-icon" />
+
+                <span className="add-review-label">
+                    Add your review
+                </span>
+            </button>
+        );
+    }
+
     private _renderCategories() {
-        return this.props.viewer.topTenCategoriesByReviews.map(category => {
+        const firstFiveCategories = this.props.viewer.topTenCategoriesByReviews.slice(0, 5);
+
+        return firstFiveCategories.map(category => {
             return this._renderCategory(category);
         });
     }
 
     private _renderCategory(category) {
+        const firstThreeSubTopics = category.topTenReviewedSubTopics.slice(0, 3);
+
         return (
             <div key={category.id} className="category-reviews">
                 <h2 className="category-heading">
@@ -117,7 +140,7 @@ export class Home extends Component<IHomeControllerProps, any> {
 
                 <div className="category-products">
                     <div className="category-products-inner">
-                        {category.topTenReviewedSubTopics.map(product => {
+                        {firstThreeSubTopics.map(product => {
                             return this._renderProduct(product);
                         })}
                     </div>
@@ -181,7 +204,7 @@ export class Home extends Component<IHomeControllerProps, any> {
     }
 }
 
-export default Relay.createContainer(Home, {
+export default Relay.createContainer(withRouter(Home), {
     fragments: {
         viewer: () => Relay.QL`
             fragment on Viewer {

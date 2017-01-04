@@ -17,6 +17,7 @@
 @import '../../user/avatar';
 @import 'app-layout';
 @import '../../home/home';
+@import '../../home/add-review';
 @import '../../topic/topic';
 @import '../../community-item/widgets/summary-editor';
 @import '../../community-item/widgets/edit-rating';
@@ -46,6 +47,7 @@
   & > { @include app-layout(); }
 
   @include home-namespace();
+  @include add-review-namespace();
   @include topic-namespace();
   @include community-item-namespace();
   @include edit-community-item-namespace();

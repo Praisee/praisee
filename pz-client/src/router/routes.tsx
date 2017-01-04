@@ -10,14 +10,16 @@ import {
     createItemQuery,
     communityItemQuery,
     editCommunityItemQuery,
-    topicHomeQuery
+    topicHomeQuery,
+    addReviewQuery
 } from 'pz-client/src/router/route-queries';
 
 import AppController from 'pz-client/src/app/app.controller';
 import AppLayout from 'pz-client/src/app/layout/app-layout.controller';
-import HomeController from 'pz-client/src/home/home.controller';
+import HomeController from 'pz-client/src/home/home-controller';
+import AddReviewController from 'pz-client/src/home/add-review-controller';
 import { SignInController, SignUpController } from 'pz-client/src/user/sign-in-up.controller';
-import ProfileController from 'pz-client/src/home/home.controller';
+import ProfileController from 'pz-client/src/home/home-controller';
 import CommunityItemController from 'pz-client/src/community-item/community-item-controller';
 import EditCommunityItemController from 'pz-client/src/community-item/edit-community-item-controller';
 import TopicController from 'pz-client/src/topic/topic.controller';
@@ -31,17 +33,9 @@ export default (
 
             <IndexRoute component={HomeController} {...mixinRouteQuery(homeQuery)} />
 
+            <Route path="add-review" component={AddReviewController} {...mixinRouteQuery(addReviewQuery)} />
+
             <Route component={AppLayout} {...mixinRouteQuery(appLayoutQuery) }>
-                {/* TODO: Remove this shit */}
-                {/*<IndexRoute component={TopicController} {...mixinRouteQuery(topicHomeQuery)} />*/}
-
-                {/* TODO: Remove this shit */}
-                <Route
-                    path="editor-poc"
-                    component={CreateItemEditor}
-                    {...mixinRouteQuery(createItemQuery) }
-                />
-
                 <Route path="user/sign-in" component={SignInController} />
                 <Route path="user/sign-up" component={SignUpController} />
 

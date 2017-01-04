@@ -47,6 +47,8 @@ interface IProps {
     }
 
     className?: string
+
+    autoFocus?: boolean
 }
 
 class ReviewCommunityItemEditor extends React.Component<IProps, any> {
@@ -124,6 +126,7 @@ class ReviewCommunityItemEditor extends React.Component<IProps, any> {
             <ReviewTopicSelector
                 onTopicSelected={this._selectTopic.bind(this)}
                 onNewTopicSelected={this._selectNewTopic.bind(this)}
+                autoFocus={this.props.autoFocus}
             />
         );
     }

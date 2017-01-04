@@ -2,6 +2,7 @@ import * as path from 'path';
 
 const routePaths = {
     index: () => '/',
+    addReview: () => '/add-review',
 
     user: {
         signIn: () => path.join(
