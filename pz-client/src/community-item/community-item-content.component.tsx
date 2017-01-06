@@ -10,7 +10,7 @@ import {
 import createMentionPlugin from 'pz-client/src/editor/mention-plugin/create-mention-plugin';
 import createDecoratorFromPlugins from 'pz-client/src/editor/create-decorator-from-plugins';
 import {isTextContent} from 'pz-server/src/content/content-data';
-import convertToText from 'pz-server/src/content/data-to-text-converter';
+import convertToText from 'pz-client/src/support/data-to-text-converter';
 import {createAttachmentPlugin} from 'pz-client/src/editor/attachment-plugin/attachment-plugin';
 
 var DraftJsEditor = require('draft-js-plugins-editor').default;
