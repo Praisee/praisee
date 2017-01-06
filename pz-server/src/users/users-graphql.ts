@@ -56,7 +56,7 @@ export default function UsersTypes(repositoryAuthorizers: IAppRepositoryAuthoriz
         name: 'UserInterface',
 
         fields: () => ({
-            id: globalIdField('User'),
+            id: { type: GraphQLString },
 
             displayName: { type: GraphQLString },
 
@@ -76,7 +76,10 @@ export default function UsersTypes(repositoryAuthorizers: IAppRepositoryAuthoriz
         name: 'CurrentUser',
 
         fields: () => ({
-            id: globalIdField(CurrentUserType.Name),
+            id: {
+                type: GraphQLString,
+                resolve: () => CurrentUserType.name
+            },
 
             displayName: {
                 type: GraphQLString
@@ -85,14 +88,16 @@ export default function UsersTypes(repositoryAuthorizers: IAppRepositoryAuthoriz
             reputation: {
                 type: GraphQLInt,
                 resolve: async ({id}, _, {user}) => {
-                    return userAuthorizer.as(user).getReputation(id);
+                    if(user)
+                        return userAuthorizer.as(user).getReputation(id);
                 }
             },
 
             image: {
                 type: GraphQLString,
                 resolve: ({email}) => {
-                    return calculateGravatarUrl(email);
+                    if(email)
+                        return calculateGravatarUrl(email);
                 }
             },
 
@@ -103,33 +108,47 @@ export default function UsersTypes(repositoryAuthorizers: IAppRepositoryAuthoriz
             trusterCount: {
                 type: GraphQLInt,
                 resolve: async ({id}, _, {user}) => {
-                    return userAuthorizer.as(user).getTotalTrusters(id);
+                    if(user)
+                        return userAuthorizer.as(user).getTotalTrusters(id);
                 }
             },
 
             serverId: {
-                type: new GraphQLNonNull(GraphQLInt),
-                resolve: (user) => user.id
+                type: GraphQLInt,
+                resolve: (_, __, {user}) => {
+                    if(user)
+                        return user.id
+                }
             },
 
             username: {
                 type: GraphQLString
             },
 
+            isLoggedIn: {
+                type: GraphQLBoolean,
+                resolve: (_, __, {user}) => !!user
+            },
+
             isCurrentUser: {
-                type:  new GraphQLNonNull(GraphQLBoolean),
+                type: new GraphQLNonNull(GraphQLBoolean),
                 resolve: ({id}, _, user) => true
             }
         }),
 
-        interfaces: [nodeInterface, UserInterfaceType]
+        interfaces: [UserInterfaceType]
     });
 
     var OtherUserType = new GraphQLObjectType({
         name: 'OtherUser',
 
         fields: () => ({
-            id: globalIdField(OtherUserType.name),
+            id: {
+                type: GraphQLString,
+                resolve: ({id}) => {
+                    return OtherUserType.name + id;
+                }
+            },
 
             displayName: {
                 type: GraphQLString
@@ -164,12 +183,12 @@ export default function UsersTypes(repositoryAuthorizers: IAppRepositoryAuthoriz
             },
 
             isCurrentUser: {
-                type:  new GraphQLNonNull(GraphQLBoolean),
+                type: new GraphQLNonNull(GraphQLBoolean),
                 resolve: ({id}, _, user) => false
             }
         }),
 
-        interfaces: [nodeInterface, UserInterfaceType]
+        interfaces: [UserInterfaceType]
     });
 
     const ToggleTrustMutation = mutationWithClientMutationId({
@@ -209,11 +228,35 @@ export default function UsersTypes(repositoryAuthorizers: IAppRepositoryAuthoriz
         }
     });
 
+    const GetCurrentUserMutation = mutationWithClientMutationId({
+        name: 'GetCurrentUser',
+
+        inputFields: () => ({}),
+
+        outputFields: () => ({
+            currentUser: {
+                type: types.CurrentUserType,
+                resolve: (payload) => {
+                    if (!payload.currentUser)
+                        payload.currentUser = {};
+                    payload.currentUser.id = CurrentUserType.name;
+                    return payload.currentUser;
+                }
+            }
+        }),
+
+        mutateAndGetPayload: async (_, context) => {
+            let currentUser = await userAuthorizer.as(context.user).findCurrentUser();
+            return { currentUser };
+        }
+    });
+
     return Object.assign({}, types, {
         UserInterfaceType,
         CurrentUserType,
         OtherUserType,
-        ToggleTrustMutation
+        ToggleTrustMutation,
+        GetCurrentUserMutation
     });
 }
 

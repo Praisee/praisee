@@ -156,8 +156,10 @@ export default function createSchema(repositoryAuthorizers: IAppRepositoryAuthor
 
                 currentUser: {
                     type: types.CurrentUserType,
-                    resolve: (_, __, {user}) => {
-                        return usersAuthorizer.as(user).findCurrentUser();
+                    resolve: async (_, __, {contextUser}) => {
+                        let user = await usersAuthorizer.as(contextUser).findCurrentUser();
+                        if(user) return user;
+                        return {id: types.CurrentUserType.name};
                     }
                 },
 
@@ -218,7 +220,8 @@ export default function createSchema(repositoryAuthorizers: IAppRepositoryAuthor
                 updateVote: types.UpdateVoteMutation,
                 deleteVote: types.DeleteVoteMutation,
 
-                toggleTrust: types.ToggleTrustMutation
+                toggleTrust: types.ToggleTrustMutation,
+                getCurrentUser: types.GetCurrentUserMutation
             }
         }),
 

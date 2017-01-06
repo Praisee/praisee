@@ -63,7 +63,7 @@
 
 @mixin rating-stars-mixin($star-size: 0.7rem) {
   display: inline-block;
-  
+
   @include apply-to-filled-rating-stars() {
     color: $star-color;
   };

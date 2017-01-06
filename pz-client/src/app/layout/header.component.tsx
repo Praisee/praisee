@@ -55,7 +55,7 @@ export default Relay.createContainer(withRouter(Header), {
     fragments: {
         currentUser: () => Relay.QL`
             fragment on UserInterface {
-                displayName,
+                displayName
                 ${UserAccountMenu.getFragment('currentUser')}
             }
         `,

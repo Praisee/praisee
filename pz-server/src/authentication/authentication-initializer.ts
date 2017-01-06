@@ -24,6 +24,7 @@ export class AuthenticationInitializer {
         this._initializePassportMiddleware();
         let configurator = this._configurePassport();
         this._provideAuthStrategies(configurator);
+        this._createRedirectRoute();
     }
 
     _initializeTokenMiddleware() {
@@ -130,6 +131,12 @@ export class AuthenticationInitializer {
             config.session = config.session !== false;
             configurator.configureProvider(provider, config);
         }
+    }
+
+    _createRedirectRoute(){
+        this._app.get(appInfo.addresses.getLoginSuccessRoute(), (request, response) => {
+            response.send("<script>(function(){window.opener.console.log('boom');window.opener.focus();window.close();})()</script>")
+        })
     }
 }
 

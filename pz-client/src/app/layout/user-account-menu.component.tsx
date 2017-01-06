@@ -10,11 +10,12 @@ import classNames from 'classnames';
 export interface IProps {
     currentUser: {
         displayName
+        isLoggedIn
     }
 }
 
 interface IContext {
-    clearSessionData: () => void
+    refreshCurrentUser: () => void
     signInUpContext: ISignInUpContext
 }
 
@@ -24,14 +25,14 @@ class UserAccountMenu extends React.Component<IProps, any> {
     };
 
     static contextTypes = {
-        clearSessionData: React.PropTypes.func,
+        refreshCurrentUser: React.PropTypes.func,
         signInUpContext: SignInUpContextType
     };
 
     context: IContext;
 
     render() {
-        if (!this.props.currentUser) {
+        if (!this.props.currentUser.isLoggedIn) {
             return this._renderSignInMenu();
         }
 
@@ -41,8 +42,8 @@ class UserAccountMenu extends React.Component<IProps, any> {
 
         return (
             <Dropdown className={classes}
-                      isOpen={this.state.isAccountMenuOpen}
-                      toggle={this._toggleAccountMenu.bind(this)}>
+                isOpen={this.state.isAccountMenuOpen}
+                toggle={this._toggleAccountMenu.bind(this)}>
 
                 <DropdownToggle className="current-user">
                     <i className="user-account-menu-icon" />
@@ -101,23 +102,21 @@ class UserAccountMenu extends React.Component<IProps, any> {
     private async _signOut(event) {
         event.preventDefault();
 
-        const noop = () => {};
-        const clearSessionData = this.context.clearSessionData || noop;
-
         await fetch(
             appInfo.addresses.getSignOutApi(),
             {method: 'POST', credentials: 'same-origin'}
         );
 
-        clearSessionData();
+        this.context.refreshCurrentUser();
     }
 }
 
 export default Relay.createContainer(UserAccountMenu, {
     fragments: {
         currentUser: () => Relay.QL`
-            fragment on UserInterface {
+            fragment on CurrentUser {
                 displayName
+                isLoggedIn
             }
         `
     }

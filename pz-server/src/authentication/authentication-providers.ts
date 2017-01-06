@@ -20,7 +20,7 @@ export default {
         'callbackURL': appInfo.addresses.getUrlBase() + appInfo.addresses.getFacebookAuthCallbackRoute(),
         'authPath': appInfo.addresses.getFacebookAuthRoute(),
         'callbackPath': appInfo.addresses.getFacebookAuthCallbackRoute(),
-        'successRedirect': '/',
+        'successRedirect': appInfo.addresses.getLoginSuccessRoute(),
         'scope': ['email', 'public_profile', 'user_friends'],
         'profileFields': ['email', 'id', 'displayName', 'photos']
     },
@@ -32,7 +32,7 @@ export default {
         'callbackURL': appInfo.addresses.getUrlBase() + appInfo.addresses.getFacebookLinkCallbackRoute(),
         'authPath': appInfo.addresses.getFacebookLinkRoute(),
         'callbackPath': appInfo.addresses.getFacebookLinkCallbackRoute(),
-        'successRedirect': '/',
+        'successRedirect': appInfo.addresses.getLoginSuccessRoute(),
         'scope': ['email', 'public_profile', 'user_friends'],
         'link': true
     },

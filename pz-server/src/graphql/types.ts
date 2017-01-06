@@ -36,6 +36,7 @@ export interface ITypes {
     CurrentUserType
     OtherUserType
     ToggleTrustMutation
+    GetCurrentUserMutation
 
     VoteType
     VoteAggregateType

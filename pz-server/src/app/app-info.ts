@@ -29,6 +29,8 @@ let appInfo = {
         getFacebookLinkRoute: () => '/i/link/facebook',
         getFacebookLinkCallbackRoute: () => '/i/link/facebook/callback',
 
+        getLoginSuccessRoute: () => '/i/auth-successfull',
+
         getSearchSuggestionsApi: () => '/i/search/suggestions',
         getMentionSuggestionsApi: () => '/i/search/mention-suggestions',
         getReviewableTopicSuggestionsApi: () => '/i/search/reviewable-topic-suggestions',
