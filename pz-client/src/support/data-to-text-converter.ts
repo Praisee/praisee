@@ -5,7 +5,7 @@ import {
 } from 'pz-server/src/content/content-data';
 
 // TODO: This is a duplicate of pz-server/src/content/data-to-text-converter and needs to be removed
-// TODO: Duplicated due to build issue under pz-server not building the code correctly for pz-client
+// TODO: Duplicated due to build issue under pz-server not building the codem correctly for pz-client
 
 export default function convertDataToText(contentStateData: IContentData) {
     if (isTextContent(contentStateData)) {
