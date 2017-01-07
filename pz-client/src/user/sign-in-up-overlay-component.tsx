@@ -55,7 +55,9 @@ export default class SignInUpOverlay extends React.Component<IProps, any> {
         return (
             <div className="sign-in-up-overlay">
                 <SimpleModal className="app-sign-in-up-overlay-modal" ref="modal">
-                    <SignInUp />
+                    <SignInUp 
+                        hideSignInUp={this._hideSignInUp.bind(this)}
+                    />
                 </SimpleModal>
 
                 {this.props.children}

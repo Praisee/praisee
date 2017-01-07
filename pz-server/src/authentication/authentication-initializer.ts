@@ -135,7 +135,13 @@ export class AuthenticationInitializer {
 
     _createRedirectRoute(){
         this._app.get(appInfo.addresses.getLoginSuccessRoute(), (request, response) => {
-            response.send("<script>(function(){window.opener.console.log('boom');window.opener.focus();window.close();})()</script>")
+            response.send(`<script>
+                (function(){
+                    window.opener.refreshUser();
+                    window.opener.focus();
+                    window.close();
+                })()
+            </script>`)
         })
     }
 }

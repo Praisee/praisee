@@ -2,6 +2,7 @@ import * as React from 'react';
 import * as Relay from 'react-relay';
 import NotFoundError from 'pz-client/src/app/not-found-error.component';
 import CurrentUserType from 'pz-client/src/user/current-user-type';
+import CurrentUserMutation from 'pz-client/src/app/layout/current-user-mutation';
 
 import {
     appStateLoadingStatusType,
@@ -25,16 +26,26 @@ export class App extends React.Component<any, any> {
     static childContextTypes: any = {
         showNotFoundError: React.PropTypes.func,
         appViewerId: React.PropTypes.string,
-        currentUser: CurrentUserType
+        currentUser: CurrentUserType,
+        refreshCurrentUser: React.PropTypes.func
     };
 
     context: IContextTypes;
+
+    constructor(){
+        super();
+
+        if (typeof(window) !== 'undefined'){
+            window['refreshUser'] = this._refreshUser.bind(this);
+        }
+    }
 
     getChildContext() {
         return {
             showNotFoundError: this._showNotFoundError.bind(this),
             appViewerId: this.props.viewer.id,
-            currentUser: this.props.currentUser
+            currentUser: this.props.currentUser,
+            refreshCurrentUser: this._refreshUser.bind(this)
         };
     }
 
@@ -92,6 +103,14 @@ export class App extends React.Component<any, any> {
             });
         }
     }
+    
+    private _refreshUser() {
+        this.props.relay.commitUpdate(
+            new CurrentUserMutation({
+                currentUser: this.props.currentUser
+            })
+        );
+    }
 }
 
 export default Relay.createContainer(App, {
@@ -103,8 +122,9 @@ export default Relay.createContainer(App, {
         `,
         currentUser: () => Relay.QL`
             fragment on CurrentUser {
-                id,
+                id
                 serverId
+                ${CurrentUserMutation.getFragment('currentUser')}
             }
         `
     }

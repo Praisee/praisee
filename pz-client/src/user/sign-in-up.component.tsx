@@ -9,10 +9,12 @@ const signUpApi = appInfo.addresses.getSignUpApi();
 
 interface IProps {
     showSignUp?: boolean
+    hideSignInUp?: () => void
 }
 
 interface IContext {
     clearSessionData: () => void
+    refreshCurrentUser: () => void
 }
 
 export default class SignInUp extends React.Component<IProps, any> {
@@ -21,7 +23,7 @@ export default class SignInUp extends React.Component<IProps, any> {
     };
 
     static contextTypes = {
-        clearSessionData: React.PropTypes.func
+        refreshCurrentUser: React.PropTypes.func
     };
 
     state = {
@@ -37,9 +39,9 @@ export default class SignInUp extends React.Component<IProps, any> {
 
         return (
             <div className="sign-in-up">
-                <Link to={appInfo.addresses.getFacebookAuthRoute()} target="_blank">FaceBook</Link>
-                <br/>
-                <Link to={appInfo.addresses.getFacebookLinkRoute()} target="_blank">FaceBook Link</Link>
+                <Link to={appInfo.addresses.getFacebookAuthRoute()} target="_blank" onClick={this.props.hideSignInUp.bind(this)}>FaceBook</Link>
+                <br />
+                <Link to={appInfo.addresses.getFacebookLinkRoute()} target="_blank" onClick={this.props.hideSignInUp.bind(this)}>FaceBook Link</Link>
                 {content}
             </div>
         );
@@ -84,7 +86,6 @@ export default class SignInUp extends React.Component<IProps, any> {
     private _renderSignIn() {
         return (
             <div className="sign-up">
-                <Link to="/auth/facebook" target="_blank">FaceBook</Link>
                 <form action={signInApi} method="post" onSubmit={this._submit.bind(this)}>
                     <fieldset>
                         <legend>Sign In</legend>
@@ -151,9 +152,6 @@ export default class SignInUp extends React.Component<IProps, any> {
     }
 
     private _handleJson(json: any) {
-        const noop = () => { };
-        const clearSessionData = this.context.clearSessionData || noop;
-
         if (json.success) {
             if (this.state.isShowingSignUp) {
                 GoogleTagManager.triggerSignUp();
@@ -161,7 +159,9 @@ export default class SignInUp extends React.Component<IProps, any> {
                 GoogleTagManager.triggerSignIn();
             }
 
-            clearSessionData();
+            this.context.refreshCurrentUser();
+            if (this.props.hideSignInUp)
+                this.props.hideSignInUp();
         } else {
             throw new Error("Incorrect username or password");
         }
