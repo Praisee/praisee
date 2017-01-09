@@ -9,6 +9,7 @@ import CreateCommentMutation from 'pz-client/src/comments/create-comment-mutatio
 import classNames from 'classnames';
 import SignInUp from 'pz-client/src/user/sign-in-up-embedded-component';
 import handleClick from 'pz-client/src/support/handle-click';
+import GoogleTagManager from 'pz-client/src/support/google-tag-manager';
 
 interface IProps {
     relay: any
@@ -168,6 +169,8 @@ class Editor extends React.Component<IProps, any> {
     }
 
     private _saveComment() {
+        GoogleTagManager.triggerComment();
+
         this.props.relay.commitUpdate(
             new CreateCommentMutation({
                 bodyData: serializeEditorState(this.state.editorContent),

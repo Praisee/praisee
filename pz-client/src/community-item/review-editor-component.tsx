@@ -18,6 +18,7 @@ import EditRating from 'pz-client/src/community-item/widgets/edit-rating-compone
 import SignInUp from 'pz-client/src/user/sign-in-up-embedded-component';
 import ReviewTopicSelector from 'pz-client/src/community-item/widgets/review-topic-selector-component';
 import SummaryEditor from 'pz-client/src/community-item/widgets/summary-editor-component';
+import GoogleTagManager from 'pz-client/src/support/google-tag-manager';
 
 interface IProps {
     relay: any
@@ -226,6 +227,10 @@ class ReviewCommunityItemEditor extends React.Component<IProps, any> {
     }
 
     private _setRating(rating: number) {
+        if (!this.state.rating) {
+            GoogleTagManager.triggerSetReviewRating();
+        }
+
         this.setState({rating});
     }
 
@@ -259,6 +264,8 @@ class ReviewCommunityItemEditor extends React.Component<IProps, any> {
         if (!topic && !newTopicName) {
             throw new Error('No topic available');
         }
+
+        GoogleTagManager.triggerReviewPost();
 
         let reviewDetails: any = {
             reviewRating: this.state.rating

@@ -8,6 +8,8 @@ import {
 
 import CreateCommunityItemMutation from 'pz-client/src/community-item/create-community-item-mutation';
 
+import GoogleTagManager from 'pz-client/src/support/google-tag-manager';
+
 export interface IProps {
     relay: any
 
@@ -36,6 +38,8 @@ class QuestionEditor extends React.Component<IProps, any> {
     }
 
     private _createQuestionMutation(editorData: IEditorData) {
+        GoogleTagManager.triggerQuestionPost();
+
         const {summary, bodyData} = editorData;
 
         return new CreateCommunityItemMutation({

@@ -11,6 +11,7 @@ import {withRouter} from 'react-router';
 import SignInUp from 'pz-client/src/user/sign-in-up-embedded-component';
 import handleClick from 'pz-client/src/support/handle-click';
 import SummaryEditor from 'pz-client/src/community-item/widgets/summary-editor-component';
+import GoogleTagManager from 'pz-client/src/support/google-tag-manager';
 
 export interface IEditorData {
     summary: string
@@ -255,6 +256,8 @@ class CommunityItemEditor extends React.Component<IProps, any> {
     }
 
     private _getDefaultMutationForSave(editorData: IEditorData) {
+        GoogleTagManager.triggerGeneralPost();
+
         const {summary, bodyData} = editorData;
 
         return new CreateCommunityItemMutation({

@@ -2,6 +2,7 @@ import * as React from 'react';
 import { Link } from 'react-router';
 import routePaths from 'pz-client/src/router/route-paths';
 import appInfo from 'pz-client/src/app/app-info';
+import GoogleTagManager from 'pz-client/src/support/google-tag-manager';
 
 const signInApi = appInfo.addresses.getSignInApi();
 const signUpApi = appInfo.addresses.getSignUpApi();
@@ -198,7 +199,7 @@ export default class SignInUp extends React.Component<IProps, any> {
             throw new Error("That email is already in use.");
         }
         if (response.status === 500) {
-            throw new Error("Opps! It looks like we're having trouble. Please try again later.");
+            throw new Error("Oops! It looks like we're having trouble. Please try again later.");
         }
         if (response.ok) {
             return response.json();
@@ -210,6 +211,12 @@ export default class SignInUp extends React.Component<IProps, any> {
         const clearSessionData = this.context.clearSessionData || noop;
 
         if (json.success) {
+            if (this.state.isShowingSignUp) {
+                GoogleTagManager.triggerSignUp();
+            } else {
+                GoogleTagManager.triggerSignIn();
+            }
+
             if (this.props.onSuccess) {
                 this.props.onSuccess(json);
             }

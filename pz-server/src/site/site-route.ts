@@ -18,6 +18,7 @@ const GRAPHQL_URL = `http://${serverInfo.getHost()}/i/graphql`; // TODO: Unhardc
 export function renderApp(request, response, renderProps, next) {
     if (process.env.NO_ISOMORPHIC) {
         response.render('site/layout', {
+            isProductionEnv: serverInfo.isProductionEnv(),
             cache: true,
             cachedRequestData: 'null',
             content: ''
@@ -61,6 +62,7 @@ export function renderApp(request, response, renderProps, next) {
 
             if (!hasError) {
                 response.render('site/layout', {
+                    isProductionEnv: serverInfo.isProductionEnv(),
                     cache: true,
                     cachedRequestData: JSON.stringify(data),
                     content: content

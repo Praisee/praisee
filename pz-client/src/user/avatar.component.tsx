@@ -6,6 +6,7 @@ import SchemaInjector, { ISchemaType } from 'pz-client/src/support/schema-inject
 import ToggleTrustMutation from 'pz-client/src/user/toggle-trust-mutation';
 import { ISignInUpContext, SignInUpContextType } from 'pz-client/src/user/sign-in-up-overlay-component';
 import handleClick from 'pz-client/src/support/handle-click';
+import GoogleTagManager from 'pz-client/src/support/google-tag-manager';
 
 const unknownAvatarUrl = appInfo.addresses.getImage('unknown-avatar.png');
 
@@ -130,9 +131,13 @@ class Avatar extends Component<IAvatarProps, any>{
 
     private _toggleTrust() {
         if (!this.context.signInUpContext.isLoggedIn) {
+            GoogleTagManager.triggerAttemptedTrust();
+
             this.context.signInUpContext.showSignInUp();
             return;
         }
+
+        GoogleTagManager.triggerTrust();
 
         const parent = this.props.communityItem || this.props.comment;
 

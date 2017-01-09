@@ -8,6 +8,7 @@ import { ISignInUpContext, SignInUpContextType } from 'pz-client/src/user/sign-i
 import classNames from 'classnames';
 import SchemaInjector, { ISchemaType } from 'pz-client/src/support/schema-injector';
 import handleClick from 'pz-client/src/support/handle-click';
+import GoogleTagManager from 'pz-client/src/support/google-tag-manager';
 
 class Votes extends React.Component<IVotesProps, any> {
     schemaInjector: SchemaInjector;
@@ -54,6 +55,8 @@ class Votes extends React.Component<IVotesProps, any> {
     }
 
     private _createVote(isUpVote: boolean) {
+        this._triggerGoogleTagManagerEvent(isUpVote, false);
+
         this.props.relay.commitUpdate(new CreateVoteMutation({
             isUpVote: isUpVote,
             communityItem: this.props.communityItem,
@@ -71,6 +74,8 @@ class Votes extends React.Component<IVotesProps, any> {
     }
 
     private _updateCurrentVote(isUpVote: boolean) {
+        this._triggerGoogleTagManagerEvent(isUpVote, false);
+
         this.props.relay.commitUpdate(new UpdateVoteMutation({
             isUpVote: isUpVote,
             communityItem: this.props.communityItem,
@@ -81,6 +86,7 @@ class Votes extends React.Component<IVotesProps, any> {
 
     private _doVoteLogic(isUpVote: boolean) {
         if (!this.context.signInUpContext.isLoggedIn) {
+            this._triggerGoogleTagManagerEvent(isUpVote, true);
             this.context.signInUpContext.showSignInUp();
             return;
         }
@@ -96,6 +102,38 @@ class Votes extends React.Component<IVotesProps, any> {
         }
         else {
             this._createVote(isUpVote);
+        }
+    }
+
+    private _triggerGoogleTagManagerEvent(isUpVote: boolean, isAttempt: boolean) {
+        if (isAttempt) {
+            if (this.props.communityItem) {
+                if (isUpVote) {
+                    GoogleTagManager.triggerAttemptedPostUpvote();
+                } else {
+                    GoogleTagManager.triggerAttemptedPostDownvote();
+                }
+            } else {
+                if (isUpVote) {
+                    GoogleTagManager.triggerAttemptedCommentUpvote();
+                } else {
+                    GoogleTagManager.triggerAttemptedCommentDownvote();
+                }
+            }
+        } else {
+            if (this.props.communityItem) {
+                if (isUpVote) {
+                    GoogleTagManager.triggerPostUpvote();
+                } else {
+                    GoogleTagManager.triggerPostDownvote();
+                }
+            } else {
+                if (isUpVote) {
+                    GoogleTagManager.triggerCommentUpvote();
+                } else {
+                    GoogleTagManager.triggerCommentDownvote();
+                }
+            }
         }
     }
 }
