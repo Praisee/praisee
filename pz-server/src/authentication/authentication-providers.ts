@@ -36,17 +36,16 @@ export default {
         'scope': ['email', 'public_profile', 'user_friends'],
         'link': true
     },
-    // 'google-link': {
-    //     'provider': 'google',
-    //     'module': 'passport-google-oauth',
-    //     'strategy': 'OAuth2Strategy',
-    //     'clientID': '{google-client-id-2}',
-    //     'clientSecret': '{google-client-secret-2}',
-    //     'callbackURL': 'http://localhost:3000/link/google/callback',
-    //     'authPath': '/link/google',
-    //     'callbackPath': '/link/google/callback',
-    //     'successRedirect': '/link/account',
-    //     'scope': ['email', 'profile'],
-    //     'link': true
-    // }
+    'google': {
+        'provider': 'google',
+        'module': 'passport-google-oauth',
+        'strategy': 'OAuth2Strategy',
+        'clientID': '188479827668-rmj7mkbd2grhi7cqqi5duenlpsv8pilm.apps.googleusercontent.com',
+        'clientSecret': 'xDkKGZ1NorQ5xZZkgESPuXdD',
+        'callbackURL': appInfo.addresses.getUrlBase() + appInfo.addresses.getGoogleAuthCallbackRoute(),
+        'authPath': appInfo.addresses.getGoogleAuthRoute(),
+        'callbackPath': appInfo.addresses.getGoogleAuthCallbackRoute(),
+        'successRedirect': appInfo.addresses.getLoginSuccessRoute(),
+        'scope': ['email', 'profile']
+    }
 }

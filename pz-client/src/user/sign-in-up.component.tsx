@@ -39,10 +39,21 @@ export default class SignInUp extends React.Component<IProps, any> {
 
         return (
             <div className="sign-in-up">
-                <Link to={appInfo.addresses.getFacebookAuthRoute()} target="_blank" onClick={this.props.hideSignInUp.bind(this)}>FaceBook</Link>
-                <br />
-                <Link to={appInfo.addresses.getFacebookLinkRoute()} target="_blank" onClick={this.props.hideSignInUp.bind(this)}>FaceBook Link</Link>
                 {content}
+            </div>
+        );
+    }
+
+    private _renderSocialLinks() {
+        return (
+            <div className="social-links">
+                <span className="social-links-or">or</span>
+                <Link to={appInfo.addresses.getFacebookAuthRoute()} target="_blank" onClick={this.props.hideSignInUp.bind(this)}>
+                    <i className="social-icon facebook-icon" />
+                </Link>
+                <Link to={appInfo.addresses.getGoogleAuthRoute()} target="_blank" onClick={this.props.hideSignInUp.bind(this)}>
+                    <i className="social-icon google-icon" />
+                </Link>
             </div>
         );
     }
@@ -68,9 +79,11 @@ export default class SignInUp extends React.Component<IProps, any> {
 
                         {this.state.errorText && <p className="error-text">{this.state.errorText}</p>}
 
-                        <div>
+                        <div className="sign-in-up-submit">
                             <button type="submit" className="sign-up-button">Sign Up</button>
                         </div>
+
+                        {this._renderSocialLinks()}
                     </fieldset>
                 </form>
 
@@ -100,9 +113,11 @@ export default class SignInUp extends React.Component<IProps, any> {
 
                         {this.state.errorText && <p className="error-text">{this.state.errorText}</p>}
 
-                        <div>
+                        <div className="sign-in-up-submit">
                             <button type="submit" className="sign-in-button">Sign In</button>
                         </div>
+
+                        {this._renderSocialLinks()}
                     </fieldset>
                 </form>
 

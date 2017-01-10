@@ -15,6 +15,8 @@ let appInfo = {
         getSignOutApi: () => '/i/sign-out',
         getFacebookAuthRoute: () => '/i/auth/facebook',
         getFacebookLinkRoute: () => '/i/link/facebook',
+        getGoogleAuthRoute: () => '/i/auth/google',
+        getGoogleLinkRoute: () => '/i/link/google',
 
         getSearchSuggestionsApi: () => '/i/search/suggestions',
         getMentionSuggestionsApi: () => '/i/search/mention-suggestions',

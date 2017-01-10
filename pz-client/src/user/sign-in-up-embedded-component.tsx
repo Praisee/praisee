@@ -53,7 +53,7 @@ export default class SignInUp extends React.Component<IProps, any> {
                 <Link to={appInfo.addresses.getFacebookAuthRoute()} target="_blank">
                     <i className="social-icon facebook-icon" />
                 </Link>
-                <Link to={appInfo.addresses.getFacebookAuthRoute()} target="_blank">
+                <Link to={appInfo.addresses.getGoogleAuthRoute()} target="_blank">
                     <i className="social-icon google-icon" />
                 </Link>
             </div>

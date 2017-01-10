@@ -1,11 +1,16 @@
 @mixin sign-in-up {
   .sign-in-up {
+    @include social-media-links();
     @include make-container();
     @include make-container-max-widths();
 
     .sign-in-button, .sign-up-button {
       @include btn;
       @include btn-primary;
+    }
+
+    .sign-in-up-submit{
+      display: inline-block;
     }
 
     p {
@@ -21,6 +26,8 @@
 
 @mixin embedded-sign-in-up {
   .embedded-sign-in-up {
+    @include social-media-links();
+    
     .sign-in-up-field {
       @extend .form-control;
       font-size: 0.9rem;
@@ -40,6 +47,25 @@
       @extend .alert-danger;
     }
 
+    
+    @include media-breakpoint-up(lg) {
+      .sign-in-up-field { width: 96%; }
+      .sign-in-up-field-group { display: inline-block; width: 33.33%; }
+      .switch-sign-in-up-action { font-size: 0.8rem; }
+
+      .sign-up {
+        .sign-in-up-email { margin: 0 auto; }
+        .sign-in-up-password { margin-left: auto; }
+      }
+
+      .sign-in {
+        .sign-in-up-password { margin-left: auto; }
+      }
+    }
+  }
+}
+
+@mixin social-media-links {
     .social-links {
       display: inline-block;
       vertical-align: middle;
@@ -66,22 +92,6 @@
     .google-icon{
       @extend .fa-google-plus-square;
     }
-    
-    @include media-breakpoint-up(lg) {
-      .sign-in-up-field { width: 96%; }
-      .sign-in-up-field-group { display: inline-block; width: 33.33%; }
-      .switch-sign-in-up-action { font-size: 0.8rem; }
-
-      .sign-up {
-        .sign-in-up-email { margin: 0 auto; }
-        .sign-in-up-password { margin-left: auto; }
-      }
-
-      .sign-in {
-        .sign-in-up-password { margin-left: auto; }
-      }
-    }
-  }
 }
 
 @mixin sign-in-up-namespace {

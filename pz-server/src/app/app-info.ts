@@ -28,8 +28,12 @@ let appInfo = {
         getFacebookAuthCallbackRoute: () => '/i/auth/facebook/callback',
         getFacebookLinkRoute: () => '/i/link/facebook',
         getFacebookLinkCallbackRoute: () => '/i/link/facebook/callback',
+        getGoogleAuthRoute: () => '/i/auth/google',
+        getGoogleAuthCallbackRoute: () => '/i/auth/google/callback',
+        getGoogleLinkRoute: () => '/i/link/google',
+        getGoogleLinkCallbackRoute: () => '/i/link/google/callback',
 
-        getLoginSuccessRoute: () => '/i/auth-successfull',
+        getLoginSuccessRoute: () => '/i/auth-successful',
 
         getSearchSuggestionsApi: () => '/i/search/suggestions',
         getMentionSuggestionsApi: () => '/i/search/mention-suggestions',
