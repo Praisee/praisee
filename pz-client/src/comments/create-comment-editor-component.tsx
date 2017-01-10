@@ -34,7 +34,8 @@ class Editor extends React.Component<IProps, any> {
 
     state = {
         editorContent: null,
-        enableCommentEditor: false
+        enableCommentEditor: false,
+        showSignInUp: true
     };
 
     private _inputs: {
@@ -63,6 +64,10 @@ class Editor extends React.Component<IProps, any> {
         }
     }
 
+    componentWillRender() {
+        this.setState({showSignInUp: !this.context.signInUpContext.isLoggedIn()});
+    }
+
     private _renderEditorOrReply() {
         if (this.state.enableCommentEditor) {
             return (
@@ -84,9 +89,9 @@ class Editor extends React.Component<IProps, any> {
                         />
                     </form>
 
-                    {this.context.signInUpContext.isLoggedIn()
-                        ? this._renderReplyButton()
-                        : this._renderSignInUp()
+                    {this.state.showSignInUp
+                        ? this._renderSignInUp()
+                        : this._renderReplyButton()
                     }
 
                 </div>
@@ -112,6 +117,12 @@ class Editor extends React.Component<IProps, any> {
     }
 
     private _renderSignInUp() {
+        /* TODO: Warning: Setting the global showSignInUp method here so the last comment to have this open will be closed.
+        *        so this will only close the last one if there are multiple open (Which should rarely happen) */
+        if (typeof(window) !== 'undefined'){
+            window['showSignInUp'] = this._setShowSignInUp.bind(this);
+        }
+        
         return (
             <SignInUp
                 onInteraction={this._recordSignInUpInteraction.bind(this)}
@@ -126,7 +137,10 @@ class Editor extends React.Component<IProps, any> {
             clearTimeout(this._hideEditorTimeout);
         }
 
-        this.setState({ enableCommentEditor: true });
+        this.setState({ 
+            enableCommentEditor: true ,
+            showSignInUp: !this.context.signInUpContext.isLoggedIn()
+        });
 
         if (this.props.onEditing) {
             this.props.onEditing(true);
@@ -194,6 +208,10 @@ class Editor extends React.Component<IProps, any> {
 
     private _updateEditor(editorContent) {
         this.setState({ editorContent });
+    }
+
+    private _setShowSignInUp(showSignInUp: boolean){
+        this.setState({ showSignInUp })
     }
 }
 

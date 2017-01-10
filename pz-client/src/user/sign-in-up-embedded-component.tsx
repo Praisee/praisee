@@ -46,6 +46,20 @@ export default class SignInUp extends React.Component<IProps, any> {
         );
     }
 
+    private _renderSocialLinks() {
+        return (
+            <div className="social-links">
+                <span className="social-links-or">or</span>
+                <Link to={appInfo.addresses.getFacebookAuthRoute()} target="_blank">
+                    <i className="social-icon facebook-icon" />
+                </Link>
+                <Link to={appInfo.addresses.getFacebookAuthRoute()} target="_blank">
+                    <i className="social-icon google-icon" />
+                </Link>
+            </div>
+        );
+    }
+
     private _renderSignUp() {
         const {submitText} = this.props;
 
@@ -78,8 +92,8 @@ export default class SignInUp extends React.Component<IProps, any> {
                             />
                     </div>
 
-                    {this.state.isShowingPasswordField &&
-                        <div className="sign-in-up-password-group sign-in-up-field-group">
+                    {this.state.isShowingPasswordField
+                        ? <div className="sign-in-up-password-group sign-in-up-field-group">
                             <input
                                 className="sign-in-up-password sign-in-up-field"
                                 type="password"
@@ -90,6 +104,7 @@ export default class SignInUp extends React.Component<IProps, any> {
                                 onChange={onInteraction}
                                 />
                         </div>
+                        : this._renderSocialLinks()
                     }
 
                     {this.state.errorText && <p className="error-text">{this.state.errorText}</p>}
@@ -141,6 +156,8 @@ export default class SignInUp extends React.Component<IProps, any> {
                             onChange={onInteraction}
                             />
                     </div>
+
+                    {this._renderSocialLinks()}
 
                     {this.state.errorText && <p className="error-text">{this.state.errorText}</p>}
 

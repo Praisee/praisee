@@ -138,6 +138,7 @@ export class AuthenticationInitializer {
             response.send(`<script>
                 (function(){
                     window.opener.refreshUser();
+                    window.opener.showSignInUp(false);
                     window.opener.focus();
                     window.close();
                 })()

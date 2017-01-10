@@ -39,6 +39,33 @@
       @extend .alert;
       @extend .alert-danger;
     }
+
+    .social-links {
+      display: inline-block;
+      vertical-align: middle;
+    }
+
+    .social-links-or {
+      padding: 5px;
+      color: $gray;
+    }
+    
+    .social-links a {
+      padding: 5px;
+    }
+    
+    .social-icon{
+      @extend .fa;
+      font-size: 2.3rem;
+    }
+
+    .facebook-icon{
+      @extend .fa-facebook-square;
+    }
+
+    .google-icon{
+      @extend .fa-google-plus-square;
+    }
     
     @include media-breakpoint-up(lg) {
       .sign-in-up-field { width: 96%; }

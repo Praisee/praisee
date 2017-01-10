@@ -111,6 +111,9 @@ export class App extends React.Component<any, any> {
                 rawUserId: 'User' + id
             })
         );
+
+        if(window["showSignInUp"])
+            window["showSignInUp"](this.props.currentUser.isLoggedIn);
     }
 }
 
@@ -126,6 +129,8 @@ export default Relay.createContainer(App, {
                 id
                 serverId
                 isLoggedIn
+                displayName
+                isCurrentUser
                 ${CurrentUserMutation.getFragment('currentUser')}
             }
         `

@@ -71,7 +71,8 @@ class ReviewCommunityItemEditor extends React.Component<IProps, any> {
         summaryHasFocus: false,
         bodyHasFocus: false,
         hasSelectedTopic: false,
-        newTopicName: null
+        newTopicName: null,
+        showSignInUp: true
     };
 
     refs: {
@@ -173,12 +174,16 @@ class ReviewCommunityItemEditor extends React.Component<IProps, any> {
             </button>
         );
 
-        return this.context.signInUpContext.isLoggedIn()
-            ? postButton
-            : this._renderSignInUp();
+        return this.state.showSignInUp
+            ? this._renderSignInUp()
+            : postButton;
     }
 
     private _renderSignInUp() {
+        if (typeof (window) !== 'undefined') {
+            window['showSignInUp'] = this._setShowSignInUp.bind(this);
+        }
+
         return (
             <SignInUp
                 onInteraction={this._recordSignInUpInteraction.bind(this)}
@@ -317,10 +322,10 @@ class ReviewCommunityItemEditor extends React.Component<IProps, any> {
 
     private _shouldShowFullBody(): boolean {
         return (
-        this.state.bodyHasFocus ||
-        this.state.summaryHasFocus ||
-        this.state.summaryContent.length > 0 ||
-        (this.state.bodyState && this.state.bodyState.getCurrentContent().hasText()));
+            this.state.bodyHasFocus ||
+            this.state.summaryHasFocus ||
+            this.state.summaryContent.length > 0 ||
+            (this.state.bodyState && this.state.bodyState.getCurrentContent().hasText()));
     }
 
     private _redirectOnSuccess(response) {
@@ -359,6 +364,10 @@ class ReviewCommunityItemEditor extends React.Component<IProps, any> {
         });
 
         this.props.relay.setVariables({selectedTopicServerId: null});
+    }
+
+    private _setShowSignInUp(showSignInUp: boolean) {
+        this.setState({ showSignInUp })
     }
 }
 
