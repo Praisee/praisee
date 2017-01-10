@@ -17,7 +17,7 @@
     }
 
     .side-section-container {
-      @include make-col-span(4);
+      @include make-col-span(5);
       padding-left: 3rem;
 
       .side-section {
@@ -93,6 +93,11 @@
         height: 5rem;
         margin: 1rem 0;
         margin-bottom: 0.5rem;
+      }
+
+      .topic-overview {
+        color: $gray;
+        font-size: 0.9rem;
       }
 
       .photo-gallery {

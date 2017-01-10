@@ -8,9 +8,9 @@ interface ITopicWikiProps {
 export default class TopicWiki extends Component<ITopicWikiProps, any>{
     render() {
         return (
-            <p>
+            <div className="topic-overview">
                 {this.props.overviewContent}
-            </p>
+            </div>
         )
     }
 }

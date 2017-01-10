@@ -50,7 +50,7 @@ export default class SignInUp extends React.Component<IProps, any> {
                         <legend>Sign Up</legend>
 
                         <div className="form-group">
-                            <input className="form-control" type="text" name="displayName" placeholder="Your name" key="displayName" />
+                            <input className="form-control" type="text" name="displayName" placeholder="Your full name" key="displayName" />
                         </div>
 
                         <div className="form-group">

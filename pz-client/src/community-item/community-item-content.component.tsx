@@ -18,6 +18,7 @@ var createLinkifyPlugin = require('draft-js-linkify-plugin').default;
 
 export interface IProps {
     communityItem: {
+        body: string
         bodyData: any
     }
 }
@@ -32,7 +33,13 @@ export class CommunityItemContent extends React.Component<IProps, any> {
     ];
 
     render() {
-        let {bodyData} = this.props.communityItem;
+        let {body, bodyData} = this.props.communityItem;
+
+        if (!body || !body.trim().length) {
+            return (
+                <span />
+            );
+        }
 
         let content;
         let bodyDataAsObj = JSON.parse(bodyData);
@@ -75,6 +82,7 @@ export default Relay.createContainer(CommunityItemContent, {
     fragments: {
         communityItem: () => Relay.QL`
             fragment on CommunityItemInterface {
+                body
                 bodyData
             }
         `

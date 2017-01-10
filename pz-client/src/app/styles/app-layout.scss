@@ -4,14 +4,17 @@
   margin-bottom: 2.5rem;
   border-bottom: 1px solid #eee;
 
-
   @include media-breakpoint-down(sm) {
     position: fixed;
     background-color: $body-bg;
     z-index: 100;
     width: 100%;
+
+    .error-namespace {
+      margin: 0;
+    }
   }
-  
+
   .app-header-container {
     @include make-container();
     @include make-container-max-widths();
@@ -52,6 +55,10 @@
     .dropdown-menu {
       @extend .dropdown-menu-right;
     }
+
+    .sign-in-dropdown-menu {
+      display: none;
+    }
   }
 
   @include media-breakpoint-down(sm) {
@@ -61,18 +68,34 @@
 
     .app-branding, .app-search, .app-controls {
       float: none;
-      margin-bottom: 1rem
+      margin-bottom: 1rem;
+      margin-right: 0.5rem;
     }
 
     .app-branding {
       display: block;
+      padding: 0;
     }
 
     .app-search {
+      padding: 0;
+
+      .site-search .search-input {
+        font-size: 0.9rem;
+      }
     }
 
     .app-controls {
-      display: none;
+      padding: 0;
+      margin-left: 0.5rem;
+
+      .sign-in {
+        display: none;
+      }
+
+      .sign-in-dropdown-menu {
+        display: block;
+      }
     }
   }
 
@@ -102,45 +125,31 @@
   .logo {
     height: 3rem;
     height: 2.5vw;
-    min-height: 0.8rem;
+    min-height: 1rem;
 
     @include media-breakpoint-down(sm) {
       height: 3vw;
     }
   }
-  
-  .nav-toggler {
-    display: none;
-    
-    @include media-breakpoint-down(sm) {
-      display: block;
-    }
-  }
-  
-  .nav-toggler-icon {
+
+  .user-account-menu-icon {
     @extend .fa;
     @extend .fa-bars;
+    color: $gray-lighter;
+    font-size: 1rem;
+    display: none;
   }
 
-  .drop-down-menu {
-    display: none;
-    
-    @include media-breakpoint-down(sm) {
-      display: block;
-      max-height: 112px; /* TODO: Don't hard code. If set too high it looks laggy on click though */
-      overflow: hidden;
-      transition: .5s max-height;
-      text-align: right;
+  @include media-breakpoint-down(sm) {
+    .user-account-menu-icon {
+      display: inline-block;
+    }
 
-      .drop-down-menu-item {
-        padding:1rem;
-      }
+    .current-user .display-name {
+      display: none;
     }
   }
-  
-  .drop-down-menu-collapsed {
-    max-height: 0;
-  }
+
 }
 
 @mixin app-layout {
@@ -161,10 +170,10 @@
 
     .app-footer {
     }
-    
+
     .app-content {
       @include media-breakpoint-down(sm) {
-        padding-top: 86px;
+        padding-top: 68px;
       }
     }
   }

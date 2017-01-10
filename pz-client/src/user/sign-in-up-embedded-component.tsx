@@ -59,7 +59,7 @@ export default class SignInUp extends React.Component<IProps, any> {
                             className="sign-in-up-name sign-in-up-field"
                             type="text"
                             name="displayName"
-                            placeholder="Your name"
+                            placeholder="Your full name"
                             key="displayName"
                             onFocus={onInteraction}
                             onChange={onInteraction}

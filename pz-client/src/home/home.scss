@@ -12,6 +12,16 @@
       margin-right: 0;
       border-bottom: none;
       margin-bottom: 0;
+      margin-top: 1rem;
+
+      @include media-breakpoint-down(sm) {
+        position: absolute;
+        background-color: transparent;
+        z-index: 0;
+        width: auto;
+        padding: 0;
+        margin-top: 1.3rem;
+      }
 
       .app-branding, .app-search {
         display: none;
@@ -63,6 +73,10 @@
         .site-search {
           margin: 0 auto;
           width: 40%;
+
+          @include media-breakpoint-down(sm) {
+            width: 80%;
+          }
         }
 
         .site-search {
@@ -96,8 +110,8 @@
     .branding-large {
       @extend .display-3;
       text-align: center;
-      margin-top: 1rem;
-      margin-bottom: 1rem;
+      padding-top: 1rem;
+      padding-bottom: 1rem;
 
       @include media-breakpoint-down(sm) {
         margin-bottom: 0.5rem;
@@ -113,27 +127,6 @@
       text-align: center;
       font-size: 1rem;
       color: $gray-light;
-    }
-
-    .primary-content .site-search {
-      margin: 0 auto;
-      margin-top: 3rem;
-      margin-bottom: 5rem;
-      width: 65%;
-
-      @include media-breakpoint-down(sm) {
-        width: 95%;
-        margin-top: 2rem;
-        margin-bottom: 3.5rem;
-      }
-
-      .search-input-container {
-        border: 1px solid $input-border-color;
-      }
-
-      &.site-search-has-focus .search-input-container {
-        border: 1px solid $input-border-focus;
-      }
     }
 
     .secondary-section {
