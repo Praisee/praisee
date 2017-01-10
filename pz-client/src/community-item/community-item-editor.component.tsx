@@ -135,7 +135,7 @@ class CommunityItemEditor extends React.Component<IProps, any> {
     }
 
     private _renderPostButton() {
-        if (!this.context.signInUpContext.isLoggedIn) {
+        if (!this.context.signInUpContext.isLoggedIn()) {
             return;
         }
 
@@ -149,7 +149,7 @@ class CommunityItemEditor extends React.Component<IProps, any> {
     }
 
     private _renderSignInUp() {
-        if (!this._shouldShowFullBody() || this.context.signInUpContext.isLoggedIn) {
+        if (!this._shouldShowFullBody() || this.context.signInUpContext.isLoggedIn()) {
             return;
         }
 

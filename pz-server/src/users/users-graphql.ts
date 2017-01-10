@@ -78,7 +78,12 @@ export default function UsersTypes(repositoryAuthorizers: IAppRepositoryAuthoriz
         fields: () => ({
             id: {
                 type: GraphQLString,
-                resolve: () => CurrentUserType.name
+                resolve: ({id}, _, {user}) => {
+                    if (id === 'CurrentUser')
+                        return id;
+                    if (user)
+                        return 'User' + user.id
+                }
             },
 
             displayName: {
@@ -88,7 +93,7 @@ export default function UsersTypes(repositoryAuthorizers: IAppRepositoryAuthoriz
             reputation: {
                 type: GraphQLInt,
                 resolve: async ({id}, _, {user}) => {
-                    if(user)
+                    if (user)
                         return userAuthorizer.as(user).getReputation(id);
                 }
             },
@@ -96,7 +101,7 @@ export default function UsersTypes(repositoryAuthorizers: IAppRepositoryAuthoriz
             image: {
                 type: GraphQLString,
                 resolve: ({email}) => {
-                    if(email)
+                    if (email)
                         return calculateGravatarUrl(email);
                 }
             },
@@ -108,7 +113,7 @@ export default function UsersTypes(repositoryAuthorizers: IAppRepositoryAuthoriz
             trusterCount: {
                 type: GraphQLInt,
                 resolve: async ({id}, _, {user}) => {
-                    if(user)
+                    if (user)
                         return userAuthorizer.as(user).getTotalTrusters(id);
                 }
             },
@@ -116,7 +121,7 @@ export default function UsersTypes(repositoryAuthorizers: IAppRepositoryAuthoriz
             serverId: {
                 type: GraphQLInt,
                 resolve: (_, __, {user}) => {
-                    if(user)
+                    if (user)
                         return user.id
                 }
             },
@@ -132,7 +137,7 @@ export default function UsersTypes(repositoryAuthorizers: IAppRepositoryAuthoriz
 
             isCurrentUser: {
                 type: new GraphQLNonNull(GraphQLBoolean),
-                resolve: ({id}, _, user) => true
+                resolve: ({id}, _, user) => !!user
             }
         }),
 
@@ -146,7 +151,8 @@ export default function UsersTypes(repositoryAuthorizers: IAppRepositoryAuthoriz
             id: {
                 type: GraphQLString,
                 resolve: ({id}) => {
-                    return OtherUserType.name + id;
+                    if(id)
+                        return 'User' + id;
                 }
             },
 
@@ -242,12 +248,19 @@ export default function UsersTypes(repositoryAuthorizers: IAppRepositoryAuthoriz
                     payload.currentUser.id = CurrentUserType.name;
                     return payload.currentUser;
                 }
+            },
+            rawUser: {
+                type: types.UserInterfaceType,
+                resolve: (payload) => {
+                    return payload.rawUser;
+                }
             }
         }),
 
         mutateAndGetPayload: async (_, context) => {
-            let currentUser = await userAuthorizer.as(context.user).findCurrentUser();
-            return { currentUser };
+            let currentUser: any = await userAuthorizer.as(context.user).findCurrentUser();
+            let rawUser = Object.assign({}, currentUser);
+            return { currentUser, rawUser };
         }
     });
 

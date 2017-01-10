@@ -9,12 +9,12 @@ interface IProps {
 
 export interface ISignInUpContext {
     showSignInUp: (event?) => any;
-    isLoggedIn: boolean
+    isLoggedIn: () => boolean
 }
 
 export var SignInUpContextType: React.Requireable<ISignInUpContext> = React.PropTypes.shape({
     showSignInUp: React.PropTypes.func,
-    isLoggedIn: React.PropTypes.bool
+    isLoggedIn: React.PropTypes.func
 });
 
 export default class SignInUpOverlay extends React.Component<IProps, any> {
@@ -23,7 +23,7 @@ export default class SignInUpOverlay extends React.Component<IProps, any> {
     };
 
     static contextTypes: any = {
-        currentUser: CurrentUserType
+        getCurrentUser: React.PropTypes.func
     };
 
     static childContextTypes = {
@@ -31,7 +31,7 @@ export default class SignInUpOverlay extends React.Component<IProps, any> {
     };
 
     context: {
-        currentUser;
+        getCurrentUser;
     };
 
     refs: any;
@@ -40,13 +40,13 @@ export default class SignInUpOverlay extends React.Component<IProps, any> {
         return {
             signInUpContext: {
                 showSignInUp: this._showSignInUp.bind(this),
-                isLoggedIn: this.context.currentUser !== null
+                isLoggedIn: () => this.context.getCurrentUser().isLoggedIn
             }
         };
     }
 
     componentWillReceiveProps(_, __, nextContext) {
-        if (nextContext && nextContext.currentUser) {
+        if (nextContext && nextContext.getCurrentUser().isLoggedIn) {
             this._hideSignInUp();
         }
     }

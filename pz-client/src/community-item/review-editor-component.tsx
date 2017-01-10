@@ -173,7 +173,7 @@ class ReviewCommunityItemEditor extends React.Component<IProps, any> {
             </button>
         );
 
-        return this.context.signInUpContext.isLoggedIn
+        return this.context.signInUpContext.isLoggedIn()
             ? postButton
             : this._renderSignInUp();
     }

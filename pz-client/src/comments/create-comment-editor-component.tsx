@@ -22,13 +22,13 @@ interface IProps {
 class Editor extends React.Component<IProps, any> {
     static contextTypes: any = {
         appViewerId: React.PropTypes.string.isRequired,
-        currentUser: CurrentUserType,
+        getCurrentUser: React.PropTypes.func,
         signInUpContext: SignInUpContextType
     };
 
     context: {
         appViewerId: number,
-        currentUser: any,
+        getCurrentUser: Function,
         signInUpContext: ISignInUpContext
     };
 
@@ -84,7 +84,7 @@ class Editor extends React.Component<IProps, any> {
                         />
                     </form>
 
-                    {this.context.signInUpContext.isLoggedIn
+                    {this.context.signInUpContext.isLoggedIn()
                         ? this._renderReplyButton()
                         : this._renderSignInUp()
                     }

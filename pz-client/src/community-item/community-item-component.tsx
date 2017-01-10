@@ -59,7 +59,7 @@ class CommunityItem extends Component<ICommunityItemProps, ICommuintyItemState> 
     context: {
         appViewerId: number
         signInUpContext: ISignInUpContext
-        currentUser: any
+        getCurrentUser: any
     };
 
     state = {
@@ -246,7 +246,7 @@ class CommunityItem extends Component<ICommunityItemProps, ICommuintyItemState> 
     private _toggleMinimized() {
         const isMinimized = !this.state.isMinimized;
 
-        if (this.context.currentUser) {
+        if (this.context.getCurrentUser().isLoggedIn) {
             this.props.relay.commitUpdate(new UpdateCommunityItemInteractionMutation({
                 appViewerId: this.context.appViewerId,
                 communityItem: this.props.communityItem,

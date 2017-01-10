@@ -24,6 +24,14 @@ export default class CurrentUserMutation extends Relay.Mutation {
                     serverId
                     username
                 }
+                rawUser {
+                    displayName
+                    id
+                    reputation
+                    image
+                    trusterCount
+                    isCurrentUser
+                }
             }
         `;
     }
@@ -32,7 +40,8 @@ export default class CurrentUserMutation extends Relay.Mutation {
         return [{
             type: 'FIELDS_CHANGE',
             fieldIDs: {
-                currentUser: this.props.currentUser.id
+                currentUser: this.props.currentUser.id,
+                rawUser: this.props.rawUserId
             }
         }];
     }

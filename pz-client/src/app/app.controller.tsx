@@ -26,7 +26,7 @@ export class App extends React.Component<any, any> {
     static childContextTypes: any = {
         showNotFoundError: React.PropTypes.func,
         appViewerId: React.PropTypes.string,
-        currentUser: CurrentUserType,
+        getCurrentUser: React.PropTypes.func,
         refreshCurrentUser: React.PropTypes.func
     };
 
@@ -44,7 +44,7 @@ export class App extends React.Component<any, any> {
         return {
             showNotFoundError: this._showNotFoundError.bind(this),
             appViewerId: this.props.viewer.id,
-            currentUser: this.props.currentUser,
+            getCurrentUser: () => this.props.currentUser,
             refreshCurrentUser: this._refreshUser.bind(this)
         };
     }
@@ -104,10 +104,11 @@ export class App extends React.Component<any, any> {
         }
     }
     
-    private _refreshUser() {
+    private _refreshUser(id) {
         this.props.relay.commitUpdate(
             new CurrentUserMutation({
-                currentUser: this.props.currentUser
+                currentUser: this.props.currentUser,
+                rawUserId: 'User' + id
             })
         );
     }
@@ -124,6 +125,7 @@ export default Relay.createContainer(App, {
             fragment on CurrentUser {
                 id
                 serverId
+                isLoggedIn
                 ${CurrentUserMutation.getFragment('currentUser')}
             }
         `

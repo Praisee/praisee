@@ -130,7 +130,7 @@ class Avatar extends Component<IAvatarProps, any>{
     }
 
     private _toggleTrust() {
-        if (!this.context.signInUpContext.isLoggedIn) {
+        if (!this.context.signInUpContext.isLoggedIn()) {
             GoogleTagManager.triggerAttemptedTrust();
 
             this.context.signInUpContext.showSignInUp();

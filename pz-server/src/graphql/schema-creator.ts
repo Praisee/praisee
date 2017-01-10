@@ -157,9 +157,11 @@ export default function createSchema(repositoryAuthorizers: IAppRepositoryAuthor
                 currentUser: {
                     type: types.CurrentUserType,
                     resolve: async (_, __, {contextUser}) => {
-                        let user = await usersAuthorizer.as(contextUser).findCurrentUser();
-                        if(user) return user;
-                        return {id: types.CurrentUserType.name};
+                        let user: any = await usersAuthorizer.as(contextUser).findCurrentUser();
+                        if (!user)
+                            user = {};
+                        user.id = types.CurrentUserType.name;
+                        return user;
                     }
                 },
 

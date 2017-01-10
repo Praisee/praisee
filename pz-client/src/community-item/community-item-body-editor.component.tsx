@@ -109,7 +109,7 @@ export default class CommunityItemEditor extends React.Component<IProps, any> {
     }
 
     private _renderAddPhotoButton() {
-        if (!this.context.signInUpContext.isLoggedIn) {
+        if (!this.context.signInUpContext.isLoggedIn()) {
             return;
         }
 

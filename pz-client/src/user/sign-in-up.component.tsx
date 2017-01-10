@@ -14,7 +14,7 @@ interface IProps {
 
 interface IContext {
     clearSessionData: () => void
-    refreshCurrentUser: () => void
+    refreshCurrentUser: (id) => void
 }
 
 export default class SignInUp extends React.Component<IProps, any> {
@@ -159,9 +159,12 @@ export default class SignInUp extends React.Component<IProps, any> {
                 GoogleTagManager.triggerSignIn();
             }
 
-            this.context.refreshCurrentUser();
-            if (this.props.hideSignInUp)
+            this.context.refreshCurrentUser(json.user.id);
+
+            if (this.props.hideSignInUp) {
                 this.props.hideSignInUp();
+            }
+
         } else {
             throw new Error("Incorrect username or password");
         }
