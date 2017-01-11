@@ -35,13 +35,11 @@ export interface ICommentProps {
 export class Comment extends Component<ICommentProps, any>{
     static contextTypes: any = {
         appViewerId: React.PropTypes.string.isRequired,
-        currentUser: CurrentUserType,
         signInUpContext: SignInUpContextType
     };
 
     context: {
         appViewerId: number,
-        currentUser: any,
         signInUpContext: ISignInUpContext
     };
 

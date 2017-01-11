@@ -97,7 +97,20 @@ class ReviewCommunityItemEditor extends React.Component<IProps, any> {
         );
     }
 
+    _updateSignInUpFormTimer = null;
+
+    componentDidMount() {
+        // TODO: This is a hack due to context updates not triggering re-renders. It needs to be replaced.
+        this._updateSignInUpFormTimer = setInterval(() => {
+            if(this.state.showSignInUp !== !this.context.signInUpContext.isLoggedIn()) {
+                this.setState({showSignInUp: !this.context.signInUpContext.isLoggedIn()});
+            }
+        }, 250);
+    }
+
     componentWillUnmount() {
+        clearInterval(this._updateSignInUpFormTimer);
+
         if (this._delayedStateTimer) {
             clearTimeout(this._delayedStateTimer);
         }
@@ -180,9 +193,6 @@ class ReviewCommunityItemEditor extends React.Component<IProps, any> {
     }
 
     private _renderSignInUp() {
-        if(this.state.showSignInUp !== !this.context.signInUpContext.isLoggedIn())
-            this.setState({showSignInUp: !this.context.signInUpContext.isLoggedIn()});
-
         if (typeof (window) !== 'undefined') {
             window['showSignInUp'] = this._setShowSignInUp.bind(this);
         }

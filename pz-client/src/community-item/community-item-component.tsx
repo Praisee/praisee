@@ -53,7 +53,7 @@ class CommunityItem extends Component<ICommunityItemProps, ICommuintyItemState> 
     static contextTypes: any = {
         appViewerId: React.PropTypes.string.isRequired,
         signInUpContext: SignInUpContextType,
-        currentUser: CurrentUserType
+        getCurrentUser: React.PropTypes.func
     };
 
     context: {

@@ -96,7 +96,20 @@ class CommunityItemEditor extends React.Component<IProps, any> {
 
     private _hasInteractedWithSignInUp = false;
 
+    _updateSignInUpFormTimer = null;
+
+    componentDidMount() {
+        // TODO: This is a hack due to context updates not triggering re-renders. It needs to be replaced.
+        this._updateSignInUpFormTimer = setInterval(() => {
+            if(this.state.showSignInUp !== !this.context.signInUpContext.isLoggedIn()) {
+                this.setState({showSignInUp: !this.context.signInUpContext.isLoggedIn()});
+            }
+        }, 250);
+    }
+
     componentWillUnmount() {
+        clearInterval(this._updateSignInUpFormTimer);
+
         if (this._delayedStateTimer) {
             clearTimeout(this._delayedStateTimer);
         }
@@ -150,9 +163,6 @@ class CommunityItemEditor extends React.Component<IProps, any> {
     }
 
     private _renderSignInUp() {
-        if (this.state.showSignInUp !== !this.context.signInUpContext.isLoggedIn())
-            this.setState({ showSignInUp: !this.context.signInUpContext.isLoggedIn() });
-
         if (!this.state.showSignInUp)
             return;
 
