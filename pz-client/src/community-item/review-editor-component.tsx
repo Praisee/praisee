@@ -180,6 +180,9 @@ class ReviewCommunityItemEditor extends React.Component<IProps, any> {
     }
 
     private _renderSignInUp() {
+        if(this.state.showSignInUp !== !this.context.signInUpContext.isLoggedIn())
+            this.setState({showSignInUp: !this.context.signInUpContext.isLoggedIn()});
+
         if (typeof (window) !== 'undefined') {
             window['showSignInUp'] = this._setShowSignInUp.bind(this);
         }

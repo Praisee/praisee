@@ -7,7 +7,7 @@ import CreateCommunityItemMutation from 'pz-client/src/community-item/create-com
 import CommunityItemBodyEditor from 'pz-client/src/community-item/community-item-body-editor.component';
 import serializeEditorState from 'pz-client/src/editor/serialize-editor-state';
 import classNames from 'classnames';
-import {withRouter} from 'react-router';
+import { withRouter } from 'react-router';
 import SignInUp from 'pz-client/src/user/sign-in-up-embedded-component';
 import handleClick from 'pz-client/src/support/handle-click';
 import SummaryEditor from 'pz-client/src/community-item/widgets/summary-editor-component';
@@ -82,16 +82,17 @@ class CommunityItemEditor extends React.Component<IProps, any> {
 
     state = {
         summaryContent: '',
-        bodyState: void(0),
+        bodyState: void (0),
         summaryHasFocus: false,
-        bodyHasFocus: false
+        bodyHasFocus: false,
+        showSignInUp: true
     };
 
     refs: {
         bodyEditor: any
     };
 
-    private _saying = void(0);
+    private _saying = void (0);
 
     private _hasInteractedWithSignInUp = false;
 
@@ -109,12 +110,12 @@ class CommunityItemEditor extends React.Component<IProps, any> {
         return (
             <SummaryEditor
                 className={classes}
-                placeholder={this._getSummaryPlaceholder() }
-                onChange={this._onSummaryChange.bind(this) }
+                placeholder={this._getSummaryPlaceholder()}
+                onChange={this._onSummaryChange.bind(this)}
                 onOverflow={this._addOverflowedSummaryToBody.bind(this)}
-                onFocus={this._onSummaryFocus.bind(this) }
-                onBlur={this._onSummaryBlur.bind(this) }
-            />
+                onFocus={this._onSummaryFocus.bind(this)}
+                onBlur={this._onSummaryBlur.bind(this)}
+                />
         );
     }
 
@@ -124,12 +125,12 @@ class CommunityItemEditor extends React.Component<IProps, any> {
                 <CommunityItemBodyEditor
                     ref="bodyEditor"
                     placeholder="Elaborate here if you wish..."
-                    onChange={this._onBodyChange.bind(this) }
-                    onFocus={this._onBodyFocus.bind(this) }
-                    onBlur={this._onBodyBlur.bind(this) }
+                    onChange={this._onBodyChange.bind(this)}
+                    onFocus={this._onBodyFocus.bind(this)}
+                    onBlur={this._onBodyBlur.bind(this)}
                     headerContent={this._renderSummary()}
                     footerContent={this._renderPostButton()}
-                />
+                    />
             </div>
         )
     }
@@ -141,7 +142,7 @@ class CommunityItemEditor extends React.Component<IProps, any> {
 
         return (
             <button className="post-button"
-                    onClick={handleClick(this._saveCommunityItem.bind(this))}>
+                onClick={handleClick(this._saveCommunityItem.bind(this))}>
 
                 <i className="save-icon" />Post
             </button>
@@ -149,8 +150,18 @@ class CommunityItemEditor extends React.Component<IProps, any> {
     }
 
     private _renderSignInUp() {
+        if (this.state.showSignInUp !== !this.context.signInUpContext.isLoggedIn())
+            this.setState({ showSignInUp: !this.context.signInUpContext.isLoggedIn() });
+
+        if (!this.state.showSignInUp)
+            return;
+
         if (!this._shouldShowFullBody() || this.context.signInUpContext.isLoggedIn()) {
             return;
+        }
+
+        if (typeof (window) !== 'undefined') {
+            window['showSignInUp'] = this._setShowSignInUp.bind(this);
         }
 
         return (
@@ -158,7 +169,7 @@ class CommunityItemEditor extends React.Component<IProps, any> {
                 onInteraction={this._recordSignInUpInteraction.bind(this)}
                 onSuccess={this._saveCommunityItem.bind(this)}
                 submitText="Post"
-            />
+                />
         );
     }
 
@@ -292,6 +303,10 @@ class CommunityItemEditor extends React.Component<IProps, any> {
             this.refs.bodyEditor.focus();
             this.refs.bodyEditor.prependText(overflowedText);
         }, 0);
+    }
+
+    private _setShowSignInUp(showSignInUp: boolean) {
+        this.setState({ showSignInUp })
     }
 }
 
