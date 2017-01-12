@@ -82,7 +82,7 @@ export default function UsersTypes(repositoryAuthorizers: IAppRepositoryAuthoriz
                     if (id === 'CurrentUser')
                         return id;
                     if (user)
-                        return 'User' + user.id
+                        return toUserId(user.id);
                 }
             },
 
@@ -152,7 +152,7 @@ export default function UsersTypes(repositoryAuthorizers: IAppRepositoryAuthoriz
                 type: GraphQLString,
                 resolve: ({id}) => {
                     if(id)
-                        return 'User' + id;
+                        return toUserId(id);
                 }
             },
 
@@ -221,8 +221,7 @@ export default function UsersTypes(repositoryAuthorizers: IAppRepositoryAuthoriz
         }),
 
         mutateAndGetPayload: async ({trustedId}, context) => {
-            const {id} = fromGlobalId(trustedId);
-            const trustedIdParsed = parseInt(id);
+            const trustedIdParsed = fromUserId(trustedId);
 
             const response = await userAuthorizer.as(context.user).toggleTrust(trustedIdParsed);
 
@@ -276,4 +275,12 @@ export default function UsersTypes(repositoryAuthorizers: IAppRepositoryAuthoriz
 function calculateGravatarUrl(email: string) {
     const hash = MD5(email.toLowerCase().trim());
     return `https://www.gravatar.com/avatar/${hash}`;
+}
+
+export function fromUserId(id){
+  return parseInt(id.replace('User', ''));  
+}
+
+export function toUserId(id){
+  return 'User' + id;
 }

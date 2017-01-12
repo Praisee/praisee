@@ -2,6 +2,7 @@ import { IVote, IVoteAggregate } from 'pz-server/src/votes/votes';
 import { IAppRepositoryAuthorizers } from 'pz-server/src/app/repositories';
 import { AuthorizationError } from 'pz-server/src/support/authorization';
 import CommunityItemTypes from 'pz-server/src/community-items/community-items-graphql';
+import { fromUserId } from 'pz-server/src/users/users-graphql';
 import { ITypes } from 'pz-server/src/graphql/types';
 import { addErrorToResponse } from 'pz-server/src/errors/errors-graphql';
 import * as graphqlRelay from 'graphql-relay';
@@ -157,7 +158,7 @@ export default function VoteTypes(repositoryAuthorizers: IAppRepositoryAuthorize
             }
         }),
         mutateAndGetPayload: async ({affectedUserId, commentId, communityItemId, isUpVote}, context) => {
-            let {id: affectedUserIdParsed} = fromGlobalId(affectedUserId);
+            let affectedUserIdParsed = fromUserId(affectedUserId);
             let {id, type} = fromGlobalId(commentId || communityItemId);
             let {user} = context;
 
@@ -223,7 +224,7 @@ export default function VoteTypes(repositoryAuthorizers: IAppRepositoryAuthorize
             }
         }),
         mutateAndGetPayload: async ({affectedUserId, communityItemId, commentId}, context) => {
-            let {id: affectedUserIdParsed} = fromGlobalId(affectedUserId);
+            let affectedUserIdParsed = fromUserId(affectedUserId);
             let {type, id} = fromGlobalId(communityItemId || commentId);
             let {user} = context;
 
@@ -291,8 +292,9 @@ export default function VoteTypes(repositoryAuthorizers: IAppRepositoryAuthorize
                 resolve: () => ({ id: 'viewer' })
             }
         }),
+        
         mutateAndGetPayload: async ({affectedUserId, commentId, communityItemId, isUpVote}, context) => {
-            let {id: affectedUserIdParsed} = fromGlobalId(affectedUserId);
+            let affectedUserIdParsed = fromUserId(affectedUserId);
             let {id, type} = fromGlobalId(commentId || communityItemId);
             let {user} = context;
 
