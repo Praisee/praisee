@@ -16,7 +16,7 @@ import serverInfo from 'pz-server/src/app/server-info';
 const GRAPHQL_URL = `http://${serverInfo.getHost()}/i/graphql`; // TODO: Unhardcode this
 
 export function renderApp(request, response, renderProps, next) {
-    if (process.env.NO_ISOMORPHIC) {
+    if (process.env.NO_ISOMORPHIC || request.query.disableServerRender === 'true') {
         response.render('site/layout', {
             isProductionEnv: serverInfo.isProductionEnv(),
             cache: true,
