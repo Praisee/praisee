@@ -1,16 +1,17 @@
 {
-  "initial": {
-    "loopback#logger": {
-      "params": [
-        "combined"
-      ]
+    "initial": {
+        "loopback#logger": {
+            "params": [
+                "combined"
+            ]
+        }
+    },
+    "final:after": {
+        "strong-error-handler": {
+            "params": {
+                "debug": false,
+                "log": true
+            }
+        }
     }
-  },
-  "final:after": {
-    "loopback#errorHandler": {
-      "params": {
-        "includeStack": false
-      }
-    }
-  }
 }
