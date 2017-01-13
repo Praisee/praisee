@@ -96,8 +96,10 @@
       }
 
       .topic-overview {
+        @include content-truncator();
         color: $gray;
         font-size: 0.9rem;
+        text-align: justify;
       }
 
       .photo-gallery {
