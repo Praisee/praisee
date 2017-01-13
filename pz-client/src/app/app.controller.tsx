@@ -2,7 +2,6 @@ import * as React from 'react';
 import * as Relay from 'react-relay';
 import NotFoundError from 'pz-client/src/app/not-found-error.component';
 import CurrentUserType from 'pz-client/src/user/current-user-type';
-import CurrentUserMutation from 'pz-client/src/app/layout/current-user-mutation';
 
 import {
     appStateLoadingStatusType,
@@ -26,26 +25,16 @@ export class App extends React.Component<any, any> {
     static childContextTypes: any = {
         showNotFoundError: React.PropTypes.func,
         appViewerId: React.PropTypes.string,
-        getCurrentUser: React.PropTypes.func,
-        refreshCurrentUser: React.PropTypes.func
+        getCurrentUser: React.PropTypes.func
     };
 
     context: IContextTypes;
-
-    constructor(){
-        super();
-
-        if (typeof(window) !== 'undefined'){
-            window['refreshUser'] = this._refreshUser.bind(this);
-        }
-    }
 
     getChildContext() {
         return {
             showNotFoundError: this._showNotFoundError.bind(this),
             appViewerId: this.props.viewer.id,
             getCurrentUser: () => this.props.currentUser,
-            refreshCurrentUser: this._refreshUser.bind(this)
         };
     }
 
@@ -103,18 +92,6 @@ export class App extends React.Component<any, any> {
             });
         }
     }
-    
-    private _refreshUser(id) {
-        this.props.relay.commitUpdate(
-            new CurrentUserMutation({
-                currentUser: this.props.currentUser,
-                rawUserId: 'User' + id
-            })
-        );
-
-        if(window["showSignInUp"])
-            window["showSignInUp"](this.props.currentUser.isLoggedIn);
-    }
 }
 
 export default Relay.createContainer(App, {
@@ -131,7 +108,6 @@ export default Relay.createContainer(App, {
                 isLoggedIn
                 displayName
                 isCurrentUser
-                ${CurrentUserMutation.getFragment('currentUser')}
             }
         `
     }

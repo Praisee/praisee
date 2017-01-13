@@ -84,8 +84,7 @@ class CommunityItemEditor extends React.Component<IProps, any> {
         summaryContent: '',
         bodyState: void (0),
         summaryHasFocus: false,
-        bodyHasFocus: false,
-        showSignInUp: true
+        bodyHasFocus: false
     };
 
     refs: {
@@ -96,20 +95,7 @@ class CommunityItemEditor extends React.Component<IProps, any> {
 
     private _hasInteractedWithSignInUp = false;
 
-    _updateSignInUpFormTimer = null;
-
-    componentDidMount() {
-        // TODO: This is a hack due to context updates not triggering re-renders. It needs to be replaced.
-        this._updateSignInUpFormTimer = setInterval(() => {
-            if(this.state.showSignInUp !== !this.context.signInUpContext.isLoggedIn()) {
-                this.setState({showSignInUp: !this.context.signInUpContext.isLoggedIn()});
-            }
-        }, 250);
-    }
-
     componentWillUnmount() {
-        clearInterval(this._updateSignInUpFormTimer);
-
         if (this._delayedStateTimer) {
             clearTimeout(this._delayedStateTimer);
         }
@@ -163,15 +149,8 @@ class CommunityItemEditor extends React.Component<IProps, any> {
     }
 
     private _renderSignInUp() {
-        if (!this.state.showSignInUp)
-            return;
-
         if (!this._shouldShowFullBody() || this.context.signInUpContext.isLoggedIn()) {
             return;
-        }
-
-        if (typeof (window) !== 'undefined') {
-            window['showSignInUp'] = this._setShowSignInUp.bind(this);
         }
 
         return (
@@ -313,10 +292,6 @@ class CommunityItemEditor extends React.Component<IProps, any> {
             this.refs.bodyEditor.focus();
             this.refs.bodyEditor.prependText(overflowedText);
         }, 0);
-    }
-
-    private _setShowSignInUp(showSignInUp: boolean) {
-        this.setState({ showSignInUp })
     }
 }
 

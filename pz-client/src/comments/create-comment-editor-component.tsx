@@ -23,19 +23,19 @@ class Editor extends React.Component<IProps, any> {
     static contextTypes: any = {
         appViewerId: React.PropTypes.string.isRequired,
         getCurrentUser: React.PropTypes.func,
+        clearSessionData: React.PropTypes.func,
         signInUpContext: SignInUpContextType
     };
 
     context: {
         appViewerId: number,
-        getCurrentUser: Function,
         signInUpContext: ISignInUpContext
+        clearSessionData: () => void
     };
 
     state = {
         editorContent: null,
-        enableCommentEditor: false,
-        showSignInUp: true
+        enableCommentEditor: false
     };
 
     private _inputs: {
@@ -89,9 +89,9 @@ class Editor extends React.Component<IProps, any> {
                         />
                     </form>
 
-                    {this.state.showSignInUp
-                        ? this._renderSignInUp()
-                        : this._renderReplyButton()
+                    {this.context.signInUpContext.isLoggedIn()
+                        ? this._renderReplyButton()
+                        : this._renderSignInUp()
                     }
 
                 </div>
@@ -117,12 +117,6 @@ class Editor extends React.Component<IProps, any> {
     }
 
     private _renderSignInUp() {
-        /* TODO: Warning: Setting the global showSignInUp method here so the last comment to have this open will be closed.
-        *        so this will only close the last one if there are multiple open (Which should rarely happen) */
-        if (typeof(window) !== 'undefined'){
-            window['showSignInUp'] = this._setShowSignInUp.bind(this);
-        }
-        
         return (
             <SignInUp
                 onInteraction={this._recordSignInUpInteraction.bind(this)}
@@ -138,8 +132,7 @@ class Editor extends React.Component<IProps, any> {
         }
 
         this.setState({ 
-            enableCommentEditor: true ,
-            showSignInUp: !this.context.signInUpContext.isLoggedIn()
+            enableCommentEditor: true
         });
 
         if (this.props.onEditing) {
@@ -193,6 +186,7 @@ class Editor extends React.Component<IProps, any> {
                 appViewerId: this.context.appViewerId
             }), {
                 onSuccess: () => {
+                    this.context.clearSessionData();
                     this.setState({ enableCommentEditor: false });
 
                     if (this.props.onEditing) {
@@ -208,10 +202,6 @@ class Editor extends React.Component<IProps, any> {
 
     private _updateEditor(editorContent) {
         this.setState({ editorContent });
-    }
-
-    private _setShowSignInUp(showSignInUp: boolean){
-        this.setState({ showSignInUp })
     }
 }
 

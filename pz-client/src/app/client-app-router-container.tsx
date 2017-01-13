@@ -35,6 +35,12 @@ export default class ClientAppRouterContainer extends React.Component<IProps, an
         isLoadingSessionData: React.PropTypes.bool
     };
 
+    constructor(){
+        super();
+        if(typeof(window) !== 'undefined')
+            window["clearSessionData"] = this._clearSessionData.bind(this);
+    }
+    
     getChildContext() {
         return {
             clearSessionData: this._clearSessionData.bind(this),

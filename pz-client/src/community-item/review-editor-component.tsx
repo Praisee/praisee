@@ -57,7 +57,7 @@ class ReviewCommunityItemEditor extends React.Component<IProps, any> {
     private _delayedState = {};
 
     static contextTypes: any = {
-        signInUpContext: SignInUpContextType
+        signInUpContext: SignInUpContextType,
     };
 
     context: {
@@ -71,8 +71,7 @@ class ReviewCommunityItemEditor extends React.Component<IProps, any> {
         summaryHasFocus: false,
         bodyHasFocus: false,
         hasSelectedTopic: false,
-        newTopicName: null,
-        showSignInUp: true
+        newTopicName: null
     };
 
     refs: {
@@ -98,15 +97,6 @@ class ReviewCommunityItemEditor extends React.Component<IProps, any> {
     }
 
     _updateSignInUpFormTimer = null;
-
-    componentDidMount() {
-        // TODO: This is a hack due to context updates not triggering re-renders. It needs to be replaced.
-        this._updateSignInUpFormTimer = setInterval(() => {
-            if(this.state.showSignInUp !== !this.context.signInUpContext.isLoggedIn()) {
-                this.setState({showSignInUp: !this.context.signInUpContext.isLoggedIn()});
-            }
-        }, 250);
-    }
 
     componentWillUnmount() {
         clearInterval(this._updateSignInUpFormTimer);
@@ -187,16 +177,12 @@ class ReviewCommunityItemEditor extends React.Component<IProps, any> {
             </button>
         );
 
-        return this.state.showSignInUp
-            ? this._renderSignInUp()
-            : postButton;
+        return this.context.signInUpContext.isLoggedIn()
+            ? postButton
+            : this._renderSignInUp();
     }
 
     private _renderSignInUp() {
-        if (typeof (window) !== 'undefined') {
-            window['showSignInUp'] = this._setShowSignInUp.bind(this);
-        }
-
         return (
             <SignInUp
                 onInteraction={this._recordSignInUpInteraction.bind(this)}
@@ -377,10 +363,6 @@ class ReviewCommunityItemEditor extends React.Component<IProps, any> {
         });
 
         this.props.relay.setVariables({selectedTopicServerId: null});
-    }
-
-    private _setShowSignInUp(showSignInUp: boolean) {
-        this.setState({ showSignInUp })
     }
 }
 

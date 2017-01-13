@@ -137,9 +137,8 @@ export class AuthenticationInitializer {
         this._app.get(appInfo.addresses.getLoginSuccessRoute(), (request, response) => {
             response.send(`<script>
                 (function(){
-                    window.opener.refreshUser();
-                    if(window.opener.showSignInUp)
-                        window.opener.showSignInUp(false);
+                    if(window.opener.clearSessionData)
+                        window.opener.clearSessionData();
                     window.opener.focus();
                     window.close();
                 })()

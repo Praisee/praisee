@@ -14,16 +14,11 @@ interface IProps {
 
 interface IContext {
     clearSessionData: () => void
-    refreshCurrentUser: (id) => void
 }
 
 export default class SignInUp extends React.Component<IProps, any> {
     static propTypes = {
         showSignUp: React.PropTypes.bool
-    };
-
-    static contextTypes = {
-        refreshCurrentUser: React.PropTypes.func
     };
 
     state = {
@@ -173,8 +168,6 @@ export default class SignInUp extends React.Component<IProps, any> {
             } else {
                 GoogleTagManager.triggerSignIn();
             }
-
-            this.context.refreshCurrentUser(json.user.id);
 
             if (this.props.hideSignInUp) {
                 this.props.hideSignInUp();

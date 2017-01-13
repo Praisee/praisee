@@ -15,7 +15,7 @@ export interface IProps {
 }
 
 interface IContext {
-    refreshCurrentUser: () => void
+    clearSessionData: () => void
     signInUpContext: ISignInUpContext
 }
 
@@ -25,7 +25,7 @@ class UserAccountMenu extends React.Component<IProps, any> {
     };
 
     static contextTypes = {
-        refreshCurrentUser: React.PropTypes.func,
+        clearSessionData: React.PropTypes.func,
         signInUpContext: SignInUpContextType
     };
 
@@ -107,7 +107,7 @@ class UserAccountMenu extends React.Component<IProps, any> {
             {method: 'POST', credentials: 'same-origin'}
         );
 
-        this.context.refreshCurrentUser();
+        this.context.clearSessionData();
     }
 }
 
