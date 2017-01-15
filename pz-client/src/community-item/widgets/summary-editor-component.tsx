@@ -39,6 +39,7 @@ export default class SummaryEditor extends React.Component<IProps, any> {
     }
 
     _editorPlugins: Array<any>;
+    _debounceEditingTimeout = null;
 
     constructor(props: IProps, state) {
         super(props, state);
@@ -51,6 +52,12 @@ export default class SummaryEditor extends React.Component<IProps, any> {
         this._editorPlugins = [
             createSingleLinePlugin()
         ];
+    }
+
+    componentWillUnmount() {
+        if (this._debounceEditingTimeout) {
+            clearTimeout(this._debounceEditingTimeout);
+        }
     }
 
     private _createEditorStateFromText(text: string | null) {
@@ -88,7 +95,7 @@ export default class SummaryEditor extends React.Component<IProps, any> {
             }
         }
 
-        setTimeout(() => {
+        this._debounceEditingTimeout = setTimeout(() => {
             this.setState({debounceEditing: false})
         }, 50);
     }

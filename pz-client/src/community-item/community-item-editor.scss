@@ -40,7 +40,7 @@
     }
   }
 
-  &.editor-hide-full-body {
+  &.editor-hide-full-body, .editor-hide-full-body {
     .editor-area, .editor-footer {
       display: none;
     }

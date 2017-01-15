@@ -1,8 +1,7 @@
 import * as React from 'react';
 import * as Relay from 'react-relay';
 
-import CurrentUserType from 'pz-client/src/user/current-user-type';
-import SignInUpOverlay, { ISignInUpContext, SignInUpContextType } from 'pz-client/src/user/sign-in-up-overlay-component';
+import { ISignInUpContext, SignInUpContextType } from 'pz-client/src/user/sign-in-up-overlay-component';
 import CreateCommunityItemMutation from 'pz-client/src/community-item/create-community-item-mutation';
 import CommunityItemBodyEditor from 'pz-client/src/community-item/community-item-body-editor.component';
 import serializeEditorState from 'pz-client/src/editor/serialize-editor-state';
@@ -25,14 +24,6 @@ export interface IProps {
         }
     }
 
-    communityItem?: {
-        id: number
-        type: string,
-        summary: string,
-        body: string,
-        topic: any
-    }
-
     topic?: {
         id: number,
         name: string
@@ -41,6 +32,7 @@ export interface IProps {
     summaryPlaceholder?: string
 
     showFullEditor?: boolean
+    alwaysShowSubmitButton?: boolean
 
     onSave?: (editorData: IEditorData) => any
     getMutationForSave?: (editorData: IEditorData) => any
@@ -65,6 +57,7 @@ class CommunityItemEditor extends React.Component<IProps, any> {
             <div className={classes}>
                 {this._renderBody()}
                 {this._renderSignInUp()}
+                {this.props.alwaysShowSubmitButton && this._renderSubmit()}
             </div>
         );
     }
@@ -114,11 +107,14 @@ class CommunityItemEditor extends React.Component<IProps, any> {
                 onOverflow={this._addOverflowedSummaryToBody.bind(this)}
                 onFocus={this._onSummaryFocus.bind(this)}
                 onBlur={this._onSummaryBlur.bind(this)}
-                />
+            />
         );
     }
 
     private _renderBody() {
+        const inlineSubmit = !this.props.alwaysShowSubmitButton ?
+            this._renderSubmit() : null;
+
         return (
             <div>
                 <CommunityItemBodyEditor
@@ -128,13 +124,13 @@ class CommunityItemEditor extends React.Component<IProps, any> {
                     onFocus={this._onBodyFocus.bind(this)}
                     onBlur={this._onBodyBlur.bind(this)}
                     headerContent={this._renderSummary()}
-                    footerContent={this._renderPostButton()}
-                    />
+                    footerContent={inlineSubmit}
+                />
             </div>
         )
     }
 
-    private _renderPostButton() {
+    private _renderSubmit() {
         if (!this.context.signInUpContext.isLoggedIn()) {
             return;
         }
@@ -158,7 +154,7 @@ class CommunityItemEditor extends React.Component<IProps, any> {
                 onInteraction={this._recordSignInUpInteraction.bind(this)}
                 onSuccess={this._saveCommunityItem.bind(this)}
                 submitText="Post"
-                />
+            />
         );
     }
 
@@ -316,15 +312,4 @@ export var CreateItemEditor = Relay.createContainer(withRouter(CommunityItemEdit
     }
 });
 
-export var UpdateItemEditor = Relay.createContainer(withRouter(CommunityItemEditor), {
-    fragments: {
-        review: () => Relay.QL`
-            fragment on CommunityItemInterface {
-                id,
-                type,
-                summary,
-                body
-            }
-        `
-    }
-});
+export default CreateItemEditor;
