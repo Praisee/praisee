@@ -2,7 +2,7 @@ import * as React from 'react';
 import {Component} from 'react';
 import * as Relay from 'react-relay';
 import * as util from 'util';
-import {CreateItemEditor} from 'pz-client/src/community-item/community-item-editor.component';
+import CommunityItemEditor from 'pz-client/src/community-item/community-item-editor.component';
 import ReviewEditor from 'pz-client/src/community-item/review-editor-component';
 // import QuestionEditor from 'pz-client/src/community-item/question-editor-component';
 import SideSection from 'pz-client/src/topic/side-section/side-section.component';
@@ -78,12 +78,20 @@ export class TopicController extends Component<ITopicProps, ITopicState> {
     private _renderContributionSection() {
         if (this.state.isShowingGeneralEditor) {
             return (
-                <CreateItemEditor topic={this.props.topic} viewer={this.props.viewer} />
+                <CommunityItemEditor
+                    persistedDataKey={this.props.topic.id}
+                    topic={this.props.topic}
+                    viewer={this.props.viewer}
+                />
             );
 
         } else if (this.state.isShowingQuestionEditor) {
             return (
-                <QuestionEditor topic={this.props.topic} viewer={this.props.viewer} />
+                <QuestionEditor
+                    persistedDataKey={this.props.topic.id}
+                    topic={this.props.topic}
+                    viewer={this.props.viewer}
+                />
             );
 
         } else {
@@ -92,6 +100,7 @@ export class TopicController extends Component<ITopicProps, ITopicState> {
                 return (
                     <ReviewEditor
                         key={this.props.topic.id}
+                        persistedDataKey={this.props.topic.id}
                         topic={null}
                         fromTopic={this.props.topic}
                         viewer={this.props.viewer}
@@ -102,6 +111,7 @@ export class TopicController extends Component<ITopicProps, ITopicState> {
                 return (
                     <ReviewEditor
                         key={this.props.topic.id}
+                        persistedDataKey={this.props.topic.id}
                         topic={this.props.topic}
                         fromTopic={this.props.topic}
                         viewer={this.props.viewer}
@@ -258,7 +268,7 @@ export default Relay.createContainer(TopicController, {
                 }
                 
                 ${SideSection.getFragment('topic')}
-                ${CreateItemEditor.getFragment('topic')}
+                ${CommunityItemEditor.getFragment('topic')}
                 ${ReviewEditor.getFragment('topic')}
                 ${ReviewEditor.getFragment('fromTopic')}
                 ${QuestionEditor.getFragment('topic')}
@@ -267,7 +277,7 @@ export default Relay.createContainer(TopicController, {
 
         viewer: () => Relay.QL`
             fragment on Viewer {
-                ${CreateItemEditor.getFragment('viewer')}
+                ${CommunityItemEditor.getFragment('viewer')}
                 ${ReviewEditor.getFragment('viewer')}
                 ${QuestionEditor.getFragment('viewer')}
             }

@@ -11,15 +11,22 @@ import SignInUp from 'pz-client/src/user/sign-in-up-embedded-component';
 import handleClick from 'pz-client/src/support/handle-click';
 import GoogleTagManager from 'pz-client/src/support/google-tag-manager';
 
+import {
+    createPersistedDataComponent,
+    createMemoryLoaders
+} from 'pz-client/src/support/create-persisted-data-component';
+
 interface IProps {
+    persistedDataKey: any
     relay: any
     onEditing: Function
     communityItem?: any
     comment?: any
     className?: string
+    persistedData?: {initialContent: any}
 }
 
-class Editor extends React.Component<IProps, any> {
+class CommentEditor extends React.Component<IProps, any> {
     static contextTypes: any = {
         appViewerId: React.PropTypes.string.isRequired,
         getCurrentUser: React.PropTypes.func,
@@ -31,11 +38,6 @@ class Editor extends React.Component<IProps, any> {
         appViewerId: number,
         signInUpContext: ISignInUpContext
         clearSessionData: () => void
-    };
-
-    state = {
-        editorContent: null,
-        enableCommentEditor: false
     };
 
     private _inputs: {
@@ -58,6 +60,16 @@ class Editor extends React.Component<IProps, any> {
         );
     }
 
+    constructor(props, state) {
+        super(props, state);
+
+        this.state = {
+            editorContent: null,
+            enableCommentEditor: props.persistedData && props.persistedData.initialContent ?
+                true : false
+        };
+    }
+
     componentWillUnmount() {
         if (this._hideEditorTimeout) {
             clearTimeout(this._hideEditorTimeout);
@@ -69,11 +81,14 @@ class Editor extends React.Component<IProps, any> {
     }
 
     private _renderEditorOrReply() {
+        const {initialContent = void(0)} = this.props.persistedData || {};
+
         if (this.state.enableCommentEditor) {
             return (
                 <div>
                     <form className="editor-form">
                         <EditorComponent
+                            initialRawContentState={initialContent}
                             placeholder="Share your thoughts..."
                             onChange={this._updateEditor.bind(this)}
                             onBlur={this._hideEditor.bind(this)}
@@ -131,7 +146,7 @@ class Editor extends React.Component<IProps, any> {
             clearTimeout(this._hideEditorTimeout);
         }
 
-        this.setState({ 
+        this.setState({
             enableCommentEditor: true
         });
 
@@ -146,6 +161,10 @@ class Editor extends React.Component<IProps, any> {
 
     private _hideEditor() {
         this._hideEditorTimeout = setTimeout(() => {
+            if (this.state.persistedData && this.state.persistedData.initialContent) {
+                return;
+            }
+
             if (this.state.editorContent.getCurrentContent().hasText()) {
                 return;
             }
@@ -186,8 +205,12 @@ class Editor extends React.Component<IProps, any> {
                 appViewerId: this.context.appViewerId
             }), {
                 onSuccess: () => {
+                    this.setState({
+                        editorContent: null,
+                        enableCommentEditor: false
+                    });
+
                     this.context.clearSessionData();
-                    this.setState({ enableCommentEditor: false });
 
                     if (this.props.onEditing) {
                         this.props.onEditing(false);
@@ -205,7 +228,21 @@ class Editor extends React.Component<IProps, any> {
     }
 }
 
-export default Relay.createContainer(Editor, {
+const [persister, reloader] = createMemoryLoaders(
+    (element: any) => ({
+        initialContent: element.state.editorContent ?
+            serializeEditorState(element.state.editorContent)
+            : null
+    })
+);
+
+const PersistableCommentEditor = createPersistedDataComponent(
+    CommentEditor,
+    persister,
+    reloader
+);
+
+export default Relay.createContainer(PersistableCommentEditor, {
     fragments: {
         comment: () => Relay.QL`
             fragment on Comment {

@@ -26,6 +26,7 @@ class AddReview extends React.Component<IProps, any> {
                         fromTopic={null}
                         viewer={this.props.viewer}
                         autoFocus={true}
+                        persistedDataKey="addReview"
                     />
                 </SignInUpOverlay>
             </div>

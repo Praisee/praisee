@@ -151,11 +151,16 @@ export default class Editor extends React.Component<IProps, any> {
         let editorState = DraftJsEditorState.createEmpty();
 
         if (this.props.initialRawContentState) {
-            const rawContentState = JSON.parse(this.props.initialRawContentState);
+            const rawContentState = this._isString(this.props.initialRawContentState) ?
+                JSON.parse(this.props.initialRawContentState) : this.props.initialRawContentState;
 
             if (isDraftJs08Content(rawContentState)) {
                 editorState = DraftJsEditorState.createWithContent(
-                    convertFromRaw(rawContentState.value),
+                    convertFromRaw(
+                        this._isString(rawContentState.value) ?
+                            JSON.parse(rawContentState.value) : rawContentState.value
+                    ),
+
                     createDecoratorFromPlugins(this._editorPlugins)
                 );
 
@@ -170,6 +175,10 @@ export default class Editor extends React.Component<IProps, any> {
         this.state = Object.assign({}, initialState, this.state, {
             editorState
         });
+    }
+
+    private _isString(string: any) {
+        return typeof string === 'string' || string instanceof String
     }
 
     private _updateEditor(editorState) {

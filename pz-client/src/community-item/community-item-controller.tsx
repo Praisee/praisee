@@ -188,6 +188,7 @@ export class CommunityItemController extends Component<ICommunityItemProps, any>
                 }
 
                 <CreateCommentEditor
+                    persistedDataKey={'community-item-controller-' + communityItem.id}
                     comment={null}
                     communityItem={communityItem}
                     onEditing={this._onEditingComment.bind(this)} />
@@ -271,48 +272,48 @@ export class CommunityItemController extends Component<ICommunityItemProps, any>
         );
     }
 
-    private _renderRelatedCommunityItems(communityItem) {
-        return (
-            <div className="related-community-items-container">
-                <div className="related-community-item-container">
-                    <div className="related-community-item">
-                        <h4>This is why I'm switching to canon</h4>
-                         <div style={{display:"flex"}}>
-                        <Avatar communityItem={communityItem} comment={null}
-                            showReputation={false}
-                            showTrusts={true}
-                            showTrust-button={false} />
-                        <CommentBubble onClick={this._toggleComments.bind(this)} communityItem={this.props.communityItem} />
-                    </div>
-                    </div>
-                </div>
-                <div className="related-community-item-container">
-                    <div className="related-community-item">
-                        <h4>Test #2</h4>
-                         <div style={{display:"flex"}}>
-                        <Avatar communityItem={communityItem} comment={null}
-                            showReputation={false}
-                            showTrusts={true}
-                            showTrust-button={false} />
-                        <CommentBubble onClick={this._toggleComments.bind(this)} communityItem={this.props.communityItem} />
-                    </div>
-                    </div>
-                </div>
-                <div className="related-community-item-container">
-                    <div className="related-community-item">
-                        <h4>Test #3</h4>
-                        <div style={{display:"flex"}}>
-                            <Avatar communityItem={communityItem} comment={null}
-                                showReputation={false}
-                                showTrusts={true}
-                                showTrust-button={false} />
-                            <CommentBubble onClick={this._toggleComments.bind(this)} communityItem={this.props.communityItem} />
-                        </div>
-                    </div>
-                </div>
-            </div>
-        )
-    }
+    // private _renderRelatedCommunityItems(communityItem) {
+    //     return (
+    //         <div className="related-community-items-container">
+    //             <div className="related-community-item-container">
+    //                 <div className="related-community-item">
+    //                     <h4>This is why I'm switching to canon</h4>
+    //                      <div style={{display:"flex"}}>
+    //                     <Avatar communityItem={communityItem} comment={null}
+    //                         showReputation={false}
+    //                         showTrusts={true}
+    //                         showTrust-button={false} />
+    //                     <CommentBubble onClick={this._toggleComments.bind(this)} communityItem={this.props.communityItem} />
+    //                 </div>
+    //                 </div>
+    //             </div>
+    //             <div className="related-community-item-container">
+    //                 <div className="related-community-item">
+    //                     <h4>Test #2</h4>
+    //                      <div style={{display:"flex"}}>
+    //                     <Avatar communityItem={communityItem} comment={null}
+    //                         showReputation={false}
+    //                         showTrusts={true}
+    //                         showTrust-button={false} />
+    //                     <CommentBubble onClick={this._toggleComments.bind(this)} communityItem={this.props.communityItem} />
+    //                 </div>
+    //                 </div>
+    //             </div>
+    //             <div className="related-community-item-container">
+    //                 <div className="related-community-item">
+    //                     <h4>Test #3</h4>
+    //                     <div style={{display:"flex"}}>
+    //                         <Avatar communityItem={communityItem} comment={null}
+    //                             showReputation={false}
+    //                             showTrusts={true}
+    //                             showTrust-button={false} />
+    //                         <CommentBubble onClick={this._toggleComments.bind(this)} communityItem={this.props.communityItem} />
+    //                     </div>
+    //                 </div>
+    //             </div>
+    //         </div>
+    //     )
+    // }
 
     private _onEditingComment(isEditingComment) {
         this.setState({ isEditingComment });

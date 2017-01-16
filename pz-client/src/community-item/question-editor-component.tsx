@@ -1,10 +1,7 @@
 import * as React from 'react';
 import * as Relay from 'react-relay';
 
-import {
-    CreateItemEditor,
-    IEditorData
-} from 'pz-client/src/community-item/community-item-editor.component';
+import CommunityItemEditor, {IEditorData} from 'pz-client/src/community-item/community-item-editor.component';
 
 import CreateCommunityItemMutation from 'pz-client/src/community-item/create-community-item-mutation';
 
@@ -12,6 +9,8 @@ import GoogleTagManager from 'pz-client/src/support/google-tag-manager';
 
 export interface IProps {
     relay: any
+
+    persistedDataKey: any
 
     viewer: {
         id: any
@@ -26,7 +25,8 @@ export interface IProps {
 class QuestionEditor extends React.Component<IProps, any> {
     render() {
         return (
-            <CreateItemEditor
+            <CommunityItemEditor
+                persistedDataKey={'question-' + this.props.persistedDataKey}
                 className="question-editor"
                 viewer={this.props.viewer}
                 topic={this.props.topic}
@@ -56,7 +56,7 @@ export default Relay.createContainer(QuestionEditor, {
     fragments: {
         viewer: () => Relay.QL`
             fragment on Viewer {
-                ${CreateItemEditor.getFragment('viewer')}
+                ${CommunityItemEditor.getFragment('viewer')}
                 ${CreateCommunityItemMutation.getFragment('viewer')}
                 
                 lastCreatedCommunityItem {
@@ -69,7 +69,7 @@ export default Relay.createContainer(QuestionEditor, {
             fragment on Topic {
                 id
                 name
-                ${CreateItemEditor.getFragment('topic')}
+                ${CommunityItemEditor.getFragment('topic')}
             }
         `
     }

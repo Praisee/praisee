@@ -122,6 +122,7 @@ export class Comment extends Component<ICommentProps, any>{
                     {this._renderVotesOrReputation()}
 
                     <CreateCommentEditor
+                        persistedDataKey={'comment-' + this.props.comment.id}
                         comment={this.props.comment}
                         communityItem={null}
                         onEditing={this._onCreatingComment.bind(this)} />

@@ -200,10 +200,11 @@ class CommunityItem extends Component<ICommunityItemProps, ICommuintyItemState> 
                 </div>
 
                 <CreateCommentEditor
+                    persistedDataKey={'community-item-' + communityItem.id}
                     comment={null}
                     communityItem={communityItem}
                     onEditing={this._onEditingComment.bind(this)}
-                    />
+                />
             </div>
         );
     }

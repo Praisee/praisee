@@ -12,12 +12,19 @@ import handleClick from 'pz-client/src/support/handle-click';
 import SummaryEditor from 'pz-client/src/community-item/widgets/summary-editor-component';
 import GoogleTagManager from 'pz-client/src/support/google-tag-manager';
 
+import {
+    createPersistedDataComponent,
+    createMemoryLoaders
+} from 'pz-client/src/support/create-persisted-data-component';
+
 export interface IEditorData {
     summary: string
     bodyData: any
 }
 
 export interface IProps {
+    persistedDataKey: any
+
     viewer: {
         lastCreatedCommunityItem: {
             routePath
@@ -36,6 +43,7 @@ export interface IProps {
 
     onSave?: (editorData: IEditorData) => any
     getMutationForSave?: (editorData: IEditorData) => any
+    onMutationSaved?: (response: any) => any
 
     className?: string
 
@@ -43,6 +51,11 @@ export interface IProps {
 
     router: {
         push: Function
+    }
+
+    persistedData?: {
+        initialSummary: string,
+        initialBody: any,
     }
 }
 
@@ -73,13 +86,6 @@ class CommunityItemEditor extends React.Component<IProps, any> {
         signInUpContext: ISignInUpContext
     };
 
-    state = {
-        summaryContent: '',
-        bodyState: void (0),
-        summaryHasFocus: false,
-        bodyHasFocus: false
-    };
-
     refs: {
         bodyEditor: any
     };
@@ -87,6 +93,19 @@ class CommunityItemEditor extends React.Component<IProps, any> {
     private _saying = void (0);
 
     private _hasInteractedWithSignInUp = false;
+
+    constructor(props, state) {
+        super(props, state);
+
+        const {initialSummary = null} = props.persistedData || {};
+
+        this.state = {
+            summaryContent: initialSummary || '',
+            bodyState: void(0),
+            summaryHasFocus: false,
+            bodyHasFocus: false
+        };
+    }
 
     componentWillUnmount() {
         if (this._delayedStateTimer) {
@@ -99,9 +118,12 @@ class CommunityItemEditor extends React.Component<IProps, any> {
             'has-input': this.state.summaryContent && this.state.summaryContent.length
         });
 
+        const {initialSummary = void(0)} = this.props.persistedData || {};
+
         return (
             <SummaryEditor
                 className={classes}
+                initialValue={initialSummary}
                 placeholder={this._getSummaryPlaceholder()}
                 onChange={this._onSummaryChange.bind(this)}
                 onOverflow={this._addOverflowedSummaryToBody.bind(this)}
@@ -115,10 +137,13 @@ class CommunityItemEditor extends React.Component<IProps, any> {
         const inlineSubmit = !this.props.alwaysShowSubmitButton ?
             this._renderSubmit() : null;
 
+        const {initialBody = void(0)} = this.props.persistedData || {};
+
         return (
             <div>
                 <CommunityItemBodyEditor
                     ref="bodyEditor"
+                    initialRawContentState={initialBody}
                     placeholder="Elaborate here if you wish..."
                     onChange={this._onBodyChange.bind(this)}
                     onFocus={this._onBodyFocus.bind(this)}
@@ -215,7 +240,20 @@ class CommunityItemEditor extends React.Component<IProps, any> {
             this.props.relay.commitUpdate(
                 getMutationForSave(editorData),
                 {
-                    onSuccess: this._redirectOnSuccess.bind(this)
+                    onSuccess: (response) => {
+                        this.state = {
+                            summaryContent: '',
+                            bodyState: void(0),
+                            summaryHasFocus: false,
+                            bodyHasFocus: false
+                        };
+
+                        if (this.props.onMutationSaved) {
+                            this.props.onMutationSaved(response);
+                        }
+
+                        this._redirectOnSuccess(response)
+                    }
                 }
             );
         }
@@ -291,7 +329,22 @@ class CommunityItemEditor extends React.Component<IProps, any> {
     }
 }
 
-export var CreateItemEditor = Relay.createContainer(withRouter(CommunityItemEditor), {
+const [persister, reloader] = createMemoryLoaders(
+    (element: any) => ({
+        initialSummary: element.state.summaryContent,
+        initialBody: element.state.bodyState ?
+            serializeEditorState(element.state.bodyState)
+            : void(0)
+    })
+);
+
+const PersistableCommunityItemEditor = createPersistedDataComponent(
+    CommunityItemEditor,
+    persister,
+    reloader
+);
+
+export var CreateItemEditor = Relay.createContainer(withRouter(PersistableCommunityItemEditor), {
     fragments: {
         viewer: () => Relay.QL`
             fragment on Viewer {

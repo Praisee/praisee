@@ -10,7 +10,14 @@ import ReviewTopicSelector from 'pz-client/src/community-item/widgets/review-top
 import GoogleTagManager from 'pz-client/src/support/google-tag-manager';
 import CommunityItemEditor, {IEditorData} from 'pz-client/src/community-item/community-item-editor.component';
 
+import {
+    createPersistedDataComponent,
+    createMemoryLoaders
+} from 'pz-client/src/support/create-persisted-data-component';
+
 interface IProps {
+    persistedDataKey: any
+
     relay: any
 
     viewer: {
@@ -36,15 +43,16 @@ interface IProps {
     className?: string
 
     autoFocus?: boolean
+
+    persistedData: {
+        rating: number | null
+        hasSelectedTopic: boolean
+        newTopicName: string | null
+        selectedTopicServerId: any
+    }
 }
 
 class ReviewCommunityItemEditor extends React.Component<IProps, any> {
-    state = {
-        rating: null,
-        hasSelectedTopic: false,
-        newTopicName: null
-    };
-
     render() {
         const classes = classNames('review-editor', this.props.className);
 
@@ -55,6 +63,21 @@ class ReviewCommunityItemEditor extends React.Component<IProps, any> {
                 {this._renderCommunityItemEditor()}
             </div>
         );
+    }
+
+    constructor(props, state) {
+        super(props, state);
+
+        this.state = Object.assign({
+            rating: null,
+            hasSelectedTopic: false,
+            newTopicName: null,
+            selectedTopicServerId: null
+        }, props.persistedData);
+
+        if (this.state.selectedTopicServerId) {
+            this.props.relay.setVariables({selectedTopicServerId: this.state.selectedTopicServerId});
+        }
     }
 
     private _getTopic(): {id: any, name: string} | null {
@@ -126,11 +149,13 @@ class ReviewCommunityItemEditor extends React.Component<IProps, any> {
 
         return (
             <CommunityItemEditor
+                persistedDataKey={'review-' + this.props.persistedDataKey}
                 alwaysShowSubmitButton={true}
                 summaryPlaceholder="Write a summary for your review"
                 viewer={this.props.viewer}
                 topic={null}
                 getMutationForSave={this._createReviewMutation.bind(this)}
+                onMutationSaved={this._clearSelectedTopic.bind(this)}
             />
         )
     }
@@ -180,12 +205,22 @@ class ReviewCommunityItemEditor extends React.Component<IProps, any> {
     }
 
     private _selectTopic(serverId: number) {
-        this.setState({hasSelectedTopic: true, newTopicName: null});
+        this.setState({
+            hasSelectedTopic: true,
+            newTopicName: null,
+            selectedTopicServerId: serverId
+        });
+
         this.props.relay.setVariables({selectedTopicServerId: serverId});
     }
 
     private _selectNewTopic(topicName: string) {
-        this.setState({hasSelectedTopic: true, newTopicName: topicName});
+        this.setState({
+            hasSelectedTopic: true,
+            newTopicName: topicName,
+            selectedTopicServerId: null
+        });
+
         this.props.relay.setVariables({selectedTopicServerId: null});
     }
 
@@ -193,14 +228,25 @@ class ReviewCommunityItemEditor extends React.Component<IProps, any> {
         this.setState({
             hasSelectedTopic: false,
             newTopicName: null,
-            rating: null
+            rating: null,
+            selectedTopicServerId: null
         });
 
         this.props.relay.setVariables({selectedTopicServerId: null});
     }
 }
 
-export default Relay.createContainer(ReviewCommunityItemEditor, {
+const [persister, reloader] = createMemoryLoaders(
+    (element: any) => element.state
+);
+
+const PersistableReviewEditor = createPersistedDataComponent(
+    ReviewCommunityItemEditor,
+    persister,
+    reloader
+);
+
+export default Relay.createContainer(PersistableReviewEditor, {
     initialVariables: {
         selectedTopicServerId: null
     },
