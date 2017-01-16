@@ -170,7 +170,15 @@ class CommunityItemEditor extends React.Component<IProps, any> {
     }
 
     private _renderSignInUp() {
-        if (!this._shouldShowFullBody() || this.context.signInUpContext.isLoggedIn()) {
+        const shouldHideSignInUp = (
+            this.context.signInUpContext.isLoggedIn()
+            || (
+                !this.props.alwaysShowSubmitButton
+                && !this._shouldShowFullBody()
+            )
+        );
+
+        if (shouldHideSignInUp) {
             return;
         }
 
