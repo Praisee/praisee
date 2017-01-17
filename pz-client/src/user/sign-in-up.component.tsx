@@ -21,6 +21,10 @@ export default class SignInUp extends React.Component<IProps, any> {
         showSignUp: React.PropTypes.bool
     };
 
+    static contextTypes = {
+        clearSessionData: React.PropTypes.func
+    };
+
     state = {
         isShowingSignUp: this.props.showSignUp !== false,
         errorText: ""
@@ -172,6 +176,8 @@ export default class SignInUp extends React.Component<IProps, any> {
             if (this.props.hideSignInUp) {
                 this.props.hideSignInUp();
             }
+
+            this.context.clearSessionData();
 
         } else {
             throw new Error("Incorrect username or password");
