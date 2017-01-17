@@ -165,6 +165,37 @@ export default function createSchema(repositoryAuthorizers: IAppRepositoryAuthor
                     }
                 },
 
+                profile: {
+                    type: types.UserProfileType,
+
+                    args: {
+                        id: {
+                            type: GraphQLInt
+                        },
+
+                        urlSlug: {
+                            type: GraphQLString
+                        }
+                    },
+
+                    resolve: async (_, {id, urlSlug}, {user: currentUser}) => {
+                        let user = null;
+
+                        if (id) {
+                            user = await usersAuthorizer
+                                .as(currentUser)
+                                .findUserById(id);
+
+                        } else if (urlSlug) {
+                            user = await usersAuthorizer
+                                .as(user)
+                                .findByUrlSlugName(urlSlug);
+                        }
+
+                        return user;
+                    }
+                },
+                
                 topic: getTopicLookupField(repositoryAuthorizers, types),
 
                 communityItem: {
@@ -173,7 +204,7 @@ export default function createSchema(repositoryAuthorizers: IAppRepositoryAuthor
                     args: {
                         id: {
                             type: GraphQLID
-                        },
+                       },
 
                         urlSlug: {
                             type: GraphQLString

@@ -18,7 +18,6 @@ export function initializeTypes(repositoryAuthorizers: IAppRepositoryAuthorizers
         voteTypes(repositoryAuthorizers, nodeInterface, types),
         commentTypes(repositoryAuthorizers, nodeInterface, types),
         userTypes(repositoryAuthorizers, nodeInterface, types),
-        userTypes(repositoryAuthorizers, nodeInterface, types),
         topicTypes(repositoryAuthorizers, nodeInterface, types),
         getTopicAttributeTypes(repositoryAuthorizers, nodeInterface, types),
         communityItemTypes(repositoryAuthorizers, nodeInterface, types),
@@ -35,6 +34,7 @@ export interface ITypes {
     UserInterfaceType
     CurrentUserType
     OtherUserType
+    UserProfileType
     ToggleTrustMutation
     GetCurrentUserMutation
 

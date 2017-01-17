@@ -131,3 +131,13 @@ export var topicHomeQuery: IRouteQuery = {
         `
     }
 };
+
+export var profileQuery: IRouteQuery = {
+    queries: {
+        profile: () => Relay.QL`
+            query {
+                profile(urlSlug: $urlSlug)
+            }
+        `
+    }
+};

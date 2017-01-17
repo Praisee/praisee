@@ -16,6 +16,7 @@ export interface IUser extends IRepositoryRecord {
 
 export interface IUsers extends IRepository {
     findById(userId: number): Promise<IUser>
+    findByUrlSlugName(urlSlug: string): Promise<IOtherUser | IUser>
     getTotalCommunityItems(userId: number): Promise<number>
     getTotalTrusters(userId: number): Promise<number>
     addTrust(trusterId: number, trustedId: number): Promise<boolean>
@@ -27,4 +28,11 @@ export interface IUsers extends IRepository {
 
 export interface IUsersBatchable {
     findAllByIds(userIds: Array<number>): Promise<Array<IUser>>
+}
+
+export interface IOtherUser extends IRepositoryRecord {
+    recordType: 'OtherUser'
+    id: number
+    displayName: string
+    email: string
 }

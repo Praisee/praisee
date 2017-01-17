@@ -1,3 +1,7 @@
+import {
+    IUrlSlugInstance,
+    IUrlSlugModel
+} from 'pz-server/src/url-slugs/models/url-slug';
 import promisify from 'pz-support/src/promisify';
 import {IUsers, IUser, IUsersBatchable} from 'pz-server/src/users/users';
 import {IUserInstance, IUserModel} from 'pz-server/src/models/user';
@@ -10,9 +14,11 @@ export function createRecordFromLoopbackUser(user: IUserInstance): IUser {
 
 export default class Users implements IUsers, IUsersBatchable {
     private _UserModel: IUserModel;
-
-    constructor(User: IUserModel) {
+    private _UrlSlugsModel: IPersistedModel;
+    
+    constructor(User: IUserModel, UrlSlug: IUrlSlugModel) {
         this._UserModel = User;
+        this._UrlSlugsModel = UrlSlug;
     }
 
     async findById(userId: number): Promise<IUser> {
@@ -34,6 +40,22 @@ export default class Users implements IUsers, IUsersBatchable {
         return userModels.map(userModel => {
             return createRecordFromLoopbackUser(userModel);
         });
+    }
+
+    async findByUrlSlugName(fullSlug: string): Promise<IUser> {
+        let urlSlug: IUrlSlugInstance = await promisify(this._UrlSlugsModel.findOne, this._UrlSlugsModel)({
+            where: {
+                sluggableType: this._UserModel.sluggableType,
+                fullSlugLowercase: fullSlug.toLowerCase()
+            }
+        });
+
+        if (urlSlug) {
+            const result = await promisify(this._UserModel.findById, this._UserModel)(urlSlug.sluggableId);
+            return createRecordFromLoopbackUser(result);
+        }
+
+        return null;
     }
 
     async getTotalCommunityItems(userId: number): Promise<number> {

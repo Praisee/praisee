@@ -7,22 +7,13 @@ import {
     IAuthorizer
 } from 'pz-server/src/support/authorization';
 
-import {IUsers, IUser} from 'pz-server/src/users/users';
-import {
-    IRepository, IRepositoryRecord, createRecordFromLoopback
-} from 'pz-server/src/support/repository';
-
-export interface IOtherUser extends IRepositoryRecord {
-    recordType: 'OtherUser'
-    id: number
-    displayName: string
-    email: string
-}
+import {IUsers, IUser, IOtherUser} from 'pz-server/src/users/users';
 
 export interface IAuthorizedUsers {
     findById(userId: number): Promise<IUser>
     findCurrentUser(): Promise<IUser>
     findUserById(userId: number): Promise<IOtherUser | IUser>
+    findByUrlSlugName(urlSlug: string): Promise<IOtherUser | IUser>
     getTotalTrusters(userId: number): Promise<number>
     getReputation(userId: number): Promise<number>
     toggleTrust(trustedId: number): Promise<boolean | AuthorizationError>
@@ -79,6 +70,10 @@ class AuthorizedUsers {
         return this.findById(this._user.id);
     }
 
+    async findByUrlSlugName(fullSlug: string): Promise<IOtherUser | IUser> {
+        return this._users.findByUrlSlugName(fullSlug);
+    }
+    
     getTotalTrusters(userId: number): Promise<number> {
         return this._users.getTotalTrusters(userId);
     }

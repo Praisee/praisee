@@ -11,7 +11,8 @@ import {
     communityItemQuery,
     editCommunityItemQuery,
     topicHomeQuery,
-    addReviewQuery
+    addReviewQuery,
+    profileQuery
 } from 'pz-client/src/router/route-queries';
 
 import AppController from 'pz-client/src/app/app.controller';
@@ -19,7 +20,7 @@ import AppLayout from 'pz-client/src/app/layout/app-layout.controller';
 import HomeController from 'pz-client/src/home/home-controller';
 import AddReviewController from 'pz-client/src/home/add-review-controller';
 import { SignInController, SignUpController } from 'pz-client/src/user/sign-in-up.controller';
-import ProfileController from 'pz-client/src/home/home-controller';
+import ProfileController from 'pz-client/src/profile/profile.controller';
 import CommunityItemController from 'pz-client/src/community-item/community-item-controller';
 import EditCommunityItemController from 'pz-client/src/community-item/edit-community-item-controller';
 import TopicController from 'pz-client/src/topic/topic.controller';
@@ -39,7 +40,7 @@ export default (
                 <Route path="user/sign-in" component={SignInController} />
                 <Route path="user/sign-up" component={SignUpController} />
 
-                <Route path="profile/:urlSlug" component={ProfileController} />
+                <Route path="profile/:urlSlug" component={ProfileController} {...mixinRouteQuery(profileQuery) }/>
 
                 <Route path="on/:urlSlug" component={CommunityItemController} {...mixinRouteQuery(communityItemQuery) } />
                 <Route path="edit/:id" component={EditCommunityItemController} {...mixinRouteQuery(editCommunityItemQuery) } />

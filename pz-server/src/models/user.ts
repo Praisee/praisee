@@ -1,8 +1,9 @@
+import {ISluggable} from 'pz-server/src/url-slugs/mixins/sluggable';
 import { ICommunityItemModel } from 'pz-server/src/models/community-item';
 import { IVoteModel, IVoteInstance } from 'pz-server/src/models/vote';
 import promisify from 'pz-support/src/promisify';
 
-export interface IUserModel extends IPersistedModel {
+export interface IUserModel extends IPersistedModel, ISluggable {
     getTotalCommunityItems(userId: number): Promise<number>
     getTotalTrusters(userId: number): Promise<number>
     getReputation(userId: number): Promise<number>

@@ -203,6 +203,46 @@ export default function UsersTypes(repositoryAuthorizers: IAppRepositoryAuthoriz
         interfaces: [UserInterfaceType]
     });
 
+    var UserProfileType = new GraphQLObjectType({
+        name: 'UserProfile',
+
+        fields: () => ({
+            id: globalIdField(CurrentUserType.Name),
+            
+            displayName: {
+                type: GraphQLString
+            },
+
+            reputation: {
+                type: GraphQLInt,
+                resolve: async ({id}, _, {user}) => {
+                    return userAuthorizer.as(user).getReputation(id);
+                }
+            },
+
+            image: {
+                type: GraphQLString,
+                resolve: ({email}) => {
+                    return calculateGravatarUrl(email);
+                }
+            },
+
+            trusterCount: {
+                type: GraphQLInt,
+                resolve: async ({id}, _, {user}) => {
+                    return userAuthorizer.as(user).getTotalTrusters(id);
+                }
+            },
+
+            bio: {
+                type: GraphQLString,
+                resolve: ({email}) => {
+                    return "About me!!!";
+                }
+            },
+        })
+    });
+    
     const ToggleTrustMutation = mutationWithClientMutationId({
         name: 'ToggleTrust',
 
@@ -273,6 +313,7 @@ export default function UsersTypes(repositoryAuthorizers: IAppRepositoryAuthoriz
         UserInterfaceType,
         CurrentUserType,
         OtherUserType,
+        UserProfileType,
         ToggleTrustMutation,
         GetCurrentUserMutation
     });

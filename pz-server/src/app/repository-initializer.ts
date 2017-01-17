@@ -63,7 +63,7 @@ module.exports = function initializeRepositories(app: IApp) {
     const vanityRoutePaths = new VanityRoutePaths(urlSlugs);
     const vanityRoutePathsAuthorizer = new VanityRoutePathsAuthorizer(vanityRoutePaths);
 
-    const users = new UsersLoader(new Users(app.models.PraiseeUser));
+    const users = new UsersLoader(new Users(app.models.PraiseeUser, app.models.UrlSlug));
     const usersAuthorizer = new UsersAuthorizer(users);
 
     const photosEvents = new PhotosEvents(new Photos(app.models.Photo, app.models.DeletedPhoto));
