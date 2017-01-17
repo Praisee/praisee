@@ -46,20 +46,6 @@ export default class SignInUp extends React.Component<IProps, any> {
         );
     }
 
-    private _renderSocialLinks() {
-        return (
-            <div className="social-links">
-                <span className="social-links-or">or</span>
-                <Link to={appInfo.addresses.getFacebookAuthRoute()} target="_blank">
-                    <i className="social-icon facebook-icon" />
-                </Link>
-                <Link to={appInfo.addresses.getGoogleAuthRoute()} target="_blank">
-                    <i className="social-icon google-icon" />
-                </Link>
-            </div>
-        );
-    }
-
     private _renderSignUp() {
         const {submitText} = this.props;
 
@@ -175,6 +161,30 @@ export default class SignInUp extends React.Component<IProps, any> {
                         onMouseDown={this._onInteraction.bind(this)}
                         onClick={this._switchToSignUp.bind(this)}> Sign up here!</a>
                 </div>
+            </div>
+        );
+    }
+
+    private _renderSocialLinks() {
+        return (
+            <div className="social-links">
+                <span className="social-links-or">
+                    ... or use
+                </span>
+
+                <a href={appInfo.addresses.getFacebookAuthRoute()}
+                   className="social-link"
+                   target="_blank">
+
+                    <i className="social-icon facebook-icon" />
+                </a>
+
+                <a href={appInfo.addresses.getGoogleAuthRoute()}
+                   className="social-link"
+                   target="_blank">
+
+                    <i className="social-icon google-icon" />
+                </a>
             </div>
         );
     }

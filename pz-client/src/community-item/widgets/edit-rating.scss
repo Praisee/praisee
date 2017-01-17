@@ -1,11 +1,30 @@
 @mixin edit-rating {
   .edit-rating {
+    white-space: nowrap;
+
+    .rating-container {
+      display: inline-block;
+      margin-right: 2rem;
+      margin-bottom: 1.5rem;
+      position: relative;
+
+      .rating-label {
+        position: absolute;
+        white-space: nowrap;
+        font-size: 0.8rem;
+        font-weight: 200;
+        color: lighten($gray, 20%);
+        left: 50%;
+        transform: translateX(-50%);
+      }
+    }
+
     .rating-star-group {
       @extend .fa;
       @extend .fa-star;
       position: relative;
-      margin-right: 0.5rem;
-      font-size: 2rem;
+      font-size: 3rem;
+      margin-bottom: 0.5rem;
       color: transparent;
 
       &:hover, &:active, &:focus {
@@ -19,7 +38,7 @@
       @extend .fa;
       @extend .fa-star;
       color: $gray-lighter;
-      font-size: 2rem;
+      font-size: 3rem;
       position: absolute;
       right: 0;
       top: 0;
@@ -74,5 +93,28 @@
       transition: all $btn-transition-time ease-in-out;
       @extend .fa-star-o;
     }
+
+    @include media-breakpoint-down(sm) {
+      .rating-container {
+        font-size: 2.5rem;
+        margin-right: 0.75rem;
+        margin-bottom: 1rem;
+
+        .rating-label {
+          display: none;
+        }
+
+        &:hover, &:active, &:focus {
+          .rating-label {
+            display: block;
+          }
+        }
+      }
+
+      .rating-star-group, .rating-star {
+        font-size: 2.5rem;
+      }
+    }
+
   }
 }

@@ -295,6 +295,10 @@
     @include community-item();
     @include expand-button();
 
+    @include media-breakpoint-down(sm){
+      padding-top: 2rem;
+    }
+
     .primary-section {
       @include make-col-span(8);
     }

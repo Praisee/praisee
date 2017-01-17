@@ -27,7 +27,7 @@
 @mixin embedded-sign-in-up {
   .embedded-sign-in-up {
     @include social-media-links();
-    
+
     .sign-in-up-field {
       @extend .form-control;
       font-size: 0.9rem;
@@ -47,10 +47,16 @@
       @extend .alert-danger;
     }
 
-    
+
     @include media-breakpoint-up(lg) {
       .sign-in-up-field { width: 96%; }
-      .sign-in-up-field-group { display: inline-block; width: 33.33%; }
+
+      .sign-in-up-field-group {
+        display: inline-block;
+        width: 33.33%;
+        vertical-align: middle;
+      }
+
       .switch-sign-in-up-action { font-size: 0.8rem; }
 
       .sign-up {
@@ -60,6 +66,14 @@
 
       .sign-in {
         .sign-in-up-password { margin-left: auto; }
+      }
+    }
+
+    @include media-breakpoint-down(md) {
+      .social-links {
+        display: block;
+        width: 100%;
+        margin: 1rem 0;
       }
     }
   }
@@ -72,24 +86,29 @@
     }
 
     .social-links-or {
-      padding: 5px;
-      color: $gray;
-    }
-    
-    .social-links a {
-      padding: 5px;
-    }
-    
-    .social-icon{
-      @extend .fa;
-      font-size: 2.3rem;
+      padding: 0.5rem;
+      color: $gray-light;
     }
 
-    .facebook-icon{
+    .social-link {
+      padding-right: 0.5rem;
+      color: lighten($gray, 35%);
+
+      &:hover, &:active, &:focus {
+        color: lighten($gray, 25%);
+      }
+    }
+
+    .social-icon {
+      @extend .fa;
+      font-size: 2rem;
+    }
+
+    .facebook-icon {
       @extend .fa-facebook-square;
     }
 
-    .google-icon{
+    .google-icon {
       @extend .fa-google-plus-square;
     }
 }

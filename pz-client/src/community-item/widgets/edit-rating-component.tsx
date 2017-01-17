@@ -21,11 +21,45 @@ export default class EditRating extends React.Component<IProps, any> {
 
         return (
             <div className={classes}>
-                {this._renderRatingButton(1)}
-                {this._renderRatingButton(2)}
-                {this._renderRatingButton(3)}
-                {this._renderRatingButton(4)}
-                {this._renderRatingButton(5)}
+                <div className="rating-container rating-1">
+                    {this._renderRatingOption(1)}
+
+                    <div className="rating-label">
+                        Hate it
+                    </div>
+                </div>
+
+                <div className="rating-container rating-2">
+                    {this._renderRatingOption(2)}
+
+                    <div className="rating-label">
+                        Dislike it
+                    </div>
+                </div>
+
+                <div className="rating-container rating-3">
+                    {this._renderRatingOption(3)}
+
+                    <div className="rating-label">
+                        Acceptable
+                    </div>
+                </div>
+
+                <div className="rating-container rating-4">
+                    {this._renderRatingOption(4)}
+
+                    <div className="rating-label">
+                        Like it
+                    </div>
+                </div>
+
+                <div className="rating-container rating-5">
+                    {this._renderRatingOption(5)}
+
+                    <div className="rating-label">
+                        Love it
+                    </div>
+                </div>
             </div>
         );
     }
@@ -34,7 +68,7 @@ export default class EditRating extends React.Component<IProps, any> {
         preselectedRating: null
     };
 
-    _renderRatingButton(rating: number) {
+    _renderRatingOption(rating: number) {
         const createStarButton = (rating: number) => {
             const classes = classNames(
                 'edit-rating-star',

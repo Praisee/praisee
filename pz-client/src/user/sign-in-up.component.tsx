@@ -43,20 +43,6 @@ export default class SignInUp extends React.Component<IProps, any> {
         );
     }
 
-    private _renderSocialLinks() {
-        return (
-            <div className="social-links">
-                <span className="social-links-or">or</span>
-                <Link to={appInfo.addresses.getFacebookAuthRoute()} target="_blank" onClick={this.props.hideSignInUp.bind(this)}>
-                    <i className="social-icon facebook-icon" />
-                </Link>
-                <Link to={appInfo.addresses.getGoogleAuthRoute()} target="_blank" onClick={this.props.hideSignInUp.bind(this)}>
-                    <i className="social-icon google-icon" />
-                </Link>
-            </div>
-        );
-    }
-
     private _renderSignUp() {
         return (
             <div className="sign-up">
@@ -69,7 +55,7 @@ export default class SignInUp extends React.Component<IProps, any> {
                         </div>
 
                         <div className="form-group">
-                            <input className="form-control" type="text" name="email" placeholder="Your email" key="email" />
+                            <input className="form-control" type="email" name="email" placeholder="Your email" key="email" />
                         </div>
 
                         <div className="form-group">
@@ -103,7 +89,7 @@ export default class SignInUp extends React.Component<IProps, any> {
                         <legend>Sign In</legend>
 
                         <div className="form-group">
-                            <input className="form-control" type="text" name="email" placeholder="Your email" key="email" />
+                            <input className="form-control" type="email" name="email" placeholder="Your email" key="email" />
                         </div>
 
                         <div className="form-group">
@@ -125,6 +111,30 @@ export default class SignInUp extends React.Component<IProps, any> {
                     <a href={routePaths.user.signUp()}
                         onClick={this._switchToSignUp.bind(this)}> Sign up here!</a>
                 </p>
+            </div>
+        );
+    }
+
+    private _renderSocialLinks() {
+        return (
+            <div className="social-links">
+                <span className="social-links-or">or use</span>
+
+                <a href={appInfo.addresses.getFacebookAuthRoute()}
+                   className="social-link"
+                   target="_blank"
+                   onClick={this.props.hideSignInUp.bind(this)}>
+
+                    <i className="social-icon facebook-icon" />
+                </a>
+
+                <a href={appInfo.addresses.getGoogleAuthRoute()}
+                   className="social-link"
+                   target="_blank"
+                   onClick={this.props.hideSignInUp.bind(this)}>
+
+                    <i className="social-icon google-icon" />
+                </a>
             </div>
         );
     }

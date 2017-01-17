@@ -128,12 +128,12 @@ class ReviewCommunityItemEditor extends React.Component<IProps, any> {
 
         return (
             <div className="editor-rating">
-                <EditRating rating={this.state.rating} onChange={this._setRating.bind(this)} />
-
                 <div className="editor-rating-label">
                     How would you rate <span className="selected-topic">{topicName}</span>?
                     {clearTopicButton}
                 </div>
+
+                <EditRating rating={this.state.rating} onChange={this._setRating.bind(this)} />
             </div>
         );
     }
