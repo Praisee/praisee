@@ -8,7 +8,7 @@ export default {
     bootScripts: [
         pzPath('pz-server', 'src/cache/initialize-cache'),
         pzPath('pz-server', 'src/app/initialize-worker-client'),
-        pzPath('pz-server', 'src/app/repository-initializer'), 
+        pzPath('pz-server', 'src/app/repository-initializer'),
         // Due to model changes in authentication-initializer we need to initialize before auto-updating models
         pzPath('pz-server', 'src/authentication/authentication-initializer'),
         pzPath('pz-server', 'src/app/auto-update-models'),
@@ -23,6 +23,7 @@ export default {
         pzPath('pz-server', 'src/search/suggestion-routes'),
         pzPath('pz-server', 'src/photos/upload-routes'),
         pzPath('pz-server', 'src/site/health-check-routes'),
+        pzPath('pz-server', 'src/site/redirect-to-canonical-host'),
         pzPath('pz-server', 'src/site/site-route'),
         pzPath('pz-server', 'src/site/static-assets')
     ]
