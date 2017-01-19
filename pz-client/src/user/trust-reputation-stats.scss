@@ -1,0 +1,35 @@
+@mixin trust-reputation-stats {
+  .reputation,
+  .trusters {
+    margin-left: 1em;
+    margin-top: .5em;
+    margin-bottom: .5em;
+    font-size: .75rem;
+    color: $gray-light;
+  }
+
+  .reputation-icon,
+  .trusters-icon {
+    @extend .fa;
+    padding-left: .25rem;
+    color: $gray-lighter;
+  }
+
+  .reputation-icon {
+    @extend .fa-heart;
+  }
+
+  .trusters-icon {
+    @extend .fa-check;
+  }
+
+  .avatar-stats {
+    line-height: .5rem;
+    margin-top: 0.3rem;
+
+    span:nth-child(1) {
+      padding-left: 0;
+      margin-left: 0;
+    }
+  }
+}

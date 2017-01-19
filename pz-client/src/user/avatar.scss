@@ -1,5 +1,8 @@
 @mixin avatar {
   .avatar {
+    @include trust-button();
+    @include trust-reputation-stats();
+    
     font-weight: 300;
     font-size: 0.9rem;
     margin: 1rem 0;
@@ -26,54 +29,6 @@
       white-space: nowrap;
       text-overflow: ellipsis;
       line-height: 0.9rem;
-    }
-
-    .reputation,
-    .trusters {
-      margin-left: 1em;
-      margin-top: .5em;
-      margin-bottom: .5em;
-      font-size: .75rem;
-      color: $gray-light;
-    }
-
-    .reputation-icon,
-    .trusters-icon {
-      @extend .fa;
-      padding-left: .25rem;
-      color: $gray-lighter;
-    }
-
-    .reputation-icon {
-      @extend .fa-heart;
-    }
-
-    .trusters-icon {
-      @extend .fa-check;
-    }
-
-    .trust-button {
-      @include btn();
-      @include praisee-btn-outline($brand-primary-minor);
-      font-size: 0.7rem;
-      padding: 0.2rem 0.5rem;
-      margin-left: 1rem;
-    }
-
-    .trust-button-icon {
-      @extend .fa-check;
-      @extend .fa;
-      margin-right: 0.3rem;
-    }
-
-    .avatar-stats {
-      line-height: .5rem;
-      margin-top: 0.3rem;
-
-      span:nth-child(1) {
-        padding-left: 0;
-        margin-left: 0;
-      }
     }
 
     .avatar-image-container {

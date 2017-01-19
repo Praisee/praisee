@@ -16,20 +16,30 @@ export class DateDisplay extends Component<IDateDisplayProps, any>{
 
     render() {
         const {type} = this.props;
+        let format = this.props.format || "YYYY-MM-DDThh:mm:ss";
 
         return this.schemaInjector.inject(
-            <div className="date">
+            <div className="date" style={this.props.style}>
                 <meta content={this.moment.format("YYYY-MM-DDThh:mm:ss")} className={type} />
-                {this.moment.fromNow()}
+
+                { this.props.format
+                    ? this.moment.format(this.props.format)
+                    : this.moment.fromNow()}
             </div>
         );
     }
 }
 
 export interface IDateDisplayProps {
-    date: string | Date,
+    date: string | Date
     type: DateType
+    format?: FormatType
+    style?: Object
 }
+
+export type FormatType =
+    "from-now"
+    | "MM-DD-YYYY";
 
 export type DateType =
     "date-published"

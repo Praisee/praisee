@@ -73,7 +73,7 @@ export class Comment extends Component<ICommentProps, any>{
             <div className="comment-header">
                 <div className="comment-header-primary">
                     <Avatar
-                        communityItem={null} comment={this.props.comment}
+                        user={this.props.comment.user}
                         showReputation={true}
                         showTrusts={true}
                         showTrustButton={true}
@@ -291,11 +291,11 @@ export default Relay.createContainer(Comment, {
                 
                 user {
                     id
+                    ${Avatar.getFragment('user')}
                 }
                 
                 ${CommentContent.getFragment('comment')}
                 ${UpdateCommentEditor.getFragment('comment')}
-                ${Avatar.getFragment('comment')}
                 ${CommentList.getFragment('comment', { currentDepth }).if(expand)}
                 ${CreateCommentEditor.getFragment('comment')}
                 ${Votes.getFragment('comment')}

@@ -89,9 +89,11 @@ export default function UsersTypes(repositoryAuthorizers: IAppRepositoryAuthoriz
                 }
             },
 
-            displayName: {
-                type: GraphQLString
-            },
+            displayName: { type: GraphQLString },
+
+            email: { type: GraphQLString },
+
+            username: { type: GraphQLString },
 
             reputation: {
                 type: GraphQLInt,
@@ -109,10 +111,6 @@ export default function UsersTypes(repositoryAuthorizers: IAppRepositoryAuthoriz
                 }
             },
 
-            email: {
-                type: new GraphQLNonNull(GraphQLString)
-            },
-
             trusterCount: {
                 type: GraphQLInt,
                 resolve: async ({id}, _, {user}) => {
@@ -124,10 +122,6 @@ export default function UsersTypes(repositoryAuthorizers: IAppRepositoryAuthoriz
             serverId: {
                 type: GraphQLInt,
                 resolve: (_, __, {user}) => user ? user.id : null
-            },
-
-            username: {
-                type: GraphQLString
             },
 
             isLoggedIn: {
@@ -153,45 +147,28 @@ export default function UsersTypes(repositoryAuthorizers: IAppRepositoryAuthoriz
         name: 'OtherUser',
 
         fields: () => ({
-            id: {
-                type: GraphQLString,
-                resolve: ({id}) => {
-                    if(id) {
-                        return toUserId(id);
-                    }
-                }
-            },
+            id: { type: GraphQLString },
 
-            displayName: {
-                type: GraphQLString
+            displayName: { type: GraphQLString },
+
+            image: {
+                type: GraphQLString,
+                resolve: ({email}) => calculateGravatarUrl(email)
             },
 
             reputation: {
                 type: GraphQLInt,
-                resolve: async ({id}, _, {user}) => {
-                    return userAuthorizer.as(user).getReputation(id);
-                }
-            },
-
-            image: {
-                type: GraphQLString,
-                resolve: ({email}) => {
-                    return calculateGravatarUrl(email);
-                }
+                resolve: ({id}, _, {user}) => userAuthorizer.as(user).getReputation(id)
             },
 
             trusterCount: {
                 type: GraphQLInt,
-                resolve: async ({id}, _, {user}) => {
-                    return userAuthorizer.as(user).getTotalTrusters(id);
-                }
+                resolve: ({id}, _, {user}) => userAuthorizer.as(user).getTotalTrusters(id)
             },
 
             isCurrentUserTrusting: {
                 type: GraphQLBoolean,
-                resolve: ({id}, _, {user}) => {
-                    return userAuthorizer.as(user).isUserTrusting(id);
-                }
+                resolve: ({id}, _, {user}) => userAuthorizer.as(user).isUserTrusting(id)
             },
 
             isCurrentUser: {
@@ -208,41 +185,19 @@ export default function UsersTypes(repositoryAuthorizers: IAppRepositoryAuthoriz
 
         fields: () => ({
             id: globalIdField(CurrentUserType.Name),
-            
-            displayName: {
-                type: GraphQLString
+
+            bio: { type: GraphQLString },
+
+            createdAt: { type: GraphQLString },
+
+            user: {
+                type: UserInterfaceType,
+                resolve: (user) => user
             },
 
-            reputation: {
-                type: GraphQLInt,
-                resolve: async ({id}, _, {user}) => {
-                    return userAuthorizer.as(user).getReputation(id);
-                }
-            },
-
-            image: {
-                type: GraphQLString,
-                resolve: ({email}) => {
-                    return calculateGravatarUrl(email);
-                }
-            },
-
-            trusterCount: {
-                type: GraphQLInt,
-                resolve: async ({id}, _, {user}) => {
-                    return userAuthorizer.as(user).getTotalTrusters(id);
-                }
-            },
-
-            bio: {
-                type: GraphQLString,
-                resolve: ({email}) => {
-                    return "About me!!!";
-                }
-            },
         })
     });
-    
+
     const ToggleTrustMutation = mutationWithClientMutationId({
         name: 'ToggleTrust',
 

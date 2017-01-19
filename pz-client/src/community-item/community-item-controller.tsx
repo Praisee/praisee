@@ -139,7 +139,7 @@ export class CommunityItemController extends Component<ICommunityItemProps, any>
     private _renderAvatar() {
         return (
             <Avatar
-                communityItem={this.props.communityItem} comment={null}
+                user={this.props.communityItem.user}
                 showReputation={true}
                 showTrusts={true}
                 showTrustButton={true}
@@ -394,6 +394,7 @@ export default Relay.createContainer(withRouter(CommunityItemController), {
                 
                 user {
                     displayName
+                    ${Avatar.getFragment('user')}
                 }
                 
                 topics {
@@ -414,7 +415,6 @@ export default Relay.createContainer(withRouter(CommunityItemController), {
                 }
                 
                 ${CommentList.getFragment('communityItem', { expandCommentsTo }).if(expandComments)}
-                ${Avatar.getFragment('communityItem')}
                 ${CommunityItemContent.getFragment('communityItem')}
                 ${CreateCommentEditor.getFragment('communityItem')}
                 ${Votes.getFragment('communityItem')}

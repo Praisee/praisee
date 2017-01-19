@@ -1,0 +1,16 @@
+@mixin profile-namespace() {
+  .profile-namespace {
+    @include trust-button();
+    @include trust-reputation-stats();
+    @include make-container();
+    @include make-container-max-widths();
+
+    .name {
+      margin-bottom: 0;
+    }
+
+    .member-since {
+      font-size: 0.7rem;
+    }
+  } 
+}

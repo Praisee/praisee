@@ -142,7 +142,7 @@ class CommunityItem extends Component<ICommunityItemProps, ICommuintyItemState> 
         return (
             <div className="community-item-maximized">
                 <div className="community-item-maximized-inner">
-                    <Avatar communityItem={communityItem} comment={null}
+                    <Avatar user={this.props.communityItem.user}
                         showReputation={true}
                         showTrusts={true}
                         showTrustButton={true} />
@@ -284,6 +284,7 @@ export default Relay.createContainer(CommunityItem, {
                 body
                 user {
                     displayName
+                    ${Avatar.getFragment('user')}
                 }
                 topics {
                     id
@@ -303,7 +304,6 @@ export default Relay.createContainer(CommunityItem, {
                 }
                 
                 ${CommentList.getFragment('communityItem', { expandCommentsTo }).if(expandComments)}
-                ${Avatar.getFragment('communityItem')}
                 ${CommunityItemContent.getFragment('communityItem')}
                 ${CreateCommentEditor.getFragment('communityItem')}
                 ${Votes.getFragment('communityItem')}

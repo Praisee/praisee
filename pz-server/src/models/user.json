@@ -16,6 +16,11 @@
             "description": "The displayed name of the user"
         },
 
+        "bio": {
+            "type": "string",
+            "description": "A short bio of the user"
+        },
+
         "isAdmin": {
             "type": "boolean",
             "required": false,
