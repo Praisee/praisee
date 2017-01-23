@@ -1,6 +1,7 @@
-import { Component } from 'react';
 import * as React from 'react';
 import * as Relay from 'react-relay';
+import { Component } from 'react';
+import { Link } from 'react-router';
 import appInfo from 'pz-client/src/app/app-info';
 import SchemaInjector, { ISchemaType } from 'pz-client/src/support/schema-injector';
 import GoogleTagManager from 'pz-client/src/support/google-tag-manager';
@@ -23,7 +24,7 @@ class Avatar extends Component<IAvatarProps, any>{
                 {this._renderImage()}
 
                 <div className="avatar-name-container">
-                    <span className="display-name">{this.props.user.displayName}</span>
+                    <Link to={} className="display-name">{this.props.user.displayName}</Link>
                     <TrustReputationStats 
                         showReputation={this.props.showReputation}
                         showTrusts={this.props.showTrusts}

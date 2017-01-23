@@ -1,4 +1,9 @@
 import {
+    biCursorFromGraphqlArgs,
+    connectionFromCursorResults
+} from 'pz-server/src/graphql/cursor-helpers';
+
+import {
     authorizer,
     TOptionalUser,
     NotOwnerError,
@@ -42,6 +47,7 @@ var {
 
 export default function UsersTypes(repositoryAuthorizers: IAppRepositoryAuthorizers, nodeInterface, types: ITypes) {
     let userAuthorizer = repositoryAuthorizers.users;
+    let communityItemsAuthorizer = repositoryAuthorizers.communityItems;
 
     var resolveType = function (value, {user}) {
         if (user && user.id === value.id) {
@@ -195,6 +201,26 @@ export default function UsersTypes(repositoryAuthorizers: IAppRepositoryAuthoriz
                 resolve: (user) => user
             },
 
+            communityItemCount: {
+                type: GraphQLInt,
+                resolve: (user) => 10
+            },
+
+            communityItems: {
+                type: types.CommunityItemConnection.connectionType,
+                args: connectionArgs,
+
+                resolve: async ({id}, args, {user}) => {
+                    const cursor = biCursorFromGraphqlArgs(args as any);
+                    let items = await communityItemsAuthorizer
+                            .as(user)
+                            .findSomeByUserId(cursor, id);
+
+                    return connectionFromCursorResults(
+                        items
+                    );
+                }
+            }
         })
     });
 

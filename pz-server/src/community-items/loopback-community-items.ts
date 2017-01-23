@@ -10,8 +10,7 @@ import {
 import {ITopicInstance} from 'pz-server/src/models/topic';
 import {ITopic} from 'pz-server/src/topics/topics';
 import {IComment} from 'pz-server/src/comments/comments';
-import {ICommunityItemModel, ICommunityItemInstance} from 'pz-server/src/models/community-item';
-import {IVote} from 'pz-server/src/votes/votes';
+import {ICommunityItemModel, ICommunityItemInstance} from 'pz-server/src/models/community-item'; import {IVote} from 'pz-server/src/votes/votes';
 import {IVoteInstance} from 'pz-server/src/models/vote';
 
 import {

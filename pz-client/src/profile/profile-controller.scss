@@ -3,14 +3,116 @@
     @include trust-button();
     @include trust-reputation-stats();
     @include make-container();
-    @include make-container-max-widths();
 
-    .name {
-      margin-bottom: 0;
+    max-width: 740px;
+
+    .profile-top-section {
+      @include make-row();
+
+      .profile-top-left {
+        // @include make-col-span(3);
+
+        .avatar-image {
+          width: 150px;
+          height: 150px;
+        }
+
+        .avatar-stats{
+          text-align: center;
+
+          .reputation,
+          .trusters {
+            font-size: 1rem;
+          }
+        }
+      }
+
+      .profile-top-right {
+        @include make-col-span(9);
+        
+        .name {
+          margin-bottom: 0;
+        }
+
+        .member-since {
+          font-size: 0.7rem;
+        }
+
+        .bio {
+          @include content-truncator();
+          
+          color: $gray;
+          font-size: 0.9rem;
+          text-align: justify;
+          margin-top: 1rem;
+        }
+
+        .trust-button {
+          float: right;
+          margin-top:1rem;
+          margin-right: 1rem;
+        }
+      }
+      
+      .profile-top-left,
+      .profile-top-right {
+        @include make-col();
+        
+        @include media-breakpoint-down(sm){
+          @include make-col-span(12);
+          text-align: center;
+        }
+      }
     }
 
-    .member-since {
-      font-size: 0.7rem;
+    .summary-section {
+      margin-top: 2rem;
+      
+      .summary-section-row {
+        @include make-row();
+        margin-top: 1rem;
+      }
+
+      .summary-section-title { 
+        @include make-col-span(2);
+      }
+
+      .summary-section-contents { 
+        @include make-col-span(10);
+      }
+
+      .summary-section-title,
+      .summary-section-contents{
+        @include make-col();
+      }
+
+      .summary-item {
+        display: inline-block;
+        margin-right: 1.5rem;
+        margin-bottom: .5rem;
+        font-size: .9rem;
+        color: $gray;
+        
+        .summary-badge {
+          color: $white;
+          background-color: $brand-success;
+          font-size: .8rem;
+          border-radius: .25rem;
+          padding: .25rem .5rem;
+          margin: 2px;
+        }
+      }
+    }
+
+    .contributions-section {
+      @include community-item-list();
+      
+      margin-top: 2rem;
+
+      .section-title {
+        padding-bottom: .5rem;
+        border-bottom: 1px solid $gray-lighter;
+      }
     }
   } 
 }
