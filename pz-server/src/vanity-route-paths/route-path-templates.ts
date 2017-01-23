@@ -37,7 +37,7 @@ const routePaths = {
 
     user: {
         profile: (urlSlug: TRoutePathUrlSlug) => path.join(
-            routePaths.index(), 'profile/sign-in', urlSlug.toString()
+            routePaths.index(), 'profile', urlSlug.toString()
         ),
     }
 };

@@ -5,7 +5,7 @@ import {
 export type TOptionalUser = {id: number, isAdmin: boolean} | null;
 
 export interface IUser extends IRepositoryRecord {
-    recordType: 'User' | 'CurrentUser' | 'OtherUser'
+    recordType: 'User' | 'CurrentUser' | 'OtherUser' | 'PraiseeUser'
     id: number
     displayName: string
     email: string

@@ -48,6 +48,7 @@ var {
 export default function UsersTypes(repositoryAuthorizers: IAppRepositoryAuthorizers, nodeInterface, types: ITypes) {
     let userAuthorizer = repositoryAuthorizers.users;
     let communityItemsAuthorizer = repositoryAuthorizers.communityItems;
+    let vanityRoutePathAuthorizer = repositoryAuthorizers.vanityRoutePaths;
 
     var resolveType = function (value, {user}) {
         if (user && user.id === value.id) {
@@ -56,6 +57,13 @@ export default function UsersTypes(repositoryAuthorizers: IAppRepositoryAuthoriz
         else {
             return OtherUserType;
         }
+    };
+
+    const resolveSlugPath = async (user, _, {user: currentUser}) => {
+        user.recordType = 'PraiseeUser';
+        let route = await vanityRoutePathAuthorizer.as(currentUser).findByRecord(user);
+
+        return route.routePath;
     };
 
     var UserInterfaceType = new GraphQLInterfaceType({
@@ -72,7 +80,9 @@ export default function UsersTypes(repositoryAuthorizers: IAppRepositoryAuthoriz
 
             trusterCount: { type: GraphQLInt },
 
-            isCurrentUser: { type: new GraphQLNonNull(GraphQLBoolean) }
+            isCurrentUser: { type: new GraphQLNonNull(GraphQLBoolean) },
+
+            routePath: { type: GraphQLString }
         }),
 
         resolveType: resolveType
@@ -143,6 +153,11 @@ export default function UsersTypes(repositoryAuthorizers: IAppRepositoryAuthoriz
             isAdmin: {
                 type: new GraphQLNonNull(GraphQLBoolean),
                 resolve: (_, __, {user}) => user ? user.isAdmin : false
+            },
+
+            routePath: {
+                type: GraphQLString,
+                resolve: resolveSlugPath
             }
         }),
 
@@ -180,6 +195,11 @@ export default function UsersTypes(repositoryAuthorizers: IAppRepositoryAuthoriz
             isCurrentUser: {
                 type: new GraphQLNonNull(GraphQLBoolean),
                 resolve: ({id}, _, user) => false
+            },
+
+            routePath: {
+                type: GraphQLString,
+                resolve: resolveSlugPath
             }
         }),
 
@@ -213,8 +233,8 @@ export default function UsersTypes(repositoryAuthorizers: IAppRepositoryAuthoriz
                 resolve: async ({id}, args, {user}) => {
                     const cursor = biCursorFromGraphqlArgs(args as any);
                     let items = await communityItemsAuthorizer
-                            .as(user)
-                            .findSomeByUserId(cursor, id);
+                        .as(user)
+                        .findSomeByUserId(cursor, id);
 
                     return connectionFromCursorResults(
                         items
@@ -305,10 +325,10 @@ function calculateGravatarUrl(email: string) {
     return `https://www.gravatar.com/avatar/${hash}`;
 }
 
-export function fromUserId(id){
-  return parseInt(id.replace('User', ''));
+export function fromUserId(id) {
+    return parseInt(id.replace('User', ''));
 }
 
-export function toUserId(id){
-  return 'User' + id;
+export function toUserId(id) {
+    return 'User' + id;
 }

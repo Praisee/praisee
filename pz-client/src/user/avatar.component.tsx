@@ -24,8 +24,10 @@ class Avatar extends Component<IAvatarProps, any>{
                 {this._renderImage()}
 
                 <div className="avatar-name-container">
-                    <Link to={} className="display-name">{this.props.user.displayName}</Link>
-                    <TrustReputationStats 
+                    <Link to={this.props.user.routePath}
+                        className="display-name">{this.props.user.displayName}
+                    </Link>
+                    <TrustReputationStats
                         showReputation={this.props.showReputation}
                         showTrusts={this.props.showTrusts}
                         user={this.props.user} />
@@ -74,6 +76,7 @@ export default Relay.createContainer(Avatar, {
                 isCurrentUser
                 displayName
                 image
+                routePath
                 ${TrustButton.getFragment('user')}
                 ${TrustReputationStats.getFragment('user')}
             }
@@ -85,6 +88,7 @@ interface IUser {
     isCurrentUser: boolean;
     displayName: string;
     image: string;
+    routePath: string;
 }
 
 export interface IAvatarProps {

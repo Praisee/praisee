@@ -130,7 +130,7 @@ export class Profile extends Component<IProfileControllerProps, any> {
         return (
             <div className="contributions-section">
                 <h1 className="section-title">
-                    Contributions <span>{this.props.profile.communityItems.edges.length}</span>
+                    Contributions - <span>{this.props.profile.communityItems.edges.length}</span>
                 </h1> 
                 {this._renderContributions()}
             </div>

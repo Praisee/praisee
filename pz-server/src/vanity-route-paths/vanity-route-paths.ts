@@ -16,7 +16,10 @@ import {ICommunityItem} from 'pz-server/src/community-items/community-items';
 export type TVanityRoutePathSupportedRecord = IUser | ITopic | ICommunityItem;
 
 export var isUserRecord = (record: TVanityRoutePathSupportedRecord): record is IUser => (
-    record.recordType === 'User'
+    record.recordType === 'PraiseeUser' 
+    || record.recordType === 'OtherUser' 
+    || record.recordType === 'CurrentUser' 
+    || record.recordType === 'User' 
 );
 
 export var isTopicRecord = (record: TVanityRoutePathSupportedRecord): record is ITopic => (
