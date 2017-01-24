@@ -88,7 +88,8 @@ module.exports = function initializeRepositories(app: IApp) {
     const communityItems = new CommunityItemsLoader(new CommunityItems(
         app.models.CommunityItem,
         app.models.CommunityItemInteraction,
-        app.models.UrlSlug
+        app.models.UrlSlug,
+        app.models.Photo
     ));
 
     const contentFilterer = new ContentFilterer(

@@ -27,6 +27,10 @@ import {
     ICommunityItemInteractionInstance
 } from 'pz-server/src/models/community-item-interaction';
 
+import {IPhoto} from 'pz-server/src/photos/photos';
+import {IPhotoModel as ILoopbackPhoto, IPhotoInstance as ILoopbackPhotoInstance} from 'pz-server/src/models/photo';
+import {cursorPhotoLoopbackModelsToRecords} from 'pz-server/src/photos/loopback-photos';
+
 export function createRecordFromLoopbackCommunityItem(communityItem: ICommunityItemInstance): ICommunityItem {
     return createRecordFromLoopback<ICommunityItem>('CommunityItem', communityItem);
 }
@@ -43,16 +47,19 @@ export default class CommunityItems implements ICommunityItems, ICommunityItemsB
     private _CommunityItemModel: ICommunityItemModel;
     private _CommunityItemInteractionModel: ICommunityItemInteractionModel;
     private _UrlSlugsModel: IPersistedModel;
+    private _Photo: ILoopbackPhoto;
 
     constructor(
             CommunityItemModel: ICommunityItemModel,
             CommunityItemInteractionModel: ICommunityItemInteractionModel,
-            UrlSlug: IPersistedModel
+            UrlSlug: IPersistedModel,
+            Photo: ILoopbackPhoto,
         ) {
 
         this._CommunityItemModel = CommunityItemModel;
         this._CommunityItemInteractionModel = CommunityItemInteractionModel;
         this._UrlSlugsModel = UrlSlug;
+        this._Photo = Photo;
     }
 
     async findById(id: number): Promise<ICommunityItem> {
@@ -186,6 +193,21 @@ export default class CommunityItems implements ICommunityItems, ICommunityItemsB
 
             return createRecordFromLoopbackCommunityItemInteraction(interactionModel);
         });
+    }
+
+    async findSomePhotosById(id: number, cursor: TBiCursor): Promise<ICursorResults<IPhoto>> {
+        const photos = await findWithCursor<ILoopbackPhotoInstance>(
+            this._Photo,
+            cursor,
+            {
+                where: {
+                    parentType: 'CommunityItem',
+                    parentId: id
+                }
+            }
+        );
+
+        return cursorPhotoLoopbackModelsToRecords(photos);
     }
 
     async getReputationEarned(communityItemId: number, userId: number): Promise<number> {

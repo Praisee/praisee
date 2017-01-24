@@ -15,7 +15,7 @@ import {promisedMapCursorResults} from 'pz-server/src/support/cursors/map-cursor
 import {IComment} from 'pz-server/src/comments/comments';
 import {IVote} from 'pz-server/src/votes/votes';
 import {IPhotos, IPhoto} from 'pz-server/src/photos/photos';
-import {filterAttachments} from '../content/filters/attachment-data';
+import {filterAttachments} from 'pz-server/src/content/filters/attachment-data';
 import {
     IAttachment,
     isPhotoAttachment
@@ -86,6 +86,10 @@ export default class FilteredCommunityItems implements ICommunityItems {
 
     findInteraction(communityItemId: number, userId: number): Promise<ICommunityItemInteraction> {
         return this._communityItems.findInteraction(communityItemId, userId);
+    }
+
+    findSomePhotosById(id: number, cursor: TBiCursor): Promise<ICursorResults<IPhoto>> {
+        return this._communityItems.findSomePhotosById(id, cursor);
     }
 
     async getReputationEarned(communityItemId: number, userId: number): Promise<number>{

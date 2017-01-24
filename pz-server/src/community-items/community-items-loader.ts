@@ -11,6 +11,7 @@ import {IVote} from 'pz-server/src/votes/votes';
 
 import DataLoader from 'dataloader';
 import createDataLoaderBatcher from 'pz-server/src/support/create-dataloader-batcher';
+import {IPhoto} from 'pz-server/src/photos/photos';
 
 export default class CommunityItemsLoader implements ICommunityItems {
     private _communityItems: ICommunityItems & ICommunityItemsBatchable;
@@ -64,6 +65,10 @@ export default class CommunityItemsLoader implements ICommunityItems {
 
     findInteraction(communityItemId: number, userId: number): Promise<ICommunityItemInteraction> {
         return this._loaders.findAllInteractionsForEach.load([communityItemId, userId]);
+    }
+
+    findSomePhotosById(id: number, cursor: TBiCursor): Promise<ICursorResults<IPhoto>> {
+        return this._communityItems.findSomePhotosById(id, cursor);
     }
 
     getReputationEarned(communityItemId: number, userId: number): Promise<number>{

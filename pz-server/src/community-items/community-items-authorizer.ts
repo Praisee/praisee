@@ -16,6 +16,7 @@ import {
 } from 'pz-server/src/community-items/community-items';
 import {TBiCursor, ICursorResults} from 'pz-server/src/support/cursors/cursors';
 import {IComment} from 'pz-server/src/comments/comments';
+import {IPhoto} from 'pz-server/src/photos/photos';
 
 export interface IAuthorizedCommunityItems {
     findById(id: number): Promise<ICommunityItem>
@@ -25,6 +26,7 @@ export interface IAuthorizedCommunityItems {
     findVotesForCommunityItem(communityItemId: number): Promise<Array<IVote>>
     findByUrlSlugName(fullSlug: string): Promise<ICommunityItem>
     findInteraction(communityItemId: number): Promise<ICommunityItemInteraction>
+    findSomePhotosById(id: number, cursor: TBiCursor): Promise<ICursorResults<IPhoto>>
     getReputationEarned(communityItemId: number): Promise<number | AuthorizationError>
     create(communityItem: ICommunityItem): Promise<ICommunityItem | AuthorizationError>
     update(communityItem: ICommunityItem): Promise<ICommunityItem | AuthorizationError>
@@ -67,6 +69,10 @@ class AuthorizedCommunityItems implements IAuthorizedCommunityItems {
 
     async findByUrlSlugName(fullSlug: string): Promise<ICommunityItem> {
         return await this._communityItems.findByUrlSlugName(fullSlug);
+    }
+
+    findSomePhotosById(id: number, cursor: TBiCursor): Promise<ICursorResults<IPhoto>> {
+        return this._communityItems.findSomePhotosById(id, cursor);
     }
 
     async getReputationEarned(communityItemId: number): Promise<number> {

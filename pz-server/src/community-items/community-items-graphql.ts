@@ -46,7 +46,16 @@ import {
 
 import {getViewerField} from 'pz-server/src/graphql/viewer-graphql';
 import {addErrorToResponse} from 'pz-server/src/errors/errors-graphql';
+
 import {GraphQLUnionType} from 'graphql/type/definition';
+
+import {
+    biCursorFromGraphqlArgs,
+    connectionFromCursorResults
+} from 'pz-server/src/graphql/cursor-helpers';
+
+import {mapCursorResultItems} from 'pz-server/src/support/cursors/map-cursor-results';
+import {getCommunityItemContentPhotoVariationsUrls} from 'pz-server/src/photos/photo-variations';
 
 export default function getCommunityItemTypes(repositoryAuthorizers: IAppRepositoryAuthorizers, nodeInterface, types: ITypes) {
     const communityItemsAuthorizer = repositoryAuthorizers.communityItems;
@@ -212,6 +221,27 @@ export default function getCommunityItemTypes(repositoryAuthorizers: IAppReposit
                     .as(user)
                     .getReputationEarned(communityItem.id);
             }
+        },
+
+        photos: {
+            type: CommunityItemPhotoConnection.connectionType,
+            args: connectionArgs,
+
+            resolve: async (communityItem, args, {user}) => {
+                const cursor = biCursorFromGraphqlArgs(args as any);
+
+                const photoGalleryPhotos = await communityItemsAuthorizer
+                    .as(user)
+                    .findSomePhotosById(communityItem.id, cursor);
+
+                const photoGalleryPhotosUrls = mapCursorResultItems(photoGalleryPhotos, (photo) => {
+                    return Object.assign({}, photo,
+                        getCommunityItemContentPhotoVariationsUrls(photo.photoServerPath)
+                    );
+                });
+
+                return connectionFromCursorResults(photoGalleryPhotosUrls);
+            }
         }
     });
 
@@ -271,6 +301,30 @@ export default function getCommunityItemTypes(repositoryAuthorizers: IAppReposit
     var CommunityItemConnection = connectionDefinitions({
         name: 'CommunityItem',
         nodeType: CommunityItemInterfaceType
+    });
+
+    const CommunityItemPhotoType = new GraphQLObjectType({
+        name: 'CommunityItemPhoto',
+
+        fields: () => ({
+            defaultUrl: {type: new GraphQLNonNull(GraphQLString)},
+
+            variations: {
+                type: new GraphQLObjectType({
+                    name: 'CommunityItemPhotoVariations',
+
+                    fields: {
+                        initialLoad: {type: new GraphQLNonNull(GraphQLString)},
+                        mobile: {type: new GraphQLNonNull(GraphQLString)}
+                    }
+                })
+            }
+        })
+    });
+
+    const CommunityItemPhotoConnection = connectionDefinitions({
+        name: 'CommunityItemPhoto',
+        nodeType: CommunityItemPhotoType
     });
 
     var CreateCommunityItemMutation = mutationWithClientMutationId({
@@ -626,6 +680,8 @@ export default function getCommunityItemTypes(repositoryAuthorizers: IAppReposit
             },
 
             CommunityItemConnection,
+
+            CommunityItemPhotoType,
 
             CreateCommunityItemMutation,
             UpdateCommunityItemContentMutation,
