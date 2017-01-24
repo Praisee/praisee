@@ -8,6 +8,13 @@ let appInfo = {
         getImage: (imagePath: string) =>
             path.join(appInfo.addresses.getImages(), imagePath),
 
+        getImageFullUrl: (imagePath: string, protocol: string = '') => url.resolve(
+            `${protocol ? protocol + ':' : ''}//` + (
+                process.env.NODE_ENV === 'production' ? 'www.praisee.com' : `localhost:3000`
+            ),
+            appInfo.addresses.getImage(imagePath)
+        ),
+
         getGraphqlApi: () => '/i/graphql',
 
         getSignInApi: () => '/i/sign-in',

@@ -19,6 +19,7 @@ import SimpleModal from 'pz-client/src/widgets/simple-modal-component';
 import handleClick from 'pz-client/src/support/handle-click';
 import DestroyCommunityItemMutation from 'pz-client/src/community-item/destroy-community-item-mutation';
 import {ContextMenu, ContextMenuOption} from 'pz-client/src/widgets/context-menu-component';
+import Helmet from 'react-helmet';
 
 interface IContext {
     showNotFoundError: any
@@ -57,6 +58,8 @@ export class CommunityItemController extends Component<ICommunityItemProps, any>
 
         return (
             <div className="community-item-namespace" >
+                {this._renderPageHead(communityItem)}
+
                 <div className={communityItemClasses}>
                     {this._renderCommunityItemTypeHeader(communityItem)}
 
@@ -78,6 +81,42 @@ export class CommunityItemController extends Component<ICommunityItemProps, any>
                 </div>
             </div>
         )
+    }
+
+    private _renderPageHead(communityItem) {
+        const title = communityItem.summary;
+        const author = communityItem.user.displayName;
+        const photoFromContentEdge = communityItem.photos.edges[0];
+        const photoFromContent = photoFromContentEdge && photoFromContentEdge.node.defaultUrl;
+        const imageUrl = photoFromContent || '';
+        const description = communityItem.body;
+
+        return (
+            <Helmet
+                title={title}
+
+                meta={[
+                    {name: 'description', content: description},
+
+                    // Schema.org markup for Google
+                    {itemprop: 'name', content: title},
+                    {itemprop: 'description', content: description},
+                    {itemprop: 'image', content: imageUrl},
+
+                    // Open Graph Data
+                    {property: 'og:title', content: title},
+                    {property: 'og:type', content: 'article'},
+                    {property: 'og:article:author', content: author},
+                    {property: 'og:image', content: imageUrl},
+                    {property: 'og:description', content: description},
+
+                    // Twitter markup
+                    {property: 'twitter:title', content: title},
+                    {property: 'twitter:description', content: description},
+                    {property: 'twitter:image:src', content: imageUrl},
+                ]}
+            />
+        );
     }
 
     private _renderCommunityItemTypeHeader(communityItem) {
@@ -353,16 +392,27 @@ export default Relay.createContainer(withRouter(CommunityItemController), {
                 id
                 summary
                 body
+                
                 user {
                     displayName
                 }
+                
                 topics {
                     id
                     name
                     routePath
                 }
+                
                 commentCount
                 belongsToCurrentUser
+                
+                photos(first: 1) {
+                    edges {
+                        node {
+                            defaultUrl
+                        }
+                    }
+                }
                 
                 ${CommentList.getFragment('communityItem', { expandCommentsTo }).if(expandComments)}
                 ${Avatar.getFragment('communityItem')}

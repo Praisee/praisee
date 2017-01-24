@@ -16,7 +16,8 @@ import {
     notFoundContext,
     INotFoundContext
 } from 'pz-client/src/app/not-found-context';
-import QuestionEditor from '../community-item/question-editor-component';
+import QuestionEditor from 'pz-client/src/community-item/question-editor-component';
+import Helmet from 'react-helmet';
 
 interface IContext extends INotFoundContext {
     showNotFoundError: any
@@ -36,6 +37,7 @@ export class TopicController extends Component<ITopicProps, ITopicState> {
 
         return (
             <div className="topic-namespace" >
+                {this._renderPageHead()}
                 {this._renderOffCanvasContainer()}
             </div>
         )
@@ -64,6 +66,43 @@ export class TopicController extends Component<ITopicProps, ITopicState> {
                 isSideBarActive: false
             })
         }
+    }
+
+    private _renderPageHead() {
+        const topicName = this.props.topic.name;
+        const title = `${topicName} Reviews, Questions, Answers and Discussion`;
+        const description = this.props.topic.overviewContent;
+
+        const photoFromGalleryEdge = this.props.topic.photoGallery.edges[0];
+        const photoFromGallery = photoFromGalleryEdge && photoFromGalleryEdge.node.defaultUrl;
+        const thumbnailPhoto = this.props.topic.thumbnailPhoto && this.props.topic.thumbnailPhoto.defaultUrl;
+        const imageUrl = thumbnailPhoto || photoFromGallery || '';
+
+        return (
+            <Helmet
+                title={title}
+
+                meta={[
+                    {name: 'description', content: description},
+
+                    // Schema.org markup for Google
+                    {itemprop: 'name', content: title},
+                    {itemprop: 'description', content: description},
+                    {itemprop: 'image', content: imageUrl},
+
+                    // Open Graph Data
+                    {property: 'og:title', content: title},
+                    {property: 'og:type', content: 'article'},
+                    {property: 'og:image', content: imageUrl},
+                    {property: 'og:description', content: description},
+
+                    // Twitter markup
+                    {property: 'twitter:title', content: title},
+                    {property: 'twitter:description', content: description},
+                    {property: 'twitter:image:src', content: imageUrl},
+                ]}
+            />
+        );
     }
 
     private _renderPrimarySection() {
@@ -257,12 +296,27 @@ export default Relay.createContainer(TopicController, {
                 id
                 name
                 isCategory
+                overviewContent
+                
                 communityItemCount
+                
                 communityItems(first: $limit) {
                      edges {
                         node{
                             id,
                             ${CommunityItem.getFragment('communityItem')}
+                        }
+                    }
+                }
+                
+                thumbnailPhoto {
+                    defaultUrl
+                }
+                
+                photoGallery(first: 1) {
+                    edges {
+                        node {
+                            defaultUrl
                         }
                     }
                 }
@@ -300,6 +354,19 @@ interface ITopicProps {
         communityItemCount
         communityItems
         isCategory
+        overviewContent
+
+        thumbnailPhoto: {
+            defaultUrl: string
+        }
+
+        photoGallery: {
+            edges: [{
+                node: {
+                    defaultUrl
+                }
+            }]
+        }
     }
 
     viewer

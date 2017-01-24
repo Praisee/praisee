@@ -2,11 +2,13 @@ import * as React from 'react';
 import * as Relay from 'react-relay';
 import NotFoundError from 'pz-client/src/app/not-found-error.component';
 import CurrentUserType from 'pz-client/src/user/current-user-type';
+import Helmet from 'react-helmet';
 
 import {
     appStateLoadingStatusType,
     TAppStateLoadingStatus
 } from 'pz-client/src/app/client-app-router-container';
+import appInfo from 'pz-client/src/app/app-info';
 
 interface IContextTypes {
     notFoundHandler: Function
@@ -55,6 +57,8 @@ export class App extends React.Component<any, any> {
 
         return (
             <div className="app-namespace">
+                {this._renderPageHead()}
+
                 {content}
             </div>
         );
@@ -71,6 +75,42 @@ export class App extends React.Component<any, any> {
                 notFoundErrorMessage: null
             });
         }
+    }
+
+    private _renderPageHead() {
+        const defaultDescription = 'Praisee is a community dedicated to giving consumers a voice to share their reviews, ask questions and find answers to all products';
+
+        const defaultImageUrl = appInfo.addresses.getImageFullUrl(
+            'praisee-square-1024'
+        );
+
+        return (
+            <Helmet
+                htmlAttributes={{
+                    prefix: "og: http://ogp.me/ns#"
+                }}
+
+                defaultTitle="Praisee - The One Stop Review Spot"
+                titleTemplate="%s - Praisee"
+
+                meta={[
+                    {name: 'description', content: defaultDescription},
+
+                    // Schema.org markup for Google
+                    {itemprop: 'description', content: defaultDescription},
+                    {itemprop: 'image', content: defaultImageUrl},
+
+                    // Open Graph Data
+                    {property: 'og:image', content: defaultImageUrl},
+                    {property: 'og:description', content: defaultDescription},
+                    {property: 'og:site_name', content: 'Praisee'},
+
+                    // Twitter markup
+                    {property: 'twitter:description', content: defaultDescription},
+                    {property: 'twitter:image:src', content: defaultImageUrl},
+                ]}
+            />
+        );
     }
 
     private _showNotFoundError(errorMessage?) {

@@ -2,13 +2,24 @@
 
 <html>
 
-<head>
+<head {{{headContent.htmlAttributes}}}>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
 
-    <title>Praisee</title>
+    {{{headContent.meta}}}
+    {{{headContent.base}}}
+
+    {{#if isProductionEnv}}
+        <title>Praisee</title>
+
+    {{else}}
+
+        {{{headContent.title}}}
+    {{/if}}
 
     <link rel="stylesheet" href="/i/client/styles/app.css">
+
+    {{{headContent.link}}}
 
     <!-- Google Tag Manager -->
 
@@ -39,6 +50,8 @@
             cachedRequestData: {{{cachedRequestData}}}
         }
     </script>
+
+    {{{headContent.script}}}
 </head>
 
 <body>
