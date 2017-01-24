@@ -81,7 +81,7 @@ export class App extends React.Component<any, any> {
         const defaultDescription = 'Praisee is a community dedicated to giving consumers a voice to share their reviews, ask questions and find answers to all products';
 
         const defaultImageUrl = appInfo.addresses.getImageFullUrl(
-            'praisee-square-1024'
+            'praisee-square-1024.jpg'
         );
 
         return (

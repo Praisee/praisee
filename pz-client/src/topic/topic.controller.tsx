@@ -71,7 +71,7 @@ export class TopicController extends Component<ITopicProps, ITopicState> {
     private _renderPageHead() {
         const topicName = this.props.topic.name;
         const title = `${topicName} Reviews, Questions, Answers and Discussion`;
-        const description = this.props.topic.overviewContent;
+        const description = this.props.topic.overviewContent || '';
 
         const photoFromGalleryEdge = this.props.topic.photoGallery.edges[0];
         const photoFromGallery = photoFromGalleryEdge && photoFromGalleryEdge.node.defaultUrl;

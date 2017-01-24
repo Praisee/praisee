@@ -1,6 +1,8 @@
 import * as url from 'url';
 import * as path from 'path';
 
+const defaultProtocol = 'http'; // TODO: This should be switched to HTTPS
+
 let appInfo = {
     addresses: {
         getImages: () => '/i/client/assets/images',
@@ -8,8 +10,8 @@ let appInfo = {
         getImage: (imagePath: string) =>
             path.join(appInfo.addresses.getImages(), imagePath),
 
-        getImageFullUrl: (imagePath: string, protocol: string = '') => url.resolve(
-            `${protocol ? protocol + ':' : ''}//` + (
+        getImageFullUrl: (imagePath: string, protocol: string = null) => url.resolve(
+            `${protocol ? protocol : defaultProtocol}://` + (
                 process.env.NODE_ENV === 'production' ? 'www.praisee.com' : `localhost:3000`
             ),
             appInfo.addresses.getImage(imagePath)
@@ -30,7 +32,8 @@ let appInfo = {
         getReviewableTopicSuggestionsApi: () => '/i/search/reviewable-topic-suggestions',
 
         // TODO: This should be a CDN path
-        getPhotosApi: () => process.env.NODE_ENV === 'production' ? '//photos.praisee.com' : 'http://localhost:8888',
+        getPhotosApi: () => process.env.NODE_ENV === 'production' ?
+            `${defaultProtocol}://photos.praisee.com` : 'http://localhost:8888',
 
         getPhoto: (imagePath: string) =>
             url.resolve(appInfo.addresses.getPhotosApi(), imagePath),

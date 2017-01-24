@@ -2,6 +2,8 @@ import * as url from 'url';
 import * as path from 'path';
 import serverInfo from 'pz-server/src/app/server-info';
 
+const defaultProtocol = 'http'; // TODO: This should be switched to HTTPS
+
 let appInfo = {
     addresses: {
         getImages: () => '/i/client/assets/images',
@@ -9,8 +11,8 @@ let appInfo = {
         getImage: (imagePath: string) =>
             path.join(appInfo.addresses.getImages(), imagePath),
 
-        getImageFullUrl: (imagePath: string, protocol: string = '') => url.resolve(
-            `${protocol ? protocol + ':' : ''}//` + (
+        getImageFullUrl: (imagePath: string, protocol: string = null) => url.resolve(
+            `${protocol ? protocol : defaultProtocol}://` + (
                 serverInfo.isProductionEnv() ? 'www.praisee.com' : `localhost:${serverInfo.getPort()}`
             ),
             appInfo.addresses.getImage(imagePath)
@@ -40,7 +42,8 @@ let appInfo = {
         getReviewableTopicSuggestionsApi: () => '/i/search/reviewable-topic-suggestions',
 
         // TODO: This should be a CDN path
-        getPhotosApi: () => serverInfo.isProductionEnv() ? '//photos.praisee.com' : 'http://localhost:8888',
+        getPhotosApi: () => serverInfo.isProductionEnv() ?
+            `${defaultProtocol}://photos.praisee.com` : 'http://localhost:8888',
 
         getPhoto: (imagePath: string) =>
             url.resolve(appInfo.addresses.getPhotosApi(), imagePath),

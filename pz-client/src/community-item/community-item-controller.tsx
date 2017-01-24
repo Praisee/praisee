@@ -89,7 +89,7 @@ export class CommunityItemController extends Component<ICommunityItemProps, any>
         const photoFromContentEdge = communityItem.photos.edges[0];
         const photoFromContent = photoFromContentEdge && photoFromContentEdge.node.defaultUrl;
         const imageUrl = photoFromContent || '';
-        const description = communityItem.body;
+        const description = communityItem.body ? communityItem.body.substr(0, 512) : '';
 
         return (
             <Helmet
@@ -106,7 +106,6 @@ export class CommunityItemController extends Component<ICommunityItemProps, any>
                     // Open Graph Data
                     {property: 'og:title', content: title},
                     {property: 'og:type', content: 'article'},
-                    {property: 'og:article:author', content: author},
                     {property: 'og:image', content: imageUrl},
                     {property: 'og:description', content: description},
 
