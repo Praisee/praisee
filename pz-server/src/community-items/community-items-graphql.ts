@@ -228,19 +228,17 @@ export default function getCommunityItemTypes(repositoryAuthorizers: IAppReposit
             args: connectionArgs,
 
             resolve: async (communityItem, args, {user}) => {
-                const cursor = biCursorFromGraphqlArgs(args as any);
-
-                const photoGalleryPhotos = await communityItemsAuthorizer
+                const photos = await communityItemsAuthorizer
                     .as(user)
-                    .findSomePhotosById(communityItem.id, cursor);
+                    .findAllPhotosByBodyData(communityItem.bodyData);
 
-                const photoGalleryPhotosUrls = mapCursorResultItems(photoGalleryPhotos, (photo) => {
+                const photoUrls = photos.map((photo) => {
                     return Object.assign({}, photo,
                         getCommunityItemContentPhotoVariationsUrls(photo.photoServerPath)
                     );
                 });
 
-                return connectionFromCursorResults(photoGalleryPhotosUrls);
+                return connectionFromArray(photoUrls, args);
             }
         }
     });

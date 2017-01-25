@@ -5,7 +5,7 @@ import {getCommunityItemContentPhotoVariationsUrls as getPhotoVariationsUrls} fr
 
 import {
     IAttachment,
-    isPhotoAttachment, IYoutubeAttachment, isYoutubeAttachment
+    isPhotoAttachment, IYoutubeAttachment, isYoutubeAttachment, IPhotoAttachment
 } from 'pz-client/src/editor/attachment-plugin/attachment';
 
 const attachmentNamespace = 'praiseeAttachment';
@@ -13,14 +13,14 @@ const attachmentNamespace = 'praiseeAttachment';
 // TODO: This needs better guards on type safety to ensure changes to the client
 // TODO: don't result in injection attacks
 
+function isAttachmentBlock(block) {
+    return block.data && block.data.type === attachmentNamespace;
+}
+
 export async function filterAttachments(
         content: IDraftjs08Data,
         filterer: (attachment: IAttachment) => Promise<IAttachment | null>
     ): Promise<IDraftjs08Data> {
-
-    const isAttachmentBlock = (block) => {
-        return block.data && block.data.type === attachmentNamespace;
-    };
 
     const mapAttachments = async (block) => {
         if (!isAttachmentBlock(block)) {
@@ -44,6 +44,24 @@ export async function filterAttachments(
     return Object.assign({}, content, {
         blocks: filteredBlocks
     });
+}
+
+export function extractAttachments(content: IDraftjs08Data): Array<IAttachment> {
+    return content.blocks.reduce<Array<IAttachment>>((attachments, block) => {
+        if (!isAttachmentBlock(block)) {
+            return attachments;
+        }
+
+        const attachment = block.data as IAttachment;
+
+        return attachments.concat(attachment);
+
+    }, []);
+}
+
+export function extractPhotoAttachments(content: IDraftjs08Data): Array<IPhotoAttachment> {
+    const attachments = extractAttachments(content);
+    return attachments.filter(attachment => isPhotoAttachment(attachment)) as Array<IPhotoAttachment>;
 }
 
 export async function cleanAttachmentData(content: IDraftjs08Data, photos: IPhotos): Promise<IDraftjs08Data> {

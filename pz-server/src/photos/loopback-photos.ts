@@ -11,6 +11,10 @@ export function createRecordFromLoopbackPhoto(photo: IPhotoInstance): IPhoto {
     return createRecordFromLoopback<IPhoto>('Photo', photo);
 }
 
+export function createRecordsFromLoopbackPhotos(photoModels: Array<IPhotoInstance>): Array<IPhoto> {
+    return photoModels.map(photoModel => createRecordFromLoopbackPhoto(photoModel));
+}
+
 export function cursorPhotoLoopbackModelsToRecords(photos: ICursorResults<IPhotoInstance>): ICursorResults<IPhoto> {
     return cursorLoopbackModelsToRecords<IPhoto>('Photo', photos);
 }

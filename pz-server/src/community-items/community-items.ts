@@ -53,7 +53,7 @@ export interface ICommunityItems extends IRepository {
     findVotesForCommunityItem(communityItemId: number): Promise<Array<IVote>>
     findByUrlSlugName(fullSlug: string): Promise<ICommunityItem>
     findInteraction(communityItemId: number, userId: number): Promise<ICommunityItemInteraction>
-    findSomePhotosById(id: number, cursor: TBiCursor): Promise<ICursorResults<IPhoto>>
+    findAllPhotosByBodyData(bodyData: IContentData): Promise<Array<IPhoto>>
     getReputationEarned(communityItemId: number, userId: number): Promise<number>
     isOwner(userId: number, communityItemId: number): Promise<boolean>
     create(communityItem: ICommunityItem, ownerId: number): Promise<ICommunityItem>

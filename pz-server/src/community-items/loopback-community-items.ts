@@ -14,7 +14,10 @@ import {ICommunityItemModel, ICommunityItemInstance} from 'pz-server/src/models/
 import {IVote} from 'pz-server/src/votes/votes';
 import {IVoteInstance} from 'pz-server/src/models/vote';
 
-import {ICursorResults, TBiCursor} from 'pz-server/src/support/cursors/cursors';
+import {
+    ICursorResults, TBiCursor,
+    createEmptyCursorResults
+} from 'pz-server/src/support/cursors/cursors';
 
 import {findWithCursor} from 'pz-server/src/support/cursors/loopback-helpers';
 import {cursorLoopbackModelsToRecords} from 'pz-server/src/support/cursors/repository-helpers';
@@ -29,7 +32,13 @@ import {
 
 import {IPhoto} from 'pz-server/src/photos/photos';
 import {IPhotoModel as ILoopbackPhoto, IPhotoInstance as ILoopbackPhotoInstance} from 'pz-server/src/models/photo';
-import {cursorPhotoLoopbackModelsToRecords} from 'pz-server/src/photos/loopback-photos';
+
+import {
+    createRecordFromLoopbackPhoto
+} from 'pz-server/src/photos/loopback-photos';
+
+import {IContentData, isDraftJs08Content} from 'pz-server/src/content/content-data';
+import {extractPhotoAttachments} from 'pz-server/src/content/filters/attachment-data';
 
 export function createRecordFromLoopbackCommunityItem(communityItem: ICommunityItemInstance): ICommunityItem {
     return createRecordFromLoopback<ICommunityItem>('CommunityItem', communityItem);
@@ -195,19 +204,45 @@ export default class CommunityItems implements ICommunityItems, ICommunityItemsB
         });
     }
 
-    async findSomePhotosById(id: number, cursor: TBiCursor): Promise<ICursorResults<IPhoto>> {
-        const photos = await findWithCursor<ILoopbackPhotoInstance>(
-            this._Photo,
-            cursor,
-            {
-                where: {
-                    parentType: 'CommunityItem',
-                    parentId: id
-                }
-            }
-        );
+    // Using body data here instead of the community item ID is useful to ensure the
+    // order of the photos returned in the look up is the same as the order of
+    // the photos in the body data.
+    async findAllPhotosByBodyData(bodyData: IContentData): Promise<Array<IPhoto>> {
+        if (!bodyData || !isDraftJs08Content(bodyData)) {
+            return [];
+        }
 
-        return cursorPhotoLoopbackModelsToRecords(photos);
+        const photoAttachments = extractPhotoAttachments(bodyData.value);
+
+        if (!photoAttachments.length) {
+            return [];
+        }
+
+        const photoIds = photoAttachments.map(attachment => attachment.id);
+
+        const photoModels = await promisify(this._Photo.find, this._Photo)({
+            where: {
+                id: {inq: photoIds},
+                parentType: 'CommunityItem'
+            }
+        });
+
+        const photoModelMap = new Map<number, ILoopbackPhotoInstance>(photoModels.map(
+            photoModel => [photoModel.id, photoModel]
+        ));
+
+        return photoIds.reduce<Array<IPhoto>>((photos, photoId) => {
+            const photoModel = photoModelMap.get(photoId);
+
+            if (!photoModel) {
+                return photos;
+            }
+
+            photos.push(createRecordFromLoopbackPhoto(photoModel));
+
+            return photos;
+
+        }, []);
     }
 
     async getReputationEarned(communityItemId: number, userId: number): Promise<number> {

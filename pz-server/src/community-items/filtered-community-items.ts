@@ -88,8 +88,8 @@ export default class FilteredCommunityItems implements ICommunityItems {
         return this._communityItems.findInteraction(communityItemId, userId);
     }
 
-    findSomePhotosById(id: number, cursor: TBiCursor): Promise<ICursorResults<IPhoto>> {
-        return this._communityItems.findSomePhotosById(id, cursor);
+    findAllPhotosByBodyData(bodyData: IContentData): Promise<Array<IPhoto>> {
+        return this._communityItems.findAllPhotosByBodyData(bodyData);
     }
 
     async getReputationEarned(communityItemId: number, userId: number): Promise<number>{

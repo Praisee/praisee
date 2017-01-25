@@ -9,6 +9,7 @@ export default {
         pzPath('pz-server', 'src/cache/initialize-cache'),
         pzPath('pz-server', 'src/app/initialize-worker-client'),
         pzPath('pz-server', 'src/app/repository-initializer'),
+
         // Due to model changes in authentication-initializer we need to initialize before auto-updating models
         pzPath('pz-server', 'src/authentication/authentication-initializer'),
         pzPath('pz-server', 'src/app/auto-update-models'),
