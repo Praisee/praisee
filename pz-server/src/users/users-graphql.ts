@@ -210,7 +210,7 @@ export default function UsersTypes(repositoryAuthorizers: IAppRepositoryAuthoriz
         name: 'UserProfile',
 
         fields: () => ({
-            id: globalIdField(CurrentUserType.Name),
+            id: globalIdField(UserProfileType.Name),
 
             bio: { type: GraphQLString },
 
@@ -224,6 +224,25 @@ export default function UsersTypes(repositoryAuthorizers: IAppRepositoryAuthoriz
             communityItemCount: {
                 type: GraphQLInt,
                 resolve: (user) => 10
+            },
+
+            activityStats: {
+                type: new GraphQLObjectType({
+                    name: 'ActivityStats',
+                    fields: {
+                        comments: { type: GraphQLInt },
+                        communityItems: { type: GraphQLInt },
+                        upVotes: { type: GraphQLInt },
+                        downVotes: { type: GraphQLInt },
+                        trusts: { type: GraphQLInt },
+                        reputation: { type: GraphQLInt }
+                    }
+                }),
+                resolve: async (user, _, {user: currentUser}) => {
+                    let stats = await userAuthorizer.as(currentUser).getActivityStats(user.id);
+
+                    return stats;
+                }
             },
 
             communityItems: {

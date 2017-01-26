@@ -18,6 +18,14 @@ export interface IProfileControllerProps {
             displayName: string;
             image: string;
         }
+        activityStats: {
+            comments: number
+            communityItems: number
+            downVotes: number
+            upVotes: number
+            trusts: number
+            reputation: number
+        }
         communityItems: any;
         communityItemCount: any;
     }
@@ -88,39 +96,36 @@ export class Profile extends Component<IProfileControllerProps, any> {
     }
 
     private _renderSummarySection() {
+        const {comments, communityItems, upVotes, downVotes, reputation, trusts} = this.props.profile.activityStats;
+        
         return (
             <div className="summary-section">
                 <div className="summary-section-row">
                     <span className="summary-section-title">Activity</span>
                     <div className="summary-section-contents">
-                        {this._renderSummaryItem("comments")}
-                        {this._renderSummaryItem("upvotes")}
-                        {this._renderSummaryItem("downvotes")}
-                        {this._renderSummaryItem("reputation")}
-                        {this._renderSummaryItem("trusters")}
+                        {this._renderSummaryItem("comments", comments)}
+                        {this._renderSummaryItem("community items", communityItems)}
+                        {this._renderSummaryItem("up voted", upVotes)}
+                        {this._renderSummaryItem("down voted", downVotes)}
+                        {this._renderSummaryItem("reputation", reputation)}
+                        {this._renderSummaryItem("trusters", trusts)}
                     </div>
                 </div>
+{/*
                 <div className="summary-section-row">
                     <span className="summary-section-title">Awards</span>
                     <div className="summary-section-contents">
-                        {this._renderSummaryItem("comments")}
-                        {this._renderSummaryItem("upvotes")}
-                        {this._renderSummaryItem("downvotes")}
-                        {this._renderSummaryItem("reputation")}
                     </div>
                 </div>
+*/}
             </div>
         );
     }
 
-    private _renderSummaryItem(type) {
-        //TODO: Pull this from db
-        // const count = this.props[type].count;
-        let count = Math.floor(Math.random() * 100);
-
+    private _renderSummaryItem(type: string, count: number) {
         return (
             <div className="summary-item">
-                <span className="summary-badge">{count}</span>
+                <span className="summary-badge">{count > 0 ? '+' : ''}{count}</span>
                 {type}
             </div>
         );
@@ -193,6 +198,15 @@ export default Relay.createContainer(Profile, {
                     ${TrustReputationStats.getFragment('user')}
                 }
 
+                activityStats {
+                    communityItems
+                    comments
+                    upVotes
+                    downVotes
+                    trusts
+                    reputation
+                }
+                
                 communityItemCount
                 communityItems(first: $limit) {
                     edges {

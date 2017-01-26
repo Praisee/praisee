@@ -14,6 +14,7 @@ export interface IAuthorizedUsers {
     findCurrentUser(): Promise<IUser>
     findUserById(userId: number): Promise<IOtherUser | IUser>
     findByUrlSlugName(urlSlug: string): Promise<IOtherUser | IUser>
+    getActivityStats(userId: number): Promise<any>
     getTotalTrusters(userId: number): Promise<number>
     getReputation(userId: number): Promise<number>
     toggleTrust(trustedId: number): Promise<boolean | AuthorizationError>
@@ -68,6 +69,10 @@ class AuthorizedUsers {
         }
 
         return this.findById(this._user.id);
+    }
+
+    getActivityStats(userId: number) {
+        return this._users.getActivityStats(userId);
     }
 
     async findByUrlSlugName(fullSlug: string): Promise<IOtherUser | IUser> {

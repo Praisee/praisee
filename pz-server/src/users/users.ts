@@ -17,6 +17,7 @@ export interface IUser extends IRepositoryRecord {
 export interface IUsers extends IRepository {
     findById(userId: number): Promise<IUser>
     findByUrlSlugName(urlSlug: string): Promise<IOtherUser | IUser>
+    getActivityStats(userId: number): Promise<any>
     getTotalCommunityItems(userId: number): Promise<number>
     getTotalTrusters(userId: number): Promise<number>
     addTrust(trusterId: number, trustedId: number): Promise<boolean>

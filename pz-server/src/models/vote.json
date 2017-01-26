@@ -6,6 +6,9 @@
     "options": {
         "validateUpsert": true
     },
+    "mixins": {
+        "TimeStamp": true
+    },
     "properties": {
         "isUpVote": {
             "type": "boolean",

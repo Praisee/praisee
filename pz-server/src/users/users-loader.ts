@@ -32,6 +32,10 @@ export default class UsersLoader implements IUsers {
         return this._users.findByUrlSlugName(urlSlug);
     }
 
+    getActivityStats(userId: number): Promise<number> {
+        return this._users.getActivityStats(userId);
+    }
+    
     getTotalCommunityItems(userId: number): Promise<number> {
         return this._users.getTotalCommunityItems(userId);
     }

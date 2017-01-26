@@ -4,7 +4,9 @@
     "strict": true,
     "idInjection": false,
     "options": {},
-    "mixins": {},
+    "mixins": {
+        "TimeStamp": true
+    },
     "properties": {
          "trusterId": {
             "type": "Number",
