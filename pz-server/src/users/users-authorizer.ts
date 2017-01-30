@@ -1,3 +1,4 @@
+import {IUserInstance} from '../models/user';
 import {
     authorizer,
     TOptionalUser,
@@ -20,6 +21,7 @@ export interface IAuthorizedUsers {
     toggleTrust(trustedId: number): Promise<boolean | AuthorizationError>
     isUserTrusting(queriedUserId: number): Promise<boolean>
     create(email, password, displayName): Promise<IUser>
+    update(user): Promise<IUser | AuthorizationError>
 }
 
 class AuthorizedUsers {
@@ -115,6 +117,14 @@ class AuthorizedUsers {
         }
 
         return this._users.create(email, password, displayName);
+    }
+
+    async update(user: IUser): Promise<IUser | AuthorizationError> {
+        if (!this._user || this._user.id !== user.id) {
+            return new NotAuthenticatedError();
+        }
+
+        return await this._users.update(user);
     }
 }
 

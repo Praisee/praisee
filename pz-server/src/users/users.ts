@@ -12,6 +12,7 @@ export interface IUser extends IRepositoryRecord {
     isAdmin: boolean
     createdAt: Date
     trusters?: any
+    bio: string
 }
 
 export interface IUsers extends IRepository {
@@ -25,6 +26,7 @@ export interface IUsers extends IRepository {
     isUserTrusting(trusterId: number, trustedId: number): Promise<boolean>
     getReputation(userId: number): Promise<number>
     create(email: string, password: string, displayName: string): Promise<IUser>
+    update(user: IUser): Promise<IUser>
 }
 
 export interface IUsersBatchable {

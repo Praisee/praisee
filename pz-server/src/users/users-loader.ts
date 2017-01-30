@@ -35,7 +35,7 @@ export default class UsersLoader implements IUsers {
     getActivityStats(userId: number): Promise<number> {
         return this._users.getActivityStats(userId);
     }
-    
+
     getTotalCommunityItems(userId: number): Promise<number> {
         return this._users.getTotalCommunityItems(userId);
     }
@@ -62,5 +62,9 @@ export default class UsersLoader implements IUsers {
 
     create(email: string, password: string, displayName: string): Promise<IUser> {
         return this._users.create(email, password, displayName);
+    }
+
+    update(user: IUser): Promise<IUser> {
+        return this._users.update(user);
     }
 }

@@ -16,6 +16,7 @@ export interface IUserInstance extends IPersistedModelInstance {
     email: string
     isAdmin: boolean
     created: Date
+    bio: string
     trusters?: IRelatedPersistedModel<IUserInstance[]>
     trusting?: IRelatedPersistedModel<IUserInstance[]>
 }

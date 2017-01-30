@@ -9,33 +9,30 @@ import TrustReputationStats from 'pz-client/src/user/trust-reputation-stats';
 import ContentTruncator from 'pz-client/src/widgets/content-truncator-component';
 import ExpandButton from 'pz-client/src/widgets/expand-button-component';
 import CommunityItem from 'pz-client/src/community-item/community-item-component';
-
-export interface IProfileControllerProps {
-    profile: {
-        bio: string;
-        createdAt: string;
-        user: {
-            displayName: string;
-            image: string;
-        }
-        activityStats: {
-            comments: number
-            communityItems: number
-            downVotes: number
-            upVotes: number
-            trusts: number
-            reputation: number
-        }
-        communityItems: any;
-        communityItemCount: any;
-    }
-
-    relay: any;
-}
+import UpdateUserMutation from 'pz-client/src/user/update-user-mutation';
 
 const unknownAvatarUrl = appInfo.addresses.getImage('unknown-avatar.png');
 
-export class Profile extends Component<IProfileControllerProps, any> {
+export class Profile extends Component<IProfileControllerProps, IProfileControllerState> {
+    constructor(props, state) {
+        super(props, state);
+        this.state = {
+            isEditingName: false,
+            isEditingBio: false,
+            displayName: this.props.profile.user.displayName,
+            bio: this.props.profile.bio
+        };
+    }
+
+    componentWillReceiveProps(nextProps) {
+        this.setState({
+            isEditingName: false,
+            isEditingBio: false,
+            displayName: nextProps.profile.user.displayName,
+            bio: nextProps.profile.bio
+        });
+    }
+
     render() {
 
         return (
@@ -66,7 +63,7 @@ export class Profile extends Component<IProfileControllerProps, any> {
                 <div className="profile-top-right">
                     <TrustButton user={user} />
 
-                    <h1 className="name">{displayName}</h1>
+                    {this._renderName()}
 
                     <div className="member-since">
                         Praisee member since <DateDisplay
@@ -83,37 +80,134 @@ export class Profile extends Component<IProfileControllerProps, any> {
         )
     }
 
+    private _renderName() {
+        if (this.state.isEditingName) {
+            return (
+                <div>
+                    <input
+                        type="text"
+                        className='name-editor'
+                        value={this.state.displayName}
+                        onChange={this._handleNameChanging}
+                        autoFocus={true} />
+
+                    <i className='save-changes-icon'
+                        onClick={this._handleNameChangeSubmit}
+                        title="Save changes to your name"
+                        />
+
+                    <i className='cancel-changes-icon'
+                        onClick={this._handleNameChangeCancel}
+                        title="Cancel changes to your name"
+                        />
+                </div>
+            )
+        } else {
+            return (
+                <h1 className="name"
+                    onClick={() => this._editIfMine('Name')}>
+
+                    {this.state.displayName}
+
+                    {
+                        this.props.profile.user.isCurrentUser && <i className='edit-icon'
+                            onClick={this._editName}
+                            title="Edit your name"
+                            />
+                    }
+                </h1>
+            )
+        }
+    }
+
     private _renderBio() {
+        let {isCurrentUser} = this.props.profile.user;
         let {bio} = this.props.profile;
 
-        return (
-            <div className="bio">
-                <ContentTruncator truncateToHeight={100} heightMargin={50}>
-                    {bio}
-                </ContentTruncator>
-            </div>
-        );
+        if (this.state.isEditingBio) {
+            return (
+                <div>
+                    <textarea
+                        type="text"
+                        className='bio-editor'
+                        rows={8}
+                        value={this.state.bio}
+                        onChange={this._handleBioChanging}
+                        autoFocus={true}
+                        />
+
+                    <div className="bio-icons">
+
+                        <i className='save-changes-icon'
+                            onClick={this._handleBioChangeSubmit}
+                            title="Save changes to your bio"
+                            />
+
+                        <i className='cancel-changes-icon'
+                            onClick={this._handleBioChangeCancel}
+                            title="Cancel changes to your bio"
+                            />
+                    </div>
+                </div>
+            );
+        }
+        else {
+
+            return (
+                <div className="bio">
+                    {
+                        isCurrentUser &&
+                        <i className='edit-icon'
+                            onClick={this._editBio}
+                            title="Edit your bio"
+                            />
+                    }
+                    <ContentTruncator truncateToHeight={150} heightMargin={25}>
+                        { this._isEmpty(bio) && isCurrentUser
+                            ? <i onClick={() => this._editIfMine('Bio')}>
+                                It looks like your bio is empty! Let everyone know a little about yourself.
+                              </i>
+                            : <p onClick={() => this._editIfMine('Bio')}>{bio}</p>
+                        }
+                    </ContentTruncator>
+
+                </div>
+            );
+        }
     }
 
     private _renderSummarySection() {
         const {comments, communityItems, upVotes, downVotes, reputation, trusts} = this.props.profile.activityStats;
-        
+        const {displayName} = this.props.profile.user;
+
         return (
             <div className="summary-section">
                 <div className="summary-section-row">
-                    <span className="summary-section-title">Activity</span>
+                    <span className="summary-section-title"
+                        title={`${displayName}'s Activity over the past 30 days`}>
+                        Activity
+                    </span>
                     <div className="summary-section-contents">
-                        {this._renderSummaryItem("comments", comments)}
-                        {this._renderSummaryItem("community items", communityItems)}
-                        {this._renderSummaryItem("up voted", upVotes)}
-                        {this._renderSummaryItem("down voted", downVotes)}
-                        {this._renderSummaryItem("reputation", reputation)}
-                        {this._renderSummaryItem("trusters", trusts)}
+                        {this._renderSummaryItem("comments", comments,
+                            `How many comments ${displayName} has written in the past 30 days`)}
+                        {this._renderSummaryItem("community items", communityItems,
+                            `How many posts (reviews, questions, discussion items) ${displayName} has written in the past 30 days`)}
+                        {this._renderSummaryItem("upvotes", upVotes,
+                            `How many times ${displayName} was up voted in the past 30 days`)}
+                        {this._renderSummaryItem("downvotes", downVotes,
+                            `How many times ${displayName} was down voted in the past 30 days`)}
+                        {this._renderSummaryItem("reputation", reputation,
+                            `How much reptuation ${displayName} has earned in the past 30 days`)}
+                        {this._renderSummaryItem("trusters", trusts,
+                            `How many trusters ${displayName} has gained in the past 30 days`)}
                     </div>
                 </div>
 {/*
                 <div className="summary-section-row">
-                    <span className="summary-section-title">Awards</span>
+                    <span className="summary-section-title" 
+                        title=`The awards ${displayName} has earned`>
+                        Awards
+                    </span>
                     <div className="summary-section-contents">
                     </div>
                 </div>
@@ -122,9 +216,9 @@ export class Profile extends Component<IProfileControllerProps, any> {
         );
     }
 
-    private _renderSummaryItem(type: string, count: number) {
+    private _renderSummaryItem(type: string, count: number, hintText: string) {
         return (
-            <div className="summary-item">
+            <div className="summary-item" title={hintText}>
                 <span className="summary-badge">{count > 0 ? '+' : ''}{count}</span>
                 {type}
             </div>
@@ -132,21 +226,6 @@ export class Profile extends Component<IProfileControllerProps, any> {
     }
 
     private _renderContributionsSection() {
-        return (
-            <div className="contributions-section">
-                <h1 className="section-title">
-                    Contributions - <span>{this.props.profile.communityItems.edges.length}</span>
-                </h1> 
-                {this._renderContributions()}
-            </div>
-        )
-    }
-
-    private _loadDefaultImage(event) {
-        event.target.src = unknownAvatarUrl;
-    }
-
-    private _renderContributions() {
         const rows = this.props.profile.communityItems.edges
             .map(({node}) =>
                 <CommunityItem
@@ -170,15 +249,85 @@ export class Profile extends Component<IProfileControllerProps, any> {
         }
 
         return (
-            <div>
+            <div className="contributions-section">
+                <h1 className="section-title">
+                    Contributions - <span>{this.props.profile.communityItems.edges.length}</span>
+                </h1>
                 {rows}
                 {expandButton}
             </div>
         );
     }
 
+    private _handleNameChangeSubmit = () => {
+        const onSuccess = () => this.setState({ isEditingName: false });
+
+        if (this.props.profile.user.displayName === this.state.displayName) {
+            return onSuccess();
+        }
+
+        this._submitUserChangeMutation(onSuccess);
+    }
+
+    private _handleBioChangeSubmit = () => {
+        const onSuccess = () => this.setState({ isEditingBio: false });
+
+        if (this.props.profile.bio === this.state.bio) {
+            return onSuccess();
+        }
+
+        this._submitUserChangeMutation(onSuccess);
+    }
+
+    private _submitUserChangeMutation(success: Function, failure?: Function) {
+        this.props.relay.commitUpdate(
+            new UpdateUserMutation({
+                profile: this.props.profile,
+                displayName: this.state.displayName,
+                bio: this.state.bio
+            }), {
+                onSuccess: () => {
+                    success && success();
+                },
+                onFailure: () => {
+                    //TODO: Local error handling
+                    failure && failure();
+                }
+            }
+        );
+    }
+
+    private _handleBioChanging = event => this.setState({ bio: event.target.value });
+
+    private _handleNameChanging = event => this.setState({ displayName: event.target.value });
+
+    private _editIfMine = field =>
+        this.props.profile.user.isCurrentUser && this.setState({ [`isEditing${field}`]: true });
+
+    private _editBio = () => this.setState({ isEditingBio: true });
+
+    private _editName = () => this.setState({ isEditingName: true });
+
+    private _handleBioChangeCancel = event =>
+        this.setState({
+            isEditingBio: false,
+            bio: this.props.profile.bio
+        });
+
+    private _handleNameChangeCancel = event =>
+        this.setState({
+            isEditingName: false,
+            displayName: this.props.profile.user.displayName
+        });
+
+    private _loadDefaultImage = event => event.target.src = unknownAvatarUrl;
+
     private _showMoreCommunityItems() {
         this.props.relay.setVariables({ limit: this.props.relay.variables.limit + 5 })
+    }
+
+    private _isEmpty(str: string) : boolean {
+        return str === null || typeof(str) === 'undefined' || str.trim() === '';
     }
 }
 
@@ -191,9 +340,12 @@ export default Relay.createContainer(Profile, {
             fragment on UserProfile {
                 bio
                 createdAt
+                ${UpdateUserMutation.getFragment('profile')}
+                
                 user {
                     displayName
                     image
+                    isCurrentUser
                     ${TrustButton.getFragment('user')}
                     ${TrustReputationStats.getFragment('user')}
                 }
@@ -206,7 +358,7 @@ export default Relay.createContainer(Profile, {
                     trusts
                     reputation
                 }
-                
+
                 communityItemCount
                 communityItems(first: $limit) {
                     edges {
@@ -220,3 +372,34 @@ export default Relay.createContainer(Profile, {
         `
     }
 });
+
+interface IProfileControllerProps {
+    profile: {
+        bio: string;
+        createdAt: string;
+        user: {
+            displayName: string;
+            image: string;
+            isCurrentUser: boolean;
+        }
+        activityStats: {
+            comments: number;
+            communityItems: number;
+            downVotes: number;
+            upVotes: number;
+            trusts: number;
+            reputation: number;
+        }
+        communityItems: any;
+        communityItemCount: any;
+    }
+
+    relay: any;
+}
+
+interface IProfileControllerState {
+    isEditingName?: boolean;
+    isEditingBio?: boolean;
+    displayName?: string;
+    bio?: string;
+}

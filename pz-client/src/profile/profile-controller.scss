@@ -6,6 +6,7 @@
     @include expand-button();
 
     max-width: 740px;
+    margin-top: 2rem;
 
     .profile-top-section {
       @include make-row();
@@ -30,7 +31,7 @@
 
       .profile-top-right {
         @include make-col-span(9);
-        
+
         .name {
           margin-bottom: 0;
         }
@@ -41,17 +42,84 @@
 
         .bio {
           @include content-truncator();
-          
+
           color: $gray;
           font-size: 0.9rem;
           text-align: justify;
           margin-top: 1rem;
+
+          p {
+            white-space: pre-line;
+          }
+
+          .edit-icon {
+            float:right;
+            font-size: 1.5rem;
+
+            @include media-breakpoint-down(sm) {
+              display: none;
+            }
+          }
+        }
+
+        .bio-editor {
+          width: 100%;
+          resize: none;
+          margin-top: 1rem;
+          outline-color: $brand-primary;
+          border: 1px solid $gray-lighter;
+        }
+
+        .bio-icons {
+          text-align: right;
         }
 
         .trust-button {
           float: right;
           margin-top:1rem;
           margin-right: 1rem;
+        }
+
+        .name-editor {
+          font-size: 1.9rem;
+          font-weight: 300;
+          line-height: 1.1rem;
+          border: none;
+          margin-bottom: .2rem;
+          font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+          color: $gray-light;
+          border-bottom: 1px solid $brand-primary;
+
+          &:focus, &:active {
+            outline: none;
+          }
+        }
+
+        .save-changes-icon {
+          @extend .fa-check;
+          font-size: 1.5rem;
+          color: $brand-success;
+        }
+
+        .cancel-changes-icon {
+          @extend .fa-times;
+          font-size: 1.5rem;
+          color: $brand-danger;
+        }
+        
+        .edit-icon {
+          @extend .fa-pencil;
+          color: $gray-lighter;
+          font-size: 1rem;
+          vertical-align: top;
+        }
+        
+        .save-changes-icon,
+        .cancel-changes-icon,
+        .edit-icon {
+          @extend .fa;
+          margin-left: 1rem;
+          cursor: pointer;
         }
       }
       

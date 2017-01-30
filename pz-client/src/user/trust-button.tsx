@@ -19,7 +19,7 @@ class TrustButton extends Component<TrustButtonProps, any>{
         const {isCurrentUserTrusting, isCurrentUser} = this.props.user;
 
         if (isCurrentUser) {
-            return;
+            return null;
         }
 
         return (

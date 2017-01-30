@@ -238,11 +238,9 @@ export default function UsersTypes(repositoryAuthorizers: IAppRepositoryAuthoriz
                         reputation: { type: GraphQLInt }
                     }
                 }),
-                resolve: async (user, _, {user: currentUser}) => {
-                    let stats = await userAuthorizer.as(currentUser).getActivityStats(user.id);
-
-                    return stats;
-                }
+                
+                resolve: async (user, _, {user: currentUser}) => 
+                    await userAuthorizer.as(currentUser).getActivityStats(user.id)
             },
 
             communityItems: {
@@ -273,11 +271,8 @@ export default function UsersTypes(repositoryAuthorizers: IAppRepositoryAuthoriz
         outputFields: () => ({
             trustedUser: {
                 type: types.OtherUserType,
-                resolve: async ({trustedId, user}) => {
-                    return await userAuthorizer
-                        .as(user)
-                        .findUserById(trustedId);
-                }
+                resolve: async ({trustedId, user}) =>
+                    await userAuthorizer.as(user).findUserById(trustedId)
             },
 
             viewer: {
@@ -329,13 +324,51 @@ export default function UsersTypes(repositoryAuthorizers: IAppRepositoryAuthoriz
         }
     });
 
+    const UpdateUserMutation = mutationWithClientMutationId({
+        name: 'UpdateUser',
+
+        inputFields: () => ({
+            id: { type: new GraphQLNonNull(GraphQLString) },
+            displayName: { type: GraphQLString },
+            bio: { type: GraphQLString }
+        }),
+
+        outputFields: () => ({
+            profile: {
+                type: types.UserProfileType,
+                resolve: async ({user}) => user
+            },
+
+            user: {
+                type: types.UserInterfaceType
+            }
+        }),
+
+        mutateAndGetPayload: async ({id: userId, displayName, bio}, context) => {
+            const id = fromUserId(userId);
+
+            const response = await userAuthorizer.as(context.user).update({
+                id: id,
+                displayName,
+                bio
+            });
+
+            if (response instanceof AuthorizationError) {
+                addErrorToResponse(context.responseErrors, 'NotAuthenticated', response);
+            }
+
+            return { user: response };
+        }
+    });
+
     return Object.assign({}, types, {
         UserInterfaceType,
         CurrentUserType,
         OtherUserType,
         UserProfileType,
         ToggleTrustMutation,
-        GetCurrentUserMutation
+        GetCurrentUserMutation,
+        UpdateUserMutation
     });
 }
 

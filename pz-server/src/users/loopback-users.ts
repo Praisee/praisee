@@ -180,4 +180,23 @@ export default class Users implements IUsers, IUsersBatchable {
         const user = await createUser({ email, password, displayName });
         return user;
     }
+
+    async update(user: IUser): Promise<IUser> {
+        if (!user.id) {
+            throw new Error('Cannot update record without an id');
+        }
+
+        let userInstance: IUserInstance = await promisify(
+            this._UserModel.findById, this._UserModel)(user.id);
+
+        if (!userInstance) {
+            throw new Error('Could not find user with id: ' + user.id);
+        }
+
+        userInstance.displayName = user.displayName;
+        userInstance.bio = user.bio;
+
+        const result = await promisify(userInstance.save, userInstance)();
+        return createRecordFromLoopbackUser(result);
+    }
 }
