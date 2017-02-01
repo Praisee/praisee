@@ -17,7 +17,11 @@ export default class CurrentUserMutation extends Relay.Mutation {
                     id
                     isLoggedIn
                     reputation
-                    image
+                    avatarInfo{
+                        facebookId
+                        googleId
+                        emailHash
+                    } 
                     trusterCount
                     isCurrentUser
                     email
@@ -28,7 +32,6 @@ export default class CurrentUserMutation extends Relay.Mutation {
                     displayName
                     id
                     reputation
-                    image
                     trusterCount
                     isCurrentUser
                 }

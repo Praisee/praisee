@@ -16,7 +16,11 @@ export class DevEnvSeeder {
                 email: 'test@praisee.com',
                 displayName: 'Andesl Adams',
                 password: 'test',
-                bio: `I'm a super famous black and white photographer. I love all things photography and make lots of money doing it. I'm here to help out and share my opinions on my gear! I'm a super famous black and white photographer. I love all things photography and make lots of money doing it. I'm here to help out and share my opinions on my gear! I'm a super famous black and white photographer. I love all things photography and make lots of money doing it. I'm here to help out and share my opinions on my gear!`
+                bio: `I'm a super famous B&W photographer. I love all things photography and make lots of money doing it. I'm here to help out and share my opinions on my gear! I'm a super famous black and white photographer. I love all things photography and make lots of money doing it. I'm here to help out and share my opinions on my gear!
+
+                I'm a super famous black and white photographer. 
+
+                I love all things photography and make lots of money doing it. I'm here to help out and share my opinions on my gear!`
             },
             {
                 email: 'test2@praisee.com',
@@ -25,7 +29,7 @@ export class DevEnvSeeder {
             },
             {
                 email: 'test3@praisee.com',
-                displayName: 'Dexter L.',
+                displayName: 'Benjamin F. Button',
                 password: 'test'
             },
             {

@@ -1,7 +1,9 @@
 import {
     IUser,
     IUsers,
-    IUsersBatchable
+    IUsersBatchable,
+    IUserActivityStats,
+    IAvatarInfo
 } from 'pz-server/src/users/users';
 
 import DataLoader from 'dataloader';
@@ -44,6 +46,10 @@ export default class UsersLoader implements IUsers {
         return this._users.getTotalTrusters(userId);
     }
 
+    getAvatarInfo(userId: number): Promise<IAvatarInfo> {
+        return this._users.getAvatarInfo(userId);
+    }
+    
     addTrust(trusterId: number, trustedId: number): Promise<boolean> {
         return this._users.addTrust(trusterId, trustedId);
     }

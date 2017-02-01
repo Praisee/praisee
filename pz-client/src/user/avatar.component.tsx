@@ -7,8 +7,7 @@ import SchemaInjector, { ISchemaType } from 'pz-client/src/support/schema-inject
 import GoogleTagManager from 'pz-client/src/support/google-tag-manager';
 import TrustButton from 'pz-client/src/user/trust-button';
 import TrustReputationStats from 'pz-client/src/user/trust-reputation-stats';
-
-const unknownAvatarUrl = appInfo.addresses.getImage('unknown-avatar.png');
+var AvatarImage = require('react-avatar');
 
 class Avatar extends Component<IAvatarProps, any>{
     schemaInjector: SchemaInjector;
@@ -19,13 +18,27 @@ class Avatar extends Component<IAvatarProps, any>{
     }
 
     render() {
+        const {avatarInfo, displayName} = this.props.user;
+        const {facebookId, googleId, emailHash} = avatarInfo;
+
         return this.schemaInjector.inject(
             <div className="avatar">
-                {this._renderImage()}
+                <div className="avatar-image-container">
+                    <AvatarImage
+                        size={40}
+                        facebookId={facebookId}
+                        googleId={googleId}
+                        md5email={emailHash}
+                        name={displayName}
+                        round={true}
+                        />
+                </div>
 
                 <div className="avatar-name-container">
                     <Link to={this.props.user.routePath}
-                        className="display-name">{this.props.user.displayName}
+                        className="display-name">
+
+                        {this.props.user.displayName}
                     </Link>
                     <TrustReputationStats
                         showReputation={this.props.showReputation}
@@ -37,46 +50,19 @@ class Avatar extends Component<IAvatarProps, any>{
             </div>
         );
     }
-
-    private _renderImage() {
-        const {isCurrentUser, image} = this.props.user;
-
-        if (isCurrentUser) {
-            return (
-                <a href="https://gravatar.com" target="blank">
-                    <div className="avatar-image-container avatar-image-container-is-mine">
-                        <img className="avatar-image"
-                            src={`${image}?d=retro`}
-                            onError={this._loadDefaultImage.bind(this)} />
-                    </div>
-                </a>
-            );
-        }
-
-        else {
-            return (
-                <div className="avatar-image-container">
-                    <img className="avatar-image"
-                        src={`${image}?d=retro`}
-                        onError={this._loadDefaultImage.bind(this)} />
-                </div>
-            );
-        }
-    }
-
-    private _loadDefaultImage(event) {
-        event.target.src = unknownAvatarUrl;
-    }
 }
 
 export default Relay.createContainer(Avatar, {
     fragments: {
         user: () => Relay.QL`
             fragment on UserInterface {
-                isCurrentUser
                 displayName
-                image
                 routePath
+                avatarInfo {
+                    facebookId
+                    googleId
+                    emailHash
+                }
                 ${TrustButton.getFragment('user')}
                 ${TrustReputationStats.getFragment('user')}
             }
@@ -85,10 +71,13 @@ export default Relay.createContainer(Avatar, {
 });
 
 interface IUser {
-    isCurrentUser: boolean;
     displayName: string;
-    image: string;
     routePath: string;
+    avatarInfo: {
+        facebookId: string;
+        googleId: string;
+        emailHash: string;
+    }
 }
 
 export interface IAvatarProps {

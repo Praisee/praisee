@@ -5,10 +5,11 @@ import {
     IUrlSlugModel
 } from 'pz-server/src/url-slugs/models/url-slug';
 import promisify from 'pz-support/src/promisify';
-import {IUsers, IUser, IUsersBatchable} from 'pz-server/src/users/users';
+import {IUsers, IUser, IUsersBatchable, IAvatarInfo, IUserActivityStats} from 'pz-server/src/users/users';
 import {IUserInstance, IUserModel} from 'pz-server/src/models/user';
 import {createRecordFromLoopback} from 'pz-server/src/support/repository';
 import {loopbackFindAllByIds} from 'pz-server/src/support/loopback-find-all-helpers';
+import MD5 from 'md5';
 const moment = require('moment');
 
 export function createRecordFromLoopbackUser(user: IUserInstance): IUser {
@@ -73,7 +74,7 @@ export default class Users implements IUsers, IUsersBatchable {
         return this._UserModel.getReputation(userId);
     }
 
-    async getActivityStats(userId: number): Promise<any> {
+    async getActivityStats(userId: number): Promise<IUserActivityStats> {
         const oneMonthAgo = moment().subtract(1, 'month').format('YYYY-MM-DD');
         const query = `
             SELECT
@@ -145,6 +146,33 @@ export default class Users implements IUsers, IUsersBatchable {
         let commentReputation = commentUpVoteReputation - commentDownVoteReputation;
         
         return communityItemUpVoteReputation + commentReputation;
+    }
+    
+    async getAvatarInfo(userId: number): Promise<IAvatarInfo> {
+        const query = `
+            SELECT
+                (
+                    SELECT externalId FROM useridentity as fbId
+                    WHERE fbId.userid = ${userId} AND fbId.provider = 'facebook'
+                ) AS facebookid,
+                (
+                    SELECT externalId FROM useridentity as googleId
+                    WHERE googleId.userid = ${userId} AND googleId.provider = 'google'
+                ) AS googleid,
+                (
+                    SELECT email FROM praiseeuser
+                    WHERE praiseeuser.id = ${userId}
+                )
+        `;
+
+        const results: any= await loopbackQuery(this._UserModel, query);
+        const {facebookid, googleid, email} = results[0];
+        
+        return {
+            facebookId: facebookid,
+            googleId: googleid,
+            emailHash: MD5(email.toLowerCase().trim())
+        }
     }
 
     async isUserTrusting(trusterId: number, trustedId: number): Promise<boolean> {

@@ -10,8 +10,8 @@ import ContentTruncator from 'pz-client/src/widgets/content-truncator-component'
 import ExpandButton from 'pz-client/src/widgets/expand-button-component';
 import CommunityItem from 'pz-client/src/community-item/community-item-component';
 import UpdateUserMutation from 'pz-client/src/user/update-user-mutation';
-
-const unknownAvatarUrl = appInfo.addresses.getImage('unknown-avatar.png');
+// import Avatar from 'react-avatar';
+var Avatar = require('react-avatar');
 
 export class Profile extends Component<IProfileControllerProps, IProfileControllerState> {
     constructor(props, state) {
@@ -45,17 +45,22 @@ export class Profile extends Component<IProfileControllerProps, IProfileControll
     }
 
     private _renderTopSection() {
-        let {createdAt, user} = this.props.profile;
-        let {displayName, image} = user;
-        let memberSince = new Date(createdAt);
+        const {createdAt, user} = this.props.profile;
+        const {facebookId, googleId, emailHash} = this.props.profile.user.avatarInfo; 
+        const {displayName, image} = user;
+        const memberSince = new Date(createdAt);
 
         return (
             <div className="profile-top-section">
                 <div className="profile-top-left">
-                    <img className="avatar-image"
-                        src={`${image}?d=retro`}
-                        onError={this._loadDefaultImage.bind(this)}
-                        />
+                    <Avatar
+                            size={150}
+                            facebookId={facebookId}
+                            googleId={googleId}
+                            md5email={emailHash}
+                            name={displayName}
+                            round={true}
+                    />
 
                     <TrustReputationStats user={user} showReputation={true} showTrusts={true} />
                 </div>
@@ -320,8 +325,6 @@ export class Profile extends Component<IProfileControllerProps, IProfileControll
             displayName: this.props.profile.user.displayName
         });
 
-    private _loadDefaultImage = event => event.target.src = unknownAvatarUrl;
-
     private _showMoreCommunityItems() {
         this.props.relay.setVariables({ limit: this.props.relay.variables.limit + 5 })
     }
@@ -344,8 +347,12 @@ export default Relay.createContainer(Profile, {
                 
                 user {
                     displayName
-                    image
                     isCurrentUser
+                    avatarInfo {
+                        facebookId
+                        googleId
+                        emailHash
+                    }
                     ${TrustButton.getFragment('user')}
                     ${TrustReputationStats.getFragment('user')}
                 }
@@ -381,6 +388,11 @@ interface IProfileControllerProps {
             displayName: string;
             image: string;
             isCurrentUser: boolean;
+            avatarInfo: {
+                facebookId: string;
+                googleId: string;
+                emailHash: string;
+            }
         }
         activityStats: {
             comments: number;

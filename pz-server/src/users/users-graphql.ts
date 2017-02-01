@@ -17,7 +17,6 @@ import {IAppRepositoryAuthorizers} from 'pz-server/src/app/repositories';
 import {ITypes} from 'pz-server/src/graphql/types';
 import * as graphqlRelay from 'graphql-relay';
 import * as graphql from 'graphql';
-import MD5 from 'MD5';
 
 var {
     GraphQLBoolean,
@@ -71,18 +70,12 @@ export default function UsersTypes(repositoryAuthorizers: IAppRepositoryAuthoriz
 
         fields: () => ({
             id: { type: GraphQLString },
-
             displayName: { type: GraphQLString },
-
             reputation: { type: GraphQLInt },
-
-            image: { type: GraphQLString },
-
             trusterCount: { type: GraphQLInt },
-
             isCurrentUser: { type: new GraphQLNonNull(GraphQLBoolean) },
-
-            routePath: { type: GraphQLString }
+            routePath: { type: GraphQLString },
+            avatarInfo: { type: AvatarInfo }
         }),
 
         resolveType: resolveType
@@ -119,14 +112,6 @@ export default function UsersTypes(repositoryAuthorizers: IAppRepositoryAuthoriz
                 }
             },
 
-            image: {
-                type: GraphQLString,
-                resolve: ({email}) => {
-                    if (email)
-                        return calculateGravatarUrl(email);
-                }
-            },
-
             trusterCount: {
                 type: GraphQLInt,
                 resolve: async ({id}, _, {user}) => {
@@ -158,6 +143,11 @@ export default function UsersTypes(repositoryAuthorizers: IAppRepositoryAuthoriz
             routePath: {
                 type: GraphQLString,
                 resolve: resolveSlugPath
+            },
+
+           avatarInfo: {
+                type: AvatarInfo,
+                resolve: ({id}, _, {user}) => userAuthorizer.as(user).getAvatarInfo(id)
             }
         }),
 
@@ -171,11 +161,6 @@ export default function UsersTypes(repositoryAuthorizers: IAppRepositoryAuthoriz
             id: { type: GraphQLString },
 
             displayName: { type: GraphQLString },
-
-            image: {
-                type: GraphQLString,
-                resolve: ({email}) => calculateGravatarUrl(email)
-            },
 
             reputation: {
                 type: GraphQLInt,
@@ -200,6 +185,11 @@ export default function UsersTypes(repositoryAuthorizers: IAppRepositoryAuthoriz
             routePath: {
                 type: GraphQLString,
                 resolve: resolveSlugPath
+            },
+
+            avatarInfo: {
+                type: AvatarInfo,
+                resolve: ({id}, _, {user}) => userAuthorizer.as(user).getAvatarInfo(id)
             }
         }),
 
@@ -227,19 +217,8 @@ export default function UsersTypes(repositoryAuthorizers: IAppRepositoryAuthoriz
             },
 
             activityStats: {
-                type: new GraphQLObjectType({
-                    name: 'ActivityStats',
-                    fields: {
-                        comments: { type: GraphQLInt },
-                        communityItems: { type: GraphQLInt },
-                        upVotes: { type: GraphQLInt },
-                        downVotes: { type: GraphQLInt },
-                        trusts: { type: GraphQLInt },
-                        reputation: { type: GraphQLInt }
-                    }
-                }),
-                
-                resolve: async (user, _, {user: currentUser}) => 
+                type: ActivityStats,
+                resolve: async (user, _, {user: currentUser}) =>
                     await userAuthorizer.as(currentUser).getActivityStats(user.id)
             },
 
@@ -259,6 +238,27 @@ export default function UsersTypes(repositoryAuthorizers: IAppRepositoryAuthoriz
                 }
             }
         })
+    });
+
+    var AvatarInfo = new GraphQLObjectType({
+        name: 'AvatarInfo',
+        fields: {
+            facebookId: { type: GraphQLString },
+            googleId: { type: GraphQLString },
+            emailHash: { type: GraphQLString },
+        }
+    });
+
+    var ActivityStats = new GraphQLObjectType({
+        name: 'ActivityStats',
+        fields: {
+            comments: { type: GraphQLInt },
+            communityItems: { type: GraphQLInt },
+            upVotes: { type: GraphQLInt },
+            downVotes: { type: GraphQLInt },
+            trusts: { type: GraphQLInt },
+            reputation: { type: GraphQLInt }
+        }
     });
 
     const ToggleTrustMutation = mutationWithClientMutationId({
@@ -370,11 +370,6 @@ export default function UsersTypes(repositoryAuthorizers: IAppRepositoryAuthoriz
         GetCurrentUserMutation,
         UpdateUserMutation
     });
-}
-
-function calculateGravatarUrl(email: string) {
-    const hash = MD5(email.toLowerCase().trim());
-    return `https://www.gravatar.com/avatar/${hash}`;
 }
 
 export function fromUserId(id) {

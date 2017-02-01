@@ -8,16 +8,17 @@ import {
     IAuthorizer
 } from 'pz-server/src/support/authorization';
 
-import {IUsers, IUser, IOtherUser} from 'pz-server/src/users/users';
+import {IUsers, IUser, IOtherUser, IAvatarInfo, IUserActivityStats} from 'pz-server/src/users/users';
 
 export interface IAuthorizedUsers {
     findById(userId: number): Promise<IUser>
     findCurrentUser(): Promise<IUser>
     findUserById(userId: number): Promise<IOtherUser | IUser>
     findByUrlSlugName(urlSlug: string): Promise<IOtherUser | IUser>
-    getActivityStats(userId: number): Promise<any>
+    getActivityStats(userId: number): Promise<IUserActivityStats>
     getTotalTrusters(userId: number): Promise<number>
     getReputation(userId: number): Promise<number>
+    getAvatarInfo(userId: number): Promise<IAvatarInfo>
     toggleTrust(trustedId: number): Promise<boolean | AuthorizationError>
     isUserTrusting(queriedUserId: number): Promise<boolean>
     create(email, password, displayName): Promise<IUser>
@@ -73,7 +74,7 @@ class AuthorizedUsers {
         return this.findById(this._user.id);
     }
 
-    getActivityStats(userId: number) {
+    getActivityStats(userId: number): Promise<IUserActivityStats> {
         return this._users.getActivityStats(userId);
     }
 
@@ -87,6 +88,10 @@ class AuthorizedUsers {
 
     getReputation(userId: number): Promise<number> {
         return this._users.getReputation(userId);
+    }
+
+    getAvatarInfo(userId: number): Promise<IAvatarInfo> {
+        return this._users.getAvatarInfo(userId);
     }
 
     async toggleTrust(trustedId: number): Promise<boolean | AuthorizationError> {
