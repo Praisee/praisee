@@ -116,6 +116,11 @@ export default class SignInUp extends React.Component<IProps, any> {
     }
 
     private _renderSocialLinks() {
+        const noop = () => {};
+
+        const maybeHideSignInUp = this.props.hideSignInUp ?
+            this.props.hideSignInUp.bind(this) : noop;
+
         return (
             <div className="social-links">
                 <span className="social-links-or">or use</span>
@@ -123,7 +128,7 @@ export default class SignInUp extends React.Component<IProps, any> {
                 <a href={appInfo.addresses.getFacebookAuthRoute()}
                    className="social-link"
                    target="_blank"
-                   onClick={this.props.hideSignInUp.bind(this)}>
+                   onClick={maybeHideSignInUp}>
 
                     <i className="social-icon facebook-icon" />
                 </a>
@@ -131,7 +136,7 @@ export default class SignInUp extends React.Component<IProps, any> {
                 <a href={appInfo.addresses.getGoogleAuthRoute()}
                    className="social-link"
                    target="_blank"
-                   onClick={this.props.hideSignInUp.bind(this)}>
+                   onClick={maybeHideSignInUp}>
 
                     <i className="social-icon google-icon" />
                 </a>

@@ -47,6 +47,7 @@
   & > { @include app-layout(); }
 
   @include home-namespace();
+  @include sign-in-up-namespace();
   @include add-review-namespace();
   @include topic-namespace();
   @include community-item-namespace();

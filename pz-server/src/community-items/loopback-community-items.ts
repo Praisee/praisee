@@ -162,7 +162,12 @@ export default class CommunityItems implements ICommunityItems, ICommunityItemsB
             return createRecordFromLoopbackCommunityItem(result);
         }
 
-        const result = await promisify(this._CommunityItemModel.findById, this._CommunityItemModel)(fullSlug);
+        const id = Number(fullSlug);
+        if (!Number.isInteger(id) || id < 1) {
+            return null;
+        }
+
+        const result = await promisify(this._CommunityItemModel.findById, this._CommunityItemModel)(id);
 
         if (!result) {
             return null;
