@@ -1,4 +1,5 @@
 import { App } from '../app/app.controller';
+import { browserHistory } from 'react-router';
 import * as React from 'react';
 import * as Relay from 'react-relay';
 import { Component } from 'react';
@@ -291,7 +292,8 @@ export class Profile extends Component<IProfileControllerProps, IProfileControll
                 displayName: this.state.displayName,
                 bio: this.state.bio
             }), {
-                onSuccess: () => {
+                onSuccess: ({updateUser}) => {
+                    browserHistory.replace(updateUser.user.routePath);
                     success && success();
                 },
                 onFailure: () => {

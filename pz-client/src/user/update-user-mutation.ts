@@ -27,6 +27,7 @@ export default class UpdateUserMutation extends Relay.Mutation {
                 
                 user {
                     displayName
+                    routePath
                 }
             }
         `;

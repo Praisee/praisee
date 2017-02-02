@@ -24,14 +24,17 @@ class Avatar extends Component<IAvatarProps, any>{
         return this.schemaInjector.inject(
             <div className="avatar">
                 <div className="avatar-image-container">
-                    <AvatarImage
-                        size={40}
-                        facebookId={facebookId}
-                        googleId={googleId}
-                        md5email={emailHash}
-                        name={displayName}
-                        round={true}
-                        />
+                    <Link to={this.props.user.routePath}
+                        className="display-name">
+                        <AvatarImage
+                            size={40}
+                            facebookId={facebookId}
+                            googleId={googleId}
+                            md5email={emailHash}
+                            name={displayName}
+                            round={true}
+                            />
+                    </Link>
                 </div>
 
                 <div className="avatar-name-container">
