@@ -107,6 +107,11 @@
           color: $gray-lighter;
           font-size: 1rem;
           vertical-align: top;
+          transition: all .5s ease;
+
+          &:hover {
+            transform: rotate(25deg) scale(1.2);
+          }
         }
         
         .save-changes-icon,

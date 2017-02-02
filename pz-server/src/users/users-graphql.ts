@@ -106,17 +106,19 @@ export default function UsersTypes(repositoryAuthorizers: IAppRepositoryAuthoriz
 
             reputation: {
                 type: GraphQLInt,
-                resolve: async ({id}, _, {user}) => {
-                    if (user)
-                        return userAuthorizer.as(user).getReputation(id);
+                resolve: (_, __, {user}) => {
+                    if (user) {
+                        return userAuthorizer.as(user).getReputation(user.id);
+                    }
                 }
             },
 
             trusterCount: {
                 type: GraphQLInt,
-                resolve: async ({id}, _, {user}) => {
-                    if (user)
-                        return userAuthorizer.as(user).getTotalTrusters(id);
+                resolve: (_, __, {user}) => {
+                    if (user) {
+                        return userAuthorizer.as(user).getTotalTrusters(user.id);
+                    }
                 }
             },
 
@@ -142,12 +144,26 @@ export default function UsersTypes(repositoryAuthorizers: IAppRepositoryAuthoriz
 
             routePath: {
                 type: GraphQLString,
-                resolve: resolveSlugPath
+                resolve: async (_, __, {user}) => {
+                    if(!user) {
+                      return;
+                    }
+
+                    user.recordType = 'PraiseeUser';
+                    let route = await vanityRoutePathAuthorizer.as(user).findByRecord(user);
+
+                    return route.routePath;
+                }
+
             },
 
-           avatarInfo: {
+            avatarInfo: {
                 type: AvatarInfo,
-                resolve: ({id}, _, {user}) => userAuthorizer.as(user).getAvatarInfo(id)
+                resolve: (_, __, {user}) => {
+                    if (user) {
+                        return userAuthorizer.as(user).getAvatarInfo(user.id)
+                    }
+                }
             }
         }),
 
@@ -184,7 +200,12 @@ export default function UsersTypes(repositoryAuthorizers: IAppRepositoryAuthoriz
 
             routePath: {
                 type: GraphQLString,
-                resolve: resolveSlugPath
+                resolve: async (user, _, {user: currentUser}) => {
+                    user.recordType = 'PraiseeUser';
+                    let route = await vanityRoutePathAuthorizer.as(currentUser).findByRecord(user);
+
+                    return route.routePath;
+                }
             },
 
             avatarInfo: {

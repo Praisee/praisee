@@ -107,6 +107,15 @@
   }
 
   .user-account-menu {
+    .avatar-image {
+      margin-left: .5rem;
+      transition: all .3s;
+    }
+
+    .display-name {
+      vertical-align: middle;
+    }
+
     .current-user {
       color: $link-color;
       background: none;
@@ -118,6 +127,12 @@
         background: none;
         text-decoration: $link-hover-decoration;
         outline: none;
+      }
+    }
+    
+    &:hover {
+      .avatar-image{
+        transform: scale(1.1);
       }
     }
   }
