@@ -357,11 +357,14 @@ export default function UsersTypes(repositoryAuthorizers: IAppRepositoryAuthoriz
         outputFields: () => ({
             profile: {
                 type: types.UserProfileType,
-                resolve: async ({user}) => user
+                resolve: ({user}) => user
             },
 
             user: {
-                type: types.UserInterfaceType
+                type: types.UserInterfaceType,
+                resolve: (payload) => {
+                    return payload.user
+                }
             }
         }),
 

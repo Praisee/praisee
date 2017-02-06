@@ -12,10 +12,9 @@
       @include make-row();
 
       .profile-top-left {
-        // @include make-col-span(3);
-
         .avatar-stats{
           text-align: center;
+          margin-top: 1rem;
 
           .reputation,
           .trusters {
@@ -50,10 +49,6 @@
           .edit-icon {
             float:right;
             font-size: 1.5rem;
-
-            @include media-breakpoint-down(sm) {
-              display: none;
-            }
           }
         }
 
@@ -90,36 +85,19 @@
           }
         }
 
-        .save-changes-icon {
-          @extend .fa-check;
-          font-size: 1.5rem;
-          color: $brand-success;
-        }
-
-        .cancel-changes-icon {
-          @extend .fa-times;
-          font-size: 1.5rem;
-          color: $brand-danger;
-        }
-        
         .edit-icon {
           @extend .fa-pencil;
+          @extend .fa;
           color: $gray-lighter;
           font-size: 1rem;
           vertical-align: top;
           transition: all .5s ease;
+          margin-left: 1rem;
+          cursor: pointer;
 
           &:hover {
             transform: rotate(25deg) scale(1.2);
           }
-        }
-        
-        .save-changes-icon,
-        .cancel-changes-icon,
-        .edit-icon {
-          @extend .fa;
-          margin-left: 1rem;
-          cursor: pointer;
         }
       }
       
@@ -163,8 +141,8 @@
         color: $gray;
         
         .summary-badge {
-          color: $white;
-          background-color: $brand-success;
+          color: $brand-primary;
+          border: 1px solid $brand-primary-minor;
           font-size: .8rem;
           border-radius: .25rem;
           padding: .25rem .5rem;
@@ -178,11 +156,8 @@
       @include community-item-list();
       
       margin-top: 2rem;
-
-      .section-title {
-        padding-bottom: .5rem;
-        border-bottom: 1px solid $gray-lighter;
-      }
+      padding-bottom: .5rem;
+      border-bottom: 1px solid $gray-lighter;
     }
   } 
 }

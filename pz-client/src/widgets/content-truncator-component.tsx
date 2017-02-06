@@ -49,7 +49,8 @@ export default class ContentTruncator extends React.Component<IProps, any> {
 
     state = {
         shouldTruncate: false,
-        allowTruncation: true
+        allowTruncation: true,
+        previousHeight: null
     };
 
     refs: any;
@@ -68,6 +69,10 @@ export default class ContentTruncator extends React.Component<IProps, any> {
     componentWillUnmount () {
         this._cancelResizeEventHandler();
         window.removeEventListener('load', this._updateContentDimensionsListener);
+    }
+
+    componentDidUpdate() {
+         this._updateContentDimensions(); 
     }
 
     private _isTruncated() {
@@ -91,6 +96,12 @@ export default class ContentTruncator extends React.Component<IProps, any> {
         const {truncateToHeight, heightMargin} = this.props;
         const maxHeight = truncateToHeight + heightMargin;
         const contentHeight = this._getContentHeight();
+
+        if(this.state.previousHeight === contentHeight){
+            return;
+        }
+
+        this.setState({previousHeight: contentHeight});
 
         if (contentHeight < maxHeight) {
             if (this.state.shouldTruncate) {

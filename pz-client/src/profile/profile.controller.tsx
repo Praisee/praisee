@@ -1,3 +1,4 @@
+import { IUserActivityStats } from 'pz-server/src/users/users';
 import { App } from '../app/app.controller';
 import { browserHistory } from 'react-router';
 import * as React from 'react';
@@ -21,16 +22,27 @@ export class Profile extends Component<IProfileControllerProps, IProfileControll
             isEditingName: false,
             isEditingBio: false,
             displayName: this.props.profile.user.displayName,
-            bio: this.props.profile.bio
+            bio: this.props.profile.bio || ""
         };
     }
 
     componentWillReceiveProps(nextProps) {
+        /*
+            TODO:
+            Cant edit name on user created from facebook - fat query doesnt ask for routePath... FUCKIN WAHT!H!!!?!
+            Add photos to contributions
+            Add ability to upload and crop photo
+        */
+
+        if (this.props.profile.user.id == nextProps.profile.user.id) {
+            return;
+        }
+
         this.setState({
             isEditingName: false,
             isEditingBio: false,
             displayName: nextProps.profile.user.displayName,
-            bio: nextProps.profile.bio
+            bio: nextProps.profile.bio || ""
         });
     }
 
@@ -47,7 +59,7 @@ export class Profile extends Component<IProfileControllerProps, IProfileControll
 
     private _renderTopSection() {
         const {createdAt, user} = this.props.profile;
-        const {facebookId, googleId, emailHash} = this.props.profile.user.avatarInfo; 
+        const {facebookId, googleId, emailHash} = this.props.profile.user.avatarInfo;
         const {displayName, image} = user;
         const memberSince = new Date(createdAt);
 
@@ -55,12 +67,12 @@ export class Profile extends Component<IProfileControllerProps, IProfileControll
             <div className="profile-top-section">
                 <div className="profile-top-left">
                     <Avatar
-                            size={150}
-                            facebookId={facebookId}
-                            googleId={googleId}
-                            md5email={emailHash}
-                            name={displayName}
-                            round={true}
+                        size={150}
+                        facebookId={facebookId}
+                        googleId={googleId}
+                        md5email={emailHash}
+                        name={displayName}
+                        round={true}
                     />
 
                     <TrustReputationStats user={user} showReputation={true} showTrusts={true} />
@@ -77,7 +89,7 @@ export class Profile extends Component<IProfileControllerProps, IProfileControll
                             type="date-created"
                             style={{ display: "inline-block" }}
                             format="MM-DD-YYYY"
-                            />
+                        />
                     </div>
 
                     {this._renderBio()}
@@ -95,17 +107,8 @@ export class Profile extends Component<IProfileControllerProps, IProfileControll
                         className='name-editor'
                         value={this.state.displayName}
                         onChange={this._handleNameChanging}
+                        onBlur={this._handleNameChangeSubmit}
                         autoFocus={true} />
-
-                    <i className='save-changes-icon'
-                        onClick={this._handleNameChangeSubmit}
-                        title="Save changes to your name"
-                        />
-
-                    <i className='cancel-changes-icon'
-                        onClick={this._handleNameChangeCancel}
-                        title="Cancel changes to your name"
-                        />
                 </div>
             )
         } else {
@@ -119,7 +122,7 @@ export class Profile extends Component<IProfileControllerProps, IProfileControll
                         this.props.profile.user.isCurrentUser && <i className='edit-icon'
                             onClick={this._editName}
                             title="Edit your name"
-                            />
+                        />
                     }
                 </h1>
             )
@@ -139,21 +142,9 @@ export class Profile extends Component<IProfileControllerProps, IProfileControll
                         rows={8}
                         value={this.state.bio}
                         onChange={this._handleBioChanging}
+                        onBlur={this._handleBioChangeSubmit}
                         autoFocus={true}
-                        />
-
-                    <div className="bio-icons">
-
-                        <i className='save-changes-icon'
-                            onClick={this._handleBioChangeSubmit}
-                            title="Save changes to your bio"
-                            />
-
-                        <i className='cancel-changes-icon'
-                            onClick={this._handleBioChangeCancel}
-                            title="Cancel changes to your bio"
-                            />
-                    </div>
+                    />
                 </div>
             );
         }
@@ -166,10 +157,10 @@ export class Profile extends Component<IProfileControllerProps, IProfileControll
                         <i className='edit-icon'
                             onClick={this._editBio}
                             title="Edit your bio"
-                            />
+                        />
                     }
                     <ContentTruncator truncateToHeight={150} heightMargin={25}>
-                        { this._isEmpty(bio) && isCurrentUser
+                        {this._isEmpty(bio) && isCurrentUser
                             ? <i onClick={() => this._editIfMine('Bio')}>
                                 It looks like your bio is empty! Let everyone know a little about yourself.
                               </i>
@@ -196,7 +187,7 @@ export class Profile extends Component<IProfileControllerProps, IProfileControll
                     <div className="summary-section-contents">
                         {this._renderSummaryItem("comments", comments,
                             `How many comments ${displayName} has written in the past 30 days`)}
-                        {this._renderSummaryItem("community items", communityItems,
+                        {this._renderSummaryItem("posts", communityItems,
                             `How many posts (reviews, questions, discussion items) ${displayName} has written in the past 30 days`)}
                         {this._renderSummaryItem("upvotes", upVotes,
                             `How many times ${displayName} was up voted in the past 30 days`)}
@@ -208,7 +199,7 @@ export class Profile extends Component<IProfileControllerProps, IProfileControll
                             `How many trusters ${displayName} has gained in the past 30 days`)}
                     </div>
                 </div>
-{/*
+                {/*
                 <div className="summary-section-row">
                     <span className="summary-section-title" 
                         title=`The awards ${displayName} has earned`>
@@ -225,7 +216,7 @@ export class Profile extends Component<IProfileControllerProps, IProfileControll
     private _renderSummaryItem(type: string, count: number, hintText: string) {
         return (
             <div className="summary-item" title={hintText}>
-                <span className="summary-badge">{count > 0 ? '+' : ''}{count}</span>
+                <span className="summary-badge">{count}</span>
                 {type}
             </div>
         );
@@ -239,7 +230,7 @@ export class Profile extends Component<IProfileControllerProps, IProfileControll
                     communityItem={node}
                     truncateLongContent={true}
                     linkShouldOpenInTab={true}
-                    />
+                />
             );
 
         let expandButton = null;
@@ -250,15 +241,12 @@ export class Profile extends Component<IProfileControllerProps, IProfileControll
                     className="show-more-community-items"
                     onExpand={this._showMoreCommunityItems.bind(this)}
                     isExpanded={!canExpand}
-                    />
+                />
             )
         }
 
         return (
             <div className="contributions-section">
-                <h1 className="section-title">
-                    Contributions - <span>{this.props.profile.communityItems.edges.length}</span>
-                </h1>
                 {rows}
                 {expandButton}
             </div>
@@ -266,9 +254,15 @@ export class Profile extends Component<IProfileControllerProps, IProfileControll
     }
 
     private _handleNameChangeSubmit = () => {
-        const onSuccess = () => this.setState({ isEditingName: false });
+        const onSuccess = (mutationPayload?) => {
+            if (mutationPayload) {
+                browserHistory.replace(mutationPayload.updateUser.user.routePath);
+            }
 
-        if (this.props.profile.user.displayName === this.state.displayName) {
+            this.setState({ isEditingName: false });
+        }
+
+        if (this.props.profile.user.displayName === this.state.displayName.trim()) {
             return onSuccess();
         }
 
@@ -277,8 +271,13 @@ export class Profile extends Component<IProfileControllerProps, IProfileControll
 
     private _handleBioChangeSubmit = () => {
         const onSuccess = () => this.setState({ isEditingBio: false });
+        const modifiedBio = this.state.bio.trim();
+        const originalBio = this.props.profile.bio.trim();
 
-        if (this.props.profile.bio === this.state.bio) {
+        const bioChanged = originalBio !== modifiedBio
+            || (originalBio === null && modifiedBio === '')
+
+        if (!bioChanged) {
             return onSuccess();
         }
 
@@ -289,12 +288,11 @@ export class Profile extends Component<IProfileControllerProps, IProfileControll
         this.props.relay.commitUpdate(
             new UpdateUserMutation({
                 profile: this.props.profile,
-                displayName: this.state.displayName,
-                bio: this.state.bio
+                displayName: this.state.displayName.trim(),
+                bio: this.state.bio.trim()
             }), {
-                onSuccess: ({updateUser}) => {
-                    browserHistory.replace(updateUser.user.routePath);
-                    success && success();
+                onSuccess: (payload) => {
+                    success && success(payload);
                 },
                 onFailure: () => {
                     //TODO: Local error handling
@@ -315,24 +313,12 @@ export class Profile extends Component<IProfileControllerProps, IProfileControll
 
     private _editName = () => this.setState({ isEditingName: true });
 
-    private _handleBioChangeCancel = event =>
-        this.setState({
-            isEditingBio: false,
-            bio: this.props.profile.bio
-        });
-
-    private _handleNameChangeCancel = event =>
-        this.setState({
-            isEditingName: false,
-            displayName: this.props.profile.user.displayName
-        });
-
     private _showMoreCommunityItems() {
         this.props.relay.setVariables({ limit: this.props.relay.variables.limit + 5 })
     }
 
-    private _isEmpty(str: string) : boolean {
-        return str === null || typeof(str) === 'undefined' || str.trim() === '';
+    private _isEmpty(str: string): boolean {
+        return str === null || typeof (str) === 'undefined' || str.trim() === '';
     }
 }
 
@@ -348,6 +334,7 @@ export default Relay.createContainer(Profile, {
                 ${UpdateUserMutation.getFragment('profile')}
                 
                 user {
+                    id
                     displayName
                     isCurrentUser
                     avatarInfo {
@@ -387,6 +374,7 @@ interface IProfileControllerProps {
         bio: string;
         createdAt: string;
         user: {
+            id: string;
             displayName: string;
             image: string;
             isCurrentUser: boolean;
