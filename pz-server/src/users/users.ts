@@ -2,13 +2,14 @@ import {
     IRepository, IRepositoryRecord
 } from 'pz-server/src/support/repository';
 
-export type TOptionalUser = {id: number} | null;
+export type TOptionalUser = {id: number, isAdmin: boolean} | null;
 
 export interface IUser extends IRepositoryRecord {
     recordType: 'User' | 'CurrentUser' | 'OtherUser'
     id: number
     displayName: string
     email: string
+    isAdmin: boolean
     createdAt: Date
     trusters?: any
 }

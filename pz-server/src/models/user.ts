@@ -13,6 +13,7 @@ export interface IUserInstance extends IPersistedModelInstance {
     id: number
     displayName: string
     email: string
+    isAdmin: boolean
     created: Date
     trusters?: IRelatedPersistedModel<IUserInstance[]>
     trusting?: IRelatedPersistedModel<IUserInstance[]>
@@ -26,7 +27,7 @@ module.exports = function (User: IUserModel) {
         return await getCount({
             userId: userId
         });
-    }
+    };
 
     User.getTotalTrusters = async (userId: number) => {
         const Trust = User.app.models.Trust;
@@ -35,7 +36,7 @@ module.exports = function (User: IUserModel) {
         return await getCount({
             trustedId: userId
         });
-    }
+    };
 
     User.isUserTrusting = async (trusterId: number, trustedId: number) => {
         const Trust = User.app.models.Trust;
@@ -49,7 +50,7 @@ module.exports = function (User: IUserModel) {
         });
 
         return result.length > 0;
-    }
+    };
 
     User.getReputation = async (userId: number) => {
         const Vote: IVoteModel = User.app.models.Vote;
@@ -58,7 +59,7 @@ module.exports = function (User: IUserModel) {
                 affectedUserId: userId
             }
         });
-        
+
         let communityItemVotes = votesOnUser.filter(vote => vote.parentType === "CommunityItem");
         let communityItemUpVoteCount = communityItemVotes.filter(vote => vote.isUpVote).length;
         let communityItemUpVoteReputation = communityItemUpVoteCount * 10;
@@ -70,7 +71,7 @@ module.exports = function (User: IUserModel) {
         let commentUpVoteReputation = commentUpVoteCount * 4;
         let commentDownVoteReputation = (commentVotes.length - commentUpVoteCount) * 2;
         let commentReputation = commentUpVoteReputation - commentDownVoteReputation;
-        
+
         return communityItemUpVoteReputation + commentReputation;
     }
 };

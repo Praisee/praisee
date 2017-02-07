@@ -97,6 +97,16 @@ export default class CommunityItems implements ICommunityItems, ICommunityItemsB
         });
     }
 
+    async findSomeByLatest(cursor: TBiCursor): Promise<ICursorResults<ICommunityItem>> {
+        const cursorResults = await findWithCursor<ICommunityItemInstance>(
+            this._CommunityItemModel,
+            cursor,
+            { order: 'createdAt DESC' }
+        );
+
+        return cursorCommunityItemLoopbackModelsToRecords(cursorResults);
+    }
+
     async findSomeByUserId(cursor: TBiCursor, userId: number): Promise<ICursorResults<ICommunityItem>> {
         const cursorResults = await findWithCursor<ICommunityItemInstance>(
             this._CommunityItemModel,

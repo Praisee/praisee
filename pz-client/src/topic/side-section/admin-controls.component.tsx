@@ -20,10 +20,7 @@ class AdminControls extends React.Component<IProps, any> {
     context: any;
 
     render() {
-        // TODO: This is a hack to prevent any user from uploading topic photos for now
-        // TODO: We should be using user roles instead
-
-        if (!this.context.getCurrentUser() || this.context.getCurrentUser().serverId !== 1) {
+        if (!this.context.getCurrentUser() || !this.context.getCurrentUser().isAdmin) {
             return <span />
         }
 

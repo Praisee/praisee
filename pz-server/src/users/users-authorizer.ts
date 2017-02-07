@@ -46,7 +46,7 @@ class AuthorizedUsers {
     async findUserById(userId): Promise<IOtherUser | IUser> {
         const user = await this._users.findById(userId);
 
-        if (this._user && this._user.id == user.id) {
+        if (this._user && this._user.id === user.id) {
             user.recordType = 'CurrentUser';
             return user;
         }
@@ -82,7 +82,7 @@ class AuthorizedUsers {
     getTotalTrusters(userId: number): Promise<number> {
         return this._users.getTotalTrusters(userId);
     }
-    
+
     getReputation(userId: number): Promise<number> {
         return this._users.getReputation(userId);
     }

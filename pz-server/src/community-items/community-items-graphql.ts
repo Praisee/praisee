@@ -710,3 +710,22 @@ export function communityItemTypeResolver(types: ITypes, source) {
             return types.communityItemTypes.general;
     }
 }
+
+export function getLatestCommunityItemsField(repositoryAuthorizers: IAppRepositoryAuthorizers, types: ITypes) {
+    const communityItemsAuthorizer = repositoryAuthorizers.communityItems;
+
+    return {
+        type: types.CommunityItemConnection.connectionType,
+        args: connectionArgs,
+
+        resolve: async (topic, args, {user}) => {
+            const cursor = biCursorFromGraphqlArgs(args as any);
+
+            const communityItems = await communityItemsAuthorizer
+                .as(user)
+                .findSomeByLatest(cursor);
+
+            return connectionFromCursorResults(communityItems);
+        }
+    };
+}

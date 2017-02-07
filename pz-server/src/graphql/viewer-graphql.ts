@@ -12,11 +12,14 @@ import {
 
 import {ITypes} from 'pz-server/src/graphql/types';
 import {getStaticPhotosField} from 'pz-server/src/photos/static-photos-graphql';
+
 import {
     getTopicLookupField,
     getTopicsField,
     getTopTenCategoriesByReviewsField
 } from 'pz-server/src/topics/topics-graphql';
+
+import {getLatestCommunityItemsField} from 'pz-server/src/community-items/community-items-graphql';
 
 var {
     GraphQLBoolean,
@@ -77,6 +80,8 @@ export default function getViewerType(repositoryAuthorizers: IAppRepositoryAutho
             lastCreatedCommunityItem: {
                 type: types.CommunityItemInterfaceType
             },
+
+            latestCommunityItems: getLatestCommunityItemsField(repositoryAuthorizers, types),
 
             staticPhotos: getStaticPhotosField(types),
 

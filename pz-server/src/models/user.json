@@ -4,7 +4,7 @@
     "emailVerificationRequired": false,
     "mixins": {
         "TimeStamp": true,
-        
+
         "Sluggable": {
             "property": "displayName"
         }
@@ -14,6 +14,13 @@
             "type": "string",
             "required": true,
             "description": "The displayed name of the user"
+        },
+
+        "isAdmin": {
+            "type": "boolean",
+            "required": false,
+            "default": false,
+            "description": "Whether or not the user is an admin"
         }
     },
     "options": {

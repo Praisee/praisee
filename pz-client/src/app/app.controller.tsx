@@ -148,6 +148,7 @@ export default Relay.createContainer(App, {
                 isLoggedIn
                 displayName
                 isCurrentUser
+                isAdmin
             }
         `
     }

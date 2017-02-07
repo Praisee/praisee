@@ -14,13 +14,17 @@ import {
     ICommunityItem,
     ICommunityItemInteraction
 } from 'pz-server/src/community-items/community-items';
-import {TBiCursor, ICursorResults} from 'pz-server/src/support/cursors/cursors';
+import {
+    TBiCursor, ICursorResults,
+    createEmptyCursorResults
+} from 'pz-server/src/support/cursors/cursors';
 import {IComment} from 'pz-server/src/comments/comments';
 import {IPhoto} from 'pz-server/src/photos/photos';
 import {IContentData} from 'pz-server/src/content/content-data';
 
 export interface IAuthorizedCommunityItems {
     findById(id: number): Promise<ICommunityItem>
+    findSomeByLatest(cursor: TBiCursor): Promise<ICursorResults<ICommunityItem>>
     findSomeByCurrentUser(cursor: TBiCursor): Promise<ICursorResults<ICommunityItem>>
     findAllComments(communityItemId: number): Promise<Array<IComment>>
     findAllTopics(communityItemId: number): Promise<Array<ITopic>>
@@ -46,6 +50,14 @@ class AuthorizedCommunityItems implements IAuthorizedCommunityItems {
 
     async findById(id: number): Promise<ICommunityItem> {
         return await this._communityItems.findById(id);
+    }
+
+    async findSomeByLatest(cursor: TBiCursor): Promise<ICursorResults<ICommunityItem>> {
+        if (!this._user || !this._user.isAdmin) {
+            return createEmptyCursorResults<ICommunityItem>();
+        }
+
+        return this._communityItems.findSomeByLatest(cursor);
     }
 
     async findSomeByCurrentUser(cursor: TBiCursor): Promise<ICursorResults<ICommunityItem>> {

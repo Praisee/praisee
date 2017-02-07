@@ -53,15 +53,14 @@ export default class FilteredCommunityItems implements ICommunityItems {
         }));
     }
 
-    async findSomeByUserId(cursor: TBiCursor, userId: number): Promise<ICursorResults<ICommunityItem>> {
-        const filteredCursorResults = await promisedMapCursorResults(
-            await this._communityItems.findSomeByUserId(cursor, userId),
-            async (cursorResult) => Object.assign({}, cursorResult, {
-                item: await this._filterBeforeRead(cursorResult.item)
-            })
-        );
+    async findSomeByLatest(cursor: TBiCursor): Promise<ICursorResults<ICommunityItem>> {
+        const cursorResults = await this._communityItems.findSomeByLatest(cursor);
+        return this._filterCursorResults(cursorResults);
+    }
 
-        return filteredCursorResults;
+    async findSomeByUserId(cursor: TBiCursor, userId: number): Promise<ICursorResults<ICommunityItem>> {
+        const cursorResults = await this._communityItems.findSomeByUserId(cursor, userId);
+        return this._filterCursorResults(cursorResults);
     }
 
     async isOwner(userId: number, communityItemId: number): Promise<boolean> {
@@ -175,6 +174,17 @@ export default class FilteredCommunityItems implements ICommunityItems {
 
     destroy(communityItem: ICommunityItem): Promise<void> {
         return this._communityItems.destroy(communityItem);
+    }
+
+    private async _filterCursorResults(cursorResults: ICursorResults<ICommunityItem>): Promise<ICursorResults<ICommunityItem>> {
+        const filteredCursorResults = await promisedMapCursorResults(
+            cursorResults,
+            async (cursorResult) => Object.assign({}, cursorResult, {
+                item: await this._filterBeforeRead(cursorResult.item)
+            })
+        );
+
+        return filteredCursorResults;
     }
 
     private async _filterBeforeRead(communityItem: ICommunityItem | null): Promise<ICommunityItem | null> {

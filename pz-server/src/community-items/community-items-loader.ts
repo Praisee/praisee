@@ -44,6 +44,10 @@ export default class CommunityItemsLoader implements ICommunityItems {
         return this._loaders.findAllByIds.loadMany(ids);
     }
 
+    findSomeByLatest(cursor: TBiCursor): Promise<ICursorResults<ICommunityItem>> {
+        return this._communityItems.findSomeByLatest(cursor);
+    }
+
     findSomeByUserId(cursor: TBiCursor, userId: number): Promise<ICursorResults<ICommunityItem>> {
         return this._communityItems.findSomeByUserId(cursor, userId);
     }

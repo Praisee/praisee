@@ -50,7 +50,7 @@ export default function UsersTypes(repositoryAuthorizers: IAppRepositoryAuthoriz
         else {
             return OtherUserType;
         }
-    }
+    };
 
     var UserInterfaceType = new GraphQLInterfaceType({
         name: 'UserInterface',
@@ -79,10 +79,13 @@ export default function UsersTypes(repositoryAuthorizers: IAppRepositoryAuthoriz
             id: {
                 type: GraphQLString,
                 resolve: ({id}, _, {user}) => {
-                    if (id === 'CurrentUser')
+                    if (id === 'CurrentUser') {
                         return id;
-                    if (user)
+                    }
+
+                    if (user) {
                         return toUserId(user.id);
+                    }
                 }
             },
 
@@ -107,7 +110,7 @@ export default function UsersTypes(repositoryAuthorizers: IAppRepositoryAuthoriz
             },
 
             email: {
-                type: GraphQLString
+                type: new GraphQLNonNull(GraphQLString)
             },
 
             trusterCount: {
@@ -120,10 +123,7 @@ export default function UsersTypes(repositoryAuthorizers: IAppRepositoryAuthoriz
 
             serverId: {
                 type: GraphQLInt,
-                resolve: (_, __, {user}) => {
-                    if (user)
-                        return user.id
-                }
+                resolve: (_, __, {user}) => user ? user.id : null
             },
 
             username: {
@@ -131,13 +131,18 @@ export default function UsersTypes(repositoryAuthorizers: IAppRepositoryAuthoriz
             },
 
             isLoggedIn: {
-                type: GraphQLBoolean,
+                type: new GraphQLNonNull(GraphQLBoolean),
                 resolve: (_, __, {user}) => !!user
             },
 
             isCurrentUser: {
                 type: new GraphQLNonNull(GraphQLBoolean),
-                resolve: ({id}, _, user) => !!user
+                resolve: (_, __, {user}) => !!user
+            },
+
+            isAdmin: {
+                type: new GraphQLNonNull(GraphQLBoolean),
+                resolve: (_, __, {user}) => user ? user.isAdmin : false
             }
         }),
 
@@ -151,8 +156,9 @@ export default function UsersTypes(repositoryAuthorizers: IAppRepositoryAuthoriz
             id: {
                 type: GraphQLString,
                 resolve: ({id}) => {
-                    if(id)
+                    if(id) {
                         return toUserId(id);
+                    }
                 }
             },
 
@@ -278,7 +284,7 @@ function calculateGravatarUrl(email: string) {
 }
 
 export function fromUserId(id){
-  return parseInt(id.replace('User', ''));  
+  return parseInt(id.replace('User', ''));
 }
 
 export function toUserId(id){

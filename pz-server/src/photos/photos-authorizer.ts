@@ -32,9 +32,7 @@ class AuthorizedPhotos implements IAuthorizedPhotos {
             return new NotAuthenticatedError();
         }
 
-        // TODO: This is a hack to prevent any user from uploading topic photos for now
-        // TODO: We should be using user roles instead
-        if (photo.purposeType === 'TopicThumbnail' && this._user.id !== 1) {
+        if (photo.purposeType === 'TopicThumbnail' && this._user && this._user.isAdmin) {
             return new NotAdminError();
         }
 
