@@ -139,7 +139,7 @@ export default function UsersTypes(repositoryAuthorizers: IAppRepositoryAuthoriz
 
             isAdmin: {
                 type: new GraphQLNonNull(GraphQLBoolean),
-                resolve: (_, __, {user}) => user ? user.isAdmin : false
+                resolve: (_, __, {user}) => user && user.isAdmin ? true : false
             },
 
             routePath: {
