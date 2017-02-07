@@ -1,20 +1,26 @@
 import authProvidersConfig from 'pz-server/src/authentication/authentication-providers';
 import provideLocalAuth from 'pz-server/src/authentication/local-provider';
 import appInfo from 'pz-server/src/app/app-info';
+import {IConnectionManager} from 'pz-server/src/cache/connection-manager';
 
 var loopback = require('loopback');
 var cookieParser = require('cookie-parser');
 var session = require('express-session');
+var RedisStore = require('connect-redis')(session);
 var passport = require('passport');
 var loopbackPassport = require('loopback-component-passport');
 
 const PassportConfigurator = loopbackPassport.PassportConfigurator;
 
+const sessionMaxAgeInMilliseconds = 1000 * 60 * 60 * 24 * 30 * 4 /* months */;
+
 export class AuthenticationInitializer {
     private _app: IApp;
+    private _cacheConnectionManager: IConnectionManager;
 
-    constructor(app: IApp) {
+    constructor(app: IApp, cacheConnectionManager: IConnectionManager) {
         this._app = app;
+        this._cacheConnectionManager = cacheConnectionManager;
     }
 
     initialize() {
@@ -35,13 +41,28 @@ export class AuthenticationInitializer {
 
     _initializeSessionMiddleware() {
         const secret = "secrets don't make friends";// TODO: *SECURITY* - This should come from a environment variable
+
         this._app.middleware('session:before', cookieParser(secret));
 
+        const redisStoreOptions = {
+            client: this._cacheConnectionManager.getConnection('session')
+        };
+
         this._app.middleware('session', session({
+            cookie: {
+                secure: 'auto', // TODO: Only allow HTTPS in the future
+                maxAge: sessionMaxAgeInMilliseconds
+            },
+            name: 'praisee.sid',
             secret: secret,
             saveUninitialized: true,
-            resave: true
+            resave: true,
+            store: new RedisStore(redisStoreOptions),
         }));
+
+        // TODO: In the future, if we're sitting behind a reverse proxy,
+        // TODO: the line below must be uncommented
+        // this._app.set('trust proxy', 1); // trust proxy if we're sitting behind one
     }
 
     _initializePassportMiddleware() {
@@ -126,7 +147,7 @@ export class AuthenticationInitializer {
                 continue;
 
             let config = authProvidersConfig[provider];
-            
+
             config.profileToUser = profileToUser;
             config.session = config.session !== false;
             configurator.configureProvider(provider, config);
@@ -148,6 +169,6 @@ export class AuthenticationInitializer {
 }
 
 module.exports = function initializeAuthentication(app: IApp) {
-    let initializer = new AuthenticationInitializer(app);
+    let initializer = new AuthenticationInitializer(app, app.services.cacheConnections);
     initializer.initialize();
 };

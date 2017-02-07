@@ -1,8 +1,0 @@
-{
-    "connections": {
-        "rankings": {
-            "host": "localhost",
-            "databaseIndex": 1
-        }
-    }
-}
