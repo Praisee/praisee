@@ -16,10 +16,9 @@ export class DateDisplay extends Component<IDateDisplayProps, any>{
 
     render() {
         const {type} = this.props;
-        let format = this.props.format || "YYYY-MM-DDThh:mm:ss";
 
         return this.schemaInjector.inject(
-            <div className="date" style={this.props.style}>
+            <div className="date-display" style={this.props.style}>
                 <meta content={this.moment.format("YYYY-MM-DDThh:mm:ss")} className={type} />
 
                 { this.props.format
@@ -33,13 +32,9 @@ export class DateDisplay extends Component<IDateDisplayProps, any>{
 export interface IDateDisplayProps {
     date: string | Date
     type: DateType
-    format?: FormatType
+    format?: string
     style?: Object
 }
-
-export type FormatType =
-    "from-now"
-    | "MM-DD-YYYY";
 
 export type DateType =
     "date-published"

@@ -6,12 +6,26 @@
     @include expand-button();
 
     max-width: 740px;
-    margin-top: 2rem;
+    margin-top: 3rem;
 
     .profile-top-section {
       @include make-row();
 
+      .profile-top-left,
+      .profile-top-right {
+        @include make-col();
+
+        @include media-breakpoint-down(sm) {
+          text-align: center;
+        }
+      }
+
       .profile-top-left {
+        @include media-breakpoint-down(sm) {
+          @include make-col-span(12);
+          margin-bottom: 1.5rem;
+        }
+
         .avatar-stats{
           text-align: center;
           margin-top: 1rem;
@@ -26,12 +40,36 @@
       .profile-top-right {
         @include make-col-span(9);
 
+        @include media-breakpoint-down(sm) {
+          @include make-col-span(12);
+        }
+
+        .profile-name-row {
+          display: flex;
+          flex-direction: row;
+
+          @include media-breakpoint-down(sm) {
+            display: block;
+          }
+
+          .profile-name-container {
+            flex: 1
+          }
+        }
+
         .name {
           margin-bottom: 0;
         }
 
         .member-since {
-          font-size: 0.7rem;
+          font-size: 0.8rem;
+          font-weight: 200;
+          color: $gray-light;
+          margin-top: 0.5rem;
+
+          .date-display {
+            display: inline-block;
+          }
         }
 
         .bio {
@@ -65,7 +103,6 @@
         }
 
         .trust-button {
-          float: right;
           margin-top:1rem;
           margin-right: 1rem;
         }
@@ -100,32 +137,31 @@
           }
         }
       }
-      
-      .profile-top-left,
-      .profile-top-right {
-        @include make-col();
-        
-        @include media-breakpoint-down(sm){
-          @include make-col-span(12);
-          text-align: center;
-        }
-      }
     }
 
     .summary-section {
       margin-top: 2rem;
-      
+
       .summary-section-row {
         @include make-row();
         margin-top: 1rem;
       }
 
-      .summary-section-title { 
+      .summary-section-title {
         @include make-col-span(2);
+
+        @include media-breakpoint-down(sm) {
+          @include make-col-span(12);
+          margin-bottom: 1rem;
+        }
       }
 
-      .summary-section-contents { 
+      .summary-section-contents {
         @include make-col-span(10);
+
+        @include media-breakpoint-down(sm) {
+          @include make-col-span(12);
+        }
       }
 
       .summary-section-title,
@@ -139,7 +175,7 @@
         margin-bottom: .5rem;
         font-size: .9rem;
         color: $gray;
-        
+
         .summary-badge {
           color: $brand-primary;
           border: 1px solid $brand-primary-minor;
@@ -154,10 +190,13 @@
 
     .contributions-section {
       @include community-item-list();
-      
+
       margin-top: 2rem;
       padding-bottom: .5rem;
-      border-bottom: 1px solid $gray-lighter;
     }
-  } 
+
+    .expand-button-container {
+      margin-top: 2rem;
+    }
+  }
 }

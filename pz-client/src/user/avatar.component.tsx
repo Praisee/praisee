@@ -7,7 +7,25 @@ import SchemaInjector, { ISchemaType } from 'pz-client/src/support/schema-inject
 import GoogleTagManager from 'pz-client/src/support/google-tag-manager';
 import TrustButton from 'pz-client/src/user/trust-button';
 import TrustReputationStats from 'pz-client/src/user/trust-reputation-stats';
-var AvatarImage = require('react-avatar');
+import AvatarImage from 'react-avatar';
+
+interface IUser {
+    displayName: string;
+    routePath: string;
+    avatarInfo: {
+        facebookId: string;
+        googleId: string;
+        emailHash: string;
+    }
+}
+
+export interface IAvatarProps {
+    user: IUser;
+    showReputation: boolean;
+    showTrusts: boolean;
+    showTrustButton: boolean;
+    relay: any;
+}
 
 class Avatar extends Component<IAvatarProps, any>{
     schemaInjector: SchemaInjector;
@@ -26,6 +44,7 @@ class Avatar extends Component<IAvatarProps, any>{
                 <div className="avatar-image-container">
                     <Link to={this.props.user.routePath}
                         className="display-name">
+
                         <AvatarImage
                             size={40}
                             facebookId={facebookId}
@@ -33,7 +52,7 @@ class Avatar extends Component<IAvatarProps, any>{
                             md5email={emailHash}
                             name={displayName}
                             round={true}
-                            />
+                        />
                     </Link>
                 </div>
 
@@ -43,14 +62,25 @@ class Avatar extends Component<IAvatarProps, any>{
 
                         {this.props.user.displayName}
                     </Link>
+
                     <TrustReputationStats
                         showReputation={this.props.showReputation}
                         showTrusts={this.props.showTrusts}
                         user={this.props.user} />
                 </div>
 
-                <TrustButton user={this.props.user} />
+                {this._renderTrustButton()}
             </div>
+        );
+    }
+
+    private _renderTrustButton() {
+        if (this.props.showTrustButton === false) {
+            return;
+        }
+
+        return (
+            <TrustButton user={this.props.user} />
         );
     }
 }
@@ -73,24 +103,6 @@ export default Relay.createContainer(Avatar, {
     }
 });
 
-interface IUser {
-    displayName: string;
-    routePath: string;
-    avatarInfo: {
-        facebookId: string;
-        googleId: string;
-        emailHash: string;
-    }
-}
-
-export interface IAvatarProps {
-    user: IUser;
-    showReputation: boolean;
-    showTrusts: boolean;
-    showTrustButton: boolean;
-    relay: any;
-}
-
 var avatarSchema: ISchemaType = {
     "author": {
         property: "author",
@@ -104,4 +116,4 @@ var avatarSchema: ISchemaType = {
         property: "downvoteCount",
         typeof: "AggregateRating"
     }
-}
+};

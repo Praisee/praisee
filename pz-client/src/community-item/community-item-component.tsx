@@ -142,10 +142,12 @@ class CommunityItem extends Component<ICommunityItemProps, ICommuintyItemState> 
         return (
             <div className="community-item-maximized">
                 <div className="community-item-maximized-inner">
-                    <Avatar user={this.props.communityItem.user}
+                    <Avatar
+                        user={this.props.communityItem.user}
                         showReputation={true}
                         showTrusts={true}
-                        showTrustButton={true} />
+                        showTrustButton={false}
+                    />
 
                     {this._renderContent(communityItem)}
 

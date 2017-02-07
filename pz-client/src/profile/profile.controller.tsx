@@ -12,8 +12,7 @@ import ContentTruncator from 'pz-client/src/widgets/content-truncator-component'
 import ExpandButton from 'pz-client/src/widgets/expand-button-component';
 import CommunityItem from 'pz-client/src/community-item/community-item-component';
 import UpdateUserMutation from 'pz-client/src/user/update-user-mutation';
-// import Avatar from 'react-avatar';
-var Avatar = require('react-avatar');
+import Avatar from 'react-avatar';
 
 export class Profile extends Component<IProfileControllerProps, IProfileControllerState> {
     constructor(props, state) {
@@ -61,13 +60,15 @@ export class Profile extends Component<IProfileControllerProps, IProfileControll
         const {createdAt, user} = this.props.profile;
         const {facebookId, googleId, emailHash} = this.props.profile.user.avatarInfo;
         const {displayName, image} = user;
-        const memberSince = new Date(createdAt);
 
         return (
             <div className="profile-top-section">
                 <div className="profile-top-left">
+
+                    {/* The key on Avatar is needed to remount the component when the user changes */}
                     <Avatar
-                        size={150}
+                        key={user.id}
+                        size={100}
                         facebookId={facebookId}
                         googleId={googleId}
                         md5email={emailHash}
@@ -79,17 +80,22 @@ export class Profile extends Component<IProfileControllerProps, IProfileControll
                 </div>
 
                 <div className="profile-top-right">
-                    <TrustButton user={user} />
+                    <div className="profile-name-row">
+                        <div className="profile-name-container">
+                            {this._renderName()}
 
-                    {this._renderName()}
+                            <div className="member-since">
+                                Praisee member since <DateDisplay
+                                    date={createdAt}
+                                    type="date-created"
+                                    format="ll"
+                                />
+                            </div>
+                        </div>
 
-                    <div className="member-since">
-                        Praisee member since <DateDisplay
-                            date={createdAt}
-                            type="date-created"
-                            style={{ display: "inline-block" }}
-                            format="MM-DD-YYYY"
-                        />
+                        <div className="profile-trust-container">
+                            <TrustButton user={user} />
+                        </div>
                     </div>
 
                     {this._renderBio()}
@@ -100,15 +106,23 @@ export class Profile extends Component<IProfileControllerProps, IProfileControll
 
     private _renderName() {
         if (this.state.isEditingName) {
+            const preventDefault = (handler) => (event) => {
+                event.preventDefault();
+                handler();
+            };
+
             return (
-                <div>
-                    <input
-                        type="text"
-                        className='name-editor'
-                        value={this.state.displayName}
-                        onChange={this._handleNameChanging}
-                        onBlur={this._handleNameChangeSubmit}
-                        autoFocus={true} />
+                <div className="name-editor-container">
+                    <form onSubmit={preventDefault(this._handleNameChangeSubmit.bind(this))}>
+                        <input
+                            type="text"
+                            className='name-editor'
+                            value={this.state.displayName}
+                            onChange={this._handleNameChanging.bind(this)}
+                            onBlur={this._handleNameChangeSubmit.bind(this)}
+                            autoFocus={true}
+                        />
+                    </form>
                 </div>
             )
         } else {
@@ -120,7 +134,7 @@ export class Profile extends Component<IProfileControllerProps, IProfileControll
 
                     {
                         this.props.profile.user.isCurrentUser && <i className='edit-icon'
-                            onClick={this._editName}
+                            onClick={this._editName.bind(this)}
                             title="Edit your name"
                         />
                     }
@@ -141,8 +155,8 @@ export class Profile extends Component<IProfileControllerProps, IProfileControll
                         className='bio-editor'
                         rows={8}
                         value={this.state.bio}
-                        onChange={this._handleBioChanging}
-                        onBlur={this._handleBioChangeSubmit}
+                        onChange={this._handleBioChanging.bind(this)}
+                        onBlur={this._handleBioChangeSubmit.bind(this)}
                         autoFocus={true}
                     />
                 </div>
@@ -155,7 +169,7 @@ export class Profile extends Component<IProfileControllerProps, IProfileControll
                     {
                         isCurrentUser &&
                         <i className='edit-icon'
-                            onClick={this._editBio}
+                            onClick={this._editBio.bind(this)}
                             title="Edit your bio"
                         />
                     }
@@ -201,7 +215,7 @@ export class Profile extends Component<IProfileControllerProps, IProfileControll
                 </div>
                 {/*
                 <div className="summary-section-row">
-                    <span className="summary-section-title" 
+                    <span className="summary-section-title"
                         title=`The awards ${displayName} has earned`>
                         Awards
                     </span>
@@ -253,14 +267,14 @@ export class Profile extends Component<IProfileControllerProps, IProfileControll
         );
     }
 
-    private _handleNameChangeSubmit = () => {
+    private _handleNameChangeSubmit() {
         const onSuccess = (mutationPayload?) => {
             if (mutationPayload) {
                 browserHistory.replace(mutationPayload.updateUser.user.routePath);
             }
 
             this.setState({ isEditingName: false });
-        }
+        };
 
         if (this.props.profile.user.displayName === this.state.displayName.trim()) {
             return onSuccess();
@@ -269,7 +283,7 @@ export class Profile extends Component<IProfileControllerProps, IProfileControll
         this._submitUserChangeMutation(onSuccess);
     }
 
-    private _handleBioChangeSubmit = () => {
+    private _handleBioChangeSubmit() {
         const onSuccess = () => this.setState({ isEditingBio: false });
         const modifiedBio = this.state.bio.trim();
         const originalBio = this.props.profile.bio.trim();
@@ -302,16 +316,25 @@ export class Profile extends Component<IProfileControllerProps, IProfileControll
         );
     }
 
-    private _handleBioChanging = event => this.setState({ bio: event.target.value });
+    private _handleBioChanging(event) {
+        this.setState({ bio: event.target.value });
+    }
 
-    private _handleNameChanging = event => this.setState({ displayName: event.target.value });
+    private _handleNameChanging(event) {
+        this.setState({ displayName: event.target.value });
+    }
 
-    private _editIfMine = field =>
+    private _editIfMine(field) {
         this.props.profile.user.isCurrentUser && this.setState({ [`isEditing${field}`]: true });
+    }
 
-    private _editBio = () => this.setState({ isEditingBio: true });
+    private _editBio() {
+        this.setState({ isEditingBio: true });
+    }
 
-    private _editName = () => this.setState({ isEditingName: true });
+    private _editName() {
+        this.setState({ isEditingName: true });
+    }
 
     private _showMoreCommunityItems() {
         this.props.relay.setVariables({ limit: this.props.relay.variables.limit + 5 })

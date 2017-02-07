@@ -1,12 +1,11 @@
 import * as React from 'react';
 import * as Relay from 'react-relay';
-import {Link} from 'react-router';
 import {Dropdown, DropdownToggle, DropdownMenu, DropdownItem} from 'reactstrap';
 import {ISignInUpContext, SignInUpContextType} from 'pz-client/src/user/sign-in-up-overlay-component';
 import appInfo from 'pz-client/src/app/app-info';
 import routePaths from 'pz-client/src/router/route-paths';
-var Avatar = require('react-avatar');
-
+import {withRouter} from 'react-router';
+import Avatar from 'react-avatar';
 import classNames from 'classnames';
 
 export interface IProps {
@@ -19,6 +18,10 @@ export interface IProps {
             googleId: string
             emailHash: string
         }
+    }
+
+    router: {
+        push: any
     }
 }
 
@@ -45,7 +48,7 @@ class UserAccountMenu extends React.Component<IProps, any> {
         }
 
         const {facebookId, googleId, emailHash} = this.props.currentUser.avatarInfo;
-        const {displayName, routePath} = this.props.currentUser;
+        const {displayName} = this.props.currentUser;
 
         const classes = classNames('user-account-menu', {
             'menu-open': this.state.isAccountMenuOpen
@@ -57,7 +60,6 @@ class UserAccountMenu extends React.Component<IProps, any> {
                 toggle={this._toggleAccountMenu.bind(this)}>
 
                 <DropdownToggle className="current-user">
-                    <i className="user-account-menu-icon" />
                     <span className="display-name">
                         {this.props.currentUser.displayName}
                     </span>
@@ -73,11 +75,10 @@ class UserAccountMenu extends React.Component<IProps, any> {
                 </DropdownToggle>
 
                 <DropdownMenu className="account-menu-options">
-                    <DropdownItem className="sign-out">
-                        <Link to={routePath}>
-                            My Profile
-                        </Link>
+                    <DropdownItem className="view-profile" onClick={this._viewProfile.bind(this)}>
+                        Profile
                     </DropdownItem>
+
                     <DropdownItem className="sign-out" onClick={this._signOut.bind(this)}>
                         Sign Out
                     </DropdownItem>
@@ -123,6 +124,10 @@ class UserAccountMenu extends React.Component<IProps, any> {
         this.setState({isAccountMenuOpen: !this.state.isAccountMenuOpen});
     }
 
+    private _viewProfile() {
+        this.props.router.push(this.props.currentUser.routePath);
+    }
+
     private async _signOut(event) {
         event.preventDefault();
 
@@ -135,7 +140,7 @@ class UserAccountMenu extends React.Component<IProps, any> {
     }
 }
 
-export default Relay.createContainer(UserAccountMenu, {
+export default Relay.createContainer(withRouter(UserAccountMenu), {
     fragments: {
         currentUser: () => Relay.QL`
             fragment on CurrentUser {

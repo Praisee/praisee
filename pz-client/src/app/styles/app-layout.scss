@@ -110,6 +110,7 @@
     .avatar-image {
       margin-left: .5rem;
       transition: all .3s;
+      vertical-align: middle;
     }
 
     .display-name {
@@ -129,7 +130,7 @@
         outline: none;
       }
     }
-    
+
     &:hover {
       .avatar-image{
         transform: scale(1.1);
@@ -184,6 +185,7 @@
     }
 
     .app-footer {
+      margin-top: 3rem;
     }
 
     .app-content {

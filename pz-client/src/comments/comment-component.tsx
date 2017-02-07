@@ -76,8 +76,8 @@ export class Comment extends Component<ICommentProps, any>{
                         user={this.props.comment.user}
                         showReputation={true}
                         showTrusts={true}
-                        showTrustButton={true}
-                        />
+                        showTrustButton={false}
+                    />
                 </div>
 
                 <div className="comment-header-secondary">
@@ -144,7 +144,7 @@ export class Comment extends Component<ICommentProps, any>{
                 <UpdateCommentEditor
                     comment={this.props.comment}
                     onCloseEditor={this._closeCommentEditor.bind(this)}
-                    />
+                />
             );
         }
     }
@@ -167,7 +167,7 @@ export class Comment extends Component<ICommentProps, any>{
                     key={`comment-votes-${this.props.comment.id}`}
                     comment={this.props.comment}
                     communityItem={null}
-                    />
+                />
             );
         }
     }

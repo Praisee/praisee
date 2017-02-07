@@ -25,7 +25,7 @@
       justify-content: space-between;
     }
 
-    .date {
+    .date-display {
       text-align: right;
       margin-top: .5rem;
       font-size: .8rem;
@@ -37,7 +37,7 @@
         display: block;
         margin-bottom: 1rem;
 
-        .date {
+        .date-display {
           text-align: left;
         }
       }
