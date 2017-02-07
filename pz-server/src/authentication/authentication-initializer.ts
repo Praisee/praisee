@@ -55,7 +55,7 @@ export class AuthenticationInitializer {
             },
             name: 'praisee.sid',
             secret: secret,
-            saveUninitialized: true,
+            saveUninitialized: false,
             resave: true,
             store: new RedisStore(redisStoreOptions),
         }));
