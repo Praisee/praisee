@@ -10,7 +10,8 @@ import {
 import {ITopicInstance} from 'pz-server/src/models/topic';
 import {ITopic} from 'pz-server/src/topics/topics';
 import {IComment} from 'pz-server/src/comments/comments';
-import {ICommunityItemModel, ICommunityItemInstance} from 'pz-server/src/models/community-item'; import {IVote} from 'pz-server/src/votes/votes';
+import {ICommunityItemModel, ICommunityItemInstance} from 'pz-server/src/models/community-item'; 
+import {IVote} from 'pz-server/src/votes/votes';
 import {IVoteInstance} from 'pz-server/src/models/vote';
 
 import {
@@ -58,11 +59,11 @@ export default class CommunityItems implements ICommunityItems, ICommunityItemsB
     private _Photo: ILoopbackPhoto;
 
     constructor(
-            CommunityItemModel: ICommunityItemModel,
-            CommunityItemInteractionModel: ICommunityItemInteractionModel,
-            UrlSlug: IPersistedModel,
-            Photo: ILoopbackPhoto,
-        ) {
+        CommunityItemModel: ICommunityItemModel,
+        CommunityItemInteractionModel: ICommunityItemInteractionModel,
+        UrlSlug: IPersistedModel,
+        Photo: ILoopbackPhoto,
+    ) {
 
         this._CommunityItemModel = CommunityItemModel;
         this._CommunityItemInteractionModel = CommunityItemInteractionModel;
@@ -106,11 +107,14 @@ export default class CommunityItems implements ICommunityItems, ICommunityItemsB
         return cursorCommunityItemLoopbackModelsToRecords(cursorResults);
     }
 
-    async findSomeByUserId(cursor: TBiCursor, userId: number): Promise<ICursorResults<ICommunityItem>> {
+    async findSomeLatestByUserId(cursor: TBiCursor, userId: number): Promise<ICursorResults<ICommunityItem>> {
         const cursorResults = await findWithCursor<ICommunityItemInstance>(
             this._CommunityItemModel,
             cursor,
-            { where: { userId } }
+            {
+                where: { userId },
+                order: 'createdAt DESC'
+            }
         );
 
         return cursorCommunityItemLoopbackModelsToRecords(cursorResults);
@@ -190,9 +194,9 @@ export default class CommunityItems implements ICommunityItems, ICommunityItemsB
             this._CommunityItemInteractionModel.findOne, this._CommunityItemInteractionModel);
 
         let interactionModel = await interactionFinder({where: {
-            communityItemId: communityItemId,
-            userId: userId
-        }});
+                communityItemId: communityItemId,
+                userId: userId
+            }});
 
         if (!interactionModel) {
             return null;
@@ -203,11 +207,11 @@ export default class CommunityItems implements ICommunityItems, ICommunityItemsB
 
     async findAllInteractionsForEach(communityItemUserIds: Array<[number, number]>): Promise<Array<ICommunityItemInteraction>> {
         const interactionModels = await loopbackFindAllForEach<ICommunityItemInteractionModel, ICommunityItemInteractionInstance>
-        (
+            (
             this._CommunityItemInteractionModel,
             ['communityItemId', 'userId'],
             communityItemUserIds
-        );
+            );
 
         return interactionModels.map(interactionModel => {
             if (!interactionModel) {
@@ -313,9 +317,9 @@ export default class CommunityItems implements ICommunityItems, ICommunityItemsB
             this._CommunityItemInteractionModel.findOne, this._CommunityItemInteractionModel);
 
         let interactionModel = await interactionFinder({where: {
-            communityItemId: interaction.communityItemId,
-            userId: interaction.userId
-        }});
+                communityItemId: interaction.communityItemId,
+                userId: interaction.userId
+            }});
 
         if (!interactionModel) {
             interactionModel = new this._CommunityItemInteractionModel({

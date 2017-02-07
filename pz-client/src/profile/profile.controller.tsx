@@ -28,10 +28,8 @@ export class Profile extends Component<IProfileControllerProps, IProfileControll
     componentWillReceiveProps(nextProps) {
         /*
             TODO:
-            Cant edit name on user created from facebook - fat query doesnt ask for routePath... FUCKIN WAHT!H!!!?!
             Add photos to contributions
             Add ability to upload and crop photo
-            Sort comm items by created Desc
             Fix issue with load more comm items
         */
 

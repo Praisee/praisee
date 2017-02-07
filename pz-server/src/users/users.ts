@@ -21,7 +21,7 @@ export interface IUsers extends IRepository {
     getActivityStats(userId: number): Promise<any>
     getTotalCommunityItems(userId: number): Promise<number>
     getTotalTrusters(userId: number): Promise<number>
-    getAvatarInfo(userId: number): Promise<number>
+    getAvatarInfo(userId: number): Promise<IAvatarInfo>
     addTrust(trusterId: number, trustedId: number): Promise<boolean>
     removeTrust(trusterId: number, trustedId: number): Promise<boolean>
     isUserTrusting(trusterId: number, trustedId: number): Promise<boolean>

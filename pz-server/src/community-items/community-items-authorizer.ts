@@ -25,8 +25,8 @@ import {IContentData} from 'pz-server/src/content/content-data';
 export interface IAuthorizedCommunityItems {
     findById(id: number): Promise<ICommunityItem>
     findSomeByLatest(cursor: TBiCursor): Promise<ICursorResults<ICommunityItem>>
-    findSomeByCurrentUser(cursor: TBiCursor): Promise<ICursorResults<ICommunityItem>>
-    findSomeByUserId(cursor: TBiCursor, userId: number): Promise<ICursorResults<ICommunityItem>>
+    findSomeLatestByCurrentUser(cursor: TBiCursor): Promise<ICursorResults<ICommunityItem>>
+    findSomeLatestByUserId(cursor: TBiCursor, userId: number): Promise<ICursorResults<ICommunityItem>>
     findAllComments(communityItemId: number): Promise<Array<IComment>>
     findAllTopics(communityItemId: number): Promise<Array<ITopic>>
     findVotesForCommunityItem(communityItemId: number): Promise<Array<IVote>>
@@ -61,16 +61,16 @@ class AuthorizedCommunityItems implements IAuthorizedCommunityItems {
         return this._communityItems.findSomeByLatest(cursor);
     }
 
-    async findSomeByCurrentUser(cursor: TBiCursor): Promise<ICursorResults<ICommunityItem>> {
+    async findSomeLatestByCurrentUser(cursor: TBiCursor): Promise<ICursorResults<ICommunityItem>> {
         if (!this._user) {
             return { results: [] };
         }
 
-        return await this._communityItems.findSomeByUserId(cursor, this._user.id);
+        return await this._communityItems.findSomeLatestByUserId(cursor, this._user.id);
     }
 
-    async findSomeByUserId(cursor: TBiCursor, userId: number): Promise<ICursorResults<ICommunityItem>> {
-        return await this._communityItems.findSomeByUserId(cursor, userId);
+    async findSomeLatestByUserId(cursor: TBiCursor, userId: number): Promise<ICursorResults<ICommunityItem>> {
+        return await this._communityItems.findSomeLatestByUserId(cursor, userId);
     }
     
     async findAllTopics(communityItemId: number): Promise<Array<ITopic>> {

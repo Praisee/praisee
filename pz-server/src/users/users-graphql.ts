@@ -246,7 +246,7 @@ export default function UsersTypes(repositoryAuthorizers: IAppRepositoryAuthoriz
                     const cursor = biCursorFromGraphqlArgs(args as any);
                     let items = await communityItemsAuthorizer
                         .as(user)
-                        .findSomeByUserId(cursor, id);
+                        .findSomeLatestByUserId(cursor, id);
 
                     return connectionFromCursorResults(
                         items

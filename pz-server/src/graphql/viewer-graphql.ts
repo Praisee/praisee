@@ -72,7 +72,7 @@ export default function getViewerType(repositoryAuthorizers: IAppRepositoryAutho
                     return connectionFromCursorResults(
                         await communityItemsAuthorizer
                             .as(user)
-                            .findSomeByCurrentUser(cursor)
+                            .findSomeLatestByCurrentUser(cursor)
                     );
                 }
             },

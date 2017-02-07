@@ -48,7 +48,7 @@ export interface ICommunityItems extends IRepository {
     findById(id: number): Promise<ICommunityItem>
     findAllByIds(ids: Array<number>): Promise<Array<ICommunityItem>>
     findSomeByLatest(cursor: TBiCursor): Promise<ICursorResults<ICommunityItem>>
-    findSomeByUserId(cursor: TBiCursor, userId: number): Promise<ICursorResults<ICommunityItem>>
+    findSomeLatestByUserId(cursor: TBiCursor, userId: number): Promise<ICursorResults<ICommunityItem>>
     findAllTopics(communityItemId: number): Promise<Array<ITopic>>
     findAllComments(communityItemId: number): Promise<Array<IComment>>
     findVotesForCommunityItem(communityItemId: number): Promise<Array<IVote>>

@@ -58,8 +58,8 @@ export default class FilteredCommunityItems implements ICommunityItems {
         return this._filterCursorResults(cursorResults);
     }
 
-    async findSomeByUserId(cursor: TBiCursor, userId: number): Promise<ICursorResults<ICommunityItem>> {
-        const cursorResults = await this._communityItems.findSomeByUserId(cursor, userId);
+    async findSomeLatestByUserId(cursor: TBiCursor, userId: number): Promise<ICursorResults<ICommunityItem>> {
+        const cursorResults = await this._communityItems.findSomeLatestByUserId(cursor, userId);
         return this._filterCursorResults(cursorResults);
     }
 
