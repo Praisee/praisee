@@ -337,6 +337,7 @@ export default Relay.createContainer(Profile, {
                     id
                     displayName
                     isCurrentUser
+                    routePath
                     avatarInfo {
                         facebookId
                         googleId
