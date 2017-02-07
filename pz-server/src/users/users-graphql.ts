@@ -232,11 +232,6 @@ export default function UsersTypes(repositoryAuthorizers: IAppRepositoryAuthoriz
                 resolve: (user) => user
             },
 
-            communityItemCount: {
-                type: GraphQLInt,
-                resolve: (user) => 10
-            },
-
             activityStats: {
                 type: ActivityStats,
                 resolve: async (user, _, {user: currentUser}) =>

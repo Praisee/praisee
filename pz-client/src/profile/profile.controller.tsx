@@ -31,6 +31,8 @@ export class Profile extends Component<IProfileControllerProps, IProfileControll
             Cant edit name on user created from facebook - fat query doesnt ask for routePath... FUCKIN WAHT!H!!!?!
             Add photos to contributions
             Add ability to upload and crop photo
+            Sort comm items by created Desc
+            Fix issue with load more comm items
         */
 
         if (this.props.profile.user.id == nextProps.profile.user.id) {
@@ -248,7 +250,7 @@ export class Profile extends Component<IProfileControllerProps, IProfileControll
             );
 
         let expandButton = null;
-        const canExpand = this.props.profile.communityItemCount > this.props.relay.variables.limit;
+        const canExpand = this.props.profile.communityItems.pageInfo.hasNextPage;
         if (canExpand) {
             expandButton = (
                 <ExpandButton
@@ -286,10 +288,9 @@ export class Profile extends Component<IProfileControllerProps, IProfileControll
     private _handleBioChangeSubmit() {
         const onSuccess = () => this.setState({ isEditingBio: false });
         const modifiedBio = this.state.bio.trim();
-        const originalBio = this.props.profile.bio.trim();
+        const originalBio = (this.props.profile.bio || "").trim();
 
-        const bioChanged = originalBio !== modifiedBio
-            || (originalBio === null && modifiedBio === '')
+        const bioChanged = originalBio !== modifiedBio;
 
         if (!bioChanged) {
             return onSuccess();
@@ -379,8 +380,10 @@ export default Relay.createContainer(Profile, {
                     reputation
                 }
 
-                communityItemCount
                 communityItems(first: $limit) {
+                    pageInfo {
+                        hasNextPage
+                    }
                     edges {
                         node{
                             id,
@@ -417,7 +420,6 @@ interface IProfileControllerProps {
             reputation: number;
         }
         communityItems: any;
-        communityItemCount: any;
     }
 
     relay: any;

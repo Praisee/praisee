@@ -180,11 +180,12 @@ export default function createSchema(repositoryAuthorizers: IAppRepositoryAuthor
 
                     resolve: async (_, {id, urlSlug}, {user: currentUser}) => {
                         let user = null;
-
-                        if (id) {
+                        let isSlugAnId = !isNaN(parseInt(urlSlug));
+                            
+                        if (id || isSlugAnId) {
                             user = await usersAuthorizer
                                 .as(currentUser)
-                                .findUserById(id);
+                                .findUserById(id || urlSlug);
 
                         } else if (urlSlug) {
                             user = await usersAuthorizer
