@@ -9,17 +9,20 @@ interface IProps {
 
 export interface ISignInUpContext {
     showSignInUp: (event?) => any;
+    showMustSignInUp: (event?) => any;
     isLoggedIn: () => boolean
 }
 
 export var SignInUpContextType: React.Requireable<ISignInUpContext> = React.PropTypes.shape({
     showSignInUp: React.PropTypes.func,
+    showMustSignInUp: React.PropTypes.func,
     isLoggedIn: React.PropTypes.func
 });
 
 export default class SignInUpOverlay extends React.Component<IProps, any> {
     state = {
-        isSignInUpVisible: false
+        isSignInUpVisible: false,
+        dueToUserMustSignInUp: null
     };
 
     static contextTypes: any = {
@@ -40,6 +43,7 @@ export default class SignInUpOverlay extends React.Component<IProps, any> {
         return {
             signInUpContext: {
                 showSignInUp: this._showSignInUp.bind(this),
+                showMustSignInUp: this._showMustSignInUp.bind(this),
                 isLoggedIn: () => this.context.getCurrentUser().isLoggedIn
             }
         };
@@ -55,7 +59,8 @@ export default class SignInUpOverlay extends React.Component<IProps, any> {
         return (
             <div className="sign-in-up-overlay">
                 <SimpleModal className="app-sign-in-up-overlay-modal" ref="modal">
-                    <SignInUp 
+                    <SignInUp
+                        dueToUserMustSignInUp={this.state.dueToUserMustSignInUp}
                         hideSignInUp={this._hideSignInUp.bind(this)}
                     />
                 </SimpleModal>
@@ -69,6 +74,20 @@ export default class SignInUpOverlay extends React.Component<IProps, any> {
         if (event) {
             event.preventDefault();
         }
+
+        this.setState({dueToUserMustSignInUp: null});
+
+        if (this.refs.modal) {
+            this.refs.modal.show();
+        }
+    }
+
+    private _showMustSignInUp(event?) {
+        if (event) {
+            event.preventDefault();
+        }
+
+        this.setState({dueToUserMustSignInUp: true});
 
         if (this.refs.modal) {
             this.refs.modal.show();

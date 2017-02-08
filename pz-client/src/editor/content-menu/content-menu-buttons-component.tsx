@@ -102,6 +102,46 @@ export class AddPhotoButton extends React.Component<IAddPhotoButtonProps, any> {
     }
 }
 
+export interface ICustomizableAddPhotoButtonProps {
+    onClick?: () => any
+}
+
+export class CustomizableAddPhotoButton extends React.Component<ICustomizableAddPhotoButtonProps, any> {
+    static propTypes = {
+        onClick: React.PropTypes.func
+    };
+
+    render() {
+        return (
+            <ContentMenuButton className="customizable-add-photo-button"
+                               onClick={this._handleClick.bind(this)}>
+
+                <i className="add-photo-button-icon" />
+
+                <span className="add-photo-button-label">
+                    Add photo
+                </span>
+            </ContentMenuButton>
+        );
+    }
+
+    static contextTypes: any = {
+        closeContentMenu: React.PropTypes.func
+    };
+
+    context: any;
+
+    private _handleClick() {
+        if (this.props.onClick) {
+            this.props.onClick();
+        }
+
+        if (this.context.closeContentMenu) {
+            this.context.closeContentMenu();
+        }
+    }
+}
+
 class AddHeadingButton extends React.Component<any, any> {
     defaultProps = {
         onChange: (editorState) => {}

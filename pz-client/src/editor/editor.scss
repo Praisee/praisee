@@ -88,6 +88,14 @@
         vertical-align: middle;
       }
     }
+
+    .customizable-add-photo-button {
+      @extend .fa;
+      @extend .fa-image;
+      display: inline-block;
+      vertical-align: top;
+      margin-right: 0.3rem;
+    }
   }
 }
 
@@ -148,7 +156,7 @@
   .fixed-content-menu {
     margin-bottom: 1rem;
 
-    .add-photo-button, .embed-video-button {
+    .add-photo-button, .embed-video-button, .customizable-add-photo-button {
       @include btn();
       @include btn-sm();
       @include praisee-editor-button-never-changes-like-a-boss();
@@ -177,6 +185,12 @@
     .add-photo-button-container {
       @include customizable-file-input(7.5rem, 2.5rem);
 
+      display: inline-block;
+      margin-right: 1rem;
+      vertical-align: top;
+    }
+
+    .customizable-add-photo-button {
       display: inline-block;
       margin-right: 1rem;
       vertical-align: top;

@@ -10,6 +10,7 @@ const signUpApi = appInfo.addresses.getSignUpApi();
 interface IProps {
     showSignUp?: boolean
     hideSignInUp?: () => void
+    dueToUserMustSignInUp?: boolean
 }
 
 interface IContext {
@@ -44,11 +45,24 @@ export default class SignInUp extends React.Component<IProps, any> {
     }
 
     private _renderSignUp() {
+        const signUpHeading = this.props.dueToUserMustSignInUp ?
+            "Hey, you'll sign up to do that" : 'Sign Up';
+
+        const signUpSubheading = this.props.dueToUserMustSignInUp ?
+            "Don't worry, signing up is free and easy!"
+            : 'Signing up is free and easy!';
+
         return (
             <div className="sign-up">
                 <form action={signUpApi} method="post" onSubmit={this._submit.bind(this)}>
                     <fieldset>
-                        <legend>Sign Up</legend>
+                        <legend>
+                            {signUpHeading}
+                        </legend>
+
+                        <div className="sign-in-up-subheading">
+                            {signUpSubheading}
+                        </div>
 
                         <div className="form-group">
                             <input className="form-control" type="text" name="displayName" placeholder="Your full name" key="displayName" />

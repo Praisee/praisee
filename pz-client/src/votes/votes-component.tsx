@@ -87,7 +87,7 @@ class Votes extends React.Component<IVotesProps, any> {
     private _doVoteLogic(isUpVote: boolean) {
         if (!this.context.signInUpContext.isLoggedIn()) {
             this._triggerGoogleTagManagerEvent(isUpVote, true);
-            this.context.signInUpContext.showSignInUp();
+            this.context.signInUpContext.showMustSignInUp();
             return;
         }
 

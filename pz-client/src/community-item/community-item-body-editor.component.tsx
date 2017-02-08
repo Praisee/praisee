@@ -5,7 +5,7 @@ import XhrSingleFileUploadRequester from 'pz-client/src/support/file-upload-requ
 import {ISignInUpContext, SignInUpContextType} from 'pz-client/src/user/sign-in-up-overlay-component';
 import {
     AddPhotoButton,
-    EmbedVideoButton
+    EmbedVideoButton, CustomizableAddPhotoButton
 } from 'pz-client/src/editor/content-menu/content-menu-buttons-component';
 
 import {
@@ -109,15 +109,21 @@ export default class CommunityItemEditor extends React.Component<IProps, any> {
     }
 
     private _renderAddPhotoButton() {
-        if (!this.context.signInUpContext.isLoggedIn()) {
-            return;
-        }
+        if (this.context.signInUpContext.isLoggedIn()) {
+            return (
+                <AddPhotoButton
+                    onPhotoUploadRequested={this._uploadPhoto.bind(this)}
+                />
+            );
 
-        return (
-            <AddPhotoButton
-                onPhotoUploadRequested={this._uploadPhoto.bind(this)}
-            />
-        );
+        } else {
+
+            return (
+                <CustomizableAddPhotoButton
+                    onClick={() => this.context.signInUpContext.showMustSignInUp()}
+                />
+            );
+        }
     }
 
     private _renderEmbedVideoButton() {

@@ -38,7 +38,7 @@ class TrustButton extends Component<TrustButtonProps, any>{
         if (!this.context.signInUpContext.isLoggedIn()) {
             GoogleTagManager.triggerAttemptedTrust();
 
-            this.context.signInUpContext.showSignInUp();
+            this.context.signInUpContext.showMustSignInUp();
             return;
         }
 

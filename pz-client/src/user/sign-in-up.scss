@@ -4,6 +4,17 @@
     @include make-container();
     @include make-container-max-widths();
 
+    legend {
+      font-family: $headings-font-family;
+      font-weight: $headings-font-weight;
+    }
+
+    .sign-in-up-subheading {
+      margin-bottom: 1rem;
+      color: $gray-light;
+      font-weight: 200;
+    }
+
     .sign-in-button, .sign-up-button {
       @include btn;
       @include btn-primary;
