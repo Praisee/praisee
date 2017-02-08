@@ -33,6 +33,7 @@
 @import '../../search/site-search';
 @import '../../topic/side-section/off-canvas-container';
 @import '../../profile/profile';
+@import '../../marketing/marketing';
 @import 'error.scss';
 
 //@import 'https://fonts.googleapis.com/css?family=Open+Sans';
@@ -54,5 +55,6 @@
   @include community-item-namespace();
   @include edit-community-item-namespace();
   @include profile-namespace();
+  @include marketing-namespaces();
   @include error();
 }

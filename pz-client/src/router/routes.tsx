@@ -25,14 +25,19 @@ import CommunityItemController from 'pz-client/src/community-item/community-item
 import EditCommunityItemController from 'pz-client/src/community-item/edit-community-item-controller';
 import TopicController from 'pz-client/src/topic/topic.controller';
 
+import BhPhotoGiveawayController from 'pz-client/src/marketing/bh-photo-giveaway-controller';
+
 // TODO: Remove this
 import { CreateItemEditor } from 'pz-client/src/editor/proofofconcept/editor.controller';
+import BhPhotoGiveawayToastController from '../marketing/bh-photo-giveaway-toast-controller';
 
 export default (
     <Router>
         <Route path="/" component={AppController as any} {...mixinRouteQuery(appQuery) } >
 
-            <IndexRoute component={HomeController} {...mixinRouteQuery(homeQuery)} />
+            <Route component={BhPhotoGiveawayToastController}> {/* TODO: Remove after marketing */}
+                <IndexRoute component={HomeController} {...mixinRouteQuery(homeQuery)} />
+            </Route>
 
             <Route path="add-review" component={AddReviewController} {...mixinRouteQuery(addReviewQuery)} />
 
@@ -40,9 +45,15 @@ export default (
                 <Route path="user/sign-in" component={SignInController} />
                 <Route path="user/sign-up" component={SignUpController} />
 
-                <Route path="profile/:urlSlug" component={ProfileController} {...mixinRouteQuery(profileQuery) }/>
+                <Route path="one-hundred-dollar-bh-photo-gift-card-giveaway" component={BhPhotoGiveawayController} />
 
-                <Route path="on/:urlSlug" component={CommunityItemController} {...mixinRouteQuery(communityItemQuery) } />
+                <Route component={BhPhotoGiveawayToastController}> {/* TODO: Remove after marketing */}
+                    <Route path="profile/:urlSlug" component={ProfileController} {...mixinRouteQuery(profileQuery) }/>
+                </Route>
+
+                <Route component={BhPhotoGiveawayToastController}> {/* TODO: Remove after marketing */}
+                    <Route path="on/:urlSlug" component={CommunityItemController} {...mixinRouteQuery(communityItemQuery) } />
+                </Route>
                 <Route path="edit/:id" component={EditCommunityItemController} {...mixinRouteQuery(editCommunityItemQuery) } />
 
                 {/*<Route path="(:urlSlug)-reviews" component={ReviewController} />*/}
@@ -50,16 +61,20 @@ export default (
                 {/*<Route path="(:urlSlug)-questions" component={ComparisonController} />*/}
                 {/*<Route path="(:urlSlug)-guides" component={ComparisonController} />*/}
 
-                <Route path="(:urlSlug)-reviews" component={TopicController} {...mixinRouteQuery(topicQuery)} />
-                <Route path="(:urlSlug)-questions" component={TopicController} {...mixinRouteQuery(topicQuery)} />
-                <Route path="(:urlSlug)-guides" component={TopicController} {...mixinRouteQuery(topicQuery)} />
-                <Route path="(:urlSlug)-comparisons" component={TopicController} {...mixinRouteQuery(topicQuery)} />
+                <Route component={BhPhotoGiveawayToastController}> {/* TODO: Remove after marketing */}
+                    <Route path="(:urlSlug)-reviews" component={TopicController} {...mixinRouteQuery(topicQuery)} />
+                    <Route path="(:urlSlug)-questions" component={TopicController} {...mixinRouteQuery(topicQuery)} />
+                    <Route path="(:urlSlug)-guides" component={TopicController} {...mixinRouteQuery(topicQuery)} />
+                    <Route path="(:urlSlug)-comparisons" component={TopicController} {...mixinRouteQuery(topicQuery)} />
+                </Route>
 
-                <Route
-                    path="(:urlSlug)"
-                    component={TopicController}
-                    {...mixinRouteQuery(topicQuery) }
-                />
+                <Route component={BhPhotoGiveawayToastController}> {/* TODO: Remove after marketing */}
+                    <Route
+                        path="(:urlSlug)"
+                        component={TopicController}
+                        {...mixinRouteQuery(topicQuery) }
+                    />
+                </Route>
 
             </Route>
 

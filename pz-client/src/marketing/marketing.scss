@@ -1,0 +1,51 @@
+@mixin marketing-namespaces() {
+  .bh-photo-giveaway-namespace {
+    @include make-container();
+    @include make-container-max-widths();
+
+    text-align: center;
+
+    .contest-heading {
+      padding-bottom: 2rem;
+    }
+
+    .contest-body {
+      padding: 3rem 0;
+      margin: 0 auto;
+      width: 80%;
+    }
+  }
+
+  .bh-photo-giveaway-toast-namespace {
+    .alert {
+      text-align: center;
+      position: relative;
+      padding-left: 3rem;
+      padding-right: 3rem;
+
+      .close {
+        @extend .fa;
+        @extend .fa-close;
+
+        color: $gray;
+        position: absolute;
+        top: 50%;
+        transform: translateY(-50%);
+        background: none;
+        border: none;
+        right: 1rem;
+
+        @include media-breakpoint-up(lg) {
+          right: 3rem;
+        }
+
+        &:focus, &:active, &:hover {
+          color: $brand-primary;
+          outline: none;
+        }
+
+        span { display: none; }
+      }
+    }
+  }
+}
