@@ -12,16 +12,53 @@ export default class BhPhotoGiveawayController extends React.Component<IProps, a
     render() {
         return (
             <div className="bh-photo-giveaway-namespace">
+                {this._renderPageHead()}
+
                 <h1 className="contest-heading">$100 B&amp;H Photo Gift Card Giveaway</h1>
 
                 {this._renderContestVideo()}
 
                 <div className="contest-body">
-                    Ready to win a $100 B&H Photo gift card? Enter to win below!
+                    Ready to win a $100 B&amp;H Photo gift card? Enter to win below!
                 </div>
 
                 {this._renderContest()}
             </div>
+        );
+    }
+
+    private _renderPageHead() {
+        const title = `$100 B&H Photo Gift Card Giveaway`;
+        const description = 'Enter to win a $100 B&H Photo gift card by reviewing the gear you own';
+
+        const imageUrl = appInfo.addresses.getImageFullUrl(
+            'marketing/bh-photo-giveaway-thumb.jpg'
+        );
+
+        return (
+            <Helmet
+                title={title}
+
+                meta={[
+                    {name: 'description', content: description},
+
+                    // Schema.org markup for Google
+                    {itemprop: 'name', content: title},
+                    {itemprop: 'description', content: description},
+                    {itemprop: 'image', content: imageUrl},
+
+                    // Open Graph Data
+                    {property: 'og:title', content: title},
+                    {property: 'og:type', content: 'article'},
+                    {property: 'og:image', content: imageUrl},
+                    {property: 'og:description', content: description},
+
+                    // Twitter markup
+                    {property: 'twitter:title', content: title},
+                    {property: 'twitter:description', content: description},
+                    {property: 'twitter:image:src', content: imageUrl},
+                ]}
+            />
         );
     }
 

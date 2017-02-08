@@ -7,6 +7,10 @@
 
     .contest-heading {
       padding-bottom: 2rem;
+
+      @include media-breakpoint-up(sm) {
+        padding-top: 2rem;
+      }
     }
 
     .contest-body {
