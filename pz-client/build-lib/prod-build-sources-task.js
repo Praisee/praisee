@@ -4,6 +4,7 @@ var transpile = require('pz-client/build-lib/transpile-task');
 var gulpPrint = require('gulp-print');
 var source = require('vinyl-source-stream');
 var buffer = require('vinyl-buffer');
+var envify = require('gulp-envify');
 var uglify = require('gulp-uglify');
 var errorHandler = require('pz-builder/build-lib/error-handler');
 
@@ -20,6 +21,8 @@ module.exports = function(gulp) {
             .pipe(gulpPrint(function (filePath) {
                 return 'Building ' + filePath;
             }))
+
+            .pipe(envify())
 
             .pipe(uglify())
 

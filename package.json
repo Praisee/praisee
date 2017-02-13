@@ -75,6 +75,7 @@
     "gulp-babel": "^6.1.2",
     "gulp-cached": "^1.1.0",
     "gulp-cli": "^1.2.1",
+    "gulp-envify": "^1.0.0",
     "gulp-if": "^2.0.0",
     "gulp-plumber": "^1.1.0",
     "gulp-postcss": "^6.1.1",

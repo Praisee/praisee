@@ -5,6 +5,7 @@ var pzPath = require('pz-support/pz-path');
 var gulpPrint = require('gulp-print');
 var source = require('vinyl-source-stream');
 var buffer = require('vinyl-buffer');
+var envify = require('gulp-envify');
 
 module.exports = function(gulp) {
     var dependencies = [transpile(gulp)];
@@ -26,6 +27,8 @@ module.exports = function(gulp) {
             .pipe(gulpPrint(function (filePath) {
                 return 'Building ' + filePath;
             }))
+
+            .pipe(envify())
 
             .pipe(gulp.dest(paths.publicScriptsDir()))
         );
