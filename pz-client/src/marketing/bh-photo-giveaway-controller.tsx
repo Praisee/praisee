@@ -10,17 +10,15 @@ interface IProps {
 
 export default class BhPhotoGiveawayController extends React.Component<IProps, any> {
     render() {
+        const imageUrl = appInfo.addresses.getImageFullUrl(
+            'marketing/bh-photo-giveaway-thumb.jpg'
+        );
+
         return (
             <div className="bh-photo-giveaway-namespace">
                 {this._renderPageHead()}
 
-                <h1 className="contest-heading">$100 B&amp;H Photo Gift Card Giveaway</h1>
-
-                {this._renderContestVideo()}
-
-                <div className="contest-body">
-                    Ready to win a $100 B&amp;H Photo gift card? Enter to win below!
-                </div>
+                <img src={imageUrl} alt="$100 B&H Photo Gift Card Giveaway" className="contest-hero-image"/>
 
                 {this._renderContest()}
             </div>
@@ -59,25 +57,6 @@ export default class BhPhotoGiveawayController extends React.Component<IProps, a
                     {property: 'twitter:image:src', content: imageUrl},
                 ]}
             />
-        );
-    }
-
-    private _renderContestVideo() {
-        const embeddedVideoHtml = `
-            <div class="wistia_responsive_padding" style="padding:56.25% 0 0 0;position:relative;"><div class="wistia_responsive_wrapper" style="height:100%;left:0;position:absolute;top:0;width:100%;"><div class="wistia_embed wistia_async_wjn19ki9jv videoFoam=true" style="height:100%;width:100%">&nbsp;</div></div></div>
-        `;
-
-        return (
-            <div className="contest-video-container">
-                <Helmet
-                    script={[
-                        {src: '//fast.wistia.com/embed/medias/wjn19ki9jv.jsonp', type: 'text/javascript', async: true},
-                        {src: '//fast.wistia.com/assets/external/E-v1.js', type: 'text/javascript', async: true},
-                    ]}
-                />
-
-                <div className="contest-video" dangerouslySetInnerHTML={{__html: embeddedVideoHtml}} />
-            </div>
         );
     }
 
