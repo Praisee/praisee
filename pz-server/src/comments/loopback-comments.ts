@@ -42,7 +42,12 @@ export default class Comments implements IComments {
         const cursorResults = await findWithCursor<ICommentInstance>(
             this._CommentModel,
             cursor,
-            { where: { userId } }
+            {
+                where: { userId },
+
+                //TODO: In the future, this should be ranked or at least the method renamed to findSomeLatestByUserId
+                order: 'createdAt DESC'
+            }
         );
 
         return cursorCommentLoopbackModelsToRecords(cursorResults);
@@ -97,7 +102,7 @@ export default class Comments implements IComments {
 
         return comment;
     }
-    
+
     async getReputationEarned(commentId: number, userId: number): Promise<number> {
         return await this._CommentModel.getReputationEarned(commentId, userId);
     }
