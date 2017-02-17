@@ -437,6 +437,7 @@
     @include community-item();
     @include editor();
     @include fixed-content-menu();
+    @include cursor-content-menu();
 
     .primary-section {
       @include make-col-span(8);

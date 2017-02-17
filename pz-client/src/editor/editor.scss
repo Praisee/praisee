@@ -22,59 +22,6 @@
       }
     }
 
-    .cursor-content-menu {
-      position: relative;
-
-      .content-menu-toggle {
-        @extend .fa;
-        @extend .fa-plus;
-        position: absolute;
-        left: -2.5rem;
-        top: 0.4rem;
-        border: none;
-        background: none;
-        padding: 0;
-        margin: 0;
-        font-size: 0.9rem;
-        outline: none;
-
-        &:active, &:focus, &:hover {
-          color: $btn-primary-bg;
-        }
-      }
-
-      .content-menu-items {
-        display: none;
-        position: relative;
-        z-index: 10;
-      }
-
-      &.content-menu-open {
-        .content-menu-toggle {
-          @extend .fa;
-          @extend .fa-minus;
-        }
-
-        .content-menu-items {
-          display: block;
-          background: white;
-          border-radius: 10%;
-        }
-      }
-
-      .content-menu-button {
-        width: 1.5rem;
-        height: 1.5rem;
-        border: none;
-        background: none;
-        padding: 0;
-        margin: 0;
-        margin-right: 0.2rem;
-        font-size: 0.9rem;
-        vertical-align: middle;
-      }
-    }
-
     .add-photo-button-container {
       @include customizable-file-input(1.5rem, 1.5rem);
 
@@ -95,6 +42,11 @@
       display: inline-block;
       vertical-align: top;
       margin-right: 0.3rem;
+    }
+
+    .embed-video-button {
+      @extend .fa;
+      @extend .fa-youtube-play;
     }
   }
 }
@@ -148,6 +100,77 @@
       color: $btn-secondary-bg;
       background: $btn-secondary-color;
       border: 1px solid $btn-secondary-color;
+    }
+  }
+}
+
+@mixin cursor-content-menu {
+  .cursor-content-menu {
+    position: relative;
+
+    @include media-breakpoint-down(sm) {
+      display: none;
+    }
+
+    .content-menu-toggle {
+      @extend .fa;
+      @extend .fa-plus;
+      position: absolute;
+      left: -2.5rem;
+      top: 0.4rem;
+      border: none;
+      background: none;
+      padding: 0;
+      margin: 0;
+      font-size: 0.9rem;
+      outline: none;
+
+      &:active, &:focus, &:hover {
+        color: $btn-primary-bg;
+      }
+    }
+
+    .content-menu-items {
+      display: none;
+      position: relative;
+      z-index: 10;
+    }
+
+    &.content-menu-open {
+      .content-menu-toggle {
+        @extend .fa;
+        @extend .fa-minus;
+      }
+
+      .content-menu-items {
+        display: block;
+        background: white;
+        border-radius: 10%;
+      }
+    }
+
+    .content-menu-button {
+      width: 1.5rem;
+      height: 1.5rem;
+      border: none;
+      background: none;
+      padding: 0;
+      margin: 0;
+      margin-right: 0.2rem;
+      font-size: 0.9rem;
+      vertical-align: middle;
+    }
+
+    .add-photo-button-container, .customizable-add-photo-button {
+      .add-photo-button-label {
+        display: none;
+      }
+    }
+
+    .embed-video-button {
+      .embed-video-button-label {
+        display: none;
+      }
     }
   }
 }

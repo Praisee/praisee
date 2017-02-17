@@ -157,9 +157,9 @@ class AddHeadingButton extends React.Component<any, any> {
 
     private _addHeading() {
         if (this.props.headingType === 'h1') {
-            this._toggleBlockType('header-three');
-        } else if (this.props.headingType === 'h2') {
             this._toggleBlockType('header-four');
+        } else if (this.props.headingType === 'h2') {
+            this._toggleBlockType('header-five');
         }
     }
 

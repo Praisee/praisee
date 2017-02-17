@@ -5,7 +5,10 @@ import XhrSingleFileUploadRequester from 'pz-client/src/support/file-upload-requ
 import {ISignInUpContext, SignInUpContextType} from 'pz-client/src/user/sign-in-up-overlay-component';
 import {
     AddPhotoButton,
-    EmbedVideoButton, CustomizableAddPhotoButton
+    EmbedVideoButton,
+    CustomizableAddPhotoButton,
+    AddHeading1Button,
+    AddHeading2Button
 } from 'pz-client/src/editor/content-menu/content-menu-buttons-component';
 
 import {
@@ -18,6 +21,7 @@ import {IFileUploadResponse} from 'pz-client/src/support/file-upload-requester';
 import {FixedContentMenu} from 'pz-client/src/editor/content-menu/content-menu-components';
 
 import prependText from 'pz-client/src/editor/editor-state/prepend-text';
+import createRemoveHeadingOnEnterPlugin from 'pz-client/src/editor/content-menu/remove-heading-on-enter-plugin';
 
 export interface IProps {
     placeholder?: any
@@ -40,7 +44,8 @@ export default class CommunityItemEditor extends React.Component<IProps, any> {
     };
 
     private _editorPlugins = [
-        createAttachmentPlugin()
+        createAttachmentPlugin(),
+        createRemoveHeadingOnEnterPlugin()
     ];
 
     private _fileUploadRequester = new XhrSingleFileUploadRequester({
@@ -70,7 +75,7 @@ export default class CommunityItemEditor extends React.Component<IProps, any> {
         return (
             <div className="community-item-body-editor">
                 <FixedContentMenu>
-                    {this._renderContentMenuButtons()}
+                    {this._renderFixedContentMenuButtons()}
                 </FixedContentMenu>
 
                 <div className="editor-container">
@@ -83,6 +88,7 @@ export default class CommunityItemEditor extends React.Component<IProps, any> {
                         editorState={this.state.editorState}
                         onChange={this._updateEditorState.bind(this)}
                         plugins={this._editorPlugins}
+                        cursorContentMenuButtons={this._renderCursorContentMenuButtons()}
                         ref="editor"
                     />
 
@@ -99,11 +105,31 @@ export default class CommunityItemEditor extends React.Component<IProps, any> {
         this.props.onChange(editorState);
     }
 
-    private _renderContentMenuButtons() {
+    private _renderFixedContentMenuButtons() {
         return (
             <div className="community-item-editor-menu">
                 {this._renderAddPhotoButton()}
                 {this._renderEmbedVideoButton()}
+            </div>
+        );
+    }
+
+    private _renderCursorContentMenuButtons() {
+        return (
+            <div className="community-item-editor-menu">
+                {this._renderAddPhotoButton()}
+
+                {this._renderEmbedVideoButton()}
+
+                <AddHeading1Button
+                    editorState={this.state.editorState}
+                    onChange={this._updateEditorState.bind(this)}
+                />
+
+                <AddHeading2Button
+                    editorState={this.state.editorState}
+                    onChange={this._updateEditorState.bind(this)}
+                />
             </div>
         );
     }

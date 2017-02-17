@@ -2,6 +2,7 @@
   @include editor(1rem);
   @include embedded-sign-in-up();
   @include fixed-content-menu();
+  @include cursor-content-menu();
   @include summary-editor();
 
   .editor-container {
@@ -41,7 +42,7 @@
   }
 
   &.editor-hide-full-body, .editor-hide-full-body {
-    .editor-area, .editor-footer {
+    .editor-area, .editor-footer, .cursor-content-menu {
       display: none;
     }
   }
