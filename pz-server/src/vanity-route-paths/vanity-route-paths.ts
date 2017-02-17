@@ -16,10 +16,10 @@ import {ICommunityItem} from 'pz-server/src/community-items/community-items';
 export type TVanityRoutePathSupportedRecord = IUser | ITopic | ICommunityItem;
 
 export var isUserRecord = (record: TVanityRoutePathSupportedRecord): record is IUser => (
-    record.recordType === 'PraiseeUser' 
-    || record.recordType === 'OtherUser' 
-    || record.recordType === 'CurrentUser' 
-    || record.recordType === 'User' 
+    record.recordType === 'PraiseeUser'
+    || record.recordType === 'OtherUser'
+    || record.recordType === 'CurrentUser'
+    || record.recordType === 'User'
 );
 
 export var isTopicRecord = (record: TVanityRoutePathSupportedRecord): record is ITopic => (
@@ -130,7 +130,7 @@ export default class VanityRoutePaths implements IVanityRoutePaths {
             return [];
         }
 
-        const urlSlugsForEachRecord: Array<Array<IUrlSlug>> = await this._urlSlugs.findAllForEachSluggable(
+        const urlSlugsForEachRecord: Array<Array<IUrlSlug>> = await this._urlSlugs.findAllNonAliasForEachSluggable(
             records.map(record => ({
                 sluggableType: record.recordType,
                 sluggableId: record.id

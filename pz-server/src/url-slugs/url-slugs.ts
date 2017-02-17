@@ -12,8 +12,8 @@ export interface ISluggable {
 
 export interface IUrlSlug extends IRepositoryRecord {
     recordType: 'UrlSlug'
-    fullSlug
-    isAlias
+    fullSlug: string
+    isAlias: boolean
     sluggableType: TSluggableType,
     sluggableId: TSluggableId
     createdAt: Date
@@ -22,4 +22,5 @@ export interface IUrlSlug extends IRepositoryRecord {
 export interface IUrlSlugs extends IRepository {
     findAllBySluggable(sluggable: ISluggable): Promise<Array<IUrlSlug>>
     findAllForEachSluggable(sluggables: Array<ISluggable>): Promise<Array<Array<IUrlSlug>>>
+    findAllNonAliasForEachSluggable(sluggables: Array<ISluggable>): Promise<Array<Array<IUrlSlug>>>
 }

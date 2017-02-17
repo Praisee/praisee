@@ -7,7 +7,8 @@ export default class UrlSlugsLoader implements IUrlSlugs {
     private _urlSlugs: IUrlSlugs;
 
     private _loaders: {
-        findAllForEachSluggable: DataLoader<ISluggable, IUrlSlug>
+        findAllForEachSluggable: DataLoader<ISluggable, IUrlSlug>,
+        findAllNonAliasForEachSluggable: DataLoader<ISluggable, IUrlSlug>
     };
 
     constructor(urlSlugs: IUrlSlugs) {
@@ -16,6 +17,13 @@ export default class UrlSlugsLoader implements IUrlSlugs {
         this._loaders = {
             findAllForEachSluggable: createDataLoaderBatcher<ISluggable, IUrlSlug>(
                 this._urlSlugs.findAllForEachSluggable.bind(this._urlSlugs)
+
+                // Maybe another day...
+                // {cacheKeyFn: ({sluggableType, sluggableId}) => `${sluggableType}:${sluggableId}`}
+            ),
+
+            findAllNonAliasForEachSluggable: createDataLoaderBatcher<ISluggable, IUrlSlug>(
+                this._urlSlugs.findAllNonAliasForEachSluggable.bind(this._urlSlugs)
 
                 // Maybe another day...
                 // {cacheKeyFn: ({sluggableType, sluggableId}) => `${sluggableType}:${sluggableId}`}
@@ -29,5 +37,9 @@ export default class UrlSlugsLoader implements IUrlSlugs {
 
     findAllForEachSluggable(sluggables: Array<ISluggable>): Promise<Array<Array<IUrlSlug>>> {
         return this._loaders.findAllForEachSluggable.loadMany(sluggables);
+    }
+
+    findAllNonAliasForEachSluggable(sluggables: Array<ISluggable>): Promise<Array<Array<IUrlSlug>>> {
+        return this._loaders.findAllNonAliasForEachSluggable.loadMany(sluggables);
     }
 }

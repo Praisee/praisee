@@ -28,6 +28,14 @@ export default class UrlSlugs implements IUrlSlugs {
     }
 
     async findAllForEachSluggable(sluggables: Array<ISluggable>): Promise<Array<Array<IUrlSlug>>> {
+        return this._findAllWithWhereQueryForEachSluggable(sluggables);
+    }
+
+    async findAllNonAliasForEachSluggable(sluggables: Array<ISluggable>): Promise<Array<Array<IUrlSlug>>> {
+        return this._findAllWithWhereQueryForEachSluggable(sluggables, {isAlias: false});
+    }
+
+    private async _findAllWithWhereQueryForEachSluggable(sluggables: Array<ISluggable>, urlSlugWhereQuery: {} = {}): Promise<Array<Array<IUrlSlug>>> {
         if (!sluggables.length) {
             return [];
         }
@@ -47,10 +55,10 @@ export default class UrlSlugs implements IUrlSlugs {
         let lastSluggableType;
 
         const whereQuery = Object.keys(whereGroups).reduce((whereQuery: any, sluggableType) => {
-            const whereClause = {
+            const whereClause = Object.assign({}, urlSlugWhereQuery, {
                 sluggableType,
                 sluggableId: {inq: whereGroups[sluggableType]}
-            };
+            });
 
             if (lastSluggableType) {
                 if (whereQuery.hasOwnProperty('or')) {
