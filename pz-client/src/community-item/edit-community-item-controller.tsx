@@ -170,7 +170,6 @@ export default Relay.createContainer(withRouter(CommunityItemController), {
                 belongsToCurrentUser
                 routePath
                 
-                ${Avatar.getFragment('communityItem')}
                 ${UpdateCommunityItemContentMutation.getFragment('communityItem')}
             }
         `
