@@ -21,8 +21,11 @@
 
     .contest-body {
       padding: 3rem 0;
+      padding-top: 0;
       margin: 0 auto;
-      width: 80%;
+      max-width: 540px;
+
+      h4 { margin-bottom: 2rem; }
     }
   }
 

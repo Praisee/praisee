@@ -20,6 +20,19 @@ export default class BhPhotoGiveawayController extends React.Component<IProps, a
 
                 <img src={imageUrl} alt="$100 B&H Photo Gift Card Giveaway" className="contest-hero-image"/>
 
+                <div className="contest-body">
+                    <h3>The giveaway has ended!</h3>
+                    <h4>A winner will be announced on Monday!</h4>
+
+                    <p>
+                        We will be reviewing all entries over the weekend.
+                        On Monday an announcement will be posted here and on our
+                        Facebook page of the winner. The winner should expect
+                        to receive an email and their $100 B&amp;H Photo gift card shortly
+                        after the announcement. Stay tuned!
+                    </p>
+                </div>
+
                 {this._renderContest()}
             </div>
         );
