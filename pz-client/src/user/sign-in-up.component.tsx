@@ -46,7 +46,7 @@ export default class SignInUp extends React.Component<IProps, any> {
 
     private _renderSignUp() {
         const signUpHeading = this.props.dueToUserMustSignInUp ?
-            "Hey, you'll sign up to do that" : 'Sign Up';
+            "Hey, you'll need to sign up to do that" : 'Sign Up';
 
         const signUpSubheading = this.props.dueToUserMustSignInUp ?
             "Don't worry, signing up is free and easy!"
