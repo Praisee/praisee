@@ -18,7 +18,7 @@ export interface IAppLayoutProps {
 export class AppLayout extends React.Component<IAppLayoutProps, any> {
     render() {
         return (
-            <div className="app-layout">
+            <div className="app-layout-namespace">
                 <SignInUpOverlay>
                     <Header currentUser={this.props.currentUser || null} viewer={this.props.viewer} />
 

@@ -168,8 +168,8 @@
 
 }
 
-@mixin app-layout {
-  .app-layout {
+@mixin app-layout-namespace {
+  .app-layout-namespace {
     @include make-container();
 
     .app-header-container {

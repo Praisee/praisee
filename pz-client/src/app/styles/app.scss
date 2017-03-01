@@ -46,8 +46,7 @@
 @import url('https://fonts.googleapis.com/css?family=Roboto:300,400,500,700');
 
 .app-namespace {
-  & > { @include app-layout(); }
-
+  @include app-layout-namespace();
   @include home-namespace();
   @include sign-in-up-namespace();
   @include add-review-namespace();
